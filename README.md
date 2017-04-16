@@ -9,7 +9,7 @@ boards. It is currently compatible with Tapatalk 4.x and most vBulletin 3.x mess
 
 ## Website
 
-* http://owlclient.com
+* http://www.owlclient.com
 
 ## Twitter
 
