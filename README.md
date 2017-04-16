@@ -7,20 +7,14 @@
 Owl is a "message board client" for OS X and Windows. It offers a simplfied user interface to browse message 
 boards. It is currently compatible with Tapatalk 4.x and most vBulletin 3.x message boards.
 
-## Twitter
-
-Follow us on Twitter: https://twitter.com/owlclient
-
 ## Website
 
 * http://owlclient.com
 
-## Releases
+## Twitter
 
-* Version 0.7.2 released - 2015-01-22 (Based on Qt 5.x)
-* Version 0.7.1 released - 2014-10-13
-* Version 0.7.0 released - 2014-09-27
-* Version 0.5.0 initial release - 2014-09-22
+Follow us on Twitter: https://twitter.com/owlclient
+
 
 ## History
 
