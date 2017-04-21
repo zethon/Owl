@@ -1,6 +1,6 @@
 # Owl
 
-![Owl Client Screenshot](http://i.imgur.com/ApF3DZa.png "Owl Client Screenshot")
+![Owl Client Screenshot](http://i.imgur.com/7PQVjQz.png "Owl Client Screenshot")
 
 ## What is Owl?
 
