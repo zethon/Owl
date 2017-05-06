@@ -1,6 +1,6 @@
-# Owl
+## Owl
 
-## Description
+### Description
 
 Owl is a "message board client". It offers a simplfied user interface to browse message 
 boards.
@@ -9,7 +9,7 @@ boards.
 
 This repo is for filing issuues against and getting support for Owl.
 
-## Links
+### Links
 
 Website: [http://www.owlclient.com](http://www.owlclient.com)<br/>
 Twitter: [https://twitter.com/owlclient](https://twitter.com/owlclient)
