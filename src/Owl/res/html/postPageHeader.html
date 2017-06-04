@@ -1,0 +1,250 @@
+<!-- BEGIN postPageHeader -->
+<html>
+<head>
+<title></title>
+<script src="qrc:/js/jquery.min.js" language="javascript" type="text/javascript"></script>
+<script src="qrc:/js/nCodeImageResizer.js" language="javascript" type="text/javascript"></script>
+<script src="qrc:///qtwebchannel/qwebchannel.js" language="javascript" type="text/javascript"></script>
+
+<script type="text/javascript">
+function collapseAll()
+{
+    var tbodys = document.getElementsByTagName("tbody");
+    for (var i = 0; i < tbodys.length; i++)
+    {
+        if (tbodys[i].id.indexOf("collapseobj_") != -1)
+        {
+            tbodys[i].style.display = "none";
+        }
+        else if (tbodys[i].id.indexOf("collapsehdr_") != -1)
+        {
+            tbodys[i].className = "postheader_collapsed";
+        }
+    }
+    
+    var tds = document.getElementsByTagName("div");
+    for (var i = 0; i < tds.length; i++)
+    {
+        if (tds[i].id.indexOf("collapsebtn_") != -1)
+        {
+            tds[i].className = "collapsebutton_collapsed";
+        }
+    }
+    
+    var objs = document.getElementsByTagName("object");
+    for (var i = 0; i < objs.length; i++)
+    {
+        if (objs[i].id.indexOf("CollpaseBtn_") != -1)
+        {
+            objs[i].src = "qrc:/images/postview-collapsed-arrow.png";
+        }
+    }
+}
+
+function expandAll()
+{
+    var tbodys = document.getElementsByTagName("tbody");
+    for (var i = 0; i < tbodys.length; i++)
+    {
+        if (tbodys[i].id.indexOf("collapseobj_") != -1)
+        {
+            tbodys[i].style.display = "";
+        }
+        else if (tbodys[i].id.indexOf("collapsehdr_") != -1)
+        {
+            tbodys[i].className = "postheader_expanded";
+        }
+    }
+    
+    var tds = document.getElementsByTagName("div");
+    for (var i = 0; i < tds.length; i++)
+    {
+        if (tds[i].id.indexOf("collapsebtn_") != -1)
+        {
+            tds[i].className = "collapsebutton_expanded";
+        }
+    }
+    
+    var objs = document.getElementsByTagName("input");
+    for (var i = 0; i < objs.length; i++)
+    {
+        if (objs[i].id.indexOf("collapsebtn_") != -1)
+        {
+            objs[i].src = "qrc:/images/postview-expanded-arrow.png";
+        }
+    }	     
+}
+
+// code for collapsing a post's body
+function toggle_collapse(A)
+{
+    var OBJ = document.getElementById('collapseobj_' + A);
+    var HDR = document.getElementById('collapsehdr_' + A);
+    var BTN = document.getElementById('collapsebtn_' + A);
+
+    if (OBJ != null)
+    {
+        if (OBJ.style.display != "none")
+        {
+            // collapse the post
+            OBJ.style.display = "none";
+            if (HDR) HDR.className = "postheader_collapsed";
+            if (BTN) BTN.className = "collapsebutton_collapsed";
+        }
+        else
+        {
+            // expand the post
+            OBJ.style.display = "";
+            if (HDR) HDR.className = "postheader_expanded";
+            if (BTN) BTN.className = "collapsebutton_expanded";
+        }
+    }
+}
+</script>
+
+<style type="text/css">
+    html,
+    body {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+    
+    body {
+        margin: 0px;
+        padding: 0px;
+        background: white;
+        padding-bottom: 50px;
+    }
+    
+    table {
+        font: normal 14px verdana, arial;
+    }
+    
+    td,
+    p,
+    li,
+    div {
+        font: 10pt verdana, geneva, lucida, 'lucida grande', arial, helvetica, sans-serif;
+    }
+    
+    .tborder {
+        width: 99%;
+        background-color: white;
+        margin-left: auto;
+        margin-right: auto;
+        border: 1px solid lightgrey;
+        /*border-left-color: transparent;
+        border-left-width: 5px;
+        border-left-style: solid;*/
+    }
+    
+    .tborder:hover
+    {
+        background-color: %HIGHLIGHTCOLOR%;
+    }
+    
+    .collapsebutton_collapsed {
+        background-image: url(qrc:/images/postview-expanded-arrow.png);
+        width: 8px;
+        height: 16px;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+    
+    .collapsebutton_expanded {
+        background-image: url(qrc:/images/postview-collapsed-arrow.png);
+        width: 8px;
+        height: 16px;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+    
+    .postheader_expanded:hover {
+        cursor: pointer;
+    }
+    
+    .postheader_collapsed:hover {
+        cursor: pointer;
+        background-color: #E8E8E8;
+    }
+    
+    table.ncode_imageresizer_warning {
+        background: #B1D7FE;
+        color: #000000;
+        border: 1px solid #CCC;
+        cursor: pointer;
+    }
+    
+    table.ncode_imageresizer_warning td {
+        font-size: 10px;
+        vertical-align: middle;
+        text-decoration: none;
+    }
+    
+    table.ncode_imageresizer_warning td.td1 {
+        padding: 5px;
+    }
+    
+    table.ncode_imageresizer_warning td.td1 {
+        padding: 2px;
+    }
+    
+    blockquote {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        margin-left: 20px;
+        padding-left: 15px;
+        background-color: #f9f9f9;
+        border-left: 3px solid #4376B4;
+        border-top: 1px solid #f0f0f0;
+        border-bottom: 1px solid #f0f0f0;
+        border-right: 1px solid #f0f0f0;
+    }
+
+    .image_overlay
+    {
+        position: absolute; 
+        cursor: pointer;
+        width: 32;
+        height: 32;
+    }
+
+    .image_overlay:hover
+    {
+        background-color: lightgrey;
+    }    
+</style>
+
+<script type="text/javascript">
+function doQuote(postIdx)
+{
+    window.postlist.doQuotePost(postIdx);
+}
+
+function doReply(postIdx)
+{
+    window.postlist.doReplyPost(postIdx);
+}
+
+window.onload = function()
+{
+    var webChannel = new QWebChannel(qt.webChannelTransport, 
+        function(channel)
+        {
+            window.postlist = channel.objects.postlist;
+
+            // TODO: adjustImgMax should be a Q_SIGNAL in owl::SharedPostObject but for whatever
+            // reason I cannot get the C++ signal to invoke the following JS code. This would be
+            // useful for adjusting an images max height/width according to the size of the post
+            // window (ie. the post window could send this signal every time it's resized).
+            // window.postlist.adjustImgMax.connect(
+            //     function()
+            //     {
+            //         // alert("foo");
+            //     });            
+        });
+}
+</script>
+</head>
+<body>
+<!-- END postPageHeader -->

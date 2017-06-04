@@ -1,0 +1,42 @@
+<html>
+<head>
+<title></title>
+<style type="text/css">
+body
+{
+    margin: 0px; 
+    padding:0px;
+    font-size: 12pt;
+    font-family: "Helvetica, sans-serif";
+    color: ${boardlist.text.color};
+}
+</style> 
+</head>
+<body>
+
+<table cellspacing="0" cellpadding="0">
+<tr>
+    <td>
+        <table cellspacing="0" cellpadding="0">
+%BOARDICONSHOWSTART%
+            <tr>
+                <td align="center"><img src="%BOARDICON%" alt="%BOARDNAME%" /></td>
+            </tr>
+%BOARDICONSHOWEND%
+            <tr>
+                <td align="center"><img height="16" src="%BOARDSTATUSIMG%" alt="%BOARDSTATUSALT%" /></td>
+            </tr>
+        </table>
+    </td>
+    <td>&nbsp;</td>
+    <td>
+        <table cellspacing="0" cellpadding="2">
+            <tr><td align="left" id="boardname"><b>%BOARDNAME%</b></td></tr>
+            <tr><td align="left">%BOARDUSERNAME%</td></tr>
+        </table>
+    </td>
+</tr>
+</table>
+
+</body>
+</html>

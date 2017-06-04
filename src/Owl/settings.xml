@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<owl-config>
+  <setting-group name="board-search">
+    <setting name="subDomains" type="list">
+      <value type="text" value="" />
+      <value type="text" value="forum" />
+      <value type="text" value="forums" />
+      <value type="text" value="community" />
+    </setting>
+
+    <setting name="paths" type="list">
+      <value type="text" value="/" />
+      <value type="text" value="forum" />
+      <value type="text" value="forums" />
+      <value type="text" value="board" />
+    </setting>
+
+    <setting name="iconFiles" type="list">
+      <value type="text" value="/apple-touch-icon.png" />
+      <value type="text" value="/favicon.ico" />
+    </setting>
+  </setting-group>
+
+  <setting-group name="toolbar">
+    <setting name="iconWidth" type="uint" value="24" />
+    <setting name="iconHeight" type="uint" value="24" />
+    <setting name="scrollArrowWidth" type="uint" value="24" />
+    <setting name="scrollArrowHeight" type="uint" value="24" />
+  </setting-group>
+
+  <setting-group name="boardTree">
+    <setting name="itemHeight" type="uint" value="24" />
+  </setting-group>
+</owl-config>

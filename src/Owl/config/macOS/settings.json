@@ -1,0 +1,35 @@
+// owl.ini - UI persisted information (window location, size, etc)
+// settings.json
+{
+    "version" : "0.7.6",
+
+	//-------- Logs configuration --------
+    "logs.level": "trace",
+    "logs.file.enabled": true,
+    "logs.file.path": "", // blank by default
+    //"logs.file.path": "/Users/aclaure/Library/Application Support/Adalid Claure/Owl/logs",    
+    
+	//-------- Parsers configuration --------
+    "parsers.enabled": true,
+    // TODO: Should be set if blank (will differ Mac and Win)
+    "parser.path": "",
+    //"parsers.path": "/Users/aclaure/src/owl/bin/Owl/Owl.app/Contents/Resources/parsers",
+    
+    //-------- Editor configuration --------
+    "editor.font.family": "Helvetica",
+    "editor.font.size": 14,
+    "editor.language": "en_US",
+    "editor.spellcheck.enabled": true,
+           
+    //-------- Proxy configuration --------
+    "proxy.enabled": false,
+    "proxy.host": "",
+    "proxy.username": "",
+    "proxy.password": "",
+    "proxy.post": 0,
+    "proxy.proxyType": 0,
+    
+    //-------- WebClient configuration --------
+    // TODO: Should be set to the hardcoded #define if the value is blank 
+    "webclient.useragent": ""
+}

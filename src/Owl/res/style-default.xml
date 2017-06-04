@@ -1,0 +1,307 @@
+<style name="Owl Default">
+	<template name="postbit">
+		<![CDATA[
+<!-- BEGIN POSTBIT -->
+<a name="postAnchor{$postid}"></a>
+<table class="tborder" border="0" width="100%" id="$unreadAnchor">
+    <tbody onclick="return toggle_collapse('{$postid}')" id="collapsehdr_{$postid}" class="$unreadClass">
+        <tr>
+            <td>
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tr valign="middle">
+                        <td style="width:16px">
+                            <object height="16px;" width="8px" type="application/x-qt-plugin" classid="CollapseButton" id="CollpaseBtn_{$postid}" postid="{$postid}">[Collapse]</object>
+                        </td>
+                        <td>
+                            <b>{$username}</b>
+                        </td>
+                        <td align="right">
+                            <div style="font-size:10px; color:grey; padding-right: 5px;">{$dateline}&nbsp;&nbsp;#{$postnum}</div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </tbody>
+
+    <tbody id="collapseobj_{$postid}" style="display:$unreadStyle;">
+        <tr><td style="height:7px;"/></tr>
+        <tr>
+            <td>
+                <div style="width:97%; margin-left: auto; margin-right: auto;">
+                    {$posttext}
+                </div>
+            </td>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <hr width="97%" />
+            </td>
+        </tr>     
+        <tr>
+            <td align="right">
+                <object height="25px;" width="88px" type="application/x-qt-plugin" classid="QuoteButton" id="{$quoteBtnName}" postid="{$postid}">[Quote]</object>
+            </td>
+        </tr>    
+        <tr><td style="height:5px;"/></tr>          
+    </tbody>
+</table>
+<script>
+    {$quoteBtnName}.text = '';
+{$quoteBtnName}.clicked.connect(function() { {$quoteBtnName}.doQuote(); });
+CollpaseBtn_{$postid}.text = '';
+CollpaseBtn_{$postid}.clicked.connect(function() { toggle_collapse('{$postid}') });
+
+</script>
+<div style="height:5px;"></div>
+<!-- END POSTBIT -->
+
+]]>
+	</template>	
+
+	<template name="postPageHeader">
+		<![CDATA[
+
+<!-- BEGIN postPageHeader -->
+<html>
+
+<head>
+    <title></title>
+    <!--<link href="qrc:/css/postViewCSSMenu.css" rel="stylesheet" type="text/css">-->
+    <link href="/Users/aclaure/src/owl/src/Owl/res/css/postViewCSSMenu.css" rel="stylesheet" type="text/css">
+    
+
+    <script src="qrc:/js/nCodeImageResizer.js" language="javascript" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        function collapseAll()
+{
+	var tbodys = document.getElementsByTagName("tbody");
+	for (var i = 0; i < tbodys.length; i++)
+	{
+		if (tbodys[i].id.indexOf("collapseobj_") != -1)
+		{
+			tbodys[i].style.display = "none";
+		}
+		else if (tbodys[i].id.indexOf("collapsehdr_") != -1)
+		{
+			tbodys[i].className = "postheader_collapsed";
+		}
+	}
+    
+	var tds = document.getElementsByTagName("div");
+	for (var i = 0; i < tds.length; i++)
+	{
+		if (tds[i].id.indexOf("collapsebtn_") != -1)
+		{
+			tds[i].className = "collapsebutton_collapsed";
+		}
+	}
+	
+	var objs = document.getElementsByTagName("object");
+	for (var i = 0; i < objs.length; i++)
+	{
+		if (objs[i].id.indexOf("CollpaseBtn_") != -1)
+		{
+			objs[i].setCollapsed();
+		}
+	}
+}
+
+function expandAll()
+{
+	var tbodys = document.getElementsByTagName("tbody");
+	for (var i = 0; i < tbodys.length; i++)
+	{
+		if (tbodys[i].id.indexOf("collapseobj_") != -1)
+		{
+			tbodys[i].style.display = "";
+		}
+		else if (tbodys[i].id.indexOf("collapsehdr_") != -1)
+		{
+			tbodys[i].className = "postheader_expanded";
+		}
+	}
+    
+	var tds = document.getElementsByTagName("div");
+	for (var i = 0; i < tds.length; i++)
+	{
+		if (tds[i].id.indexOf("collapsebtn_") != -1)
+		{
+			tds[i].className = "collapsebutton_expanded";
+		}
+	}
+	
+	var objs = document.getElementsByTagName("object");
+	for (var i = 0; i < objs.length; i++)
+	{
+		if (objs[i].id.indexOf("CollpaseBtn_") != -1)
+		{
+			objs[i].setExpanded();
+		}
+	}	     
+}
+
+    </script>
+
+    <script type="text/javascript">
+        // code for collapsing a post's body
+function toggle_collapse(A)
+{
+    var OBJ = document.getElementById('collapseobj_' + A);
+    var HDR = document.getElementById('collapsehdr_' + A);
+    var BTN = document.getElementById('CollpaseBtn_' + A);
+	
+    if (OBJ != null)
+    {
+        if (OBJ.style.display != "none")
+        {
+            // collapse the post
+            OBJ.style.display = "none";
+            if (HDR) HDR.className = "postheader_collapsed";
+			if (BTN) BTN.setCollapsed();
+        }
+        else
+        {
+            // expand the post
+            OBJ.style.display = "";
+            if (HDR) HDR.className = "postheader_expanded";
+			if (BTN) BTN.setExpanded();
+        }
+    }
+}
+
+    </script>
+
+    <style type="text/css">
+        html,
+        body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        body {
+            margin: 0px;
+            padding: 0px;
+            background: white;
+            padding-bottom: 50px;
+        }
+        
+        table {
+            font: normal 14px verdana, arial;
+        }
+        
+        td,
+        p,
+        li,
+        div {
+            font: 10pt verdana, geneva, lucida, 'lucida grande', arial, helvetica, sans-serif;
+        }
+        
+        .tborder {
+            width: 99%;
+            background-color: white;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid lightgrey;
+            /*border-left-color: transparent;
+            border-left-width: 5px;
+            border-left-style: solid;*/
+        }
+        
+        .tborder:hover {
+            background-color: #F5F5F5;
+            /*border-left-color: #4376B4;
+            border-left-width: 5px;
+            border-left-style: solid;*/
+        }
+        
+        .collapsebutton_collapsed {
+            background-image: url(qrc:/images/postview-expanded-arrow.png);
+            width: 8px;
+            height: 16px;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        
+        .collapsebutton_expanded {
+            background-image: url(qrc:/images/postview-collapsed-arrow.png);
+            width: 8px;
+            height: 16px;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        
+        .postheader_expanded:hover {
+            cursor: pointer;
+        }
+        
+        .postheader_collapsed:hover {
+            cursor: pointer;
+            background-color: #E8E8E8;
+        }
+        
+        table.ncode_imageresizer_warning {
+            background: #B1D7FE;
+            color: #000000;
+            border: 1px solid #CCC;
+            cursor: pointer;
+        }
+        
+        table.ncode_imageresizer_warning td {
+            font-size: 10px;
+            vertical-align: middle;
+            text-decoration: none;
+        }
+        
+        table.ncode_imageresizer_warning td.td1 {
+            padding: 5px;
+        }
+        
+        table.ncode_imageresizer_warning td.td1 {
+            padding: 2px;
+        }
+        
+        blockquote {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            margin-left: 20px;
+            padding-left: 15px;
+            background-color: #f9f9f9;
+            border-left: 3px solid #4376B4;
+            border-top: 1px solid #f0f0f0;
+            border-bottom: 1px solid #f0f0f0;
+            border-right: 1px solid #f0f0f0;
+        }
+    </style>
+
+
+    <script type="text/javascript">
+        NcodeImageResizer.MODE = 'enlarge';
+NcodeImageResizer.MAXWIDTH = 481.5;
+NcodeImageResizer.MAXHEIGHT = 479.7;
+
+var vbphrase= new Array();
+vbphrase['ncode_imageresizer_warning_small'] = 'Click this bar to view the full image.';
+vbphrase['ncode_imageresizer_warning_filesize'] = 'This image has been resized. Click this bar to view the full image.';
+vbphrase['ncode_imageresizer_warning_no_filesize'] = 'This image has been resized. Click this bar to view the full image.';
+vbphrase['ncode_imageresizer_warning_fullsize'] = 'Click this bar to view the small image.';
+
+    </script>
+
+</head>
+
+<body>
+    <!-- END postPageHeader -->
+
+]]>
+	</template>
+
+	<template name="postPageFooter">
+		<![CDATA[
+</body>
+</html>		
+		]]>
+	</template>
+</style>

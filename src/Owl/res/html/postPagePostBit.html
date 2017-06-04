@@ -1,0 +1,52 @@
+<!-- BEGIN POSTBIT -->
+<a name="postAnchor{$postid}"></a>
+<table class="tborder" border="0" width="100%" id="{$unreadAnchor}">
+    <tbody onclick="return toggle_collapse('{$postindex}')" id="collapsehdr_{$postindex}" class="{$unreadClass}">
+        <tr>
+            <td>
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tr valign="middle">
+                        <td style="width:16px">
+                            <div id="collapsebtn_{$postindex}" class="{$collapseButtonClass}" />
+                        </td>
+                        <td>
+                            <img src="{$usericon}" height="32" width="32" style="vertical-align: middle;"/>&nbsp;<font color="#326464" style="size: 14pt; font-family: Helvetica, sans-serif; vertical-align: middle;">{$username}</font>
+                        </td>
+                        <td align="right">
+                            <div style="font-size:10px; color:grey; padding-right: 5px;">{$dateline}&nbsp;&nbsp;#{$postnum}</div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </tbody>
+
+    <tbody id="collapseobj_{$postindex}" style="display:{$unreadStyle};">
+        <tr><td style="height:7px;"/></tr>
+        <tr>
+            <td>
+                <div style="width:97%; margin-left: auto; margin-right: auto;">
+                    {$posttext}
+                </div>
+            </td>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <hr width="97%" />
+            </td>
+        </tr>     
+        <tr>
+            <td align="right">
+                <input type="submit" id="QuoteBtn{$postindex}" value="Quote" onclick="doQuote({$postindex});" />
+                &nbsp;
+                <input type="submit" id="ReplyBtn{$postindex}" value="Reply" onclick="doReply({$postindex});" />
+            </td>
+        </tr>    
+        <tr><td style="height:5px;"/></tr>          
+    </tbody>
+</table>
+<script>    
+</script>
+<div style="height:5px;"></div>
+<!-- END POSTBIT -->
