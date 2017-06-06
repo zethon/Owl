@@ -7,8 +7,6 @@ boards.
 
 ![Owl Client Screenshot](http://i.imgur.com/7PQVjQz.png "Owl Client Screenshot")
 
-This repo is for filing issuues against and getting support for Owl.
-
 ### Links
 
 Website: [http://www.owlclient.com](http://www.owlclient.com)<br/>
