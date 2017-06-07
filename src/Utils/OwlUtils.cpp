@@ -14,15 +14,6 @@ void openFolder(const QString& pathIn)
 {
 // Mac, Windows support folder or file.
 #if defined(Q_OS_WIN)
-    const QString explorer =
-        Utils::Environment::systemEnvironment().searchInPath(QLatin1String("explorer.exe"));
-
-    if (explorer.isEmpty())
-    {
-        OWL_THROW_EXCEPTION(OwlException("Could not find explorer.exe in path to launch Windows Explorer."));
-        return;
-    }
-
     QString param;
     if (!QFileInfo(pathIn).isDir())
     {
@@ -30,8 +21,7 @@ void openFolder(const QString& pathIn)
     }
 
     param += QDir::toNativeSeparators(pathIn);
-    QProcess::startDetached(explorer, QStringList(param));
-
+    QProcess::startDetached(QStringLiteral("explorer.exe"), QStringList(param));
 #elif defined(Q_OS_MAC)
     //Q_UNUSED(parent)
     QStringList scriptArgs;

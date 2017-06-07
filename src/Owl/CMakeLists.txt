@@ -81,10 +81,6 @@ ENDIF()
 if (WIN32)
     SET(CMAKE_EXE_LINKER_FLAGS "/NODEFAULTLIB:library")
     SET(RESOURCE_FILES "res/Owl.rc")
-
-    IF(MSVC OR MSVC_IDE)
-        SET(CMAKE_GENERATOR_TOOLSET "v120" CACHE STRING "Platform Toolset" FORCE)
-    ENDIF()
 endif()
 
 QT5_ADD_RESOURCES(RRC_SOURCE_FILES ${QRC_SOURCE_FILES})
@@ -122,6 +118,7 @@ TARGET_LINK_LIBRARIES(Owl
     ${DEPENDENCY_LIST}
     ${QT_LIBRARIES}
     ${LOG4QT_LIBRARIES}
+    ${HTMLTIDY_LIBRARIES}
     ${HUNSPELL_LIBRARIES}
 )
 
@@ -145,19 +142,7 @@ if (APPLE)
 endif (APPLE)
 
 QT5_USE_MODULES(Owl 
-    Concurrent
-    Core
-    MacExtras
-    Network
-    Quick
-    QuickWidgets
-    Sql
-    UiTools
-    WebEngine
-    WebEngineWidgets
-    Widgets
-    Xml
-    XmlPatterns
+    ${QT_MODULE_LIST}
 )
 
 INSTALL(
@@ -232,6 +217,5 @@ elseif (WIN32)
         COMMAND "xcopy" ARGS /Y /D "${OWL_INI_TO_COPY}" "$(OutDir)"
         COMMENT "Copying owl.ini")
 elseif (LINUX)
-
-		
+    # nothing yet for Linux		
 endif()

@@ -56,7 +56,7 @@ void SpellChecker::loadDictionary(const QString &dictFilePath)
 	QString affixFilePath(dictFilePath);
 	affixFilePath.replace(".dic", ".aff");
 
-	_spellcheck = HunspellPtr(new Hunspell(affixFilePath.toLocal8Bit(), dictFilePath.toLocal8Bit()));
+	_spellcheck = std::make_shared<Hunspell>(affixFilePath.toLocal8Bit(), dictFilePath.toLocal8Bit());
 	_textCodec = QTextCodec::codecForName(_spellcheck->get_dic_encoding());
 
 	if (!_textCodec) 

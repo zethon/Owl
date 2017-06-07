@@ -12,19 +12,18 @@ find_path(HTMLTIDY_INCLUDE_DIR
 mark_as_advanced(HTMLTIDY_INCLUDE_DIR)
 
 if (WIN32)
-        # Look for the library (sorted from most current/relevant entry to least).
-        find_library(HTMLTIDY_LIBRARY_DEBUG NAMES
-                HTMLTidyd
-                HINTS ${OWLAPI_FOLDER}/lib
-        )
-        mark_as_advanced(HTMLTIDY_LIBRARY_DEBUG)
+    # Look for the library (sorted from most current/relevant entry to least).
+    find_library(HTMLTIDY_LIBRARY_DEBUG NAMES
+        tidysd
+        HINTS ${OWLAPI_FOLDER}/lib
+    )
+    mark_as_advanced(HTMLTIDY_LIBRARY_DEBUG)
 endif()
 
 # Look for the library
 find_library(HTMLTIDY_LIBRARY NAMES
     libtidys.a
-    HTMLTidy
-#    libHTMLTidy
+    tidys
     HINTS ${OWLAPI_FOLDER}/lib
 )
 mark_as_advanced(HTMLTIDY_LIBRARY)

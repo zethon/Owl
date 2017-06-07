@@ -138,7 +138,7 @@ add_definitions(
 	${Qt5UiTools_DEFINITIONS}
 	${Qt5Widgets_DEFINITIONS}
 	${Qt5Xml_DEFINITIONS}
-        ${Qt5Test_DEFINITIONS}
+    ${Qt5Test_DEFINITIONS}
 )
 
 if (APPLE)
