@@ -15,6 +15,7 @@ if (WIN32)
 	# Look for the library (sorted from most current/relevant entry to least).
 	find_library(HUNSPELL_LIBRARY_DEBUG NAMES
 		Hunspelld
+        libhunspelld
 		HINTS ${OWLAPI_FOLDER}/lib
 	)
 	mark_as_advanced(HUNSPELL_LIBRARY_DEBUG)	
