@@ -45,7 +45,8 @@ namespace owl
 MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
 	: QMainWindow(parent),
     _splash(splash),
-    _imageOverlay{this}
+    _imageOverlay{this},
+	_svcModel{new BoardsModel(this)}
 {
 	setupUi(this);
 	setDockNestingEnabled(true);
@@ -72,46 +73,15 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
 	postViewDockWidget->setTitleBarWidget(new QWidget(postViewDockWidget));
 	boardsViewDockWidget->setTitleBarWidget(new QWidget(boardsViewDockWidget));
     
+	loadBoards();
+	servicesTree->setModel(_svcModel);
+
 	QTimer::singleShot(0, this, SLOT(onLoaded()));
-}
-
-bool MainWindow::event(QEvent *event)
-{
-    QMainWindow::event(event);
-    if (event->type() == QEvent::Show && !_bInitialized)
-    {
-        // servicePaneVisibility
-        _bInitialized = true;
-
-        auto timer = new QTimer(this);
-        timer->setSingleShot(true);
-
-        connect(timer, &QTimer::timeout, [=]()
-        {
-            if (_servicePaneVisible)
-            {
-                Q_ASSERT("Don't forget me!");
-            }
-
-            if (this->boardToolbar->isVisible())
-            {
-                _actions.showBoardbar->setText("Hide Boards Toolbar");
-            }
-            else
-            {
-                _actions.showBoardbar->setText("Show Boards Toolbar");
-            }
-        });
-
-        timer->start(0);
-    }
-
-    return true;
 }
 
 void MainWindow::onLoaded()
 {
-    _svcModel = new BoardsModel(this);
+    
 
     createBoardPanel();
     createThreadPanel();
@@ -129,7 +99,7 @@ void MainWindow::onLoaded()
     createSignals();
     createLinkMessages();
 
-    loadBoards();
+    //loadBoards();
 
     createMenus();
     createStatusBar();
@@ -355,6 +325,40 @@ void MainWindow::openPreferences()
         }, Qt::DirectConnection);
 
     dlg.exec();
+}
+
+bool MainWindow::event(QEvent *event)
+{
+	QMainWindow::event(event);
+	if (event->type() == QEvent::Show && !_bInitialized)
+	{
+		// servicePaneVisibility
+		_bInitialized = true;
+
+		auto timer = new QTimer(this);
+		timer->setSingleShot(true);
+
+		connect(timer, &QTimer::timeout, [=]()
+		{
+			if (_servicePaneVisible)
+			{
+				Q_ASSERT("Don't forget me!");
+			}
+
+			if (this->boardToolbar->isVisible())
+			{
+				_actions.showBoardbar->setText("Hide Boards Toolbar");
+			}
+			else
+			{
+				_actions.showBoardbar->setText("Show Boards Toolbar");
+			}
+		});
+
+		timer->start(0);
+	}
+
+	return true;
 }
 
 void MainWindow::onBoardToolbarItemClicked(QAction* action)
@@ -1832,7 +1836,7 @@ void MainWindow::createBoardPanel()
 	servicesTree->resizeColumnToContents(0);
 	servicesTree->setColumnWidth(0,servicesTree->width() * 0.66);
 	servicesTree->setContextMenuPolicy(Qt::CustomContextMenu);
-	servicesTree->setModel(_svcModel);
+	//servicesTree->setModel(_svcModel);
     
     auto itemDelegate = new BoardItemDelegate();
     servicesTree->setItemDelegate(itemDelegate);

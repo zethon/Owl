@@ -162,6 +162,7 @@ add_definitions(
     -DQT_NO_KEYWORDS
     -DWIN32_LEAN_AND_MEAN
     -DCURL_STATICLIB
+    -DHUNSPELL_STATIC
 )
 
 # We need this to be able to include headers produced 

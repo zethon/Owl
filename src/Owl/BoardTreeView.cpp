@@ -198,45 +198,48 @@ QString BoardTreeView::createStyle()
 // modifies each board's boardItem.html according to the app settings
 void BoardTreeView::loadStyleSettings()
 {
-    const SettingsObject appSettings;
+	if (_boardModel)
+	{
+		const SettingsObject appSettings;
 
-    QStringList settingList;
-    settingList << "boardlist.text.color" << "boardlist.highlight.color";
+		QStringList settingList;
+		settingList << "boardlist.text.color" << "boardlist.highlight.color";
 
-    const auto rowCount = _boardModel->rowCount();
-    for (int row = 0; row < rowCount; row++)
-    {
-        auto item = _boardModel->item(row);
-        if (item && item->data(BOARDITEMPTR_ROLE).canConvert<BoardWeakPtr>())
-        {
-            BoardWeakPtr bw = item->data(BOARDITEMPTR_ROLE).value<BoardWeakPtr>();
-            BoardPtr board = bw.lock();
-            if (board)
-            {
-                auto& doc = board->getBoardItemDocument();
-                for (const auto& setting : settingList)
-                {
-                    doc->setOrAddVar(QString("${%1}").arg(setting), appSettings.read(setting).toString());
-                }
+		const auto rowCount = _boardModel->rowCount();
+		for (int row = 0; row < rowCount; row++)
+		{
+			auto item = _boardModel->item(row);
+			if (item && item->data(BOARDITEMPTR_ROLE).canConvert<BoardWeakPtr>())
+			{
+				BoardWeakPtr bw = item->data(BOARDITEMPTR_ROLE).value<BoardWeakPtr>();
+				BoardPtr board = bw.lock();
+				if (board)
+				{
+					auto& doc = board->getBoardItemDocument();
+					for (const auto& setting : settingList)
+					{
+						doc->setOrAddVar(QString("${%1}").arg(setting), appSettings.read(setting).toString());
+					}
 
-                // Hack! Since Qt's limited HTML/CSS support does not support a "visible" or "display" attribute
-                // we have to hack the board icon by commenting out the <tr> element that contains it
-                if (!appSettings.read("boardlist.icons.visible").toBool())
-                {
-                    doc->setOrAddVar("%BOARDICONSHOWSTART%", "<!--");
-                    doc->setOrAddVar("%BOARDICONSHOWEND%", "-->");
-                }
-                else
-                {
-                    doc->setOrAddVar("%BOARDICONSHOWSTART%", "");
-                    doc->setOrAddVar("%BOARDICONSHOWEND%", "");
-                }
+					// Hack! Since Qt's limited HTML/CSS support does not support a "visible" or "display" attribute
+					// we have to hack the board icon by commenting out the <tr> element that contains it
+					if (!appSettings.read("boardlist.icons.visible").toBool())
+					{
+						doc->setOrAddVar("%BOARDICONSHOWSTART%", "<!--");
+						doc->setOrAddVar("%BOARDICONSHOWEND%", "-->");
+					}
+					else
+					{
+						doc->setOrAddVar("%BOARDICONSHOWSTART%", "");
+						doc->setOrAddVar("%BOARDICONSHOWEND%", "");
+					}
 
 
-                doc->reloadHtml();
-            }
-        }
-    }
+					doc->reloadHtml();
+				}
+			}
+		}
+	}
 }
 
 } // namespace

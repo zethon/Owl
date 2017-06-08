@@ -75,7 +75,7 @@ QSize BoardItemDelegate::sizeHint ( const QStyleOptionViewItem & option, const Q
 // BoardsModel
 /////////////////////////////////////////////////////////////////////////
 
-const uint BoardsModel::ITEMHEIGHT = 24;
+const uint BoardsModel::ITEMHEIGHT = 35;
 
 BoardsModel::BoardsModel(QWidget* parent)
     : QStandardItemModel(parent)
@@ -143,7 +143,6 @@ QStandardItem* BoardsModel::addBoardItem(const BoardPtr& b, bool bThrowOnFail)
             QIcon icon(QPixmap::fromImage(image));
 
             retItem = new QStandardItem(b->getName());
-//            retItem->setFlags(Qt::ItemIsEnabled);
             retItem->setData(QVariant::fromValue(BoardWeakPtr(b)), BOARDITEMPTR_ROLE);
             retItem->setData(b->getUrl(), Qt::ToolTipRole);
 
