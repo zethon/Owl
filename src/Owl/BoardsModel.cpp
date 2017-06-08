@@ -75,7 +75,11 @@ QSize BoardItemDelegate::sizeHint ( const QStyleOptionViewItem & option, const Q
 // BoardsModel
 /////////////////////////////////////////////////////////////////////////
 
+#if defined(Q_OS_WIN) || defined(Q_OS_LINUX)
 const uint BoardsModel::ITEMHEIGHT = 35;
+#else
+const uint BoardsModel::ITEMHEIGHT = 24;
+#endif
 
 BoardsModel::BoardsModel(QWidget* parent)
     : QStandardItemModel(parent)
