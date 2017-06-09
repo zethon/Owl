@@ -672,7 +672,7 @@
               </widget>
              </item>
              <item row="2" column="0">
-              <widget class="QGroupBox" name="groupBox_8">
+              <widget class="QGroupBox" name="postListFontGB">
                <property name="minimumSize">
                 <size>
                  <width>0</width>

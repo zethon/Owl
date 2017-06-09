@@ -57,6 +57,8 @@ PreferencesDlg::PreferencesDlg(QWidget* parent)
     });
 
     listWidget->setAttribute(Qt::WA_MacShowFocusRect, false);
+
+    postListFontGB->setVisible(false);
 }
 
 void PreferencesDlg::renderBoardList()
