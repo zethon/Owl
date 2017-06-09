@@ -210,6 +210,8 @@ HttpReplyPtr WebClient::doRequest(const QString& url,
                                    const StringMap& params /*= StringMap()*/)
 {
     Lock lock(_curlMutex);
+    QTime timer;
+    timer.start();
 
     HttpReplyPtr retval;
     bool bThrowOnFail = params.has("throwOnFail") ? params.getBool("thowOnFail") : getThrowOnFail();
@@ -315,11 +317,11 @@ HttpReplyPtr WebClient::doRequest(const QString& url,
             retval->data = owl::tidyHTML(retval->data);
         }
 
-        logger()->trace("HTTP Response from '%1' with length of '%2'", finalUrl, (int)_buffer.size());
+        logger()->trace("HTTP Response from '%1' with length of '%2' took %3 milliseconds", finalUrl, (int)_buffer.size(), timer.elapsed());
     }
     else
     {
-        QString errorText = QString("Unhandled HTTP response code '%1' from %2").arg(status).arg(finalUrl);
+        QString errorText = QString("Unhandled HTTP response code '%1' from %2 took %3 milliseconds").arg(status).arg(finalUrl).arg(timer.elapsed());
         logger()->warn(errorText);
         if (bThrowOnFail)
         {
