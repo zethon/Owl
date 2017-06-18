@@ -4,7 +4,7 @@
 cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
 include(CMakeForceCompiler)
 
-project(OwlReader)
+project(Owl)
 set(OWL_VERSION "0.7.7")
 
 # Add our own custom CMake modules
