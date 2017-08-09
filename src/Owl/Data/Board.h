@@ -64,6 +64,7 @@ public:
     
     void requestPostList(ThreadPtr thread);
 	void requestPostList(ThreadPtr thread, int options, bool bForceGoto = false);
+    void requestPostList(ThreadPtr thread, owl::ParserBase::PostListOptions option);
     
     void markForumRead(ForumPtr forum);
 

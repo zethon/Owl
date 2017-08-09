@@ -40,78 +40,16 @@ void BoardManager::init()
     }
     
     QSqlQuery query = db.exec("SELECT * FROM boards");
-    QSqlRecord rec = query.record();
+
     _boardList.clear();
-
-	int id = rec.indexOf("boardid");
-    int iName = rec.indexOf("name");
-    int iUrl = rec.indexOf("url");
-	int iServiceUrl = rec.indexOf("serviceUrl");
-    int iParser = rec.indexOf("parser");
-
-	int iUsername = rec.indexOf("username");
-	int iPassword = rec.indexOf("password");
-
-	int iEnabledIdx = rec.indexOf("enabled");
-	int iAutoLogin = rec.indexOf("autologin");
-	int iIcon = rec.indexOf("icon");
-	int iLastUpdate = rec.indexOf("lastupdate");
 
 	if (query.isActive())
 	{
 		while (query.next())
 		{
-			BoardPtr b = BoardPtr(new Board());
-
-            auto retrievedId = query.value(id).toUInt();
-            const auto it = std::find_if(_boardList.begin(), _boardList.end(),
-                 [&retrievedId](const owl::BoardPtr other)
-                 {
-                     return (retrievedId == other->getDBId());
-                 });
-            
-            if (it != _boardList.end())
-            {
-                continue;
-            }
-            
-			b->setDBId(retrievedId);
-			b->setName(query.value(iName).toString());
-			b->setUrl(query.value(iUrl).toString());
-			b->setServiceUrl(query.value(iServiceUrl).toString());
-			b->setProtocolName(query.value(iParser).toString());
-
-			b->setUsername(query.value(iUsername).toString());
-
-			QString rawPassword(query.value(iPassword).toString());
-			b->setPassword(_encryptor->Decrypt(rawPassword).toLatin1());
-
-			b->setEnabled(query.value(iEnabledIdx).toBool());
-			b->setAutoLogin(query.value(iAutoLogin).toBool());
-			b->setFavIcon(query.value(iIcon).toString());
-
-			QString updateStr = query.value(iLastUpdate).toString();
-			QDateTime lastUpdate = QDateTime::fromString(updateStr, Qt::ISODate);
-			if (!lastUpdate.isValid())
-			{
-				logger()->warn("Could not parser last update for boardId '%1' with date value '%2'", 
-					b->getDBId(),
-					updateStr
-				);
-            
-				// Addy's birthday easter egg
-                b->setLastUpdate(QDateTime(QDate(1975,3,24), QTime(15,55)));
-			}
-            else
-            {
-                b->setLastUpdate(lastUpdate);
-            }
-
-			loadBoardOptions(b);
-			retrieveBoardForums(b);
-
-			_boardList.push_back(b);
-			logger()->trace("Loaded '%1', last updated '%2'", b->getName(), b->getLastUpdate().toString());
+            auto boardObjects = initBoardObject(query);
+            _boardList.push_back(boardObjects.first);
+            _boards.push_back(boardObjects.second);
 		}
 
 		qSort(_boardList.begin(), _boardList.end(), &BoardManager::boardDisplayOrderLessThan);
@@ -124,7 +62,7 @@ owl::BoardPtr BoardManager::loadBoard(int boardId)
 {
 	QMutexLocker locker(&_mutex);
 
-	BoardPtr b(new Board());
+    BoardPtr b;
 	QSqlDatabase db = QSqlDatabase::database(OWL_DATABASE_NAME);
 
 	if (!db.isOpen())
@@ -139,61 +77,9 @@ owl::BoardPtr BoardManager::loadBoard(int boardId)
     
     if (query.exec())
     {
-        QSqlRecord rec = query.record();
-
-        int id = rec.indexOf("boardid");
-        int iName = rec.indexOf("name");
-        int iUrl = rec.indexOf("url");
-        int iServiceUrl = rec.indexOf("serviceUrl");
-        int iParser = rec.indexOf("parser");
-
-        int iUsername = rec.indexOf("username");
-        int iPassword = rec.indexOf("password");
-
-        int iEnabledIdx = rec.indexOf("enabled");
-        int iAutoLogin = rec.indexOf("autologin");
-        int iIcon = rec.indexOf("icon");
-        int iLastUpdate = rec.indexOf("lastupdate");
-
         if (query.next())
         {
-            b->setDBId(query.value(id).toUInt());
-            b->setName(query.value(iName).toString());
-            b->setUrl(query.value(iUrl).toString());
-            b->setServiceUrl(query.value(iServiceUrl).toString());
-            b->setProtocolName(query.value(iParser).toString());
-
-            b->setUsername(query.value(iUsername).toString());
-
-			QString rawPassword(query.value(iPassword).toString());
-			b->setPassword(_encryptor->Decrypt(rawPassword).toLatin1());
-
-            b->setEnabled(query.value(iEnabledIdx).toBool());
-            b->setAutoLogin(query.value(iAutoLogin).toBool());
-            b->setFavIcon(query.value(iIcon).toString());
-
-            QString updateStr = query.value(iLastUpdate).toString();
-            QDateTime lastUpdate = QDateTime::fromString(updateStr, Qt::ISODate);
-            if (!lastUpdate.isValid())
-            {
-                logger()->warn("Could not parser last update for boardId '%1' with date value '%2'", 
-                    b->getDBId(),
-                    updateStr
-                    );
-                
-                // Addy's birthday easter egg
-                b->setLastUpdate(QDateTime(QDate(1975,3,24), QTime(15,55)));
-            }
-            else
-            {
-                b->setLastUpdate(lastUpdate);
-            }
-
-            loadBoardOptions(b);
-            retrieveBoardForums(b);
-
-            _boardList.push_back(b);
-            logger()->trace("Loaded '%1', last updated '%2'", b->getName(), b->getLastUpdate().toString());
+            std::tie(b, std::ignore) = initBoardObject(query);
         }
     }
 
@@ -234,7 +120,85 @@ void BoardManager::loadBoardOptions(const BoardPtr& board)
 	{
 		logger()->error("updateBoard() failed: %1", query.lastError().text());
 		logger()->debug("executed query: %1", query.lastQuery());
-	}
+    }
+}
+
+std::pair<BoardPtr, BoardObjectPtr> BoardManager::initBoardObject(const QSqlQuery &query)
+{
+    BoardPtr b;
+    BoardObjectPtr board;
+
+    QSqlRecord rec = query.record();
+    int id = rec.indexOf("boardid");
+    int iName = rec.indexOf("name");
+    int iUrl = rec.indexOf("url");
+    int iServiceUrl = rec.indexOf("serviceUrl");
+    int iParser = rec.indexOf("parser");
+
+    int iUsername = rec.indexOf("username");
+    int iPassword = rec.indexOf("password");
+
+    int iEnabledIdx = rec.indexOf("enabled");
+    int iAutoLogin = rec.indexOf("autologin");
+    int iIcon = rec.indexOf("icon");
+    int iLastUpdate = rec.indexOf("lastupdate");
+
+    auto retrievedId = query.value(id).toUInt();
+    const auto it = std::find_if(_boardList.begin(), _boardList.end(),
+         [&retrievedId](const owl::BoardPtr other)
+         {
+             return (retrievedId == other->getDBId());
+         });
+
+    if (it == _boardList.end())
+    {
+        b = std::make_shared<Board>();
+        board = std::make_shared<BoardObject>(retrievedId);
+
+        board->setName(query.value(iName).toString());
+        board->setUrl(query.value(iUrl).toString());
+        board->setServiceUrl(query.value(iServiceUrl).toString());
+        board->setProtocolName(query.value(iParser).toString());
+        board->setUsername(query.value(iUsername).toString());
+
+        QString rawPassword(query.value(iPassword).toString());
+        board->setPassword(_encryptor->Decrypt(rawPassword).toLatin1());
+
+        board->setIconBuffer(query.value(iIcon).toByteArray());
+        board->setEnabled(query.value(iEnabledIdx).toBool());
+        board->setAutoLogin(query.value(iAutoLogin).toBool());
+
+        b->setDBId(retrievedId);
+        b->setName(query.value(iName).toString());
+        b->setUrl(query.value(iUrl).toString());
+        b->setServiceUrl(query.value(iServiceUrl).toString());
+        b->setProtocolName(query.value(iParser).toString());
+
+        b->setUsername(query.value(iUsername).toString());
+        b->setPassword(_encryptor->Decrypt(rawPassword).toLatin1());
+
+        b->setEnabled(query.value(iEnabledIdx).toBool());
+        b->setAutoLogin(query.value(iAutoLogin).toBool());
+        b->setFavIcon(query.value(iIcon).toString());
+
+        QString updateStr = query.value(iLastUpdate).toString();
+        QDateTime lastUpdate = QDateTime::fromString(updateStr, Qt::ISODate);
+        if (lastUpdate.isValid())
+        {
+            b->setLastUpdate(lastUpdate);
+        }
+        else
+        {
+            logger()->warn("Could not parser last update for boardId '%1' with date value '%2'", b->getDBId(), updateStr);
+            b->setLastUpdate(QDateTime::currentDateTime().addDays(-1));
+        }
+
+        loadBoardOptions(b);
+        retrieveBoardForums(b);
+        logger()->trace("Loaded '%1', last updated '%2'", b->getName(), b->getLastUpdate().toString());
+    }
+
+    return {b, board};
 }
 
 void BoardManager::reload()

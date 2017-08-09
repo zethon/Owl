@@ -87,6 +87,9 @@ private:
     
     void loadBoardOptions(const BoardPtr& b);
 
+    // TODO: remove the pair return value once the BoardPtr->BoardObjectPtr refactor is done
+    std::pair<BoardPtr, BoardObjectPtr> initBoardObject(const QSqlQuery& query);
+
 	static bool boardDisplayOrderLessThan(BoardPtr b1, BoardPtr b2)
 	{
 		uint iB1DisplayOrder = b1->getOptions()->getInt("displayOrder");
@@ -98,7 +101,9 @@ private:
 	QSqlDatabase _db;
 	CRijndaelPtr _encryptor;
 
-    BoardList _boardList;
+    BoardList           _boardList;
+    BoardObjectList     _boards;
+
 
 	QMutex _mutex;
 

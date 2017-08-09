@@ -246,6 +246,15 @@ void Board::requestPostList(ThreadPtr thread, int options, bool bForceGoto/*=fal
 	}
 }
 
+void Board::requestPostList(ThreadPtr thread, owl::ParserBase::PostListOptions option)
+{
+    this->setCurrentThread(thread);
+    int iPerPage = this->getOptions()->getInt("postsPerPage");
+    thread->setPerPage(iPerPage);
+
+    getParser()->getPostsAsync(thread, option);
+}
+
 void Board::markForumRead(ForumPtr forum)
 {
     getParser()->markForumReadAsync(forum);

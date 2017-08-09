@@ -353,8 +353,12 @@ QVariant Tapatalk4x::doThreadList(ForumPtr forumInfo, int options)
 		for (auto topic : topicList)
 		{
 			ThreadPtr newThread = makeThreadObject(&topic);
-			if (newThread.get() != nullptr)
+            if (newThread)
 			{
+                // set the page count here since we can also grab the per-page number
+//                const auto replyCount = newThread->getReplyCount();
+
+
 				newThread->setParent(forumInfo);
 				retval.push_back(newThread);
 			}
@@ -492,6 +496,12 @@ QVariant Tapatalk4x::doPostList1(ThreadPtr threadInfo, int options)
 	//		 to be the case when using this function from the TerminalWindow app.
 	uint iEnd = (iStart + threadInfo->getPerPage()) - 1;
 
+    qDebug() << "threadInfo->getPageCount()  : " << threadInfo->getPageCount();
+    qDebug() << "threadInfo->getPageNumber() : " << threadInfo->getPageNumber();
+    qDebug() << "threadInfo->getPerPage()    : " << threadInfo->getPerPage();
+    qDebug() << "iStart                      : " << iStart;
+    qDebug() << "iEnd                        : " << iEnd;
+
 	ParamList paramList;
 	paramList.append(TapaTalkParam(ParamType::STRING, QVariant::fromValue(threadInfo->getId())));
 	paramList.append(TapaTalkParam(ParamType::INT, QVariant::fromValue(iStart)));
@@ -552,7 +562,8 @@ QVariant Tapatalk4x::doGetPostList(ThreadPtr t, PostListOptions listOption, int 
 	}
 	else if (listOption == PostListOptions::LAST_POST)
 	{
-		OWL_THROW_EXCEPTION(OwlException("Not implemented"));
+        t->setPageNumber(t->getPageCount());
+        return doPostList1(t, webOptions);
 	}
 
 	return QVariant::fromValue(t);
@@ -974,13 +985,13 @@ owl::ForumPtr Tapatalk4x::makeForumObject( QVariant* variant )
 	return newForum;
 }
 
-owl::ThreadPtr Tapatalk4x::makeThreadObject( QVariant* variant )
+owl::ThreadPtr Tapatalk4x::makeThreadObject(QVariant* variant)
 {
 	ThreadPtr newThread;
 
 	if (variant->canConvert(QVariant::Map))
 	{
-		auto topicMap = variant->toMap();
+        const auto topicMap = variant->toMap();
 		
 		newThread = ThreadPtr(new Thread(topicMap["topic_id"].toString()));
 		newThread->setTitle(topicMap["topic_title"].toString());
@@ -1026,7 +1037,7 @@ owl::ThreadPtr Tapatalk4x::makeThreadObject( QVariant* variant )
 	return newThread;
 }
 
-owl::PostPtr Tapatalk4x::makePostObject( QVariant* variant )
+owl::PostPtr Tapatalk4x::makePostObject(QVariant* variant)
 {
 	PostPtr newPost;
 
@@ -1039,7 +1050,7 @@ owl::PostPtr Tapatalk4x::makePostObject( QVariant* variant )
 		newPost->setAuthor(postMap["post_author_name"].toString());
         newPost->setIconUrl(postMap["icon_url"].toString());
 
-		int unixTime = postMap["timestamp"].toInt();
+        const int unixTime = postMap["timestamp"].toInt();
 		if (unixTime > 0)
 		{
 			QDateTime dateTime;

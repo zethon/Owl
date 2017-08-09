@@ -162,8 +162,27 @@ void ThreadObject::loadThread()
         auto board = thread->getBoard().lock();
         if (board)
         {
-            board->setCurrentThread(thread);
-            board->requestPostList(thread);
+            QString action = "last";
+            if (thread->hasUnread())
+            {
+                action = SettingsObject().read("navigation.thread.newposts").toString();
+            }
+            else
+            {
+                action = SettingsObject().read("navigation.thread.nonewposts").toString();
+            }
+
+            ParserBase::PostListOptions option = ParserBase::PostListOptions::LAST_POST;
+            if (action == "new")
+            {
+                option = ParserBase::PostListOptions::FIRST_UNREAD;
+            }
+            else if (action == "first")
+            {
+                option = ParserBase::PostListOptions::FIRST_POST;
+            }
+
+            board->requestPostList(thread, option);
             threadLoading();
         }
     }
