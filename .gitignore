@@ -1,3 +1,4 @@
 bin
 *.orig
 CMakeLists.txt.user
+bin-xcode
