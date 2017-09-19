@@ -1,3 +1,6 @@
 bin
 *.orig
 CMakeLists.txt.user
+CMakeCache.txt
+CMakeCCompiler.cmake
+bin-xcode

@@ -7,6 +7,8 @@ project(Parsers)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set (SOURCE_FILES
+    Board.cpp
+
     BBCodeParser.cpp
     Forum.cpp
     LuaParserBase.cpp
@@ -18,6 +20,8 @@ set (SOURCE_FILES
 )
 
 set (MOC_HEADERS
+    Board.h
+
     BBCodeParser.h
     Forum.h
     LuaParserBase.h
