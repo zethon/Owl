@@ -14,6 +14,7 @@ SET (SOURCE_FILES
     AspectRatioPixmapLabel.cpp
     BoardTreeView.cpp
     BoardsModel.cpp
+    BoardUpdateWorker.cpp
     ClickableLabel.cpp
     ConfiguringBoardDlg.cpp
     EditBoardDlg.cpp
@@ -35,6 +36,7 @@ SET (MOC_HEADERS
     AspectRatioPixmapLabel.h
     BoardsModel.h
     BoardTreeView.h
+    BoardUpdateWorker.h
     ClickableLabel.h
     ConfiguringBoardDlg.h
     EditBoardDlg.h

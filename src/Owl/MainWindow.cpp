@@ -11,6 +11,7 @@
 #include "EditBoardDlg.h"
 #include "PreferencesDlg.h"
 #include "MainWindow.h"
+#include "BoardUpdateWorker.h"
 
 #ifdef Q_OS_MACOS
 #include <QtMac>
@@ -1088,18 +1089,6 @@ void MainWindow::createMenus()
                 openPreferences();
             });
         }
-
-#ifdef _DEBUG
-		{
-			QAction* terminal = menu->addAction("Terminal");
-			terminal->setShortcut(QKeySequence("Ctrl+T"));
-			QObject::connect(terminal, &QAction::triggered, [this]()
-			{
-				TerminalDialog term(this);
-				term.exec();
-			});
-		}
-#endif
 
 #ifdef Q_OS_WIN
 		menu->addSeparator();
