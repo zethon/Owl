@@ -24,9 +24,7 @@ SET(HEADER_FILES
     ${MOC_HEADERS}
 )
 
-SET(DEPENDENCY_LIST 
-    log4qt
-    Network
+SET(DEPENDENCY_LIST
     Parsers
     Utils
 )
@@ -42,6 +40,7 @@ ADD_EXECUTABLE(OwlTests
 TARGET_LINK_LIBRARIES(OwlTests 
     ${DEPENDENCY_LIST}
     ${Boost_LIBRARIES}
+	${LOG4QT_LIBRARIES}
     ${QT_LIBRARIES}
     ${QT_QTTEST_LIBRARY}
     Qt5::Test
