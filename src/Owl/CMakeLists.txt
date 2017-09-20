@@ -10,31 +10,25 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 OPTION(SUPRESS_CONSOLE_WINDOW "Supress TerminalWindow console" ON)
 
 SET (SOURCE_FILES
-    AspectRatioPixmapLabel.cpp
     BoardTreeView.cpp
     BoardsModel.cpp
     BoardUpdateWorker.cpp
-    ClickableLabel.cpp
     FocusEventLineEdit.cpp
     main.cpp
     MainWindow.cpp
     OwlApplication.cpp
     PostListWidget.cpp
-    PostTextEditor.cpp
     ThreadListWidget.cpp
 )
 
 SET (MOC_HEADERS
-    AspectRatioPixmapLabel.h
     BoardsModel.h
     BoardTreeView.h
     BoardUpdateWorker.h
-    ClickableLabel.h
     FocusEventLineEdit.h
     MainWindow.h
     OwlApplication.h
     PostListWidget.h
-    PostTextEditor.h
     ThreadListWidget.h
 )
 
@@ -54,6 +48,7 @@ set(QRC_SOURCE_FILES
 
 file(GLOB_RECURSE QML_FILES res/qml/*.qml res/qml/*.js)
 
+add_subdirectory(Controls)
 add_subdirectory(Data)
 add_subdirectory(Dialogs)
 
@@ -76,6 +71,7 @@ IF(${SUPRESS_CONSOLE_WINDOW})
 ENDIF(${SUPRESS_CONSOLE_WINDOW})
 
 SET(DEPENDENCY_LIST 
+    Controls
     Data
     Dialogs
     Parsers

@@ -712,7 +712,7 @@ QPushButton:focus
   <customwidget>
    <class>owl::SpellCheckEdit</class>
    <extends>QPlainTextEdit</extends>
-   <header>PostTextEditor.h</header>
+   <header>Controls/PostTextEditor.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

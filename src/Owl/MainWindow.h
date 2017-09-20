@@ -12,9 +12,9 @@
 #include <Utils/QThreadEx.h>
 #include "Data/BoardManager.h"
 #include "Dialogs/NewThreadDlg.h"
+#include "Controls/AspectRatioPixmapLabel.h"
 #include "BoardsModel.h"
 #include "PostListWidget.h"
-#include "AspectRatioPixmapLabel.h"
 #include "ui_MainWindow.h"
 
 #define PANERIGHT   0
