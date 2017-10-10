@@ -10,6 +10,14 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 OPTION(SUPRESS_CONSOLE_WINDOW "Supress TerminalWindow console" ON)
 
 SET (SOURCE_FILES
+    AboutDlg.cpp
+    ConfiguringBoardDlg.cpp
+    EditBoardDlg.cpp
+    ErrorReportDlg.cpp
+    NewThreadDlg.cpp
+    PreferencesDlg.cpp
+    QuickAddDlg.cpp
+
     BoardTreeView.cpp
     BoardsModel.cpp
     BoardUpdateWorker.cpp
@@ -22,6 +30,14 @@ SET (SOURCE_FILES
 )
 
 SET (MOC_HEADERS
+    AboutDlg.h
+    ConfiguringBoardDlg.h
+    EditBoardDlg.h
+    ErrorReportDlg.h
+    NewThreadDlg.h
+    PreferencesDlg.h
+    QuickAddDlg.h
+
     BoardsModel.h
     BoardTreeView.h
     BoardUpdateWorker.h
@@ -33,8 +49,15 @@ SET (MOC_HEADERS
 )
 
 SET (UI_SOURCES
-    MainWindow.ui
+    AboutDlg.ui
+    ConfiguringBoardDlg.ui
+    EditBoardDlg.ui
+    ErrorReportDlg.ui
+    NewThreadDlg.ui
+    PreferencesDlg.ui
+    QuickAddDlg.ui
 
+    MainWindow.ui
 )
 
 SET (HEADER_FILES
@@ -50,7 +73,6 @@ file(GLOB_RECURSE QML_FILES res/qml/*.qml res/qml/*.js)
 
 add_subdirectory(Controls)
 add_subdirectory(Data)
-add_subdirectory(Dialogs)
 
 IF (APPLE)
     SET(RESOURCE_FILES "Resources/Owl.icns")
@@ -73,7 +95,6 @@ ENDIF(${SUPRESS_CONSOLE_WINDOW})
 SET(DEPENDENCY_LIST 
     Controls
     Data
-    Dialogs
     Parsers
     Utils
 )

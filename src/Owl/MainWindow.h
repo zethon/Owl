@@ -11,7 +11,7 @@
 #include <Utils/Exception.h>
 #include <Utils/QThreadEx.h>
 #include "Data/BoardManager.h"
-#include "Dialogs/NewThreadDlg.h"
+#include "NewThreadDlg.h"
 #include "Controls/AspectRatioPixmapLabel.h"
 #include "BoardsModel.h"
 #include "PostListWidget.h"

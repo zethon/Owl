@@ -7,11 +7,11 @@
 #include <Utils/Exception.h>
 #include <Utils/Settings.h>
 #include <Utils/OwlUtils.h>
-#include "Dialogs/AboutDlg.h"
-#include "Dialogs/EditBoardDlg.h"
-#include "Dialogs/ErrorReportDlg.h"
-#include "Dialogs/PreferencesDlg.h"
-#include "Dialogs/QuickAddDlg.h"
+#include "AboutDlg.h"
+#include "EditBoardDlg.h"
+#include "ErrorReportDlg.h"
+#include "PreferencesDlg.h"
+#include "QuickAddDlg.h"
 #include "Core.h"
 #include "MainWindow.h"
 #include "BoardUpdateWorker.h"

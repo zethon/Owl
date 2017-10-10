@@ -8,7 +8,7 @@
 #include <Parsers/ParserManager.h>
 #include <Utils/Settings.h>
 #include <Utils/OwlUtils.h>
-#include "Dialogs/ErrorReportDlg.h"
+#include "ErrorReportDlg.h"
 #include "Core.h"
 #include "OwlApplication.h"
 

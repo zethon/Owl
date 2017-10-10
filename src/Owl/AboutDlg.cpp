@@ -1,7 +1,7 @@
 // Owl - www.owlclient.com
 // Copyright (c) 2012-2017, Adalid Claure <aclaure@gmail.com>
 
-#include "../Core.h"
+#include "Core.h"
 #include "AboutDlg.h"
 
 using namespace Log4Qt;

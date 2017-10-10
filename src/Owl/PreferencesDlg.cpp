@@ -9,7 +9,7 @@
 #include <Parsers/ParserManager.h>
 #include <Utils/OwlUtils.h>
 #include "Data/BoardManager.h"
-#include "Dialogs/EditBoardDlg.h"
+#include "EditBoardDlg.h"
 #include "Controls/PostTextEditor.h"
 #include "Core.h"
 #include "PreferencesDlg.h"
