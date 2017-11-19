@@ -7,6 +7,7 @@ set (SOURCE_FILES
     Base64.cpp
     DateTimeParser.cpp
     Exception.cpp
+    Moment.cpp
     QSgml.cpp
     QSgmlTag.cpp
     Rijndael.cpp
@@ -27,6 +28,7 @@ set (HEADER_FILES
     Base64.h
     DateTimeParser.h
     Exception.h
+    Moment.h
     QSgml.cpp
     QSgmlTag.cpp
     QThreadEx.h

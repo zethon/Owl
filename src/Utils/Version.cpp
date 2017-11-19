@@ -3,6 +3,7 @@
 
 #include "Exception.h"
 #include "Version.h"
+#include <boost/spirit/include/qi.hpp>
 
 namespace owl
 {
@@ -16,44 +17,19 @@ Version::Version()
 Version::Version(const char* version)
 	: _iMajor(0), _iMinor(0), _iBuild(0), _iRevision(0)
 {
-	int			iIdx = 0;
-	QString		verStr(version);
+    namespace bsq = boost::spirit::qi;
 
-	verStr = verStr.simplified();
+    auto versionParser =
+         bsq::uint_ 
+        >> -('.' >> bsq::uint_)
+        >> -('.' >> bsq::uint_)
+        >> -('.' >> bsq::uint_);
 
-    for (QString part : verStr.split("."))
-	{
-		bool bIsOk = false;
-		int iTemp = part.toInt(&bIsOk);
-
-		if (!bIsOk)
-		{
-            OWL_THROW_EXCEPTION(OwlException(QString("Invalid component at index %1 parsing '%2'").arg(iIdx).arg(verStr)));
-		}
-
-		if (iIdx == 0)
-		{
-			_iMajor = iTemp;
-		}
-		else if (iIdx == 1)
-		{
-			_iMinor = iTemp;
-		}
-		else if (iIdx == 2)
-		{
-			_iBuild = iTemp;
-		}
-		else if (iIdx == 3)
-		{
-			_iRevision = iTemp;
-		}
-		else
-		{
-            OWL_THROW_EXCEPTION(OwlException(QString("Invalid version string, too many components. '%1'").arg(verStr)));
-		}
-
-		iIdx++;
-	}
+    std::string temp(version);
+    if (!bsq::parse(temp.begin(), temp.end(), versionParser, _iMajor, _iMinor, _iBuild, _iRevision))
+    {
+        OWL_THROW_EXCEPTION(OwlException(QString("Invalid version string '%1'").arg(version)));
+    }
 }
 
 Version::Version(int major, int minor)
