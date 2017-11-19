@@ -2,3 +2,4 @@ bin
 *.orig
 CMakeLists.txt.user
 bin-xcode
+/src/Owl/res/Owl.aps

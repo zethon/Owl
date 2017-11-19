@@ -77,6 +77,9 @@
            <pointsize>14</pointsize>
           </font>
          </property>
+         <property name="whatsThis">
+          <string>Enter the title of the thread or post here.</string>
+         </property>
          <property name="inputMethodHints">
           <set>Qt::ImhNone</set>
          </property>
@@ -459,6 +462,9 @@ QToolButton:hover
        <property name="cursor" stdset="0">
         <cursorShape>IBeamCursor</cursorShape>
        </property>
+       <property name="whatsThis">
+        <string>Enter the body of the post text here.</string>
+       </property>
        <property name="styleSheet">
         <string notr="true">QPlainTextEdit { border: 5px; }</string>
        </property>
@@ -522,6 +528,9 @@ QToolButton:hover
            <family>Helvetica</family>
            <pointsize>14</pointsize>
           </font>
+         </property>
+         <property name="whatsThis">
+          <string>Enter any tags related to the thread here. Separated by commas.</string>
          </property>
          <property name="frame">
           <bool>false</bool>

@@ -2,7 +2,9 @@
 // Copyright (c) 2012-2017, Adalid Claure <aclaure@gmail.com>
 
 #pragma once
+#include <memory>
 #include <QObject>
+#include <QMutex>
 #include <log4qt/logger.h>
 
 namespace owl

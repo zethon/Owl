@@ -177,7 +177,8 @@ void SpellChecker::init()
     bool bFound = false;
     const QString languageStr = SettingsObject().read("editor.spellcheck.language").toString();
 
-	for (auto& item : availableDictionaries().toStdMap())
+    const auto dictionaries = availableDictionaries().toStdMap();
+	for (auto& item : dictionaries)
 	{
         if (languageStr == item.first)
 		{
