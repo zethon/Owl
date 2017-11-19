@@ -4,10 +4,10 @@
 #include <QtTest/QtTest>
 
 #include <Utils/DateTimeParser.h>
+#include <Utils/Moment.h>
 #include <Utils/OwlUtils.h>
 #include <Utils/StringMap.h>
 #include <Utils/Version.h>
-
 #include "OwlUtilsTests.h"
 
 void OwlUtilsTests::sanitizeUrlTest()
@@ -53,7 +53,6 @@ void OwlUtilsTests::versionTest()
     QCOMPARE(ver > owl::Version("3.5"), true);
     QCOMPARE(ver > owl::Version("3.0"), true);
 }
-
 
 void OwlUtilsTests::StringMapTest()
 {
@@ -141,4 +140,14 @@ void OwlUtilsTests::MomentTest()
 
     m.setDateTime(QDateTime(QDate(2013,5,23), QTime(5,29)));
     QCOMPARE(m.toString(fakenow), QStringLiteral("3 years ago"));
+}
+
+void OwlUtilsTests::PreviewTextTest()
+{
+    const QString shortText { "Lorem ipsum dolor sit amet, consectetur." };
+//    QCOMPARE(owl::previewText(shortText), QString{"Lorem ipsum dolor sit amet, consectetur."});
+    QCOMPARE(owl::previewText(shortText, 20), QString{"Lorem ipsum dolor..."});
+
+//    const QString longText { "Lorem ipsum dolor sit amet,   consectetur."};
+//    const QString longText { "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."};
 }

@@ -3,6 +3,7 @@
 
 #include <Utils/DateTimeParser.h>
 #include "../Utils/Moment.h"
+#include "../Utils/OwlUtils.h"
 #include "Forum.h"
 
 namespace owl
@@ -254,6 +255,11 @@ void BoardItem::removeChild(BoardItemPtr child, bool bThrow)
 void Thread::setReplyCount(int var)
 {
     _iReplyCount = var;
+}
+
+QString Thread::getPreviewText(uint maxLen /* =128 */ ) const
+{
+    return owl::previewText(_strPreviewText, maxLen);
 }
 
 } // namespace owl

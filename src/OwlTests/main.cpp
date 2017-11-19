@@ -45,11 +45,11 @@ int main(int argc, char *argv[])
 //#endif
     
     OwlUtilsTests utilsTests;
-    BBRegExParserTests BBparserTests;
-//	VBulletin3XTests vbulletin3xTests(parserFolder);
+//    BBRegExParserTests BBparserTests;
+//    VBulletin3XTests vbulletin3xTests(parserFolder);
 
     iRetVal += QTest::qExec(&utilsTests, argc, argv);
-    iRetVal += QTest::qExec(&BBparserTests, argc, argv);
+//    iRetVal += QTest::qExec(&BBparserTests, argc, argv);
 //	iRetVal += QTest::qExec(&vbulletin3xTests, argc, argv);
 
 

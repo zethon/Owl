@@ -13,4 +13,5 @@ private Q_SLOTS:
     void versionTest();
     void StringMapTest();   
     void MomentTest();
+    void PreviewTextTest();
 };

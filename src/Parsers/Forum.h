@@ -303,7 +303,7 @@ public:
 	const QString& getAuthor() const { return _strAuthor; }
 
 	void setPreviewText(const QString& var) { _strPreviewText = var; }
-	const QString& getPreviewText() const { return _strPreviewText; }
+    QString getPreviewText(uint maxLen = 128) const;
 
 	void setSticky(bool var) { _bSticky = var; }
 	bool isSticky() const { return _bSticky; }

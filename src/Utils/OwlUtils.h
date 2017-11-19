@@ -16,4 +16,7 @@ const QString sanitizeUrl(const QString& url);
 
 int randomInteger(int low, int high);
 
+QString previewText(const QString &original);
+QString previewText(const QString& original, uint maxLen);
+
 } // owl namespace

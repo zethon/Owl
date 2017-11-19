@@ -147,4 +147,33 @@ int randomInteger(int low, int high)
     return qrand() % ((high + 1) - low) + low;
 }
 
+QString previewText(const QString& original, uint maxLen)
+{
+    QString retval { original };
+
+    // don't bother doing the work if the string is less than 10 characters
+    if (maxLen != 0 && (uint)original.size() > maxLen && original.size() > 10)
+    {
+        int startFrom = ((uint)original.size() - maxLen) * -1;
+        int lastSpace = retval.lastIndexOf(QRegularExpression(R"(\s+)"), startFrom);
+
+        // no last space was found
+        if (lastSpace == -1)
+        {
+            // go back 3 spaces for the '...'
+            lastSpace = maxLen - 3;
+        }
+
+        retval.remove(lastSpace, original.size() - lastSpace);
+        retval.append("...");
+    }
+
+    return retval;
+}
+
+QString previewText(const QString &original)
+{
+    return previewText(original, 128);
+}
+
 } // owl namespace
