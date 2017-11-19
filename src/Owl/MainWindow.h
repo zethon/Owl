@@ -11,13 +11,10 @@
 #include <Utils/Exception.h>
 #include <Utils/QThreadEx.h>
 #include "Data/BoardManager.h"
-#include "AboutDlg.h"
-#include "BoardsModel.h"
-#include "ErrorReportDlg.h"
 #include "NewThreadDlg.h"
-#include "QuickAddDlg.h"
+#include "Controls/AspectRatioPixmapLabel.h"
+#include "BoardsModel.h"
 #include "PostListWidget.h"
-#include "AspectRatioPixmapLabel.h"
 #include "ui_MainWindow.h"
 
 #define PANERIGHT   0
@@ -32,6 +29,17 @@ namespace Ui
 namespace owl
 {
 
+class ErrorReportDlg;
+class QuickAddDlg;
+
+// uint - DB Id
+typedef QHash<uint, QThreadEx*> WorkerMap;
+
+typedef QList<QPair<QString, QString> > UrlQueryItems;
+
+typedef std::function<void (const UrlQueryItems&)> LinkHandler;
+typedef QMap<QString, LinkHandler> LinkMessageMap;
+
 class SplashScreen : public QSplashScreen
 {
     Q_OBJECT
@@ -45,14 +53,6 @@ public Q_SLOTS:
 private:
     bool _bDoCheck;
 };
-
-// uint - DB Id
-typedef QHash<uint, QThreadEx*> WorkerMap;
-
-typedef QList<QPair<QString, QString> > UrlQueryItems;
-
-typedef std::function<void (const UrlQueryItems&)> LinkHandler;
-typedef QMap<QString, LinkHandler> LinkMessageMap;
 
 class ImageOverlay : public QWidget
 {
@@ -354,16 +354,16 @@ private:
 
 class BoardMenu : public QMenu
 {
-	Q_OBJECT
-		LOG4QT_DECLARE_QCLASS_LOGGER
+    Q_OBJECT
+        LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
     BoardMenu(BoardWeakPtr b, MainWindow* parent = nullptr)
-		: QMenu(parent), _board(b)
-	{
-		connect(this, SIGNAL(aboutToShow()), this, SLOT(onAboutToShow()));
-		createMenu();
-	}
+        : QMenu(parent), _board(b)
+    {
+        connect(this, SIGNAL(aboutToShow()), this, SLOT(onAboutToShow()));
+        createMenu();
+    }
 
     virtual ~BoardMenu() = default;
 
@@ -372,10 +372,10 @@ Q_SIGNALS:
 
 private Q_SLOTS:
 
-	void onAboutToShow();
+    void onAboutToShow();
 
 private:
-	void createMenu();
+    void createMenu();
 
     BoardWeakPtr			_board;
     Board::BoardStatus      _lastStatus = Board::OFFLINE;

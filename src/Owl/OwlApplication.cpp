@@ -8,8 +8,8 @@
 #include <Parsers/ParserManager.h>
 #include <Utils/Settings.h>
 #include <Utils/OwlUtils.h>
-#include "Core.h"
 #include "ErrorReportDlg.h"
+#include "Core.h"
 #include "OwlApplication.h"
 
 using namespace Log4Qt;

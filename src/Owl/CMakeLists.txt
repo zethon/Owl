@@ -11,44 +11,40 @@ OPTION(SUPRESS_CONSOLE_WINDOW "Supress TerminalWindow console" ON)
 
 SET (SOURCE_FILES
     AboutDlg.cpp
-    AspectRatioPixmapLabel.cpp
-    BoardTreeView.cpp
-    BoardsModel.cpp
-    BoardUpdateWorker.cpp
-    ClickableLabel.cpp
     ConfiguringBoardDlg.cpp
     EditBoardDlg.cpp
     ErrorReportDlg.cpp
+    NewThreadDlg.cpp
+    PreferencesDlg.cpp
+    QuickAddDlg.cpp
+
+    BoardTreeView.cpp
+    BoardsModel.cpp
+    BoardUpdateWorker.cpp
     FocusEventLineEdit.cpp
     main.cpp
     MainWindow.cpp
-    NewThreadDlg.cpp
     OwlApplication.cpp
     PostListWidget.cpp
-    PostTextEditor.cpp
-    PreferencesDlg.cpp
-    QuickAddDlg.cpp
     ThreadListWidget.cpp
 )
 
 SET (MOC_HEADERS
     AboutDlg.h
-    AspectRatioPixmapLabel.h
-    BoardsModel.h
-    BoardTreeView.h
-    BoardUpdateWorker.h
-    ClickableLabel.h
     ConfiguringBoardDlg.h
     EditBoardDlg.h
     ErrorReportDlg.h
-    FocusEventLineEdit.h
-    MainWindow.h
     NewThreadDlg.h
-    OwlApplication.h
-    PostListWidget.h
-    PostTextEditor.h
     PreferencesDlg.h
     QuickAddDlg.h
+
+    BoardsModel.h
+    BoardTreeView.h
+    BoardUpdateWorker.h
+    FocusEventLineEdit.h
+    MainWindow.h
+    OwlApplication.h
+    PostListWidget.h
     ThreadListWidget.h
 )
 
@@ -57,10 +53,11 @@ SET (UI_SOURCES
     ConfiguringBoardDlg.ui
     EditBoardDlg.ui
     ErrorReportDlg.ui
-    MainWindow.ui
     NewThreadDlg.ui
     PreferencesDlg.ui
     QuickAddDlg.ui
+
+    MainWindow.ui
 )
 
 SET (HEADER_FILES
@@ -74,6 +71,7 @@ set(QRC_SOURCE_FILES
 
 file(GLOB_RECURSE QML_FILES res/qml/*.qml res/qml/*.js)
 
+add_subdirectory(Controls)
 add_subdirectory(Data)
 
 IF (APPLE)
@@ -95,6 +93,7 @@ IF(${SUPRESS_CONSOLE_WINDOW})
 ENDIF(${SUPRESS_CONSOLE_WINDOW})
 
 SET(DEPENDENCY_LIST 
+    Controls
     Data
     Parsers
     Utils

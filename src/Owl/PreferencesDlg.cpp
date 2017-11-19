@@ -9,10 +9,11 @@
 #include <Parsers/ParserManager.h>
 #include <Utils/OwlUtils.h>
 #include "Data/BoardManager.h"
+#include "EditBoardDlg.h"
+#include "Controls/PostTextEditor.h"
 #include "Core.h"
 #include "PreferencesDlg.h"
-#include "EditBoardDlg.h"
-#include "PostTextEditor.h"
+
 
 using namespace Log4Qt;
 

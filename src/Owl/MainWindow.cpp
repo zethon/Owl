@@ -7,9 +7,12 @@
 #include <Utils/Exception.h>
 #include <Utils/Settings.h>
 #include <Utils/OwlUtils.h>
-#include "Core.h"
+#include "AboutDlg.h"
 #include "EditBoardDlg.h"
+#include "ErrorReportDlg.h"
 #include "PreferencesDlg.h"
+#include "QuickAddDlg.h"
+#include "Core.h"
 #include "MainWindow.h"
 #include "BoardUpdateWorker.h"
 
@@ -19,12 +22,12 @@
 
 using namespace Log4Qt;
 
-//////////////////////////////////////////////////////////////////////////
-// SplashScreen
-///////////////////////////////////////////////////////////////////////////////
 namespace owl
 {
 
+//////////////////////////////////////////////////////////////////////////
+// SplashScreen
+//////////////////////////////////////////////////////////////////////////
 SplashScreen::SplashScreen(const QPixmap & pixmap)
     : QSplashScreen(pixmap),
       _bDoCheck(true)
@@ -35,14 +38,9 @@ SplashScreen::SplashScreen(const QPixmap & pixmap)
     label->show();
 }
 
-} // namespace (to make code collapsing easier)
-
 ///////////////////////////////////////////////////////////////////////////////
 // MainWindow
 ///////////////////////////////////////////////////////////////////////////////
-namespace owl
-{
-
 MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
 	: QMainWindow(parent),
     _splash(splash),
