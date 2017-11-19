@@ -58,7 +58,8 @@ static void loadDefaultSettings(SettingsFilePtr settings)
     root->write("proxy.authentication.username", "");
     root->write("proxy.authentication.password", "");
 
-    root->write("web.useragent", DEFAULT_USER_AGENT);
+    const QString defaultAgent = QString("Mozilla/5.0 Firefox/3.5.6 %1 / %2").arg(APP_NAME).arg(OWL_VERSION);
+    root->write("web.useragent", defaultAgent);
 
     root->write("boardlist.icons.visible", true);
     root->write("boardlist.background.color", "#444444");

@@ -30,4 +30,3 @@
 #define OWL_VERSION_DATE_TIME		__DATE__ " " __TIME__
 
 #define COPYRIGHT                   "Copyright (c) 2012-2017 " ORGANIZATION_NAME ". All Rights Reserved."
-#define DEFAULT_USER_AGENT          "Mozilla/5.0 Firefox/3.5.6 " APP_NAME "/" OWL_VERSION

@@ -447,7 +447,8 @@ void PreferencesDlg::connectParserSettings()
 void PreferencesDlg::renderInternetSettings()
 {
     // add Owl's useragent tobrowseLogFilePB the list at the the first postiion
-    userAgentCB->insertItem(0, (QString)DEFAULT_USER_AGENT);
+    const QString defaultAgent = QString("Mozilla/5.0 Firefox/3.5.6 %1 / %2").arg(APP_NAME).arg(OWL_VERSION);
+    userAgentCB->insertItem(0, (QString)defaultAgent);
 
     const auto useragent = _settings.read("web.useragent").toString();
     const auto idx = userAgentCB->findText(useragent);
