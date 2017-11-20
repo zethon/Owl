@@ -145,8 +145,11 @@ void OwlUtilsTests::MomentTest()
 void OwlUtilsTests::PreviewTextTest()
 {
     const QString shortText { "Lorem ipsum dolor sit amet, consectetur." };
-//    QCOMPARE(owl::previewText(shortText), QString{"Lorem ipsum dolor sit amet, consectetur."});
+    QCOMPARE(owl::previewText(shortText), QString{"Lorem ipsum dolor sit amet, consectetur."});
     QCOMPARE(owl::previewText(shortText, 20), QString{"Lorem ipsum dolor..."});
+
+    const QString noSpaceText { "Thisislongblockoftextwithalotoftextthatdoesnothaveaspacebutitisreallyhardtotypewithoutpressingthespacebar" };
+    QCOMPARE(owl::previewText(noSpaceText, 20), QString{ "Thisislongblockof..." });
 
 //    const QString longText { "Lorem ipsum dolor sit amet,   consectetur."};
 //    const QString longText { "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."};
