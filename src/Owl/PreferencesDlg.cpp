@@ -10,7 +10,7 @@
 #include <Utils/OwlUtils.h>
 #include "Data/BoardManager.h"
 #include "EditBoardDlg.h"
-#include "Controls/PostTextEditor.h"
+#include "PostTextEditor.h"
 #include "Core.h"
 #include "PreferencesDlg.h"
 

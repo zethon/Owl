@@ -1503,7 +1503,7 @@ QToolButton:hover
   <customwidget>
    <class>owl::ClickableLabel</class>
    <extends>QLabel</extends>
-   <header>Controls/ClickableLabel.h</header>
+   <header>ClickableLabel.h</header>
   </customwidget>
   <customwidget>
    <class>owl::PostListWebView</class>

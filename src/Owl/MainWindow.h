@@ -12,7 +12,7 @@
 #include <Utils/QThreadEx.h>
 #include "Data/BoardManager.h"
 #include "NewThreadDlg.h"
-#include "Controls/AspectRatioPixmapLabel.h"
+#include "AspectRatioPixmapLabel.h"
 #include "BoardsModel.h"
 #include "PostListWidget.h"
 #include "ui_MainWindow.h"

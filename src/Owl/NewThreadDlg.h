@@ -7,7 +7,7 @@
 #include <QPlainTextEdit>
 #include <log4qt/logger.h>
 #include <Parsers/Forum.h>
-#include "Controls/PostTextEditor.h"
+#include "PostTextEditor.h"
 #include "ui_NewThreadDlg.h"
 
 namespace Ui

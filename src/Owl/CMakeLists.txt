@@ -11,40 +11,44 @@ OPTION(SUPRESS_CONSOLE_WINDOW "Supress TerminalWindow console" ON)
 
 SET (SOURCE_FILES
     AboutDlg.cpp
-    ConfiguringBoardDlg.cpp
-    EditBoardDlg.cpp
-    ErrorReportDlg.cpp
-    NewThreadDlg.cpp
-    PreferencesDlg.cpp
-    QuickAddDlg.cpp
-
+    AspectRatioPixmapLabel.cpp
     BoardTreeView.cpp
     BoardsModel.cpp
     BoardUpdateWorker.cpp
+    ClickableLabel.cpp
+    ConfiguringBoardDlg.cpp
+    EditBoardDlg.cpp
+    ErrorReportDlg.cpp
     FocusEventLineEdit.cpp
     main.cpp
     MainWindow.cpp
+    NewThreadDlg.cpp
+    PostTextEditor.cpp
+    PreferencesDlg.cpp
     OwlApplication.cpp
     PostListWidget.cpp
+    QuickAddDlg.cpp
     ThreadListWidget.cpp
 )
 
 SET (MOC_HEADERS
     AboutDlg.h
-    ConfiguringBoardDlg.h
-    EditBoardDlg.h
-    ErrorReportDlg.h
-    NewThreadDlg.h
-    PreferencesDlg.h
-    QuickAddDlg.h
-
+    AspectRatioPixmapLabel.h
     BoardsModel.h
     BoardTreeView.h
     BoardUpdateWorker.h
+    ClickableLabel.h
+    ConfiguringBoardDlg.h
+    EditBoardDlg.h
+    ErrorReportDlg.h
     FocusEventLineEdit.h
     MainWindow.h
+    NewThreadDlg.h
     OwlApplication.h
     PostListWidget.h
+    PostTextEditor.h
+    PreferencesDlg.h
+    QuickAddDlg.h
     ThreadListWidget.h
 )
 
@@ -56,7 +60,6 @@ SET (UI_SOURCES
     NewThreadDlg.ui
     PreferencesDlg.ui
     QuickAddDlg.ui
-
     MainWindow.ui
 )
 
@@ -71,7 +74,6 @@ set(QRC_SOURCE_FILES
 
 file(GLOB_RECURSE QML_FILES res/qml/*.qml res/qml/*.js)
 
-add_subdirectory(Controls)
 add_subdirectory(Data)
 
 IF (APPLE)
@@ -93,7 +95,6 @@ IF(${SUPRESS_CONSOLE_WINDOW})
 ENDIF(${SUPRESS_CONSOLE_WINDOW})
 
 SET(DEPENDENCY_LIST 
-    Controls
     Data
     Parsers
     Utils
