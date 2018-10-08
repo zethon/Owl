@@ -3,3 +3,4 @@ bin
 CMakeLists.txt.user
 bin-xcode
 /src/Owl/res/Owl.aps
+binQt5.9.2
