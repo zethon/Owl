@@ -69,17 +69,19 @@ endif()
 
 #############################################
 # FIND BOOST
-if (NOT "${BOOST_FOLDER}" STREQUAL "")
-    set(BOOST_ROOT ${BOOST_FOLDER})
-    find_package(Boost REQUIRED)
-    include_directories(${Boost_INCLUDE_DIR})
-elseif (NOT "${OWLAPI_FOLDER}" STREQUAL "")
-    set(BOOST_ROOT "${OWLAPI_FOLDER}/inc")
-    find_package(Boost REQUIRED)
-    include_directories(${Boost_INCLUDE_DIR})
-else()
-   message(SEND_ERROR "BOOST could not be found")
-endif()
+# if (NOT "${BOOST_FOLDER}" STREQUAL "")
+#     set(BOOST_ROOT ${BOOST_FOLDER})
+#     find_package(Boost REQUIRED)
+#     include_directories(${Boost_INCLUDE_DIR})
+# elseif (NOT "${OWLAPI_FOLDER}" STREQUAL "")
+#     set(BOOST_ROOT "${OWLAPI_FOLDER}/inc")
+#     find_package(Boost REQUIRED)
+#     include_directories(${Boost_INCLUDE_DIR})
+# else()
+#    message(SEND_ERROR "BOOST could not be found")
+# endif()
+find_package(Boost REQUIRED) 
+include_directories(${Boost_INCLUDE_DIRS})
 #############################################
 
 #############################################
@@ -103,7 +105,7 @@ include_directories(${CURL_INCLUDE_DIRS})
 #############################################
 # find HUNSPELL
 find_package(Hunspell REQUIRED)
-include_directories(${HUNSPELL_INCLUDE_DIRS})
+include_directories(${HUNSPELL_INCLUDE_DIR})
 #############################################
 
 #############################################
