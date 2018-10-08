@@ -3,10 +3,10 @@
 
 #pragma once
 #include <mutex>
-#include <log4qt/logger.h>
+#include <logger.h>
 #include "StringMap.h"
 
-#include <curl/curl.h>
+#include <curl.h>
 
 namespace owl
 {

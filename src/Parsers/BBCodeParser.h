@@ -6,7 +6,7 @@
 #include <vector>
 #include <memory>
 #include <QtCore>
-#include <log4qt/logger.h>
+#include <logger.h>
 
 namespace owl
 {

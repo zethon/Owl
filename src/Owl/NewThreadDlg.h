@@ -5,7 +5,7 @@
 #include <QtCore>
 #include <QtGui>
 #include <QPlainTextEdit>
-#include <log4qt/logger.h>
+#include <logger.h>
 #include <Parsers/Forum.h>
 #include "PostTextEditor.h"
 #include "ui_NewThreadDlg.h"

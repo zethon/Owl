@@ -2,7 +2,7 @@
 // Copyright (c) 2012-2017, Adalid Claure <aclaure@gmail.com>
 
 #pragma once
-#include <lua/lua.hpp>
+#include <lua.hpp>
 
 class QSgml;
 

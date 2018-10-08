@@ -3,7 +3,7 @@
 
 #pragma once
 #include <QtCore>
-#include <log4qt/logger.h>
+#include <logger.h>
 #include "../Utils/StringMap.h"
 #include "../Utils/xrvariant.h"
 #include "ParserBase.h"

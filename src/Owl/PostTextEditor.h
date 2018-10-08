@@ -6,7 +6,7 @@
 #include <QtCore>
 #include <QtGui>
 #include <QPlainTextEdit>
-#include <log4qt/logger.h>
+#include <logger.h>
 
 class Hunspell;
 typedef std::shared_ptr<Hunspell> HunspellPtr;

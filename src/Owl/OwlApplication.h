@@ -6,12 +6,12 @@
 #include <QApplication>
 #include <QtCore>
 #include <QMainWindow>
-#include <log4qt/consoleappender.h>
-#include <log4qt/dailyrollingfileappender.h>
-#include <log4qt/rollingfileappender.h>
-#include <log4qt/logger.h>
-#include <log4qt/ttcclayout.h>
-#include <log4qt/logmanager.h>
+#include <consoleappender.h>
+#include <dailyrollingfileappender.h>
+#include <rollingfileappender.h>
+#include <logger.h>
+#include <ttcclayout.h>
+#include <logmanager.h>
 #include "Data/BoardManager.h"
 
 using namespace Log4Qt;

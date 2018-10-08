@@ -2,7 +2,7 @@
 // Copyright Adalid Claure <aclaure@gmail.com>
 
 #pragma once
-#include <log4qt/logger.h>
+#include <logger.h>
 #include <Parsers/LuaParserBase.h>
 #include "ui_ErrorReportDlg.h"
 

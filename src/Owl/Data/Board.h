@@ -7,7 +7,7 @@
 #include <QtCore>
 #include <QtGui>
 #include <QSqlQuery>
-#include <log4qt/logger.h>
+#include <logger.h>
 #include <Parsers/ParserBase.h>
 #include <Parsers/Forum.h>
 

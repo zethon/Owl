@@ -4,7 +4,7 @@
 #pragma once
 #include <QSqlDatabase>
 #include <QString>
-#include <log4qt/logger.h>
+#include <logger.h>
 #include <Utils/Exception.h>
 #include <Utils/Rijndael.h>
 #include "Board.h"
