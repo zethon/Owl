@@ -1,9 +1,9 @@
 #include <iostream>
 #include <QtTest/QtTest>
-#include <log4qt/consoleappender.h>
-#include <log4qt/logger.h>
-#include <log4qt/logmanager.h>
-#include <log4qt/ttcclayout.h>
+#include <consoleappender.h>
+#include <logger.h>
+#include <logmanager.h>
+#include <ttcclayout.h>
 #include "OwlUtilsTests.h"
 #include "SampleTests.h"
 #include "ParserTests.h"
