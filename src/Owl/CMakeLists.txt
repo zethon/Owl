@@ -182,7 +182,7 @@ if (APPLE)
     # see: http://stackoverflow.com/questions/13420117/how-to-get-a-path-of-the-app-bundle-in-a-cmake-script-to-supply-it-to-the-fixup
     if("${CMAKE_GENERATOR}" MATCHES "Xcode")
             set(DEST_BIN_PATH ${CMAKE_BINARY_DIR}/Owl/\${CONFIGURATION}/Owl.app/Contents/Resources)
-    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
             set(DEST_BIN_PATH ${CMAKE_BINARY_DIR}/Owl/Owl.app/Contents/Resources)
     endif()
 
