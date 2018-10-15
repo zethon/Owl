@@ -1,0 +1,5 @@
+[requires]
+libhunspell/1.6.2@user/channel
+
+[generators]
+cmake

@@ -19,8 +19,8 @@ mark_as_advanced(BOOST_FOLDER)
 set(LUA_FOLDER "" CACHE PATH "Lua Root Path")
 mark_as_advanced(LUA_FOLDER)
 
-set(HUNSPELL_FOLDER "" CACHE PATH "Hunspell Root Path")
-mark_as_advanced(HUNSPELL_FOLDER)
+# set(HUNSPELL_FOLDER "" CACHE PATH "Hunspell Root Path")
+# mark_as_advanced(HUNSPELL_FOLDER)
 
 set(LUAPARSERS_FOLDER "" CACHE PATH "Lua Parses Folder")
 mark_as_advanced(LUAPARSERS_FOLDER)
@@ -37,6 +37,11 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DNDEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+#include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+include(/Users/aclaure/src/bin/conanbuildinfo.cmake)
+conan_basic_setup(NO_OUTPUT_DIRS KEEP_RPATHS)
+
 
 if (UNIX)
     if (APPLE)
@@ -104,8 +109,8 @@ include_directories(${CURL_INCLUDE_DIRS})
 
 #############################################
 # find HUNSPELL
-find_package(Hunspell REQUIRED)
-include_directories(${HUNSPELL_INCLUDE_DIR})
+# find_package(Hunspell REQUIRED)
+# include_directories(${HUNSPELL_INCLUDE_DIR})
 #############################################
 
 #############################################

@@ -9,7 +9,7 @@
 #include <Utils/Settings.h>
 #include "PostTextEditor.h"
 
-#include <hunspell.hxx>
+#include <hunspell/hunspell.hxx>
 
 using namespace Log4Qt;
 //using namespace hunspell;
