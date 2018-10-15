@@ -38,8 +38,8 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-#include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-include(/Users/aclaure/src/bin/conanbuildinfo.cmake)
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+# include(/Users/aclaure/src/bin/conanbuildinfo.cmake)
 conan_basic_setup(NO_OUTPUT_DIRS KEEP_RPATHS)
 
 
@@ -103,8 +103,8 @@ include_directories(${Lua_INCLUDE_DIR})
 
 #############################################
 # find CURL
-find_package(Curl REQUIRED)
-include_directories(${CURL_INCLUDE_DIRS})
+# find_package(Curl REQUIRED)
+# include_directories(${CURL_INCLUDE_DIRS})
 #############################################
 
 #############################################

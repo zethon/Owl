@@ -6,7 +6,7 @@
 #include <logger.h>
 #include "StringMap.h"
 
-#include <curl.h>
+#include <curl/curl.h>
 
 namespace owl
 {
