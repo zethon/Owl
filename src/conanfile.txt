@@ -6,6 +6,7 @@ boost/1.68.0@conan/stable
 
 [options]
 # Qt:shared=True
+boost:header_only=True
 
 [generators]
 cmake
