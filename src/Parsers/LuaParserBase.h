@@ -5,7 +5,7 @@
 #include <mutex>
 #include <setjmp.h>
 #include <QtCore>
-#include <lua.hpp>
+#include <lua/lua.hpp>
 #include <logger.h>
 #include "../Utils/DateTimeParser.h"
 #include "../Utils/StringMap.h"
