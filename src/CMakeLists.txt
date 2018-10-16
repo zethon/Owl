@@ -13,9 +13,6 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake)
 # configure folders
 set(OWLAPI_FOLDER "" CACHE PATH "Owl API Path")
 
-set(LUA_FOLDER "" CACHE PATH "Lua Root Path")
-mark_as_advanced(LUA_FOLDER)
-
 set(LUAPARSERS_FOLDER "" CACHE PATH "Lua Parses Folder")
 mark_as_advanced(LUAPARSERS_FOLDER)
 
@@ -68,12 +65,6 @@ endif()
 # find LOG4QT
 find_package(Log4Qt REQUIRED)
 include_directories(${LOG4QT_INCLUDE_DIR})
-#############################################
-
-#############################################
-# find LUA 5.2
-find_package(Lua REQUIRED)
-include_directories(${Lua_INCLUDE_DIR})
 #############################################
 
 #############################################
@@ -143,9 +134,6 @@ add_definitions(
 # QT tools. This line should be in each sub project
 # CMakeLists.txt also
 include_directories(${CMAKE_BINARY_DIR})
-
-# this is required because log4qt has subfolders
-#include_directories("${CMAKE_CURRENT_SOURCE_DIR}/log4qt")
 
 # the folder where Owl's default parsers exists
 set(OWL_PARSERS_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/../parsers")

@@ -3,11 +3,15 @@ boost/1.68.0@conan/stable
 libcurl/7.61.1@bincrafters/stable
 # Qt/5.11.2@bincrafters/stable 
 libhunspell/1.6.2@owl/stable
-
+lua/5.2.3@owl/stable
 
 [options]
 boost:header_only=True
 # Qt:shared=True
+# Qt:widgets=True
+# Qt:GUI=True
+# Qt:qtxmlpatterns=True
+# Qt:qtwebengine=True
 
 [generators]
 cmake
