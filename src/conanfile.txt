@@ -1,12 +1,13 @@
 [requires]
-libhunspell/1.6.2@owl/stable
-libcurl/7.61.1@bincrafters/stable
 boost/1.68.0@conan/stable
+libcurl/7.61.1@bincrafters/stable
 # Qt/5.11.2@bincrafters/stable 
+libhunspell/1.6.2@owl/stable
+
 
 [options]
-# Qt:shared=True
 boost:header_only=True
+# Qt:shared=True
 
 [generators]
 cmake
