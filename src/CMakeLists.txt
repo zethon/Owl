@@ -13,20 +13,8 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake)
 # configure folders
 set(OWLAPI_FOLDER "" CACHE PATH "Owl API Path")
 
-set(BOOST_FOLDER "" CACHE PATH "Boost Root Path")
-mark_as_advanced(BOOST_FOLDER)
-
-set(LUA_FOLDER "" CACHE PATH "Lua Root Path")
-mark_as_advanced(LUA_FOLDER)
-
-set(HUNSPELL_FOLDER "" CACHE PATH "Hunspell Root Path")
-mark_as_advanced(HUNSPELL_FOLDER)
-
 set(LUAPARSERS_FOLDER "" CACHE PATH "Lua Parses Folder")
 mark_as_advanced(LUAPARSERS_FOLDER)
-
-set(LOG4QtT_FOLDER "" CACHE PATH "Log4Qt Folder")
-mark_as_advanced(LOG4QtT_FOLDER)
 
 # configure optional projects
 option(BUILD_GUI "Build Owl GUI (default ON)" ON)
@@ -37,6 +25,9 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DNDEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup(NO_OUTPUT_DIRS KEEP_RPATHS)
 
 if (UNIX)
     if (APPLE)
@@ -68,51 +59,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES Clang)
 endif()
 
 #############################################
-# FIND BOOST
-if (NOT "${BOOST_FOLDER}" STREQUAL "")
-    set(BOOST_ROOT ${BOOST_FOLDER})
-    find_package(Boost REQUIRED)
-    include_directories(${Boost_INCLUDE_DIR})
-elseif (NOT "${OWLAPI_FOLDER}" STREQUAL "")
-    set(BOOST_ROOT "${OWLAPI_FOLDER}/inc")
-    find_package(Boost REQUIRED)
-    include_directories(${Boost_INCLUDE_DIR})
-else()
-   message(SEND_ERROR "BOOST could not be found")
-endif()
-#############################################
-
-#############################################
-# find LOG4QT
-find_package(Log4Qt REQUIRED)
-include_directories(${LOG4QT_INCLUDE_DIR})
-#############################################
-
-#############################################
-# find LUA 5.2
-find_package(Lua REQUIRED)
-include_directories(${Lua_INCLUDE_DIR})
-#############################################
-
-#############################################
-# find CURL
-find_package(Curl REQUIRED)
-include_directories(${CURL_INCLUDE_DIRS})
-#############################################
-
-#############################################
-# find HUNSPELL
-find_package(Hunspell REQUIRED)
-include_directories(${HUNSPELL_INCLUDE_DIRS})
-#############################################
-
-#############################################
-# find HTMLTidy
-find_package(HTMLTidy REQUIRED)
-include_directories(${HTMLTIDY_INCLUDE_DIR})
-#############################################
-
-#############################################
 # find QT
 
 find_package(Qt5Concurrent REQUIRED)
@@ -128,6 +74,8 @@ find_package(Qt5Test REQUIRED)
 find_package(Qt5Qml REQUIRED)
 find_package(Qt5Quick REQUIRED)
 find_package(Qt5QuickWidgets REQUIRED)
+find_package(Qt5WebEngine REQUIRED)
+find_package(Qt5WebEngineWidgets REQUIRED)
 
 # include QT requirements
 add_definitions(
@@ -156,6 +104,7 @@ set(QT_USE_QTXML TRUE)
 set(QT_USE_QTXMLPATTERNS TRUE)
 set(QT_USE_QTUITOOLS TRUE)
 set(QT_USE_QTTEST TRUE)
+set(QT_USE_QTWIDGETS TRUE)
 #############################################
 
 # Needed for Qt to coexist with Boost
@@ -170,9 +119,6 @@ add_definitions(
 # QT tools. This line should be in each sub project
 # CMakeLists.txt also
 include_directories(${CMAKE_BINARY_DIR})
-
-# this is required because log4qt has subfolders
-#include_directories("${CMAKE_CURRENT_SOURCE_DIR}/log4qt")
 
 # the folder where Owl's default parsers exists
 set(OWL_PARSERS_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/../parsers")

@@ -1,8 +1,8 @@
 // Owl - www.owlclient.com
 // Copyright (c) 2012-2017, Adalid Claure <aclaure@gmail.com>
 
-#include <htmltidy/tidy.h>
-#include <htmltidy/tidybuffio.h>
+#include <tidy.h>
+#include <tidybuffio.h>
 #include "WebClient.h"
 
 namespace owl
@@ -213,7 +213,6 @@ HttpReplyPtr WebClient::doRequest(const QString& url,
     QTime timer;
     timer.start();
 
-    HttpReplyPtr retval;
     bool bThrowOnFail = params.has("throwOnFail") ? params.getBool("thowOnFail") : getThrowOnFail();
 
     // set the URL we're getting
@@ -304,12 +303,12 @@ HttpReplyPtr WebClient::doRequest(const QString& url,
     char *finalUrl;
     curl_easy_getinfo(_curl, CURLINFO_EFFECTIVE_URL, &finalUrl);
 
+	auto retval = std::make_shared<HttpReply>();
+	retval->status = status;
+	retval->finalUrl = _lastUrl = QString::fromLatin1(finalUrl);
+
     if (status == 200)
     {
-        retval = std::make_shared<HttpReply>();
-
-        retval->status = status;
-        retval->finalUrl = _lastUrl = QString::fromLatin1(finalUrl);
         retval->data = _textCodec->toUnicode(_buffer.c_str());
 
         if (!(options & Options::NOTIDY))

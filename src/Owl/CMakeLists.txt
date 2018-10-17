@@ -121,7 +121,8 @@ TARGET_LINK_LIBRARIES(Owl
     ${QT_LIBRARIES}
     ${LOG4QT_LIBRARIES}
     ${HTMLTIDY_LIBRARIES}
-    ${HUNSPELL_LIBRARIES}
+    # ${HUNSPELL_LIBRARIES}
+    ${CONAN_LIBS}
 )
 
 SET(QT_MODULE_LIST
@@ -181,7 +182,7 @@ if (APPLE)
     # see: http://stackoverflow.com/questions/13420117/how-to-get-a-path-of-the-app-bundle-in-a-cmake-script-to-supply-it-to-the-fixup
     if("${CMAKE_GENERATOR}" MATCHES "Xcode")
             set(DEST_BIN_PATH ${CMAKE_BINARY_DIR}/Owl/\${CONFIGURATION}/Owl.app/Contents/Resources)
-    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
             set(DEST_BIN_PATH ${CMAKE_BINARY_DIR}/Owl/Owl.app/Contents/Resources)
     endif()
 
