@@ -17,12 +17,11 @@ matrix:
 script:
   - conan remote add owl https://api.bintray.com/conan/zethon/owl
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
-  - conan profile show default
   - mkdir build
   - cd build
   - conan install ../src --build libcurl
   - cmake ../src -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5
-  - cmake --build . --config "Release"
+  - cmake --build . --config "Release" -- -j3
 
 notifactions:
   email:
