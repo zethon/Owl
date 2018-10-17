@@ -6,7 +6,7 @@
 #include <setjmp.h>
 #include <QtCore>
 #include <lua/lua.hpp>
-#include <logger.h>
+#include <log4qt/logger.h>
 #include "../Utils/DateTimeParser.h"
 #include "../Utils/StringMap.h"
 #include "ParserBase.h"

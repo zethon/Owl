@@ -4,7 +4,7 @@
 #pragma once
 
 #include <memory>
-#include <logger.h>
+#include <log4qt/logger.h>
 #include "ui_QuickAddDlg.h"
 
 namespace Ui

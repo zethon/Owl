@@ -4,7 +4,7 @@
 #pragma once
 
 #include <QtCore>
-#include <logger.h>
+#include <log4qt/logger.h>
 #include "LuaParserBase.h"
 
 #define PARSERMGR		ParserManager::instance()

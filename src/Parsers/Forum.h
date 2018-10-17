@@ -7,7 +7,7 @@
 #include <QtCore>
 #include <QCryptographicHash>
 #include <QtGui>
-#include <logger.h>
+#include <log4qt/logger.h>
 #include "../Utils/StringMap.h"
 
 namespace owl

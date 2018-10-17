@@ -5,7 +5,7 @@
 #include <memory>
 #include <QObject>
 #include <QMutex>
-#include <logger.h>
+#include <log4qt/logger.h>
 
 namespace owl
 {

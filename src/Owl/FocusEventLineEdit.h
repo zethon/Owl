@@ -3,7 +3,7 @@
 
 #pragma once
 #include <QLineEdit>
-#include <logger.h>
+#include <log4qt/logger.h>
 
 namespace owl
 {

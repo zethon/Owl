@@ -6,7 +6,7 @@
 #include <QtCore>
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
-#include <logger.h>
+#include <log4qt/logger.h>
 #include <Parsers/ParserManager.h>
 #include <Utils/Exception.h>
 #include <Utils/QThreadEx.h>

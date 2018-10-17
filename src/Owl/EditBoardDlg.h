@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <logger.h>
+#include <log4qt/logger.h>
 #include "Data/Board.h"
 #include "ui_EditBoardDlg.h"
 

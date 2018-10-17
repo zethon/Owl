@@ -16,9 +16,6 @@ set(OWLAPI_FOLDER "" CACHE PATH "Owl API Path")
 set(LUAPARSERS_FOLDER "" CACHE PATH "Lua Parses Folder")
 mark_as_advanced(LUAPARSERS_FOLDER)
 
-set(LOG4QtT_FOLDER "" CACHE PATH "Log4Qt Folder")
-mark_as_advanced(LOG4QtT_FOLDER)
-
 # configure optional projects
 option(BUILD_GUI "Build Owl GUI (default ON)" ON)
 option(BUILD_CONSOLE "Optionally build OwlConsole project (default OFF)" OFF)
@@ -60,12 +57,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES Clang)
         -Werror=tautological-compare
     )
 endif()
-
-#############################################
-# find LOG4QT
-find_package(Log4Qt REQUIRED)
-include_directories(${LOG4QT_INCLUDE_DIR})
-#############################################
 
 #############################################
 # find QT

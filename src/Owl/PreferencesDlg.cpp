@@ -4,8 +4,8 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QColorDialog>
-#include <ttcclayout.h>
-#include <rollingfileappender.h>
+#include <log4qt/ttcclayout.h>
+#include <log4qt/rollingfileappender.h>
 #include <Parsers/ParserManager.h>
 #include <Utils/OwlUtils.h>
 #include "Data/BoardManager.h"

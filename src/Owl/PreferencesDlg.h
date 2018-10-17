@@ -4,7 +4,7 @@
 #pragma once
 #include <memory>
 #include <QtGui>
-#include <logger.h>
+#include <log4qt/logger.h>
 #include <Utils/Settings.h>
 #include "ui_PreferencesDlg.h"
 

@@ -2,7 +2,7 @@
 // Copyright (c) 2012-2017, Adalid Claure <aclaure@gmail.com>
 
 #pragma once
-#include <logger.h>
+#include <log4qt/logger.h>
 #include "Data/Board.h"
 #include "ui_ConfiguringBoardDlg.h"
 

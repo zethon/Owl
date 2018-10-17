@@ -3,7 +3,7 @@
 
 #pragma once
 #include <QtCore>
-#include <logger.h>
+#include <log4qt/logger.h>
 #include "ParserBase.h"
 
 class QSgml;

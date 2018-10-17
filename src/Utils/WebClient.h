@@ -3,7 +3,7 @@
 
 #pragma once
 #include <mutex>
-#include <logger.h>
+#include <log4qt/logger.h>
 #include "StringMap.h"
 
 #include <curl/curl.h>

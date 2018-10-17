@@ -3,7 +3,7 @@
 
 #pragma once
 #include <QtGui>
-#include <logger.h>
+#include <log4qt/logger.h>
 #include "ui_AboutDlg.h"
 
 namespace Ui

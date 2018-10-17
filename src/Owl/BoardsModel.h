@@ -4,7 +4,7 @@
 #pragma once
 
 #include <QtWidgets>
-#include <logger.h>
+#include <log4qt/logger.h>
 #include "Data/Board.h"
 
 #define BOARDITEMPTR_ROLE      Qt::UserRole+1
