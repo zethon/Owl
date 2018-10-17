@@ -1,7 +1,6 @@
 language: cpp
 
 before_install:
-  - echo $TRAVIS_OS_NAME
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update          ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install conan; fi
 
@@ -11,6 +10,7 @@ matrix:
       osx_image: xcode10
 
 script:
+  - conan remote add owl https://api.bintray.com/conan/zethon/owl 
   - conan install ./src -s compiler=apple-clang -s compiler.version=10.0 -s compiler.libcxx=libc++
 
 notifactions:
