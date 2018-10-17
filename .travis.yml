@@ -1,14 +1,14 @@
 language: cpp
 
 before_install:
-
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update          ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install conan; fi
 
 matrix:
     - os: osx
       osx_image: xcode10
 
 script:
-  - pip install conan
   - conan install ./src
 
 notifactions:
