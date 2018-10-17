@@ -6,6 +6,7 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install conan; fi
 
 matrix:
+  include:
     - os: osx
       osx_image: xcode10
 
