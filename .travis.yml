@@ -2,11 +2,13 @@ language: cpp
 
 before_install:
 
+
 matrix:
     - os: osx
       osx_image: xcode10
 
 script:
+  - pip install conan
   - conan install ./src
 
 notifactions:
