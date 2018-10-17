@@ -11,7 +11,7 @@ matrix:
       osx_image: xcode10
 
 script:
-  - conan install ./src
+  - conan install ./src -s compiler=apple-clang -s compiler.version=10.0 -s compiler.libcxx=libc++
 
 notifactions:
   email:
