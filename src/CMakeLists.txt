@@ -68,12 +68,6 @@ include_directories(${LOG4QT_INCLUDE_DIR})
 #############################################
 
 #############################################
-# find HTMLTidy
-find_package(HTMLTidy REQUIRED)
-include_directories(${HTMLTIDY_INCLUDE_DIR})
-#############################################
-
-#############################################
 # find QT
 
 find_package(Qt5Concurrent REQUIRED)

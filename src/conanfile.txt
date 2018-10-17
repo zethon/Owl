@@ -4,6 +4,7 @@ libcurl/7.61.1@bincrafters/stable
 # Qt/5.11.2@bincrafters/stable 
 libhunspell/1.6.2@owl/stable
 lua/5.2.3@owl/stable
+libtidy/5.6@owl/stable
 
 [options]
 boost:header_only=True
