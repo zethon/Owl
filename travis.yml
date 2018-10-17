@@ -1,0 +1,17 @@
+language: cpp
+
+before_install:
+
+matrix:
+    - os: osx
+      osx_image: xcode10
+
+script:
+  - conan install ./src
+
+notifactions:
+  email:
+    recipients:
+      - aclaure@gmail.com
+    on_success: never
+    on_failre: always
