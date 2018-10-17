@@ -12,7 +12,7 @@ matrix:
 script:
   - conan remote add owl https://api.bintray.com/conan/zethon/owl
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
-  - conan install ./src -s compiler=apple-clang -s compiler.version=10.0 -s compiler.libcxx=libc++
+  - conan install ./src -s compiler=apple-clang -s compiler.version=10.0 -s compiler.libcxx=libc++ --build libcurl
 
 notifactions:
   email:
