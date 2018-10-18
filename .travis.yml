@@ -3,25 +3,30 @@ language: cpp
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update          ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install conan; fi
-
-install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install qt5; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew link --force qt5; fi
+
+install:
+  - conan remote add owl https://api.bintray.com/conan/zethon/owl
+  - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
 
 matrix:
   include:
     - os: osx
       osx_image: xcode10
       compiler: clang
+      env: CONFIG=Release
+    - os: osx
+      osx_image: xcode10
+      compiler: clang
+      env: CONFIG=RelWithDebInfo
 
 script:
-  - conan remote add owl https://api.bintray.com/conan/zethon/owl
-  - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
   - mkdir build
   - cd build
   - conan install ../src --build libcurl
   - cmake ../src -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5
-  - cmake --build . --config "Release" -- -j3
+  - cmake --build . --config "${CONFIG}" -- -j3
 
 notifactions:
   email:
