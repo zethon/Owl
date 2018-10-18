@@ -1,11 +1,12 @@
 version: 0.7.{build}
 
+image: 
+ - Visual Studio 2017
+
 environment:
   matrix:
-    - TOOLCHAIN: "vs-15-2017-win64"
-      CONFIG: Release
-    - TOOLCHAIN: "vs-15-2017-win64"
-      CONFIG: RelWithDebInfo
+    - CONFIG: Release
+    - CONFIG: RelWithDebInfo
 
 install:
   - echo "Downloading conan..."
