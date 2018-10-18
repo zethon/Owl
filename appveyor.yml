@@ -4,16 +4,16 @@ image:
  - Visual Studio 2017
 
 install:
-  - cmmd: echo "Downloading conan..."
-  - cmmd: set PATH=%PATH%;%PYTHON%/Scripts/
-  - cmmd: pip.exe install conan
-  - cmmd: conan user # Create the conan data directory
-  - cmmd: conan remote add owl https://api.bintray.com/conan/zethon/owl
-  - cmmd: conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
+  - echo "Downloading conan..."
+  - set PATH=%PATH%;%PYTHON%/Scripts/
+  - pip.exe install conan
+  - conan user # Create the conan data directory
+  - conan remote add owl https://api.bintray.com/conan/zethon/owl
+  - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
 
 build_script:
-  - cmmd: mkdir build
-  - cmmd: cd build
-  - cmmd: conan install ../src
-  - cmmd: cmake ../src "-GVisual Studio 15 2017 Win64" -DCMAKE_PREFIX_PATH=C:/Qt/5.11.1/msvc2017_64
-  - cmmd: cmake --build . --config "Release"
+  - mkdir build
+  - cd build
+  - conan install ../src
+  - cmake ../src "-GVisual Studio 15 2017 Win64" -DCMAKE_PREFIX_PATH=C:/Qt/5.11.1/msvc2017_64
+  - cmake --build . --config "Release"
