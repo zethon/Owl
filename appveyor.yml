@@ -1,7 +1,11 @@
 version: 0.7.{build}
 
-image: 
- - Visual Studio 2017
+environment:
+  matrix:
+    - TOOLCHAIN: "vs-15-2017-win64"
+      CONFIG: Release
+    - TOOLCHAIN: "vs-15-2017-win64"
+      CONFIG: RelWithDebInfo
 
 install:
   - echo "Downloading conan..."
@@ -16,4 +20,4 @@ build_script:
   - cd build
   - conan install ../src
   - cmake ../src "-GVisual Studio 15 2017 Win64" -DCMAKE_PREFIX_PATH=C:/Qt/5.11.1/msvc2017_64
-  - cmake --build . --config "Release" -- /maxcpucount:4
+  - cmake --build . --config "%CONFIG%" -- /maxcpucount:4
