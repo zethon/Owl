@@ -1,8 +1,6 @@
 // Owl - www.owlclient.com
 // Copyright (c) 2012-2017, Adalid Claure <aclaure@gmail.com>
 
-#include "boost/foreach.hpp"
-#include "boost/make_shared.hpp"
 #include "../Utils/Exception.h"
 #include "../Utils/OwlUtils.h"
 #include "ParserManager.h"

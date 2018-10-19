@@ -4,8 +4,6 @@
 #pragma once
 #include <QtGui>
 #include <QtCore>
-#include <boost/bind.hpp>
-#include <boost/function.hpp>
 #include <log4qt/logger.h>
 #include <Parsers/ParserManager.h>
 #include <Utils/Exception.h>
@@ -198,8 +196,8 @@ public:
         QAction* postPaneHidden;
     };
     
-    MainWindow(SplashScreen *splash, QWidget *parent = 0);
-	virtual ~MainWindow() = default;
+    MainWindow(SplashScreen *splash, QWidget *parent = nullptr);
+    virtual ~MainWindow() = default;
 
 protected:
 
