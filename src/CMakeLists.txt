@@ -35,13 +35,8 @@ conan_basic_setup(NO_OUTPUT_DIRS KEEP_RPATHS)
 if (UNIX)
     if (APPLE)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} 
-            -stdlib=libc++ 
-            -ffunction-sections 
-            -fdata-sections 
-            -ftemplate-depth-256 
-            -Wno-inconsistent-missing-override")
-
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -ffunction-sections -fdata-sections -ftemplate-depth-256  -Wno-inconsistent-missing-override")
+        
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -Wl,-dead_strip")
     endif (APPLE)
 endif (UNIX)
