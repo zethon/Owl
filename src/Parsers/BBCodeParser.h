@@ -14,6 +14,8 @@ namespace owl
 class QuoteFormatter
 {
 public:
+    virtual ~QuoteFormatter() = default;
+
     virtual QString getPreQuoteReplacer() = 0;
     virtual QString getQuoteBody(const QString& text) = 0;
     virtual QString getUsernameReplacer(const QString& username) = 0;
@@ -30,7 +32,7 @@ public:
         return QString("<b>\\1</b> wrote:<br/>");
     }
 
-    QString getUsernameReplacer(const QString& username)
+    QString getUsernameReplacer(const QString& username) override
     {
         return QString("<b>%1</b> wrote:<br/>").arg(username);
     }
@@ -56,7 +58,7 @@ public:
         return QString("\\1 wrote:\n");
     }
 
-    QString getUsernameReplacer(const QString& username)
+    QString getUsernameReplacer(const QString& username) override
     {
         return QString("%1 wrote:\n").arg(username);
     }
@@ -90,7 +92,7 @@ public:
         return QString("\\1 wrote:\n");
     }
 
-    QString getUsernameReplacer(const QString& username)
+    QString getUsernameReplacer(const QString& username) override
     {
         return QString("%1 wrote:\n").arg(username);
     }
