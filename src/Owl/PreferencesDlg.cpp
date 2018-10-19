@@ -584,8 +584,8 @@ void PreferencesDlg::connectAdvancedSettings()
             if (bOk && level != Log4Qt::Level::NULL_INT)
             {
                 _settings.write("logs.level", loggingLevelLB->currentText());
-                const Level level = Log4Qt::Level::fromString(loggingLevelLB->currentText());
-                Log4Qt::Logger::rootLogger()->setLevel(level);
+                const Level loglevel = Log4Qt::Level::fromString(loggingLevelLB->currentText());
+                Log4Qt::Logger::rootLogger()->setLevel(loglevel);
             }
         });
 

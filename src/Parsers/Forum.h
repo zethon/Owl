@@ -384,7 +384,7 @@ public:
     void setDisplayOrder(int var) { _iDisplayOrder = var; }
     int getDisplayOrder() const { return _iDisplayOrder; }
     
-    const uint getLevel() const { return _iForumLevel; }
+    const std::int32_t getLevel() const;
 
 	virtual bool isStructureEqual(Forum& other);
     virtual bool isStructureEqual(std::shared_ptr<Forum> other);
@@ -408,9 +408,8 @@ private:
 	ForumType	_forumType;
     
     // the level
-    uint _iForumLevel = -1;
+    std::int32_t _iForumLevel = -1;
     
-
     QList<std::shared_ptr<Forum> >	_forums;
     QList<std::shared_ptr<Thread> >   _threads;
 

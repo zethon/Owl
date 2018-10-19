@@ -132,9 +132,14 @@ QString Forum::getForumTypeString() const
 	return retStr;
 }
 
+const std::int32_t Forum::getLevel() const
+{
+    return _iForumLevel;
+}
+
 void BoardItem::setVar(const QString& key, const QString& value)
 {
-	_vars.erase(key);
+    _vars.erase(key);
 	_vars.add(key, value);
 }
 

@@ -3,7 +3,6 @@
 
 #include <iterator>
 #include <list>
-#include "boost/smart_ptr/make_shared.hpp"
 #include "BBCodeParser.h"
 
 namespace owl

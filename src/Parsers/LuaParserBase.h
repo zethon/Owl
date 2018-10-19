@@ -80,14 +80,14 @@ public:
 	Q_INVOKABLE LuaParserBase(const QString& url, const QString& luaFile);
 	virtual ~LuaParserBase();
 
-	virtual QString getName() const;
-	virtual QString getPrettyName() const;
+        virtual QString getName() const override;
+        virtual QString getPrettyName() const override;
 
-	virtual QString getItemUrl(ForumPtr forum);
-	virtual QString getItemUrl(ThreadPtr thread);
-	virtual QString getItemUrl(PostPtr post);
+        virtual QString getItemUrl(ForumPtr forum) override;
+        virtual QString getItemUrl(ThreadPtr thread) override;
+        virtual QString getItemUrl(PostPtr post) override;
 
-	virtual QString getPostQuote(PostPtr post);
+        virtual QString getPostQuote(PostPtr post) override;
 
     virtual ParserBasePtr clone(ParserBasePtr other = ParserBasePtr()) override;
 
@@ -95,25 +95,25 @@ public:
 
 protected:
 	/* ParserBase implementation */
-	virtual QVariant doLogin(const LoginInfo&);
-	virtual QVariant doLogout();
+        virtual QVariant doLogin(const LoginInfo&) override;
+        virtual QVariant doLogout() override;
 	
-	virtual QVariant doGetBoardwareInfo();
-	virtual QVariant doTestParser(const QString&);
+        virtual QVariant doGetBoardwareInfo() override;
+        virtual QVariant doTestParser(const QString&) override;
 
-	virtual QVariant doGetForumList(const QString& forumId);
-	virtual QVariant doThreadList(ForumPtr forumInfo, int options);
+        virtual QVariant doGetForumList(const QString& forumId) override;
+        virtual QVariant doThreadList(ForumPtr forumInfo, int options) override;
 	
 	//virtual QVariant doPostList(ThreadPtr threadInfo, int options);
 	virtual QVariant doGetPostList(ThreadPtr t, PostListOptions listOption, int webOptions) override;
 
-	virtual QVariant doSubmitNewThread(ThreadPtr threadInfo);
-	virtual QVariant doSubmitNewPost(PostPtr postInfo);
+        virtual QVariant doSubmitNewThread(ThreadPtr threadInfo) override;
+        virtual QVariant doSubmitNewPost(PostPtr postInfo) override;
 
-	virtual QVariant doGetUnreadForums();
-	virtual QVariant doMarkForumRead(ForumPtr forumInfo);
+        virtual QVariant doGetUnreadForums() override;
+        virtual QVariant doMarkForumRead(ForumPtr forumInfo) override;
 
-	virtual QVariant doGetEncryptionSettings();
+        virtual QVariant doGetEncryptionSettings() override;
 
 private:
 	void registerFunctions();

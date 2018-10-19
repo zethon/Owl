@@ -9,6 +9,9 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 
 OPTION(SUPRESS_CONSOLE_WINDOW "Supress TerminalWindow console" ON)
 
+# the folder where Owl's default parsers exists
+set(OWL_PARSERS_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/../parsers")
+
 SET (SOURCE_FILES
     AboutDlg.cpp
     AspectRatioPixmapLabel.cpp

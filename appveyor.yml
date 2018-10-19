@@ -12,7 +12,6 @@ install:
   - echo "Downloading conan..."
   - set PATH=%PATH%;%PYTHON%/Scripts/
   - pip.exe install conan
-  # - conan user # Create the conan data directory
   - conan remote add owl https://api.bintray.com/conan/zethon/owl
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
 

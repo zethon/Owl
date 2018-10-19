@@ -73,7 +73,10 @@ public:
 	Q_INVOKABLE Tapatalk4x(const QString& url);
 	virtual ~Tapatalk4x();
 
-	virtual const QString getRootForumId() const { return _rootId; }
+        virtual const QString getRootForumId() const  override
+        {
+            return _rootId;
+        }
 
     virtual ParserBasePtr clone(ParserBasePtr other = ParserBasePtr()) override
     {
@@ -109,20 +112,20 @@ public:
     }
 
 protected:
-	virtual QVariant doLogin(const LoginInfo&);
-	virtual QVariant doLogout();
+        virtual QVariant doLogin(const LoginInfo&) override;
+        virtual QVariant doLogout() override;
 	
-	virtual QVariant doGetBoardwareInfo();
-	virtual QVariant doTestParser(const QString&);
+        virtual QVariant doGetBoardwareInfo() override;
+        virtual QVariant doTestParser(const QString&) override;
 
-	virtual QVariant doThreadList(ForumPtr forumInfo, int options);
+        virtual QVariant doThreadList(ForumPtr forumInfo, int options) override;
 
-	virtual QVariant doSubmitNewThread(ThreadPtr threadInfo);
-	virtual QVariant doSubmitNewPost(PostPtr postInfo);
-	virtual QVariant doGetForumList(const QString& forumId);
-	virtual QVariant doGetEncryptionSettings();
-	virtual QVariant doMarkForumRead(ForumPtr forumInfo);
-	virtual QVariant doGetUnreadForums();
+        virtual QVariant doSubmitNewThread(ThreadPtr threadInfo) override;
+        virtual QVariant doSubmitNewPost(PostPtr postInfo) override;
+        virtual QVariant doGetForumList(const QString& forumId) override;
+        virtual QVariant doGetEncryptionSettings() override;
+        virtual QVariant doMarkForumRead(ForumPtr forumInfo) override;
+        virtual QVariant doGetUnreadForums() override;
 
 	virtual QVariant doGetPostList(ThreadPtr t, PostListOptions listOption, int webOptions) override;
 

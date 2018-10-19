@@ -107,8 +107,8 @@ void QuickAddDlg::accept()
 		passwordError->setVisible(false);
 	}
 
-    const QVariant data = parserCombo->itemData(parserCombo->currentIndex());
-    const QString parser = data.value<QString>();
+    const QVariant vdata = parserCombo->itemData(parserCombo->currentIndex());
+    const QString parser = vdata.value<QString>();
 
 	if (!strError.isEmpty())
 	{
@@ -129,9 +129,9 @@ void QuickAddDlg::accept()
 	_configureDlg->start();
 }
 
-// what is the point if result in this SLOT? it doesn't seem 
+// what is the point of result in this SLOT? it doesn't seem 
 // to get set by the emitter :(
-void QuickAddDlg::onConfigureFinished(int result)
+void QuickAddDlg::onConfigureFinished(int)
 {
 	if (_configureDlg->getSuccess())
 	{

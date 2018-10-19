@@ -38,9 +38,9 @@ QStringList SpellChecker::suggestions(const QString& word)
     if (_spellcheck && _textCodec)
     {
         const auto wordList = _spellcheck->suggest(word.toStdString());
-        for (const auto& word : wordList)
+        for (const auto& sword : wordList)
         {
-            retval << QString::fromStdString(word);
+            retval << QString::fromStdString(sword);
         }
     }
 
@@ -320,7 +320,7 @@ void SpellCheckEdit::showContextMenu(const QPoint& pos)
                 QAction* action = newMenu->addAction(suggestionList.at(i));
 
                 QObject::connect(action, &QAction::triggered,
-                    [cursor, cursorPosition, action](bool checked) mutable
+                    [cursor, cursorPosition, action](bool) mutable
                     {
                         cursor.beginEditBlock();
 
