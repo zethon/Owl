@@ -92,7 +92,7 @@ static void loadDefaultSettings(SettingsFilePtr settings)
 }
 
 static std::pair<bool, QString>
-    initSettings(const QString& filename, SettingsFilePtr settings, QLockFile **lockFile)
+    initSettings(const QString& filename, SettingsFilePtr settings, QLockFile **)
 {
     QFileInfo info(filename);
 

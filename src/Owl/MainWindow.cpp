@@ -851,9 +851,9 @@ void MainWindow::updateSelectedThread(ThreadPtr t)
 
 			bool bForumHasUnread = false;
 			ForumPtr parent = t->getParent()->upCast<ForumPtr>();
-			for (auto t : parent->getThreads())
+			for (auto th : parent->getThreads())
 			{
-				if (t->hasUnread())
+				if (th->hasUnread())
 				{
 					bForumHasUnread = true;
 				}

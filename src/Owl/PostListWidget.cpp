@@ -290,7 +290,7 @@ void SharedPostObject::doViewImage(const QString &base64, const QString& url)
     }
 }
 
-bool PostListWebPage::acceptNavigationRequest(const QUrl &url, NavigationType type, bool isMainFrame)
+bool PostListWebPage::acceptNavigationRequest(const QUrl &url, NavigationType type, bool)
 {
     if (type == QWebEnginePage::NavigationTypeLinkClicked)
     {

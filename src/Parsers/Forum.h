@@ -408,9 +408,8 @@ private:
 	ForumType	_forumType;
     
     // the level
-    uint _iForumLevel = -1;
+    std::int32_t _iForumLevel = -1;
     
-
     QList<std::shared_ptr<Forum> >	_forums;
     QList<std::shared_ptr<Thread> >   _threads;
 
