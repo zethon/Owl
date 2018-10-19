@@ -70,13 +70,8 @@ if (CMAKE_CXX_COMPILER_ID MATCHES Clang)
     add_compile_options(
         $<$<COMPILE_LANGUAGE:CXX>:-stdlib=libc++>
 
-        # Disable the pragma message statements on Clang
-        # because clang always creates a warning on them.
         -Wno-\#pragma-messages
-
-        # Boost and libc++ headers have unused local typedefs.
         -Wno-unused-local-typedef
-
         -Werror=tautological-compare
         -Werror=four-char-constants
         -Werror=constant-conversion
