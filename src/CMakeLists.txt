@@ -30,6 +30,13 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup(NO_OUTPUT_DIRS KEEP_RPATHS)
 
+# Global definitions
+add_definitions(
+    -DQT_NO_KEYWORDS
+    -DCURL_STATICLIB
+    -DHUNSPELL_STATIC
+)
+
 if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
 
     add_compile_options(
@@ -153,20 +160,10 @@ set(QT_USE_QTTEST TRUE)
 set(QT_USE_QTWIDGETS TRUE)
 #############################################
 
-# Needed for Qt to coexist with Boost
-add_definitions(
-    -DQT_NO_KEYWORDS
-    -DCURL_STATICLIB
-    -DHUNSPELL_STATIC
-)
-
 # We need this to be able to include headers produced 
 # QT tools. This line should be in each sub project
 # CMakeLists.txt also
 include_directories(${CMAKE_BINARY_DIR})
-
-# the folder where Owl's default parsers exists
-set(OWL_PARSERS_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/../parsers")
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 add_subdirectory(Parsers)
