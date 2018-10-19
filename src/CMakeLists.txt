@@ -5,6 +5,9 @@ cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
 include(CMakeForceCompiler)
 
 project(Owl)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_MACOSX_RPATH 1)
+
 set(OWL_VERSION "0.7.7")
 
 # Add our own custom CMake modules
@@ -32,7 +35,13 @@ conan_basic_setup(NO_OUTPUT_DIRS KEEP_RPATHS)
 if (UNIX)
     if (APPLE)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -stdlib=libc++ -ffunction-sections -fdata-sections -ftemplate-depth-256 -Wno-inconsistent-missing-override")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} 
+            -stdlib=libc++ 
+            -ffunction-sections 
+            -fdata-sections 
+            -ftemplate-depth-256 
+            -Wno-inconsistent-missing-override")
+
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -Wl,-dead_strip")
     endif (APPLE)
 endif (UNIX)
@@ -57,6 +66,22 @@ if (CMAKE_CXX_COMPILER_ID MATCHES Clang)
         -Werror=tautological-compare
     )
 endif()
+
+if (MSVC)
+    add_definitions(
+        -DWIN32
+        -D_WIN32
+        -D_WINDOWS
+        -DNOMINMAX
+        -D_SCL_SECURE_NO_WARNINGS
+        -DWIN32_LEAN_AND_MEAN
+    )
+
+    add_compile_options(
+        # treat warnings as errors
+        /WX
+    )
+endif(MSVC)
 
 #############################################
 # find QT
@@ -110,7 +135,6 @@ set(QT_USE_QTWIDGETS TRUE)
 # Needed for Qt to coexist with Boost
 add_definitions(
     -DQT_NO_KEYWORDS
-    -DWIN32_LEAN_AND_MEAN
     -DCURL_STATICLIB
     -DHUNSPELL_STATIC
 )
