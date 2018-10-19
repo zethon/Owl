@@ -13,9 +13,6 @@ set(OWL_VERSION "0.7.7")
 # Add our own custom CMake modules
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake)
 
-# configure folders
-set(OWLAPI_FOLDER "" CACHE PATH "Owl API Path")
-
 set(LUAPARSERS_FOLDER "" CACHE PATH "Lua Parses Folder")
 mark_as_advanced(LUAPARSERS_FOLDER)
 
@@ -29,36 +26,60 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+# initialize conan libs
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup(NO_OUTPUT_DIRS KEEP_RPATHS)
 
-if (UNIX)
-    if (APPLE)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -ffunction-sections -fdata-sections -ftemplate-depth-256  -Wno-inconsistent-missing-override")
-        
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -Wl,-dead_strip")
-    endif (APPLE)
-endif (UNIX)
-
 if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
+
     add_compile_options(
+        # remove dead code
+        -ffunction-sections
+        -fdata-sections
+
+        -Werror=format
+        -Werror=trigraphs
+        $<$<COMPILE_LANGUAGE:CXX>:-Werror=non-virtual-dtor>
+        -Werror=missing-braces
+        -Werror=parentheses
+        -Werror=return-type
         -Werror=sign-compare
         -Werror=unused-macros
         -Werror=unused-function
         -Werror=unused-label
         -Werror=unused-value
-        -Werror=unused-variable
         -Werror=empty-body
+        -Werror=reorder
+        -Werror=switch
+        -Werror=int-conversion
         -Werror=uninitialized
+        -Werror=char-subscripts
     )
 endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES Clang)
+
     add_compile_options(
+        $<$<COMPILE_LANGUAGE:CXX>:-stdlib=libc++>
+
+        # Disable the pragma message statements on Clang
+        # because clang always creates a warning on them.
+        -Wno-\#pragma-messages
+
+        # Boost and libc++ headers have unused local typedefs.
+        -Wno-unused-local-typedef
+
+        -Werror=tautological-compare
+        -Werror=four-char-constants
+        -Werror=constant-conversion
         -Werror=bool-conversion
         -Werror=enum-conversion
-        -Werror=tautological-compare
+        -Werror=deprecated-declarations
+        -Werror=return-stack-address
+
+        $<$<COMPILE_LANGUAGE:CXX>:-Werror=overloaded-virtual>
+        $<$<COMPILE_LANGUAGE:CXX>:-Werror=unused-private-field>
+        $<$<COMPILE_LANGUAGE:CXX>:-Werror=mismatched-tags>
     )
 endif()
 
