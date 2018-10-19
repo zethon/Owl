@@ -101,8 +101,6 @@ if (MSVC)
     add_compile_options(
         # treat warnings as errors
         /WX
-
-        /wd4966
     )
 endif(MSVC)
 
