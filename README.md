@@ -1,4 +1,7 @@
-## Owl
+# Owl
+
+[![Build Status][travis-img]][travis]
+[![Build Status][appveyor-img]][appveyor]
 
 ### Description
 
@@ -19,3 +22,9 @@ Currently the conan repos support:
 Website: [http://www.owlclient.com](http://www.owlclient.com)<br/>
 Twitter: [https://twitter.com/owlclient](https://twitter.com/owlclient)
 
+<!-- footnotes -->
+[travis-img]: https://travis-ci.org/zethon/Owl.svg?branch=master
+[travis]: https://travis-ci.org/zethon/Owl
+
+[appveyor-img]: https://ci.appveyor.com/api/projects/status/1kl42f4f0vre8x35?svg=true
+[appveyor]: https://ci.appveyor.com/project/zethon/owl
