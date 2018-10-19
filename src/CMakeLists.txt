@@ -92,6 +92,10 @@ if (MSVC)
         -DNOMINMAX
         -D_SCL_SECURE_NO_WARNINGS
         -DWIN32_LEAN_AND_MEAN
+
+        # use this to supress the boost generated "warning C4996"
+        # on Windows
+        -D_SILENCE_FPOS_SEEKPOS_DEPRECATION_WARNING
     )
 
     add_compile_options(
