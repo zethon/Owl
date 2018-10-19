@@ -42,10 +42,10 @@ SplashScreen::SplashScreen(const QPixmap & pixmap)
 // MainWindow
 ///////////////////////////////////////////////////////////////////////////////
 MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
-	: QMainWindow(parent),
-    _splash(splash),
-    _imageOverlay{this},
-	_svcModel{new BoardsModel(this)}
+    : QMainWindow(parent),
+      _svcModel{new BoardsModel(this)},
+      _splash(splash),
+      _imageOverlay{this}
 {
 	setupUi(this);
 	setDockNestingEnabled(true);

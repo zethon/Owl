@@ -144,7 +144,7 @@ protected:
         return QWidget::eventFilter(obj, ev);
     }
 
-    void mouseReleaseEvent(QMouseEvent* e)
+    void mouseReleaseEvent(QMouseEvent* e) override
     {
         Q_UNUSED(e);
         this->hide();
@@ -278,68 +278,66 @@ private Q_SLOTS:
 	void onDisplayOrderChanged(BoardPtr, int);
 
 private:
-	void createLinkMessages();
-	void createMenus();
+    void createLinkMessages();
+    void createMenus();
     void createStatusBar();
     void createSignals();
-	void createBoardPanel();
-	void createThreadPanel();
-	void createPostPanel();
+    void createBoardPanel();
+    void createThreadPanel();
+    void createPostPanel();
 
     void readSettings();
     void writeSettings();
-    
-	void connectBoard(BoardPtr board);
 
-	void startThreadLoading();
-	void stopThreadLoading();
+    void connectBoard(BoardPtr board);
 
-	void startPostsLoading();
-	void stopPostsLoading();
+    void startThreadLoading();
+    void stopThreadLoading();
+
+    void startPostsLoading();
+    void stopPostsLoading();
 
     void createDebugMenu();
 
     QMenu* createForumMenu(ForumPtr forum);
 
-	void updateSelectedThread(ThreadPtr thread = ThreadPtr());
-	void updateSelectedForum(ForumPtr forum = ForumPtr());
-    
-	ForumPtr getCurrentForum() const;
-    
-	void navigateToThreadListPage(ForumPtr forum, int iPageNumber);
+    void updateSelectedThread(ThreadPtr thread = ThreadPtr());
+    void updateSelectedForum(ForumPtr forum = ForumPtr());
+
+    ForumPtr getCurrentForum() const;
+
+    void navigateToThreadListPage(ForumPtr forum, int iPageNumber);
     void navigateToPostListPage(ThreadPtr thread, int iPageNumber);
 
     int initBoard(const BoardPtr& b);
     void openPreferences();
 
-	QMenu* _boardToolBarCtxMenu;
-
-	BoardsModel* _svcModel;
+    QMenu* _boardToolBarCtxMenu;
 
     LinkMessageMap _linkMessageMap;
     QSqlDatabase _db;
 
-	QuickAddDlg*            _quickAddDlg;
-	ErrorReportDlg*         _errorReportDlg;				// only one error at a time?
-	QList<NewThreadDlg*>    _newThreadDialogs;
+    QuickAddDlg*            _quickAddDlg;
+    ErrorReportDlg*         _errorReportDlg;				// only one error at a time?
+    QList<NewThreadDlg*>    _newThreadDialogs;
 
-	QAction* _loginButton;
+    QAction* _loginButton;
 
-	// last item selected on board/service view
-	QStandardItem* _svcTreeLastItem;
+    // last item selected on board/service view
+    QStandardItem* _svcTreeLastItem;
 
-	BoardPtr _toolBarSelectedBoard;
+    BoardPtr _toolBarSelectedBoard;
 
-	// TODO: ensure this is a good model for mutexes
-	QMutex _updateMutex;
+    // TODO: ensure this is a good model for mutexes
+    QMutex _updateMutex;
 
-	// map of threads for each board
-	WorkerMap       _workerMap;
+    // map of threads for each board
+    WorkerMap       _workerMap;
 
-	SplashScreen*	_splash;
+
     MenuActions     _actions;
     QWidget*        _postPaneTitleBar;
-	bool            _bDoneLoading = false;
+    bool            _bDoneLoading = false;
     bool			_bInitialized = false;
 
     QSize           _servicesTreeLastSize;
@@ -349,6 +347,8 @@ private:
     bool            _statusBarVisibile = true;
     uint            _postsPanePosition = PANERIGHT;
 
+    BoardsModel*    _svcModel;
+    SplashScreen*   _splash;
     ImageOverlay    _imageOverlay;
 };
 
