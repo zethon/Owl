@@ -48,6 +48,7 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
         -Werror=unused-function
         -Werror=unused-label
         -Werror=unused-value
+        -Werror=unused-variable
         -Werror=empty-body
         -Werror=reorder
         -Werror=switch
