@@ -5,6 +5,9 @@
 #include "Version.h"
 #include <boost/spirit/include/qi.hpp>
 
+#pragma warning(push)
+#pragma warning(disable : 4996)
+
 namespace owl
 {
 
@@ -56,3 +59,6 @@ Version::~Version()
 }
 	
 } // owl namespace
+
+// re-enable C4996
+#pragma warning(pop)
