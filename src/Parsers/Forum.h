@@ -384,7 +384,7 @@ public:
     void setDisplayOrder(int var) { _iDisplayOrder = var; }
     int getDisplayOrder() const { return _iDisplayOrder; }
     
-    const uint getLevel() const { return _iForumLevel; }
+    const std::int32_t getLevel() const;
 
 	virtual bool isStructureEqual(Forum& other);
     virtual bool isStructureEqual(std::shared_ptr<Forum> other);
