@@ -118,36 +118,32 @@ ADD_EXECUTABLE(Owl ${GUI_TYPE} MACOSX_BUNDLE
     ${UI_HEADERS}
     ${QML_FILES}
 )
+
+set(QT_MODULE_LIST
+    Qt5::Concurrent
+    Qt5::Core
+    Qt5::Network
+    Qt5::Quick
+    Qt5::QuickWidgets
+    Qt5::Sql
+    Qt5::UiTools
+    Qt5::WebEngine
+    Qt5::WebEngineWidgets
+    Qt5::Widgets
+    Qt5::Xml
+    Qt5::XmlPatterns
+)
+
+if (APPLE)
+    list(APPEND QT_MODULE_LIST 
+        Qt5::MacExtras
+    )
+endif (APPLE)
 	
 TARGET_LINK_LIBRARIES(Owl 
     ${DEPENDENCY_LIST}
     ${QT_LIBRARIES}
-    ${LOG4QT_LIBRARIES}
-    ${HTMLTIDY_LIBRARIES}
-    # ${HUNSPELL_LIBRARIES}
     ${CONAN_LIBS}
-)
-
-SET(QT_MODULE_LIST
-    Concurrent
-    Core
-    Network
-    Quick
-    QuickWidgets
-    Sql
-    UiTools
-    WebEngine
-    WebEngineWidgets
-    Widgets
-    Xml
-    XmlPatterns
-)
-
-if (APPLE)
-    list(APPEND QT_MODULE_LIST MacExtras)
-endif (APPLE)
-
-QT5_USE_MODULES(Owl 
     ${QT_MODULE_LIST}
 )
 

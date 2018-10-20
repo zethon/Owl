@@ -55,7 +55,4 @@ target_link_libraries(Utils
     Qt5::Network
     Qt5::Widgets
     Qt5::Xml
-    ${CURL_LIBRARIES}
-    ${HTMLTIDY_LIBRARIES}
-    ${Lua_LIBRARY}
 )

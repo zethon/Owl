@@ -1,14 +1,18 @@
 # Owl - www.owlclient.com
 # Copyright (c) 2012-2017, Adalid Claure <aclaure@gmail.com>
 
-cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
-include(CMakeForceCompiler)
-
 project(Owl)
+set(OWL_VERSION "0.7.7")
+
+cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_MACOSX_RPATH 1)
 
-set(OWL_VERSION "0.7.7")
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+# initialize conan libs
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup(NO_OUTPUT_DIRS KEEP_RPATHS)
 
 # Add our own custom CMake modules
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake)
@@ -20,15 +24,6 @@ mark_as_advanced(LUAPARSERS_FOLDER)
 option(BUILD_GUI "Build Owl GUI (default ON)" ON)
 option(BUILD_CONSOLE "Optionally build OwlConsole project (default OFF)" OFF)
 option(BUILD_TEST "Optionally build OwlTests unit test project (default OFF)" OFF)
-
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DNDEBUG")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
-
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-# initialize conan libs
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup(NO_OUTPUT_DIRS KEEP_RPATHS)
 
 # Global definitions
 add_definitions(
@@ -125,34 +120,10 @@ find_package(Qt5QuickWidgets REQUIRED)
 find_package(Qt5WebEngine REQUIRED)
 find_package(Qt5WebEngineWidgets REQUIRED)
 
-# include QT requirements
-add_definitions(
-	${Qt5_DEFINITIONS}
-	${Qt5Concurrent_DEFINITIONS}
-	${Qt5Core_DEFINITIONS}
-	${Qt5Network_DEFINITIONS}
-	${Qt5Sql_DEFINITIONS}
-	${Qt5UiTools_DEFINITIONS}
-	${Qt5Widgets_DEFINITIONS}
-	${Qt5Xml_DEFINITIONS}
-    ${Qt5Test_DEFINITIONS}
-)
-
 if (APPLE)
     find_package(Qt5MacExtras REQUIRED)
-    add_definitions(${Qt5MacExtras_DEFINITIONS})
 endif (APPLE)
 
-# configure QT modules
-set(QT_USE_QTCORE TRUE)
-set(QT_USE_QTMAIN TRUE)
-set(QT_USE_QTNETWORK TRUE)
-set(QT_USE_QTSQL TRUE)
-set(QT_USE_QTXML TRUE)
-set(QT_USE_QTXMLPATTERNS TRUE)
-set(QT_USE_QTUITOOLS TRUE)
-set(QT_USE_QTTEST TRUE)
-set(QT_USE_QTWIDGETS TRUE)
 #############################################
 
 # We need this to be able to include headers produced 
