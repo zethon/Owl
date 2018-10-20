@@ -18,6 +18,6 @@ install:
 build_script:
   - mkdir build
   - cd build
-  - conan install ../src
-  - cmake ../src "-GVisual Studio 15 2017 Win64" -DCMAKE_PREFIX_PATH=C:/Qt/5.11.1/msvc2017_64
+  - conan install ..
+  - cmake .. "-GVisual Studio 15 2017 Win64" -DCMAKE_PREFIX_PATH=C:/Qt/5.11.1/msvc2017_64
   - cmake --build . --config "%CONFIG%" -- /maxcpucount:4
