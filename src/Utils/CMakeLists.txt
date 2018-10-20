@@ -15,7 +15,6 @@ set (SOURCE_FILES
     StringMap.cpp
     OwlUtils.cpp
     Version.cpp
-    xrvariant.cpp
     WebClient.cpp
 )
 
@@ -35,8 +34,6 @@ set (HEADER_FILES
     OwlUtils.h
     Rijndael.h
     StringMap.h
-    xrbase64.cpp
-    xrvariant.h
     Version.h
     ${MOC_HEADERS}
 )

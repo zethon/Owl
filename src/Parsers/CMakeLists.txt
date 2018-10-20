@@ -15,6 +15,8 @@ set (SOURCE_FILES
     ParserManager.cpp
     Tapatalk.cpp
     Xenforo.cpp
+    xrvariant.cpp
+    xrbase64.cpp
 )
 
 set (MOC_HEADERS
@@ -29,6 +31,8 @@ set (MOC_HEADERS
 
 set (HEADER_FILES
     OwlLua.h
+    xrbase64.h
+    xrvariant.h
     ${MOC_HEADERS}
 )
 
