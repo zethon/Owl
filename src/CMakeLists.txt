@@ -1,149 +1,226 @@
 # Owl - www.owlclient.com
 # Copyright (c) 2012-2017, Adalid Claure <aclaure@gmail.com>
 
-project(Owl)
-set(OWL_VERSION "0.7.7")
+PROJECT(Owl)
 
-cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_MACOSX_RPATH 1)
+# we need this to be able to include headers produced by uic in our code
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
+OPTION(SUPRESS_CONSOLE_WINDOW "Supress TerminalWindow console" ON)
 
-# initialize conan libs
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup(NO_OUTPUT_DIRS KEEP_RPATHS)
+# the folder where Owl's default parsers exists
+set(OWL_PARSERS_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/../parsers")
 
-# Add our own custom CMake modules
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake)
-
-set(LUAPARSERS_FOLDER "" CACHE PATH "Lua Parses Folder")
-mark_as_advanced(LUAPARSERS_FOLDER)
-
-# configure optional projects
-option(BUILD_GUI "Build Owl GUI (default ON)" ON)
-option(BUILD_CONSOLE "Optionally build OwlConsole project (default OFF)" OFF)
-option(BUILD_TEST "Optionally build OwlTests unit test project (default OFF)" OFF)
-
-# Global definitions
-add_definitions(
-    -DQT_NO_KEYWORDS
-    -DCURL_STATICLIB
-    -DHUNSPELL_STATIC
+SET (SOURCE_FILES
+    AboutDlg.cpp
+    AspectRatioPixmapLabel.cpp
+    BoardTreeView.cpp
+    BoardsModel.cpp
+    BoardUpdateWorker.cpp
+    ClickableLabel.cpp
+    ConfiguringBoardDlg.cpp
+    EditBoardDlg.cpp
+    ErrorReportDlg.cpp
+    FocusEventLineEdit.cpp
+    main.cpp
+    MainWindow.cpp
+    NewThreadDlg.cpp
+    PostTextEditor.cpp
+    PreferencesDlg.cpp
+    OwlApplication.cpp
+    PostListWidget.cpp
+    QuickAddDlg.cpp
+    ThreadListWidget.cpp
 )
 
-if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
+SET (MOC_HEADERS
+    AboutDlg.h
+    AspectRatioPixmapLabel.h
+    BoardsModel.h
+    BoardTreeView.h
+    BoardUpdateWorker.h
+    ClickableLabel.h
+    ConfiguringBoardDlg.h
+    EditBoardDlg.h
+    ErrorReportDlg.h
+    FocusEventLineEdit.h
+    MainWindow.h
+    NewThreadDlg.h
+    OwlApplication.h
+    PostListWidget.h
+    PostTextEditor.h
+    PreferencesDlg.h
+    QuickAddDlg.h
+    ThreadListWidget.h
+)
 
-    add_compile_options(
-        # remove dead code
-        -ffunction-sections
-        -fdata-sections
+SET (UI_SOURCES
+    AboutDlg.ui
+    ConfiguringBoardDlg.ui
+    EditBoardDlg.ui
+    ErrorReportDlg.ui
+    NewThreadDlg.ui
+    PreferencesDlg.ui
+    QuickAddDlg.ui
+    MainWindow.ui
+)
 
-        -Werror=format
-        -Werror=trigraphs
-        $<$<COMPILE_LANGUAGE:CXX>:-Werror=non-virtual-dtor>
-        -Werror=missing-braces
-        -Werror=parentheses
-        -Werror=return-type
-        -Werror=sign-compare
-        -Werror=unused-macros
-        -Werror=unused-function
-        -Werror=unused-label
-        -Werror=unused-value
-        -Werror=unused-variable
-        -Werror=empty-body
-        -Werror=reorder
-        -Werror=switch
-        -Werror=int-conversion
-        -Werror=uninitialized
-        -Werror=char-subscripts
-    )
-endif()
+SET (HEADER_FILES
+    Core.h
+    ${MOC_HEADERS}
+)
 
-if (CMAKE_CXX_COMPILER_ID MATCHES Clang)
+set(QRC_SOURCE_FILES 
+    res/Owl.qrc
+)
 
-    add_compile_options(
-        $<$<COMPILE_LANGUAGE:CXX>:-stdlib=libc++>
+file(GLOB_RECURSE QML_FILES res/qml/*.qml res/qml/*.js)
 
-        -Wno-\#pragma-messages
-        -Wno-unused-local-typedef
-        -Werror=tautological-compare
-        -Werror=four-char-constants
-        -Werror=constant-conversion
-        -Werror=bool-conversion
-        -Werror=enum-conversion
-        -Werror=deprecated-declarations
-        -Werror=return-stack-address
-
-        $<$<COMPILE_LANGUAGE:CXX>:-Werror=overloaded-virtual>
-        $<$<COMPILE_LANGUAGE:CXX>:-Werror=unused-private-field>
-        $<$<COMPILE_LANGUAGE:CXX>:-Werror=mismatched-tags>
-    )
-endif()
-
-if (MSVC)
-    add_definitions(
-        -DWIN32
-        -D_WIN32
-        -D_WINDOWS
-        -DNOMINMAX
-        -D_SCL_SECURE_NO_WARNINGS
-        -DWIN32_LEAN_AND_MEAN
-
-        # use this to supress the boost generated "warning C4996"
-        # on Windows
-        -D_SILENCE_FPOS_SEEKPOS_DEPRECATION_WARNING
-    )
-
-    add_compile_options(
-        # treat warnings as errors
-        /WX
-    )
-endif(MSVC)
-
-#############################################
-# find QT
-
-find_package(Qt5Concurrent REQUIRED)
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Gui REQUIRED)
-find_package(Qt5Network REQUIRED)
-find_package(Qt5Sql REQUIRED)
-find_package(Qt5UiTools REQUIRED)
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5Xml REQUIRED)
-find_package(Qt5XmlPatterns REQUIRED)
-find_package(Qt5Test REQUIRED)
-find_package(Qt5Qml REQUIRED)
-find_package(Qt5Quick REQUIRED)
-find_package(Qt5QuickWidgets REQUIRED)
-find_package(Qt5WebEngine REQUIRED)
-find_package(Qt5WebEngineWidgets REQUIRED)
-
-if (APPLE)
-    find_package(Qt5MacExtras REQUIRED)
-endif (APPLE)
-
-#############################################
-
-# We need this to be able to include headers produced 
-# QT tools. This line should be in each sub project
-# CMakeLists.txt also
-include_directories(${CMAKE_BINARY_DIR})
-
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+add_subdirectory(Data)
 add_subdirectory(Parsers)
 add_subdirectory(Utils)
 
-if (BUILD_GUI)
-    add_subdirectory(Owl)
-endif(BUILD_GUI)
 
-if (BUILD_CONSOLE)
-    add_subdirectory(OwlConsole)
-endif(BUILD_CONSOLE)
+IF (APPLE)
+    SET(RESOURCE_FILES "Resources/Owl.icns")
+ENDIF()
 
-if (BUILD_TEST)
-    enable_testing()
-    add_subdirectory(OwlTests)
-endif (BUILD_TEST)
+if (WIN32)
+    SET(CMAKE_EXE_LINKER_FLAGS "/NODEFAULTLIB:library")
+    SET(RESOURCE_FILES "res/Owl.rc")
+endif()
+
+QT5_ADD_RESOURCES(RRC_SOURCE_FILES ${QRC_SOURCE_FILES})
+QT5_WRAP_UI(UI_HEADERS ${UI_SOURCES})
+QT5_WRAP_CPP(MOC_SOURCE_FILES ${MOC_HEADERS})
+
+MESSAGE(STATUS "SUPRESS_CONSOLE_WINDOW: " ${SUPRESS_CONSOLE_WINDOW})
+IF(${SUPRESS_CONSOLE_WINDOW})
+	SET(GUI_TYPE WIN32)
+ENDIF(${SUPRESS_CONSOLE_WINDOW})
+
+SET(DEPENDENCY_LIST 
+    Data
+    Parsers
+    Utils
+)
+
+SET_SOURCE_FILES_PROPERTIES(
+    ${RESOURCE_FILES}
+    PROPERTIES
+    MACOSX_PACKAGE_LOCATION Resources
+)
+
+ADD_EXECUTABLE(Owl ${GUI_TYPE} MACOSX_BUNDLE
+    ${SOURCE_FILES}
+    ${MOC_SOURCE_FILES}
+    ${RRC_SOURCE_FILES}
+    ${HEADER_FILES}
+    ${RESOURCE_FILES}
+    ${UI_HEADERS}
+    ${QML_FILES}
+)
+
+set(QT_MODULE_LIST
+    Qt5::Concurrent
+    Qt5::Core
+    Qt5::Network
+    Qt5::Quick
+    Qt5::QuickWidgets
+    Qt5::Sql
+    Qt5::UiTools
+    Qt5::WebEngine
+    Qt5::WebEngineWidgets
+    Qt5::Widgets
+    Qt5::Xml
+    Qt5::XmlPatterns
+)
+
+if (APPLE)
+    list(APPEND QT_MODULE_LIST 
+        Qt5::MacExtras
+    )
+endif (APPLE)
+	
+TARGET_LINK_LIBRARIES(Owl 
+    ${DEPENDENCY_LIST}
+    ${QT_LIBRARIES}
+    ${CONAN_LIBS}
+    ${QT_MODULE_LIST}
+)
+
+INSTALL(
+    TARGETS Owl
+    COMPONENT Owl
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    BUNDLE DESTINATION .
+)
+
+set(LUA_PARSERS
+    parser-vbulletin3x.lua
+)
+
+# the folder where Owl's default config files exist
+set(OWL_CONFIG_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/config")
+
+# folder in which the dictionaries live
+set(OWL_DICT_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/../dictionaries")
+
+if (APPLE)
+    SET(MACOSX_BUNDLE_BUNDLE_NAME Owl)
+    SET(MACOSX_BUNDLE_ICON_FILE Owl.icns)
+    SET(MACOSX_BUNDLE_GUI_IDENTIFIER "com.owlclient.full")
+    SET(MACOSX_BUNDLE_BUNDLE_VERSION "100")
+    SET(MACOSX_BUNDLE_LONG_VERSION_STRING "Owl Version ${OWL_VERSION}")
+    SET(MACOSX_BUNDLE_SHORT_VERSION_STRING "${OWL_VERSION}")
+    SET(MACOSX_BUNDLE_COPYRIGHT "Copyright (c) 2012-2017, Adalid Claure")
+
+    #SET_TARGET_PROPERTIES(Owl PROPERTIES XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Mac Developer")
+    #SET_TARGET_PROPERTIES(Owl PROPERTIES XCODE_ATTRIBUTE_OTHER_CODE_SIGN_FLAGS "--deep")
+
+    # the escaped \$ in \${CONFIGURATION} is an Xcode variable
+    # see: http://stackoverflow.com/questions/13420117/how-to-get-a-path-of-the-app-bundle-in-a-cmake-script-to-supply-it-to-the-fixup
+    if("${CMAKE_GENERATOR}" MATCHES "Xcode")
+            set(DEST_BIN_PATH ${CMAKE_BINARY_DIR}/src/\${CONFIGURATION}/Owl.app/Contents/Resources)
+    elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+            set(DEST_BIN_PATH ${CMAKE_BINARY_DIR}/src/Owl.app/Contents/Resources)
+    endif()
+
+    # NOTE: this may need to change for non-Xcode compilers
+    set(BUNDLE_PATH ${CMAKE_BINARY_DIR}/Owl/Release/Owl.app)
+
+    # copy the default user settings file (owl.ini)
+    ADD_CUSTOM_COMMAND(TARGET Owl POST_BUILD
+        COMMAND "cp" ARGS "${OWL_CONFIG_FOLDER}/macOS/owl.ini" "${DEST_BIN_PATH}"
+        COMMENT "Copying owl.ini")
+
+    # copy the included parsers
+    if (LUAPARSERS_FOLDER)
+        foreach(PARSER ${LUA_PARSERS})
+            ADD_CUSTOM_COMMAND(TARGET Owl POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                        "${LUAPARSERS_FOLDER}/${PARSER}"
+                        "${DEST_BIN_PATH}/parsers/${PARSER}"
+                COMMENT "Copying parser ${LUAPARSERS_FOLDER}/${PARSER}")
+        endforeach(PARSER)
+    endif(LUAPARSERS_FOLDER)
+
+    # copy the included dictionaries
+    ADD_CUSTOM_COMMAND(TARGET Owl POST_BUILD
+        COMMAND "cp" ARGS -R "${OWL_DICT_FOLDER}" "${DEST_BIN_PATH}"
+        COMMENT "Copying dictionaries folder")
+
+elseif (WIN32)
+    # MESSAGE("OWL_CONFIG_FOLDER: ${OWL_CONFIG_FOLDER}")
+    # MESSAGE("OWL_PARSERS_FOLDER: ${OWL_PARSERS_FOLDER}")
+    # MESSAGE("DEST_BIN_PATH: ${CMAKE_BINARY_DIR}")
+
+    FILE(TO_NATIVE_PATH "${OWL_CONFIG_FOLDER}/Windows/owl.ini" OWL_INI_TO_COPY)
+    ADD_CUSTOM_COMMAND(TARGET Owl POST_BUILD
+        COMMAND "xcopy" ARGS /Y /D "${OWL_INI_TO_COPY}" "$(OutDir)"
+        COMMENT "Copying owl.ini")
+elseif (LINUX)
+    # nothing yet for Linux		
+endif()
