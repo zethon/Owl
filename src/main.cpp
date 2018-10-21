@@ -1,6 +1,3 @@
-// Owl - www.owlclient.com
-// Copyright (c) 2012-2017, Adalid Claure <aclaure@gmail.com>
-
 #ifdef _WINDOWS
 #include <WinSock2.h>
 #endif

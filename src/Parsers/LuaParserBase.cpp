@@ -1,6 +1,3 @@
-// Owl - www.owlclient.com
-// Copyright (c) 2012-2017, Adalid Claure <aclaure@gmail.com>
-
 #include "../Utils/OwlUtils.h"
 #include "OwlLua.h"
 #include "LuaParserBase.h"

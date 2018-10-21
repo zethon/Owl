@@ -1,6 +1,3 @@
-// Owl - www.owlclient.com
-// Copyright Adalid Claure <aclaure@gmail.com>
-
 #include "Core.h"
 #include "ErrorReportDlg.h"
 

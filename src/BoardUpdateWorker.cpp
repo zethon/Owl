@@ -1,6 +1,3 @@
-// Owl - www.owlclient.com
-// Copyright (c) 2012-2017, Adalid Claure <aclaure@gmail.com>
-
 #include "Data/Board.h"
 #include "Data/BoardManager.h"
 #include <Parsers/Forum.h>

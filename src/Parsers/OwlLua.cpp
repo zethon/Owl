@@ -1,6 +1,3 @@
-// Owl - www.owlclient.com
-// Copyright (c) 2012-2017, Adalid Claure <aclaure@gmail.com>
-
 #include "../Utils/QSgml.h"
 #include "../Utils/WebClient.h"
 #include "../Utils/StringMap.h"

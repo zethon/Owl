@@ -1,7 +1,3 @@
-# OwlConsole - www.owlclient.com
-# MIT License
-# Copyright (c) 2012-2017 by Adalid Claure <aclaure@gmail.com>
-
 Project(OwlConsole)
 
 # we need this to be able to include headers produced by uic in our code
