@@ -87,7 +87,6 @@ void WebClient::eraseSendCookies()
 
 void WebClient::printCookies()
 {
-    return;
     CURLcode res;
     struct curl_slist *cookies;
     struct curl_slist *nc;

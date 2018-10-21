@@ -121,8 +121,8 @@ QVariant Tapatalk4x::doLogin(const LoginInfo& info)
             if (!_rootIdRealized)
             {
                 QString strPostData(getRequestXml("get_forum"));
-                const QString data = uploadString(strPostData);
-                getRootId(data);
+                const QString ldata = uploadString(strPostData);
+                getRootId(ldata);
             }
         }
         else
@@ -274,7 +274,7 @@ QVariant Tapatalk4x::doGetForumList(const QString& forumId)
 	return QVariant::fromValue(retval);
 }
 
-QVariant Tapatalk4x::doThreadList(ForumPtr forumInfo, int options)
+QVariant Tapatalk4x::doThreadList(ForumPtr forumInfo, int)
 {
 	QMutexLocker locker(&_mutex);
 	ThreadList retval;
@@ -390,7 +390,7 @@ QVariant Tapatalk4x::doThreadList(ForumPtr forumInfo, int options)
     return QVariant::fromValue(forumInfo);
 }
 
-QVariant Tapatalk4x::doPostList(ThreadPtr threadInfo, int options)
+QVariant Tapatalk4x::doPostList(ThreadPtr threadInfo, int)
 {
 	QMutexLocker locker(&_mutex);
 	PostList retval;
@@ -477,7 +477,7 @@ QVariant Tapatalk4x::doPostList(ThreadPtr threadInfo, int options)
 	return QVariant::fromValue(threadInfo);
 }
 
-QVariant Tapatalk4x::doPostList1(ThreadPtr threadInfo, int options)
+QVariant Tapatalk4x::doPostList1(ThreadPtr threadInfo, int)
 {
 	QMutexLocker locker(&_mutex);
 	PostList retval;
@@ -1151,15 +1151,15 @@ QString Tapatalk4x::getForumName()
 		if (!_version.isEmpty())
 		{
 			// get the board's native url
-			QString tempUrl = getBaseUrl();
-            tempUrl = tempUrl.replace(QRegularExpression("/.[^\\/]*?/mobiquo.php$"), QString());
+			QString strtempUrl = getBaseUrl();
+            strtempUrl = strtempUrl.replace(QRegularExpression("/.[^\\/]*?/mobiquo.php$"), QString());
 
 			if (_version.startsWith("vb40", Qt::CaseInsensitive))
 			{
 				// we have to use a new WebClient object so that the cookies
 				// in _webClient don't get reset
                 WebClient client;
-				QString pageSrc = client.DownloadString(tempUrl);
+				QString pageSrc = client.DownloadString(strtempUrl);
 
 				QSgml pageDoc;
 				if (!pageSrc.isEmpty() && pageDoc.parse(pageSrc))
@@ -1201,7 +1201,7 @@ QString Tapatalk4x::getForumName()
 				// we have to use a new WebClient object so that the cookies
 				// in _webClient don't get reset
                 WebClient client;
-				QString pageSrc = client.DownloadString(tempUrl);
+				QString pageSrc = client.DownloadString(strtempUrl);
 
 				QSgml pageDoc;
 				if (!pageSrc.isEmpty() && pageDoc.parse(pageSrc))

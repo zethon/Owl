@@ -56,7 +56,7 @@ class BoardItem : public QObject, public std::enable_shared_from_this<BoardItem>
 public:
 
 	BoardItem(const QString& id)
-		: _id(id),
+		: _boardId(id),
 		  _bHasUnread(false),	  
 		  _iPageNumber(1),
 		  _iTotalPages(1),
@@ -76,7 +76,7 @@ public:
 	BoardItem(const BoardItem& other)
 	{
 		_dbId = other._dbId;
-		_id = other._id;
+		_boardId = other._boardId;
 		_title = other._title;
 
 		_lastUpdated = other._lastUpdated;
@@ -105,7 +105,7 @@ public:
 
     virtual ~BoardItem() = default;
 
-    const QString getId() { return _id; }
+    QString getId() const { return _boardId; }
 
 	const int getDBId() { return _dbId;; }
 	void setDBId(int var) { _dbId = var; }
@@ -191,7 +191,7 @@ protected:
 	virtual void registerMeta();
 
 	int _dbId;
-	QString _id;
+	QString _boardId;
 	QString _title;
     QString     _strIconUrl;
 

@@ -71,8 +71,8 @@ public:
 	void updateForumHash();
 
 	// PROPERTIES
-	void setDBId(const uint id) { _id = id; }
-	uint getDBId() const { return _id; }
+	void setDBId(const uint id) { _boardId = id; }
+	uint getDBId() const { return _boardId; }
     
     void setName(const QString& name) { _name = name; }
     QString getName() const;
@@ -182,7 +182,7 @@ private:
 	void crawlSubForum(ForumPtr parent, ForumIdList* dupList = NULL, bool bThrow = true);
 	void doUpdateHash(ForumPtr parent);
 
-	uint			_id;
+	uint			_boardId;
 
 	QString			_name;
 	QString			_url;

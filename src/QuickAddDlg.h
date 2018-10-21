@@ -26,9 +26,10 @@ class QuickAddDlg : public QDialog, public Ui::QuickAddDlg
 	LOG4QT_DECLARE_QCLASS_LOGGER
 	
 public:
+	~QuickAddDlg() = default;
+
 	QuickAddDlg(QWidget *parent = 0);
-	~QuickAddDlg();
-    
+	
     BoardPtr getNewBoard() const;
 	void setParserByName(const QString& name);
 

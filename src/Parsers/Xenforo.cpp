@@ -718,8 +718,8 @@ QVariant Xenforo::doSubmitNewPost(PostPtr postInfo)
                 {
                     // As noted above, the postID needs to be numeric. It probably isn't too important here but
                     // we'll be consistent.
-                    const auto strId = linodes.back()->getArgValue("id").replace("post-", QString());
-                    retpost = std::make_shared<Post>(strId);
+                    const auto strId2 = linodes.back()->getArgValue("id").replace("post-", QString());
+                    retpost = std::make_shared<Post>(strId2);
                     postInfo->getParent()->addChild(retpost);
                 }
             }
@@ -851,9 +851,9 @@ ForumList Xenforo::getForumsPrivate(const QString &id)
                         auto h3Element = getXChildrenDown(node, 3);
                         if (h3Element && h3Element->Children.size() > 0)
                         {
-                            const auto alink = h3Element->Children.at(0);
-                            const QString strId = alink->getArgValue("href");
-                            const QString strName = parseDoc.getText(alink);
+                            const auto alink2 = h3Element->Children.at(0);
+                            const QString strId = alink2->getArgValue("href");
+                            const QString strName = parseDoc.getText(alink2);
 
                             if (!strId.isEmpty() && !strName.isEmpty())
                             {
