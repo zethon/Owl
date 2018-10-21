@@ -21,7 +21,14 @@ lua/5.2.3@owl/stable
 libtidy/5.6@owl/stable
 log4qt/0.3@owl/stable
 
+# new includes
+range-v3/0.3.7@ericniebler/stable
+# fmt/5.1.0@bincrafters/stable
+spdlog/1.1.0@bincrafters/stable
+
+
 [options]
+<<<<<<< HEAD
 boost:shared=False
 boost:without_test=False
 boost:without_math=True
@@ -53,6 +60,10 @@ boost:without_graph_parallel=True
 boost:without_python=True
 boost:without_stacktrace=True
 boost:without_type_erasure=True
+=======
+boost:header_only=True
+spdlog:fmt_external=False # implicitly include `fmt`
+>>>>>>> let’s see if spdlog compiles on Windows without a problem;
 
 [generators]
 cmake

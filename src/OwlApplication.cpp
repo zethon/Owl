@@ -9,6 +9,8 @@
 #include "Core.h"
 #include "OwlApplication.h"
 
+#include "spdlog/spdlog.h"
+
 using namespace Log4Qt;
 
 namespace owl
@@ -359,6 +361,9 @@ void OwlApplication::initializeLogger()
 
         QDir logDir(logPath);
         const QString logFilename { logDir.absoluteFilePath("owl.log") };
+
+
+
 
         // create a new layout for this appender
         // TODO: support configurable layouts?
