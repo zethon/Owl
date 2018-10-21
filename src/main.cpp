@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     QLoggingCategory::setFilterRules(QStringLiteral("qt.network.ssl=false"));
 
 	// main() return value, assume error
-	quint32 retval = 1;
+    int retval = 1;
 
 	try
 	{
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
         app.processEvents();
 
         // initialize the main window
-        MainWindow window(&splash, 0);
+        MainWindow window(&splash, nullptr);
 
         // finish the splash screen
         splash.finish(&window);
