@@ -151,12 +151,12 @@ void ParserBase::loginSlot()
 	}	
 }
 
-StringMap ParserBase::logout(LoginInfo& info)
+StringMap ParserBase::logout(LoginInfo&)
 {
     return this->doLogout().value<StringMap>();
 }
 
-void ParserBase::logoutAsync(LoginInfo& info)
+void ParserBase::logoutAsync(LoginInfo&)
 {
 	if (!_future.isRunning())
 	{

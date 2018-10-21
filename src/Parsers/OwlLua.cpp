@@ -50,7 +50,7 @@ StringMap OwlLua::tableToParams(lua_State* L, int tablePos)
     return params;
 }
 
-int OwlLua::doBreak(lua_State* L)
+int OwlLua::doBreak(lua_State*)
 {
 #ifdef QT_DEBUG
 	//__asm int 3;

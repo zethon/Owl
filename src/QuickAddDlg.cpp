@@ -55,13 +55,6 @@ QuickAddDlg::QuickAddDlg(QWidget* parent)
 	guestCB->setVisible(false);	
 }
 
-QuickAddDlg::~QuickAddDlg()
-
-
-
-{
-}
-
 BoardPtr QuickAddDlg::getNewBoard() const
 {
     return _configureDlg->getNewBoardPtr();
@@ -129,8 +122,6 @@ void QuickAddDlg::accept()
 	_configureDlg->start();
 }
 
-// what is the point of result in this SLOT? it doesn't seem 
-// to get set by the emitter :(
 void QuickAddDlg::onConfigureFinished(int)
 {
 	if (_configureDlg->getSuccess())
