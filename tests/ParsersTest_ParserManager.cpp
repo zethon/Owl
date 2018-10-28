@@ -15,7 +15,7 @@ BOOST_AUTO_TEST_SUITE(ParserManager)
 BOOST_AUTO_TEST_CASE(testParserManager)
 {
     auto pm = owl::ParserManager::instance();
-    BOOST_CHECK_EQUAL(pm->getParserTypeCount(), 0);
+    BOOST_CHECK_EQUAL(pm->getParserTypeCount(), static_cast<std::size_t>(0));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
