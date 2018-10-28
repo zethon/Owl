@@ -24,7 +24,7 @@ matrix:
 script:
   - mkdir build
   - cd build
-  - conan install .. --build libcurl
+  - conan install .. --build missing
   - cmake .. -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5
   - cmake --build . --config "${CONFIG}" -- -j3
 

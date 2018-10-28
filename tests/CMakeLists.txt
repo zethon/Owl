@@ -1,48 +1,17 @@
-# Owl - www.owlclient.com
-# Copyright (c) 2012-2017, Adalid Claure <aclaure@gmail.com>
+project(tests)
 
-SET(CMAKE_BUILD_TYPE Debug)
-PROJECT(OwlTests)
-
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
-
-SET(SOURCE_FILES 
+add_executable(TestUtils
     main.cpp
-    BBCodeParserTests.cpp
-    OwlUtilsTests.cpp
-    ParserTests.cpp
+    UtilsTest_Version.cpp
 )
 
-SET (MOC_HEADERS
-    BBCodeParserTests.h
-    OwlUtilsTests.h
-    ParserTests.h
-)
-
-SET(HEADER_FILES
-    ${MOC_HEADERS}
-)
-
-SET(DEPENDENCY_LIST
-    Parsers
+target_link_libraries(TestUtils
+ ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+     ${CONAN_LIBS}
+    Qt5::Core
     Utils
 )
 
-QT5_WRAP_CPP(MOC_SOURCE_FILES ${MOC_HEADERS})
-
-ADD_EXECUTABLE(OwlTests 
-    ${SOURCE_FILES}
-    ${HEADER_FILES}
-    ${MOC_SOURCE_FILES}
+add_test(NAME TestUtils
+    COMMAND ${CMAKE_CURRENT_BINARY_DIR}/TestUtils
 )
-
-TARGET_LINK_LIBRARIES(OwlTests 
-    ${DEPENDENCY_LIST}
-    ${Boost_LIBRARIES}
-    ${QT_LIBRARIES}
-    ${QT_QTTEST_LIBRARY}
-    Qt5::Test
-)
-
-ADD_TEST(NAME OwlTests COMMAND OwlTests)
