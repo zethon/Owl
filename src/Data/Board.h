@@ -100,7 +100,7 @@ public:
     QString getUserAgent() const;
     
     void setLastForumId(int id) { getOptions()->setOrAdd("lastForumId", (int)id); }
-    const int getLastForumId() const { return getOptions()->getInt("lastForumId"); }
+    const int getLastForumId() const { return getOptions()->get<std::uint32_t>("lastForumId"); }
 
 	void setEnabled(bool bEnabled) { _bEnabled = bEnabled; }
 	bool isEnabled() const { return _bEnabled; }

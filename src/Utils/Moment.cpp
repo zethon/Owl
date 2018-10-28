@@ -68,7 +68,7 @@ const QString Moment::toString(const QDateTime& now) const
         return QString("%1 days ago").arg(daysTo);
     }
 
-    return _dt.date().toString();
+    return _dt.date().toString("yyyy-MM-dd");
 }
 
 int Moment::monthsTo(const QDateTime &start, const QDateTime& end) const

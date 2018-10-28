@@ -1,13 +1,21 @@
 project(tests)
 
+set(UTILS_TEST
+    UtilsTest_Moment.cpp
+    UtilsTest_OwlUtils.cpp
+    UtilsTest_QSgml.cpp
+    UtilsTest_StringMap.cpp
+    UtilsTest_Version.cpp
+    UtilsTest_WebClient.cpp
+)
+
 add_executable(TestUtils
     main.cpp
-    UtilsTest_Version.cpp
+    ${UTILS_TEST}
 )
 
 target_link_libraries(TestUtils
- ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
-     ${CONAN_LIBS}
+    ${CONAN_LIBS}
     Qt5::Core
     Utils
 )

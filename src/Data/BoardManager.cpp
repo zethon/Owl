@@ -621,7 +621,7 @@ bool BoardManager::deleteBoard(BoardPtr board)
 
 	if (db.open())
 	{
-		auto displayOrder = board->getOptions()->getInt("displayOrder");
+		auto displayOrder = board->getOptions()->get<std::uint32_t>("displayOrder");
 
 		QSqlQuery query(db);
 
@@ -680,11 +680,11 @@ bool BoardManager::deleteBoard(BoardPtr board)
             _boardList.removeAt(iPos);
         }
 
-		if (displayOrder <= _boardList.size())
+		if (displayOrder <= static_cast<std::uint32_t>(_boardList.size()))
 		{
 			for (BoardPtr b : _boardList)
 			{
-				auto bDO = b->getOptions()->getInt("displayOrder");
+				auto bDO = b->getOptions()->get<std::uint32_t>("displayOrder");
 				if (bDO > displayOrder)
 				{
 					b->getOptions()->setOrAdd("displayOrder", (int)(bDO - 1));
