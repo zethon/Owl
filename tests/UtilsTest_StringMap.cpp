@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(StringMapConstructTest)
     BOOST_CHECK(paramsMove.get<std::int32_t>("int5", false) ==  5);
     BOOST_CHECK(paramsMove.getBool("boolTrue", false) == true);
 
-    BOOST_CHECK_EQUAL(paramsCopy.size(), 0);
+    BOOST_CHECK_EQUAL(paramsCopy.size(), static_cast<std::size_t>(0));
 }
 
 
