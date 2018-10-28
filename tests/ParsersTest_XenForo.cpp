@@ -15,7 +15,7 @@ BOOST_AUTO_TEST_SUITE(Forum)
 BOOST_AUTO_TEST_CASE(testXenforo)
 {
     owl::Xenforo temp("https://xenforo.com/community/");
-    BOOST_CHECK_EQUAL(temp.defaultPostsPerPage().first, 20);
+    BOOST_CHECK_EQUAL(temp.defaultPostsPerPage().first, static_cast<uint>(20));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

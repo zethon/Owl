@@ -15,7 +15,7 @@ BOOST_AUTO_TEST_SUITE(Forum)
 BOOST_AUTO_TEST_CASE(testTapatalk)
 {
     owl::Tapatalk4x temp("https://xenforo.com/community/");
-    BOOST_CHECK_EQUAL(temp.defaultPostsPerPage().first, 25);
+    BOOST_CHECK_EQUAL(temp.defaultPostsPerPage().first, static_cast<uint>(25));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
