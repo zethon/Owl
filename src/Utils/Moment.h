@@ -4,13 +4,13 @@
 namespace owl
 {
 
-class Moment final : public QObject
+class Moment final
 {
 
 public:
     Moment();
     Moment(const QDateTime&);
-    virtual ~Moment() = default;
+    ~Moment() = default;
 
     const QString toString() const;
     const QString toString(const QDateTime& now) const;

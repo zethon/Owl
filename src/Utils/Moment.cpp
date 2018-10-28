@@ -8,7 +8,7 @@ namespace owl
 {
     
 Moment::Moment()
-    : Moment(QDateTime())
+    : Moment(QDateTime::currentDateTime())
 {
     // nothing to do
 }

@@ -15,11 +15,14 @@ Version::Version(const std::string& version)
 
     namespace bsq = boost::spirit::qi;
 
-    auto versionParser =
+    // Use `bsq::copy` per this stackoverflow answer:
+    // https://stackoverflow.com/questions/53033501/boost-spirit-qi-crashes-for-memory-violation/53035940#53035940
+    auto versionParser = bsq::copy(
         bsq::uint_
         >> -('.' >> bsq::uint_)
         >> -('.' >> bsq::uint_)
-        >> -('.' >> bsq::uint_);
+        >> -('.' >> bsq::uint_)
+    );
 
     auto begin = version.begin();
     if (!bsq::parse(begin, version.end(), versionParser, _iMajor, _iMinor, _iBuild, _iRevision)

@@ -31,21 +31,19 @@ class OwlException :
         public QException
 {
 public:
-	OwlException() 
-	{ 
-    }
+	OwlException() = default;
 
-    OwlException(const QString msg)
+    OwlException(const QString& msg)
         : _message(msg), _line(0)
     {
     }
 
-    OwlException(const QString msg, const QString& filename)
+    OwlException(const QString& msg, const QString& filename)
         : _message(msg), _filename(filename), _line(0)
     {
     }
 
-    OwlException(const QString msg, const QString& filename, int line)
+    OwlException(const QString& msg, const QString& filename, int line)
 		: _message(msg), _filename(filename), _line(line)
 	{
 	}
