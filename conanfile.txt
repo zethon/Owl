@@ -1,4 +1,4 @@
-# Conan Packaging configuration for Owl
+q# Conan Packaging configuration for Owl
 # Created by Adalid Claure <aclaure@gmail.com>
 #
 # Windows: 
@@ -28,7 +28,6 @@ spdlog/1.1.0@bincrafters/stable
 
 
 [options]
-<<<<<<< HEAD
 boost:shared=False
 boost:without_test=False
 boost:without_math=True
@@ -60,10 +59,6 @@ boost:without_graph_parallel=True
 boost:without_python=True
 boost:without_stacktrace=True
 boost:without_type_erasure=True
-=======
-boost:header_only=True
-spdlog:fmt_external=False # implicitly include `fmt`
->>>>>>> let’s see if spdlog compiles on Windows without a problem;
 
 [generators]
 cmake
