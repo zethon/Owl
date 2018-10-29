@@ -25,9 +25,27 @@ struct WebClientConfig
 
 struct HttpReply
 {
+    long        status = -1;    // the http status
     QString     data;           // the body of the reply
     QString     finalUrl;       // the final url that sent the response (redirects & rewrites)
-    long        status = -1;    // the http status
+
+    HttpReply(long s)
+        : HttpReply(s, QString{}, QString{})
+    {
+        // nothing to do
+    }
+
+    HttpReply(long s, const QString& d)
+        : HttpReply(s, d, QString{})
+    {
+        // nothing to do
+    }
+
+    HttpReply(long s, const QString& d, const QString& fu)
+        : status{s}, data{d}, finalUrl{fu}
+    {
+        // nothing to do
+    }
 };
 using HttpReplyPtr = std::shared_ptr<HttpReply>;
 

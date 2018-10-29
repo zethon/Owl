@@ -65,9 +65,9 @@ public:
         const size_t width = 50;
         QString retval;
 
-        for (size_t i = 0; i < (size_t)body.size(); i += width)
+        for (size_t i = 0; i < static_cast<size_t>(body.size()); i += width)
         {
-            retval += QString("> %1\n").arg(body.mid((int)i,width));
+            retval += QString("> %1\n").arg(body.mid(static_cast<int>(i),width));
         }
 
         return retval + "\n";
@@ -99,9 +99,9 @@ public:
         const auto width = 50;
         QString retval;
 
-        for (size_t i = 0; i < (size_t)body.size(); i += width)
+        for (size_t i = 0; i < static_cast<size_t>(body.size()); i += width)
         {
-            retval += QString("> %1\n").arg(body.mid((int)i,width));
+            retval += QString("> %1\n").arg(body.mid(static_cast<int>(i),width));
         }
 
         return retval + "\n";

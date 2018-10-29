@@ -433,9 +433,9 @@ QVariant LuaParserBase::doGetForumList(const QString& forumId)
 			{
 				ForumPtr newForum = ForumPtr(new Forum(info.getText("forumId")));
 				newForum->setName(info.getText("forumName"));
-				newForum->setForumType((Forum::ForumType)info.getInt("forumType"));
+				newForum->setForumType((Forum::ForumType)info.get<std::uint8_t>("forumType"));
                 newForum->setHasUnread(info.getBool("forumUnread"));
-				newForum->setDisplayOrder(info.getInt("forumDisplayOrder"));
+				newForum->setDisplayOrder(info.get<std::uint8_t>("forumDisplayOrder"));
 
 				if (newForum->getForumType() == Forum::LINK 
 					&& info.has("forumLink"))
@@ -560,7 +560,7 @@ QVariant LuaParserBase::doThreadList(ForumPtr forumInfo, int options)
 
 					if (info.has("pageCount"))
 					{
-						forumInfo->setPageCount(info.getInt("pageCount"));
+						forumInfo->setPageCount(info.get<std::uint8_t>("pageCount"));
 					}
 				}
 			}
@@ -678,17 +678,17 @@ QVariant LuaParserBase::doGetPostList(ThreadPtr threadInfo, PostListOptions list
 
 					if (info.has("pageCount"))
 					{
-						threadInfo->setPageCount(info.getInt("pageCount"));
+						threadInfo->setPageCount(info.get<std::uint8_t>("pageCount"));
 					}
 
 					if (info.has("perPage"))
 					{
-						threadInfo->setPerPage(info.getInt("perPage"));
+						threadInfo->setPerPage(info.get<std::uint8_t>("perPage"));
 					}
 
 					if (info.has("pageNum"))
 					{
-						threadInfo->setPageNumber(info.getInt("pageNum"));
+						threadInfo->setPageNumber(info.get<std::uint8_t>("pageNum"));
 					}
 
 					if (info.has("firstUnreadId"))
@@ -896,7 +896,7 @@ QVariant LuaParserBase::doGetUnreadForums()
 			{
 				ForumPtr newForum = ForumPtr(new Forum(info.getText("forumId")));
 				newForum->setName(info.getText("forumName"));
-				newForum->setForumType((Forum::ForumType)info.getInt("forumType"));
+				newForum->setForumType((Forum::ForumType)info.get<std::uint8_t>("forumType"));
                 newForum->setHasUnread(info.getBool("forumUnread"));
 
 				if (newForum->getForumType() == Forum::LINK 

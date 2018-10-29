@@ -33,7 +33,7 @@ public:
 		OwlException::operator=(other);
 
 		_params.clear();
-		_params.add(const_cast<owl::StringMap*>(other.getParams()));
+		_params.merge(*(other.getParams()));
 
 		return *this;
 	}

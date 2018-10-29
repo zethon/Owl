@@ -1,58 +1,55 @@
 // Owl - www.owlclient.com
-// Copyright (c) 2012-2017, Adalid Claure <aclaure@gmail.com>
+// Copyright Adalid Claure <aclaure@gmail.com>
 
-#include "Exception.h"
-#include "Version.h"
+#include <stdexcept>
 #include <boost/spirit/include/qi.hpp>
+
+#include "Version.h"
 
 namespace owl
 {
 
-Version::Version()
-		: _iMajor(0), _iMinor(0), _iBuild(0), _iRevision(0)
+Version::Version(const std::string& version)
 {
-	// do nothing
-}
+    if (version.empty()) return;
 
-Version::Version(const char* version)
-	: _iMajor(0), _iMinor(0), _iBuild(0), _iRevision(0)
-{
     namespace bsq = boost::spirit::qi;
 
-    auto versionParser =
-         bsq::uint_ 
+    // Use `bsq::copy` per this stackoverflow answer:
+    // https://stackoverflow.com/questions/53033501/boost-spirit-qi-crashes-for-memory-violation
+    auto versionParser = bsq::copy(
+        bsq::uint_
         >> -('.' >> bsq::uint_)
         >> -('.' >> bsq::uint_)
-        >> -('.' >> bsq::uint_);
+        >> -('.' >> bsq::uint_)
+    );
 
-    std::string temp(version);
-    if (!bsq::parse(temp.begin(), temp.end(), versionParser, _iMajor, _iMinor, _iBuild, _iRevision))
+    auto begin = version.begin();
+    if (!bsq::parse(begin, version.end(), versionParser, _iMajor, _iMinor, _iBuild, _iRevision)
+        || begin != version.end())
     {
-        OWL_THROW_EXCEPTION(OwlException(QString("Invalid version string '%1'").arg(version)));
+        BOOST_THROW_EXCEPTION(std::runtime_error(std::string("Invalid version string: ") + version));
     }
 }
 
-Version::Version(int major, int minor)
-	: _iMajor(major), _iMinor(minor), _iBuild(0), _iRevision(0)
+Version::Version(std::uint8_t major)
+    : Version(major, 0, 0, 0)
 {
-
 }
 
-Version::Version(int major, int minor, int build)
-	: _iMajor(major), _iMinor(minor), _iBuild(build), _iRevision(0)
+Version::Version(std::uint8_t major, std::uint8_t minor)
+    : Version(major, minor, 0, 0)
 {
-
 }
 
-Version::Version(int major, int minor, int build, int revision)
-	: _iMajor(major), _iMinor(minor), _iBuild(build), _iRevision(revision)
+Version::Version(std::uint8_t major, std::uint8_t minor, std::uint8_t build)
+    : Version(major, minor, build, 0)
 {
-
 }
 
-Version::~Version()
+Version::Version(std::uint8_t major, std::uint8_t minor, std::uint8_t build, std::uint8_t revision)
+    : _iMajor(major), _iMinor(minor), _iBuild(build), _iRevision(revision)
 {
-
 }
-	
+
 } // owl namespace

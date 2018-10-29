@@ -1,48 +1,49 @@
-# Owl - www.owlclient.com
-# Copyright (c) 2012-2017, Adalid Claure <aclaure@gmail.com>
+project(tests)
 
-SET(CMAKE_BUILD_TYPE Debug)
-PROJECT(OwlTests)
+set(UTILS_TESTS
+    UtilsTest_Moment.cpp
+    UtilsTest_OwlUtils.cpp
+    UtilsTest_QSgml.cpp
+    UtilsTest_StringMap.cpp
+    UtilsTest_Version.cpp
+    UtilsTest_WebClient.cpp
+)
 
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
-
-SET(SOURCE_FILES 
+add_executable(TestUtils
     main.cpp
-    BBCodeParserTests.cpp
-    OwlUtilsTests.cpp
-    ParserTests.cpp
+    ${UTILS_TESTS}
 )
 
-SET (MOC_HEADERS
-    BBCodeParserTests.h
-    OwlUtilsTests.h
-    ParserTests.h
+target_link_libraries(TestUtils
+    ${CONAN_LIBS}
+    Qt5::Core
+    Utils
 )
 
-SET(HEADER_FILES
-    ${MOC_HEADERS}
+add_test(NAME TestUtils
+    COMMAND ${CMAKE_CURRENT_BINARY_DIR}/TestUtils
 )
 
-SET(DEPENDENCY_LIST
+set(PARSER_TESTS
+    ParsersTest_BBCodeParser.cpp
+    ParsersTest_Forum.cpp
+    ParsersTest_ParserManager.cpp
+    ParsersTest_Tapatalk.cpp
+    ParsersTest_XenForo.cpp
+)
+
+add_executable(TestParsers
+    main.cpp
+    ${PARSER_TESTS}
+)
+
+target_link_libraries(TestParsers
+    ${CONAN_LIBS}
+    Qt5::Core
     Parsers
     Utils
 )
 
-QT5_WRAP_CPP(MOC_SOURCE_FILES ${MOC_HEADERS})
-
-ADD_EXECUTABLE(OwlTests 
-    ${SOURCE_FILES}
-    ${HEADER_FILES}
-    ${MOC_SOURCE_FILES}
+add_test(NAME TestParsers
+    COMMAND ${CMAKE_CURRENT_BINARY_DIR}/TestParsers
 )
-
-TARGET_LINK_LIBRARIES(OwlTests 
-    ${DEPENDENCY_LIST}
-    ${Boost_LIBRARIES}
-    ${QT_LIBRARIES}
-    ${QT_QTTEST_LIBRARY}
-    Qt5::Test
-)
-
-ADD_TEST(NAME OwlTests COMMAND OwlTests)

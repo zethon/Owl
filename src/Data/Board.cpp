@@ -218,7 +218,7 @@ void Board::requestThreadList(ForumPtr forum)
 void Board::requestThreadList(ForumPtr forum, int options)
 {
 	this->setCurrentForum(forum);
-	int iPerPage = this->getOptions()->getInt("threadsPerPage");
+	int iPerPage = this->getOptions()->get<std::uint32_t>("threadsPerPage");
     forum->setPerPage(iPerPage);
     
 	getParser()->getThreadListAsync(forum, options);
@@ -232,7 +232,7 @@ void Board::requestPostList(ThreadPtr thread)
 void Board::requestPostList(ThreadPtr thread, int options, bool bForceGoto/*=false*/)
 {
 	this->setCurrentThread(thread);
-	int iPerPage = this->getOptions()->getInt("postsPerPage");
+	int iPerPage = this->getOptions()->get<std::uint32_t>("postsPerPage");
     thread->setPerPage(iPerPage);
 
 	if (!bForceGoto)
@@ -607,10 +607,10 @@ StringMap Board::getBoardData()
     
     params.add("boardname", (QString)this->getName());
     params.add("username", (QString)this->getUsername());
-    params.add("refreshRate", (int)this->getOptions()->getInt("refreshRate"));
+    params.add("refreshRate", (int)this->getOptions()->get<std::uint32_t>("refreshRate"));
     params.add("showImages", (bool)this->getOptions()->getBool("showImages"));
-    params.add("threadsPerPage", (int)getOptions()->getInt("threadsPerPage"));
-    params.add("postsPerPage", (int)getOptions()->getInt("postsPerPage"));
+    params.add("threadsPerPage", (int)getOptions()->get<std::uint32_t>("threadsPerPage"));
+    params.add("postsPerPage", (int)getOptions()->get<std::uint32_t>("postsPerPage"));
     
     return params;
 }

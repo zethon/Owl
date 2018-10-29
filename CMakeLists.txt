@@ -27,6 +27,7 @@ add_definitions(
     -DQT_NO_KEYWORDS
     -DCURL_STATICLIB
     -DHUNSPELL_STATIC
+    -DBOOST_TEST_NO_LIB
 )
 
 if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
@@ -38,7 +39,6 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
 
         -Werror=format
         -Werror=trigraphs
-        $<$<COMPILE_LANGUAGE:CXX>:-Werror=non-virtual-dtor>
         -Werror=missing-braces
         -Werror=parentheses
         -Werror=return-type
@@ -54,6 +54,8 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
         -Werror=int-conversion
         -Werror=uninitialized
         -Werror=char-subscripts
+
+        $<$<COMPILE_LANGUAGE:CXX>:-Werror=non-virtual-dtor>
     )
 endif()
 
@@ -140,5 +142,5 @@ endif(BUILD_CONSOLE)
 
 if (BUILD_TEST)
     enable_testing()
-    add_subdirectory(OwlTests)
+    add_subdirectory(tests)
 endif (BUILD_TEST)

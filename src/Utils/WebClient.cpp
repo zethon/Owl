@@ -302,14 +302,13 @@ HttpReplyPtr WebClient::doRequest(const QString& url,
     char *finalUrl;
     curl_easy_getinfo(_curl, CURLINFO_EFFECTIVE_URL, &finalUrl);
 
-	auto retval = std::make_shared<HttpReply>();
+	auto retval = std::make_shared<HttpReply>(status);
 	retval->status = status;
-	retval->finalUrl = _lastUrl = QString::fromLatin1(finalUrl);
+    retval->finalUrl = _lastUrl = QString::fromLatin1(finalUrl);
+    retval->data = _textCodec->toUnicode(_buffer.c_str());
 
     if (status == 200)
     {
-        retval->data = _textCodec->toUnicode(_buffer.c_str());
-
         if (!(options & Options::NOTIDY))
         {
             retval->data = owl::tidyHTML(retval->data);

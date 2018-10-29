@@ -206,13 +206,13 @@ void PreferencesDlg::connectBoardList()
                 // change the displayOrder property of the selected board
                 auto thisPropName = QString("data_%1").arg(selected.row());
                 auto thisBoard = model->property(thisPropName.toLatin1()).value<BoardPtr>();
-                auto sbdo = thisBoard->getOptions()->getInt("displayOrder");
+                auto sbdo = thisBoard->getOptions()->get<std::uint32_t>("displayOrder");
                 thisBoard->getOptions()->setOrAdd("displayOrder",(uint)sbdo - 1);
 
                 // change the displayOrder property of the board above it
                 auto otherPropName = QString("data_%1").arg(selected.row() - 1);
                 auto otherBoard = model->property(otherPropName.toLatin1()).value<BoardPtr>();
-                sbdo = otherBoard->getOptions()->getInt("displayOrder");
+                sbdo = otherBoard->getOptions()->get<std::uint32_t>("displayOrder");
                 otherBoard->getOptions()->setOrAdd("displayOrder",(uint)sbdo + 1);
 
                 // update the model properties
@@ -245,13 +245,13 @@ void PreferencesDlg::connectBoardList()
                 // change the displayOrder property of the selected board
                 auto thisPropName = QString("data_%1").arg(selected.row());
                 auto thisBoard = model->property(thisPropName.toLatin1()).value<BoardPtr>();
-                auto sbdo = thisBoard->getOptions()->getInt("displayOrder");
+                auto sbdo = thisBoard->getOptions()->get<std::uint32_t>("displayOrder");
                 thisBoard->getOptions()->setOrAdd("displayOrder",(uint)sbdo + 1);
 
                 // change the displayOrder property of the board above it
                 auto otherPropName = QString("data_%1").arg(selected.row() + 1);
                 auto otherBoard = model->property(otherPropName.toLatin1()).value<BoardPtr>();
-                sbdo = otherBoard->getOptions()->getInt("displayOrder");
+                sbdo = otherBoard->getOptions()->get<std::uint32_t>("displayOrder");
                 otherBoard->getOptions()->setOrAdd("displayOrder",(uint)sbdo - 1);
 
                 // update the model properties

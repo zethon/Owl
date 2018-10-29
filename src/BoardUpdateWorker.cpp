@@ -73,7 +73,7 @@ void BoardUpdateWorker::doWork()
         }
     }
 
-    QTimer::singleShot(1000 * _board->getOptions()->getInt("refreshRate"), this, SLOT(doWork()));
+    QTimer::singleShot(1000 * _board->getOptions()->get<std::uint32_t>("refreshRate"), this, SLOT(doWork()));
 }
 
 void BoardUpdateWorker::checkStructureUpdate()

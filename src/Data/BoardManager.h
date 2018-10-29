@@ -89,8 +89,8 @@ private:
 
 	static bool boardDisplayOrderLessThan(BoardPtr b1, BoardPtr b2)
 	{
-		uint iB1DisplayOrder = b1->getOptions()->getInt("displayOrder");
-		uint iB2DisplayOrder = b2->getOptions()->getInt("displayOrder");
+		uint iB1DisplayOrder = b1->getOptions()->get<std::uint32_t>("displayOrder");
+		uint iB2DisplayOrder = b2->getOptions()->get<std::uint32_t>("displayOrder");
 
 		return iB1DisplayOrder < iB2DisplayOrder;
 	}

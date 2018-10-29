@@ -124,7 +124,7 @@ void ConfiguringBoardDlg::onCompleted(StringMap params)
 				statusLbl->setText(
 					QString(tr("Unable to connect to %1. Server returned an error code of %2"))
 					.arg(_targetUrl.toString())
-                    .arg(params.getInt("statusCode")));
+                    .arg(params.get<std::uint32_t>("statusCode")));
 			}
 			else
 			{

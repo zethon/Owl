@@ -7,7 +7,6 @@
 #include "../Utils/WebClient.h"
 #include "Xenforo.h"
 #include <cmath>
-#include <QApplication>
 
 namespace owl
 {
