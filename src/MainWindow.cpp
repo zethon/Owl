@@ -47,15 +47,15 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
       _splash(splash),
       _imageOverlay{this}
 {
-	setupUi(this);
-	setDockNestingEnabled(true);
+    setupUi(this);
+    setDockNestingEnabled(true);
 //    setUnifiedTitleAndToolBarOnMac(true);
 
     // TODO: move this to the OwlApplication class
-	readSettings();
+    readSettings();
     
-	// initialize the dictionaries
-	SPELLCHECKER->init();
+    // initialize the dictionaries
+    SPELLCHECKER->init();
 
 #ifdef Q_OS_WIN32
     this->setWindowIcon(QIcon(":/icons/owl_256.png"));
@@ -63,19 +63,19 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
     
     setWindowTitle(QStringLiteral(APP_NAME));
     
-	// TODO: the appToolbar has been made invisible for release 1.0 but maybe it will
-	//		 come back for later versions
+    // TODO: the appToolbar has been made invisible for release 1.0 but maybe it will
+    //		 come back for later versions
     //createToolbar();
     appToolBar->setVisible(false);
-	
-	// create a blank title bar for the post view dock
-	postViewDockWidget->setTitleBarWidget(new QWidget(postViewDockWidget));
-	boardsViewDockWidget->setTitleBarWidget(new QWidget(boardsViewDockWidget));
     
-	loadBoards();
-	servicesTree->setModel(_svcModel);
+    // create a blank title bar for the post view dock
+    postViewDockWidget->setTitleBarWidget(new QWidget(postViewDockWidget));
+    boardsViewDockWidget->setTitleBarWidget(new QWidget(boardsViewDockWidget));
+    
+    loadBoards();
+    servicesTree->setModel(_svcModel);
 
-	QTimer::singleShot(0, this, SLOT(onLoaded()));
+    QTimer::singleShot(0, this, SLOT(onLoaded()));
 }
 
 void MainWindow::onLoaded()
@@ -144,32 +144,32 @@ void MainWindow::loadBoards()
     QObject::connect(addBoard, SIGNAL(triggered()), this, SLOT(onNewBoard()));
     boardToolbar->addSeparator();
     
-	if (BoardManager::instance()->getBoardCount() == 0)
-	{
-		servicesTree->setHasBoards(false);
-	}
-	else
-	{
-		int iErrors = 0;
-		QFont boldFont(servicesTree->font());
-		boldFont.setWeight(QFont::Bold);
+    if (BoardManager::instance()->getBoardCount() == 0)
+    {
+        servicesTree->setHasBoards(false);
+    }
+    else
+    {
+        int iErrors = 0;
+        QFont boldFont(servicesTree->font());
+        boldFont.setWeight(QFont::Bold);
 
         const auto& list = BOARDMANAGER->getBoardList();
         for (const BoardPtr& b : list)
-		{
+        {
             if (initBoard(b) == 0 && b->isAutoLogin())
-			{
+            {
                 logger()->debug("Starting automatic login for board '%1' with user '%2'", b->getName(), b->getUsername());
-				b->login();
-			}
-		}
+                b->login();
+            }
+        }
 
-		if (iErrors > 0)
-		{
-			QString msg(tr("Some boards could not be loaded."));
-			QMainWindow::statusBar()->showMessage(msg, 5000); 
-		}
-	}
+        if (iErrors > 0)
+        {
+            QString msg(tr("Some boards could not be loaded."));
+            QMainWindow::statusBar()->showMessage(msg, 5000); 
+        }
+    }
 
     QObject::connect(boardToolbar, SIGNAL(actionTriggered(QAction*)), this, SLOT(onBoardToolbarItemClicked(QAction*)));
     QObject::connect(boardToolbar, &QToolBar::visibilityChanged, [this](bool bVisible)
@@ -193,21 +193,21 @@ int MainWindow::initBoard(const BoardPtr& b)
     QString boardItemTemplate = owl::getResourceHtmlFile("boardItem.html");
     Q_ASSERT(!boardItemTemplate.isEmpty());
     
-	int iRet = 0;
+    int iRet = 0;
 
-	try
-	{
-		if (b->isEnabled())
-		{
+    try
+    {
+        if (b->isEnabled())
+        {
             ParserBasePtr parser = ParserManager::instance()->createParser(b->getProtocolName(), b->getServiceUrl());
             parser->setOptions(b->getOptions());
 
-			b->setParser(parser);
-			connectBoard(b);
+            b->setParser(parser);
+            connectBoard(b);
 
-			_workerMap.insert(b->getDBId(), new QThreadEx());
+            _workerMap.insert(b->getDBId(), new QThreadEx());
 
-			QStandardItem* item = _svcModel->addBoardItem(b);           
+            QStandardItem* item = _svcModel->addBoardItem(b);           
             item->setSizeHint(QSize(item->sizeHint().width(), BoardsModel::ITEMHEIGHT));
 
             // Used with GetModelItem()
@@ -216,9 +216,9 @@ int MainWindow::initBoard(const BoardPtr& b)
             BoardItemDocPtr bid(new BoardItemDoc(b, boardItemTemplate));
             b->setBoardItemDocument(bid);
 
-			// add the board to the _boardToolBar
-			QByteArray buffer(b->getFavIcon().toLatin1());
-			QImage image = QImage::fromData(QByteArray::fromBase64(buffer));
+            // add the board to the _boardToolBar
+            QByteArray buffer(b->getFavIcon().toLatin1());
+            QImage image = QImage::fromData(QByteArray::fromBase64(buffer));
 
             // calculate the scaling factor based on wanting a 32x32 image
             qreal iXScale = (qreal)boardIconWidth / (qreal)image.width();
@@ -233,14 +233,14 @@ int MainWindow::initBoard(const BoardPtr& b)
             }
 
             QIcon icon(QPixmap::fromImage(image));
-			QString toolTip = QString("%1@%2").arg(b->getUsername()).arg(b->getName());
+            QString toolTip = QString("%1@%2").arg(b->getUsername()).arg(b->getName());
 
-			// set the toolbar action
-			QAction* boardAction = new QAction(boardToolbar);
-			boardAction->setText(b->getName());
-			boardAction->setIcon(icon);
+            // set the toolbar action
+            QAction* boardAction = new QAction(boardToolbar);
+            boardAction->setText(b->getName());
+            boardAction->setIcon(icon);
             boardAction->setIconText(owl::getAbbreviatedName(b->getName()));
-			boardAction->setToolTip(toolTip);
+            boardAction->setToolTip(toolTip);
             boardAction->setData(QVariant::fromValue(BoardWeakPtr(b)));
 
             BoardMenu* boardMenu = new BoardMenu(BoardWeakPtr(b), this);
@@ -269,15 +269,15 @@ int MainWindow::initBoard(const BoardPtr& b)
                 });
 
             boardAction->setMenu(boardMenu);
-			boardToolbar->addAction(boardAction);
-		}
-	}
-	catch (const owl::OwlException& ex)
-	{
-		iRet++;
-		logger()->warn("Failed to create parser of type '%1' for board '%2': %3", 
-			b->getProtocolName(), b->getName(), ex);
-	}
+            boardToolbar->addAction(boardAction);
+        }
+    }
+    catch (const owl::OwlException& ex)
+    {
+        iRet++;
+        logger()->warn("Failed to create parser of type '%1' for board '%2': %3", 
+            b->getProtocolName(), b->getName(), ex);
+    }
 
     return iRet;
 }
@@ -328,44 +328,44 @@ void MainWindow::openPreferences()
 
 bool MainWindow::event(QEvent *event)
 {
-	QMainWindow::event(event);
-	if (event->type() == QEvent::Show && !_bInitialized)
-	{
-		// servicePaneVisibility
-		_bInitialized = true;
+    QMainWindow::event(event);
+    if (event->type() == QEvent::Show && !_bInitialized)
+    {
+        // servicePaneVisibility
+        _bInitialized = true;
 
-		auto timer = new QTimer(this);
-		timer->setSingleShot(true);
+        auto timer = new QTimer(this);
+        timer->setSingleShot(true);
 
-		connect(timer, &QTimer::timeout, [=]()
-		{
-			if (_servicePaneVisible)
-			{
-				Q_ASSERT("Don't forget me!");
-			}
+        connect(timer, &QTimer::timeout, [=]()
+        {
+            if (_servicePaneVisible)
+            {
+                Q_ASSERT("Don't forget me!");
+            }
 
-			if (this->boardToolbar->isVisible())
-			{
-				_actions.showBoardbar->setText("Hide Boards Toolbar");
-			}
-			else
-			{
-				_actions.showBoardbar->setText("Show Boards Toolbar");
-			}
-		});
+            if (this->boardToolbar->isVisible())
+            {
+                _actions.showBoardbar->setText("Hide Boards Toolbar");
+            }
+            else
+            {
+                _actions.showBoardbar->setText("Show Boards Toolbar");
+            }
+        });
 
-		timer->start(0);
-	}
+        timer->start(0);
+    }
 
-	return true;
+    return true;
 }
 
 void MainWindow::onBoardToolbarItemClicked(QAction* action)
 {
     if (!action->data().canConvert<BoardWeakPtr>())
-	{
-		return;
-	}
+    {
+        return;
+    }
 
     BoardPtr board = action->data().value<BoardWeakPtr>().lock();
     if (!board)
@@ -373,29 +373,29 @@ void MainWindow::onBoardToolbarItemClicked(QAction* action)
         return;
     }
 
-	if (board->getStatus() == Board::OFFLINE)
-	{
-		board->login();
-	}
+    if (board->getStatus() == Board::OFFLINE)
+    {
+        board->login();
+    }
 
-	this->servicesTree->reset();
+    this->servicesTree->reset();
 
-	QStandardItem* boardItem = _svcModel->getBoardItem(board, false);
-	if (boardItem != NULL && !servicesTree->isExpanded(boardItem->index()))
-	{
-		servicesTree->expandIt(boardItem->index());
-		servicesTree->setCurrentIndex(boardItem->index());
-		//servicesTree->selectOneBelow(boardItem->index());
+    QStandardItem* boardItem = _svcModel->getBoardItem(board, false);
+    if (boardItem != NULL && !servicesTree->isExpanded(boardItem->index()))
+    {
+        servicesTree->expandIt(boardItem->index());
+        servicesTree->setCurrentIndex(boardItem->index());
+        //servicesTree->selectOneBelow(boardItem->index());
         setWindowTitle(QString("%1 - %2").arg(board->getName()).arg(APP_NAME));
-	}
+    }
 }
 
 void MainWindow::boardwareInfoEvent(BoardPtr b, StringMap sp)
 {
-	QString bn = sp.getText("boardware");
-	QString bv = sp.getText("version");
+    QString bn = sp.getText("boardware");
+    QString bv = sp.getText("version");
 
-	logger()->trace("[%1][%2][%3]", b->getName(), bn, bv);
+    logger()->trace("[%1][%2][%3]", b->getName(), bn, bv);
 }
     
 void MainWindow::onForumStructureChanged(BoardPtr b)
@@ -431,7 +431,7 @@ void MainWindow::onForumStructureChanged(BoardPtr b)
 void MainWindow::loginEvent(BoardPtr b, StringMap sp)
 {
     auto doc = b->getBoardItemDocument();
-   	QString itemText;
+    QString itemText;
     QString msg;
 
     logger()->debug("Board '%1' login result with user '%2' was %3",
@@ -445,11 +445,11 @@ void MainWindow::loginEvent(BoardPtr b, StringMap sp)
         doc->setOrAddVar("%BOARDSTATUSALT%", tr("Online"));
 
         if (_workerMap.contains(b->getDBId()))
-		{
-			QThreadEx* workerThread = _workerMap.value(b->getDBId());
+        {
+            QThreadEx* workerThread = _workerMap.value(b->getDBId());
 
-			BoardUpdateWorker* pWorker = new BoardUpdateWorker(b);
-			pWorker->moveToThread(workerThread);
+            BoardUpdateWorker* pWorker = new BoardUpdateWorker(b);
+            pWorker->moveToThread(workerThread);
 
             connect(pWorker, SIGNAL(onForumStructureChanged(BoardPtr)), this, SLOT(onForumStructureChanged(BoardPtr)));
             connect(workerThread, SIGNAL(started()), pWorker, SLOT(doWork()));
@@ -460,12 +460,12 @@ void MainWindow::loginEvent(BoardPtr b, StringMap sp)
                     workerThread->deleteLater();
                 });
 
-			workerThread->start();
-		}
+            workerThread->start();
+        }
 
-		msg = QString(tr("User %1 signed on %2"))
-			.arg(b->getUsername())
-			.arg(b->getName());
+        msg = QString(tr("User %1 signed on %2"))
+            .arg(b->getUsername())
+            .arg(b->getName());
 
         logger()->debug(msg);
     }
@@ -475,8 +475,8 @@ void MainWindow::loginEvent(BoardPtr b, StringMap sp)
         doc->setOrAddVar("%BOARDSTATUSALT%", tr("Offline"));
 
         msg = QString(tr("User %1 could not sign on to '%2'"))
-			.arg(b->getUsername())
-			.arg(b->getName());
+            .arg(b->getUsername())
+            .arg(b->getName());
 
         if (sp.has("error"))
         {
@@ -492,7 +492,7 @@ void MainWindow::loginEvent(BoardPtr b, StringMap sp)
     
     doc->reloadHtml();
     servicesTree->update();
-	QMainWindow::statusBar()->showMessage(msg, 5000);
+    QMainWindow::statusBar()->showMessage(msg, 5000);
 }
 
 // invoked when a request for posts has returned
@@ -517,16 +517,16 @@ void MainWindow::getPostsHandler(BoardPtr board, ThreadPtr thread)
 
 void MainWindow::getThreadsHandler(BoardPtr b, ForumPtr forum)
 {
-	QMutexLocker lock(&_updateMutex);
+    QMutexLocker lock(&_updateMutex);
 
-	stopThreadLoading();
+    stopThreadLoading();
 
-	if (forum->getThreads().size() > 0)
-	{
+    if (forum->getThreads().size() > 0)
+    {
         threadListWidget->setThreadList(forum->getThreads());
-	}
+    }
 
-	updateSelectedForum(forum);
+    updateSelectedForum(forum);
 }
 
 // SLOT: handles the SIGNAL from a Board object. Called when the board responds 
@@ -535,50 +535,50 @@ void MainWindow::getThreadsHandler(BoardPtr b, ForumPtr forum)
 // this function
 void MainWindow::getUnreadForumsEvent(BoardPtr board, ForumList list)
 {
-	bool bHasUnread = false;
+    bool bHasUnread = false;
 
-	ForumHash tempHash;	
+    ForumHash tempHash;	
     for (ForumPtr forum : list)
-	{
-		tempHash.insert(forum->getId(), forum);
-	}
-	
-	QHashIterator<QString, ForumPtr> it(board->getForumHash());
+    {
+        tempHash.insert(forum->getId(), forum);
+    }
+    
+    QHashIterator<QString, ForumPtr> it(board->getForumHash());
 
-	while (it.hasNext())
-	{
-		it.next();
+    while (it.hasNext())
+    {
+        it.next();
 
-		if (it.value()->getForumType() != Forum::FORUM)
-		{
-			continue; 
-		}
+        if (it.value()->getForumType() != Forum::FORUM)
+        {
+            continue; 
+        }
 
-		ForumPtr treeForum = board->getForumHash().value(it.key());
-		QStandardItem* item = treeForum->getModelItem();
+        ForumPtr treeForum = board->getForumHash().value(it.key());
+        QStandardItem* item = treeForum->getModelItem();
 
-		if (item == NULL)
-		{
-			continue;
-		}
+        if (item == NULL)
+        {
+            continue;
+        }
 
-		// set the indicator on the forum's tree item
-		QFont itemFont(item->font());
-		if (tempHash.contains(it.key()))
-		{
-			bHasUnread = true;
-			itemFont.setBold(true);
-			item->setIcon(QIcon(":/icons/forum_new.png"));
+        // set the indicator on the forum's tree item
+        QFont itemFont(item->font());
+        if (tempHash.contains(it.key()))
+        {
+            bHasUnread = true;
+            itemFont.setBold(true);
+            item->setIcon(QIcon(":/icons/forum_new.png"));
 //			item->setForeground(QColor(Qt::darkGreen));			
-		}
-		else
-		{
-			itemFont.setBold(false);
-			item->setIcon(QIcon(":/icons/forum.png"));
+        }
+        else
+        {
+            itemFont.setBold(false);
+            item->setIcon(QIcon(":/icons/forum.png"));
 //			item->setForeground(QColor(Qt::black));
-		}
-		item->setFont(itemFont);
-	}
+        }
+        item->setFont(itemFont);
+    }
 
     if (board && board->getModelItem())
     {
@@ -600,50 +600,50 @@ void MainWindow::getUnreadForumsEvent(BoardPtr board, ForumList list)
 
 void MainWindow::getForumHandler(BoardPtr b, ForumPtr parent)
 {
-	QStandardItem* item = _svcModel->updateForumItem(b, parent);
+    QStandardItem* item = _svcModel->updateForumItem(b, parent);
 
-	// set the column span for all the rows we just updated
-	for (int i = 0; i < item->rowCount(); i++)
-	{
-		servicesTree->setFirstColumnSpanned(i, item->index(), true);
-	}
+    // set the column span for all the rows we just updated
+    for (int i = 0; i < item->rowCount(); i++)
+    {
+        servicesTree->setFirstColumnSpanned(i, item->index(), true);
+    }
 
-	// show everything/anything we just added
-	servicesTree->expandAll();
+    // show everything/anything we just added
+    servicesTree->expandAll();
 }
 
 void MainWindow::onNewBoard()
 {
-	if (BOARDMANAGER->getBoardCount() >= MAX_BOARDS)
-	{
-		QMessageBox msgBox(this);
-		msgBox.setWindowTitle(APP_TITLE);
-		msgBox.setTextFormat(Qt::RichText);
+    if (BOARDMANAGER->getBoardCount() >= MAX_BOARDS)
+    {
+        QMessageBox msgBox(this);
+        msgBox.setWindowTitle(APP_TITLE);
+        msgBox.setTextFormat(Qt::RichText);
 
         const QString strMsg = QString("You have already reached the maximum number of "
-			"message boards you can add to Owl. Please remove a message board in "
-			" order to add another");    
+            "message boards you can add to Owl. Please remove a message board in "
+            " order to add another");    
 
-		msgBox.setText(strMsg);
-		msgBox.exec(); 
-	}
-	else
-	{
-		_quickAddDlg = new QuickAddDlg(this);
-		connect(_quickAddDlg, SIGNAL(newBoardAddedEvent(BoardPtr)), this, SLOT(onNewBoardAdded(BoardPtr)));
+        msgBox.setText(strMsg);
+        msgBox.exec(); 
+    }
+    else
+    {
+        _quickAddDlg = new QuickAddDlg(this);
+        connect(_quickAddDlg, SIGNAL(newBoardAddedEvent(BoardPtr)), this, SLOT(onNewBoardAdded(BoardPtr)));
 
-		_quickAddDlg->open();
-	}
+        _quickAddDlg->open();
+    }
 }
 
 void MainWindow::onNewBoardAdded(BoardPtr b)
 {
-	servicesTree->setHasBoards(true);
+    servicesTree->setHasBoards(true);
 
-	if (initBoard(b) == 0)
-	{
-		b->login();
-	}
+    if (initBoard(b) == 0)
+    {
+        b->login();
+    }
 }
 
 void MainWindow::connectBoard(BoardPtr board)
@@ -662,64 +662,64 @@ void MainWindow::connectBoard(BoardPtr board)
 // called after the board's HTTP request to make a forum read returns   
 void MainWindow::markForumReadHandler(BoardPtr b, ForumPtr f)
 {
-	if (f->IsRoot())
-	{
+    if (f->IsRoot())
+    {
 //		b->updateForumHash();
-		b->updateUnread();
-	}
-	else
-	{
-		startThreadLoading();
-		newThreadBtn->setEnabled(false);
-		servicesTree->markForumRead(f);
+        b->updateUnread();
+    }
+    else
+    {
+        startThreadLoading();
+        newThreadBtn->setEnabled(false);
+        servicesTree->markForumRead(f);
 
-		b->requestThreadList(f, ParserEnums::REQUEST_NOCACHE);
-	}
+        b->requestThreadList(f, ParserEnums::REQUEST_NOCACHE);
+    }
 }
 
 void MainWindow::newThreadHandler(BoardPtr b, ThreadPtr t)
 {
-	ForumPtr forum = this->getCurrentForum();
+    ForumPtr forum = this->getCurrentForum();
 
-	if (forum != NULL)
-	{
-		startThreadLoading();
-		newThreadBtn->setEnabled(false);
+    if (forum != NULL)
+    {
+        startThreadLoading();
+        newThreadBtn->setEnabled(false);
 
-		b->requestThreadList(forum, ParserEnums::REQUEST_NOCACHE);
-	}
+        b->requestThreadList(forum, ParserEnums::REQUEST_NOCACHE);
+    }
 
-	QMainWindow::statusBar()->showMessage("New thread sent", 5000);
+    QMainWindow::statusBar()->showMessage("New thread sent", 5000);
 }
 
 void MainWindow::requestErrorHandler(OwlExceptionPtr ex)
 {
-	_errorReportDlg = new ErrorReportDlg(ex, this);
-	_errorReportDlg->show();
+    _errorReportDlg = new ErrorReportDlg(ex, this);
+    _errorReportDlg->show();
 
-	// show the message in the status bar
-	QMainWindow::statusBar()->showMessage(ex->message(), 5000); 
+    // show the message in the status bar
+    QMainWindow::statusBar()->showMessage(ex->message(), 5000); 
 }
 
 void MainWindow::onSvcTreeContextMenu(const QPoint& pnt)
 {
-	QModelIndex curIdx = servicesTree->currentIndex();
-	QStandardItem* item = _svcModel->itemFromIndex(curIdx);
+    QModelIndex curIdx = servicesTree->currentIndex();
+    QStandardItem* item = _svcModel->itemFromIndex(curIdx);
 
     if (item == nullptr)
-	{
-		return;
-	}
+    {
+        return;
+    }
 
     QMenu* ctxMenu = nullptr;
     
     if (item->data().canConvert<BoardWeakPtr>())
-	{
+    {
         Board* boardRaw = item->data().value<BoardWeakPtr>().lock().get();
         assert(boardRaw);
 
-		for (auto a : boardToolbar->actions())
-		{
+        for (auto a : boardToolbar->actions())
+        {
             if (a->data().canConvert<BoardWeakPtr>())
             {
                 auto btBoard = a->data().value<BoardWeakPtr>().lock();
@@ -732,8 +732,8 @@ void MainWindow::onSvcTreeContextMenu(const QPoint& pnt)
                     }
                 }
             }
-		}
-	}
+        }
+    }
     else if (item->data().canConvert<ForumPtr>())
     {
         ForumPtr forum = item->data().value<ForumPtr>();
@@ -750,7 +750,7 @@ QMenu* MainWindow::createForumMenu(ForumPtr forum)
 {
     QMenu* ret = new QMenu(this);
     
-	if (forum->getForumType() != Forum::LINK)
+    if (forum->getForumType() != Forum::LINK)
     {
         QAction* action = ret->addAction(QIcon(":icons/refresh.png"), tr("Refresh Forum"));
         action->setToolTip(tr("Refresh Selected Forums"));
@@ -761,43 +761,43 @@ QMenu* MainWindow::createForumMenu(ForumPtr forum)
 #endif
 
         connect(action, SIGNAL(triggered()), this, SLOT(onRefreshForum()));
-		
-		ret->addSeparator();  
+        
+        ret->addSeparator();  
     }
 
     {
-		//QAction* action = ret->addAction(QIcon(":/icons/link.png"), tr("Copy Forum Address"));
-		QAction* action = ret->addAction(tr("Copy Forum Address"));
-		action->setToolTip(tr("Copy Forum Address"));
-		action->setData(QVariant::fromValue(forum));
+        //QAction* action = ret->addAction(QIcon(":/icons/link.png"), tr("Copy Forum Address"));
+        QAction* action = ret->addAction(tr("Copy Forum Address"));
+        action->setToolTip(tr("Copy Forum Address"));
+        action->setData(QVariant::fromValue(forum));
         
-		connect(action, SIGNAL(triggered()), this, SLOT(onCopyUrl()));
-	}
+        connect(action, SIGNAL(triggered()), this, SLOT(onCopyUrl()));
+    }
 
     {
-		QAction* action = ret->addAction(QIcon(":/icons/link.png"), tr("Open Forum in Browser"));
-		action->setToolTip(tr("Open in Browser"));
-		action->setData(QVariant::fromValue(forum));
+        QAction* action = ret->addAction(QIcon(":/icons/link.png"), tr("Open Forum in Browser"));
+        action->setToolTip(tr("Open in Browser"));
+        action->setData(QVariant::fromValue(forum));
         
 #ifdef Q_OS_MACX
         action->setIconVisibleInMenu(false);
 #endif
 
-		connect(action, SIGNAL(triggered()), this, SLOT(onOpenBrowserToolbar()));
-	}
+        connect(action, SIGNAL(triggered()), this, SLOT(onOpenBrowserToolbar()));
+    }
 
-	if (forum->getForumType() != Forum::LINK)
-	{
-		ret->addSeparator();    
-		QAction* action = ret->addAction(QIcon(":/icons/markforumread.png"), tr("Mark Forum Read"));
-		action->setData(QVariant::fromValue(forum));
+    if (forum->getForumType() != Forum::LINK)
+    {
+        ret->addSeparator();    
+        QAction* action = ret->addAction(QIcon(":/icons/markforumread.png"), tr("Mark Forum Read"));
+        action->setData(QVariant::fromValue(forum));
 
 #ifdef Q_OS_MACX
         action->setIconVisibleInMenu(false);
 #endif
         
         connect(action, &QAction::triggered, [this, forum]()
-		{
+        {
             auto board = forum->getBoard().lock();
 
             if (board)
@@ -805,82 +805,82 @@ QMenu* MainWindow::createForumMenu(ForumPtr forum)
                 startThreadLoading();
                 board->markForumRead(forum);
             }
-		});
-	}
+        });
+    }
     
     return ret;
 }
 
 void MainWindow::updateSelectedForum(ForumPtr f)
 {
-	threadNavFrame->setEnabled(f != NULL);
+    threadNavFrame->setEnabled(f != NULL);
     postsWebView->resetView();
 
-	if (f != NULL)
-	{
-		newThreadBtn->setEnabled(f->getForumType() == Forum::FORUM);
-		threadPageNumEdit->setText(QString::number(f->getPageNumber()));
-		threadPageNumLbl->setText(QString::number(f->getPageCount()));
-		this->currentForumLbl->setText(f->getName());
-	}
-	else
-	{
-		newThreadBtn->setEnabled(false);
+    if (f != NULL)
+    {
+        newThreadBtn->setEnabled(f->getForumType() == Forum::FORUM);
+        threadPageNumEdit->setText(QString::number(f->getPageNumber()));
+        threadPageNumLbl->setText(QString::number(f->getPageCount()));
+        this->currentForumLbl->setText(f->getName());
+    }
+    else
+    {
+        newThreadBtn->setEnabled(false);
         this->currentForumLbl->setText(QString());
-	}
+    }
 }
 
 // called from theadslist double-click handler and
 // updates the UI
 void MainWindow::updateSelectedThread(ThreadPtr t)
 {
-	postNavFrame->setEnabled(t != NULL);
+    postNavFrame->setEnabled(t != NULL);
 
-	if (t != NULL)
-	{
-		newPostBtn->setEnabled(true);
+    if (t != NULL)
+    {
+        newPostBtn->setEnabled(true);
 
-		postPageNumEdit->setText(QString::number(t->getPageNumber()));
-		postPageNumLbl->setText(QString::number(t->getPageCount()));
+        postPageNumEdit->setText(QString::number(t->getPageNumber()));
+        postPageNumLbl->setText(QString::number(t->getPageCount()));
 
-		currentThreadLabel->setText(t->getTitle());
+        currentThreadLabel->setText(t->getTitle());
 
-		if (t->hasUnread() && t->getPageNumber() == t->getPageCount())
-		{
-			t->setHasUnread(false);
+        if (t->hasUnread() && t->getPageNumber() == t->getPageCount())
+        {
+            t->setHasUnread(false);
 
-			bool bForumHasUnread = false;
-			ForumPtr parent = t->getParent()->upCast<ForumPtr>();
-			for (auto th : parent->getThreads())
-			{
-				if (th->hasUnread())
-				{
-					bForumHasUnread = true;
-				}
-			}
+            bool bForumHasUnread = false;
+            ForumPtr parent = t->getParent()->upCast<ForumPtr>();
+            for (auto th : parent->getThreads())
+            {
+                if (th->hasUnread())
+                {
+                    bForumHasUnread = true;
+                }
+            }
 
-			if (!bForumHasUnread)
-			{
-				servicesTree->markForumRead(parent);
-			}
+            if (!bForumHasUnread)
+            {
+                servicesTree->markForumRead(parent);
+            }
 
             update();
-		}
-	}
-	else
-	{
+        }
+    }
+    else
+    {
 //		postsWebView->setThreadSelected(false);
-		newPostBtn->setEnabled(false);
+        newPostBtn->setEnabled(false);
         currentThreadLabel->setText(QString());
-	}
+    }
 }
 
 void MainWindow::onLoginClicked()
 {
-	QModelIndexList selected = servicesTree->selectionModel()->selectedRows();
+    QModelIndexList selected = servicesTree->selectionModel()->selectedRows();
 
     for (QModelIndex index : selected)
-	{
+    {
         QStandardItem* item = _svcModel->itemFromIndex(index);
         
         if (item->parent() == NULL)
@@ -888,41 +888,41 @@ void MainWindow::onLoginClicked()
             BoardPtr b = item->data().value<BoardWeakPtr>().lock();
             b->login();
         }
-	}
+    }
 }
     
 void MainWindow::onLinkActivated(const QString &urlStr)
 {
-	// TODO: test, this function changed a lot going from Qt4 -> Qt5
-	QUrl url(urlStr);
-	QUrlQuery str(urlStr);
+    // TODO: test, this function changed a lot going from Qt4 -> Qt5
+    QUrl url(urlStr);
+    QUrlQuery str(urlStr);
 
     if (url.scheme() == "owl")
-	{
-		// paths come through as '/boardconfig' so strip off the '/'
-		QString path(url.path().remove(0,1));
+    {
+        // paths come through as '/boardconfig' so strip off the '/'
+        QString path(url.path().remove(0,1));
         
-		if (_linkMessageMap.contains(path))
-		{
-			_linkMessageMap.value(path)(str.queryItems());
-			
-		}
-		else if (logger()->isWarnEnabled())
-		{
-			logger()->warn("unknown url.path '%1' in url '%2'", url.path(), urlStr);
-		}
-	}
+        if (_linkMessageMap.contains(path))
+        {
+            _linkMessageMap.value(path)(str.queryItems());
+            
+        }
+        else if (logger()->isWarnEnabled())
+        {
+            logger()->warn("unknown url.path '%1' in url '%2'", url.path(), urlStr);
+        }
+    }
 }
 
 void MainWindow::onSvcTreeClicked(const QModelIndex& selected)
 {
-	QStandardItem* item = _svcModel->itemFromIndex(selected);
+    QStandardItem* item = _svcModel->itemFromIndex(selected);
     
-	if (item != _svcTreeLastItem)
-	{
-		_svcTreeLastItem = item;
+    if (item != _svcTreeLastItem)
+    {
+        _svcTreeLastItem = item;
         if (item->data().canConvert<BoardWeakPtr>())
-		{
+        {
             threadListWidget->resetView();
             postsWebView->resetView();
 
@@ -941,10 +941,10 @@ void MainWindow::onSvcTreeClicked(const QModelIndex& selected)
             {
                 setWindowTitle(QString("%1 - %2").arg(board->getName()).arg(APP_NAME));
             }
-		}
-		else if (item->data().canConvert<ForumPtr>())
-		{
-			ForumPtr forum = item->data().value<ForumPtr>();
+        }
+        else if (item->data().canConvert<ForumPtr>())
+        {
+            ForumPtr forum = item->data().value<ForumPtr>();
             BoardPtr board = forum->getBoard().lock();
 
             if (board)
@@ -965,44 +965,44 @@ void MainWindow::onSvcTreeClicked(const QModelIndex& selected)
                     logger()->trace("%1 offline", board->getName());
                 }
             }
-		}
-	}
+        }
+    }
 }
 
 void MainWindow::onTreeDoubleClicked(const QModelIndex& idx)
 {
-	QStandardItem* item = _svcModel->itemFromIndex(idx);
-	
+    QStandardItem* item = _svcModel->itemFromIndex(idx);
+    
     if (item->data().canConvert<BoardWeakPtr>())
-	{
+    {
         BoardPtr board = item->data().value<BoardWeakPtr>().lock();
 
-		if (board->getStatus() != Board::ONLINE)
-		{
-			board->login();
+        if (board->getStatus() != Board::ONLINE)
+        {
+            board->login();
             
             auto doc = board->getBoardItemDocument();
             doc->setOrAddVar("%BOARDSTATUSIMG%", ":/icons/loading.gif");
             doc->setOrAddVar("%BOARDSTATUSALT%", tr("Connecting"));
             doc->reloadHtml();
             servicesTree->update();
-		}
-	}
-	else if (item->data().canConvert<ForumPtr>())
-	{
-		ForumPtr f = item->data().value<ForumPtr>();
+        }
+    }
+    else if (item->data().canConvert<ForumPtr>())
+    {
+        ForumPtr f = item->data().value<ForumPtr>();
 
         auto board = f->getBoard().lock();
 
         if (board && board->getStatus() != Board::ONLINE)
-		{
-			board->login();
-		}
-		else if (f->getForumType() == Forum::LINK)
-		{
-			QDesktopServices::openUrl(f->getVar("link", false));
-		}
-	}
+        {
+            board->login();
+        }
+        else if (f->getForumType() == Forum::LINK)
+        {
+            QDesktopServices::openUrl(f->getVar("link", false));
+        }
+    }
 }
 
 void MainWindow::createDebugMenu()
@@ -1089,7 +1089,7 @@ void MainWindow::createMenus()
         }
 
 #ifdef Q_OS_WIN
-		menu->addSeparator();
+        menu->addSeparator();
 #endif
         
         {
@@ -1216,55 +1216,55 @@ void MainWindow::createMenus()
             });
         }
         
-		// View Menu -> Posts Pane
+        // View Menu -> Posts Pane
         {
             QMenu* postsPaneMenu = viewMenu->addMenu("Posts Pane");
 
             {
-				// View Menu -> Posts Pane -> Right
+                // View Menu -> Posts Pane -> Right
                 _actions.postPaneRight = postsPaneMenu->addAction("Right");
                 _actions.postPaneRight->setCheckable(true);
-				QObject::connect(_actions.postPaneRight, &QAction::triggered, [this]()
-				{
-					if (!postViewDockWidget->isVisible())
-					{
-						postViewDockWidget->setTitleBarWidget(new QWidget(this));
-						postViewDockWidget->setVisible(true);
-					}
+                QObject::connect(_actions.postPaneRight, &QAction::triggered, [this]()
+                {
+                    if (!postViewDockWidget->isVisible())
+                    {
+                        postViewDockWidget->setTitleBarWidget(new QWidget(this));
+                        postViewDockWidget->setVisible(true);
+                    }
 
-					addDockWidget(Qt::DockWidgetArea::RightDockWidgetArea, postViewDockWidget);
-					this->_actions.postPaneRight->setChecked(true);
-					this->_actions.postPaneBelow->setChecked(false);
-					this->_actions.postPaneHidden->setChecked(false);
+                    addDockWidget(Qt::DockWidgetArea::RightDockWidgetArea, postViewDockWidget);
+                    this->_actions.postPaneRight->setChecked(true);
+                    this->_actions.postPaneBelow->setChecked(false);
+                    this->_actions.postPaneHidden->setChecked(false);
 
                     _postsPanePosition = PANERIGHT;
-				});
+                });
                 
-				// View Menu -> Posts Pane -> Below
+                // View Menu -> Posts Pane -> Below
                 _actions.postPaneBelow = postsPaneMenu->addAction("Below");
                 _actions.postPaneBelow->setCheckable(true);
-				QObject::connect(_actions.postPaneBelow, &QAction::triggered, [this]()
-				{
-					if (!postViewDockWidget->isVisible())
-					{
-						postViewDockWidget->setTitleBarWidget(new QWidget(this));
-						postViewDockWidget->setVisible(true);
-					}
+                QObject::connect(_actions.postPaneBelow, &QAction::triggered, [this]()
+                {
+                    if (!postViewDockWidget->isVisible())
+                    {
+                        postViewDockWidget->setTitleBarWidget(new QWidget(this));
+                        postViewDockWidget->setVisible(true);
+                    }
 
-					addDockWidget(Qt::DockWidgetArea::BottomDockWidgetArea, postViewDockWidget);
-					this->_actions.postPaneRight->setChecked(false);
-					this->_actions.postPaneBelow->setChecked(true);
-					this->_actions.postPaneHidden->setChecked(false);
+                    addDockWidget(Qt::DockWidgetArea::BottomDockWidgetArea, postViewDockWidget);
+                    this->_actions.postPaneRight->setChecked(false);
+                    this->_actions.postPaneBelow->setChecked(true);
+                    this->_actions.postPaneHidden->setChecked(false);
 
                     _postsPanePosition = PANEBOTTOM;
-				});
+                });
                 
-				// View Menu -> Posts Pane -> Hidden
+                // View Menu -> Posts Pane -> Hidden
                 _actions.postPaneHidden = postsPaneMenu->addAction("Hidden");
                 _actions.postPaneHidden->setCheckable(true);
-				QObject::connect(_actions.postPaneHidden, &QAction::triggered, [this]()
+                QObject::connect(_actions.postPaneHidden, &QAction::triggered, [this]()
                 {
-					postViewDockWidget->setVisible(false);
+                    postViewDockWidget->setVisible(false);
                     _actions.postPaneRight->setChecked(false);
                     _actions.postPaneBelow->setChecked(false);
                     _actions.postPaneHidden->setChecked(true);
@@ -1324,20 +1324,20 @@ void MainWindow::createMenus()
         }
     }
     
-	// Help Menu
-	{
-		QMenu* helpMenu = this->menuBar()->addMenu("&Help");
+    // Help Menu
+    {
+        QMenu* helpMenu = this->menuBar()->addMenu("&Help");
 
-		{
+        {
             QAction* action = helpMenu->addAction(tr("Documentation"));
-			action->setShortcut(QKeySequence::HelpContents);
-			QObject::connect(action, &QAction::triggered, [this]()
-			{
+            action->setShortcut(QKeySequence::HelpContents);
+            QObject::connect(action, &QAction::triggered, [this]()
+            {
                 QUrl url("http://wiki.owlclient.com");
-				logger()->trace("Launching browser: %1", url.toString());
-				QDesktopServices::openUrl(url);
-			});
-		}
+                logger()->trace("Launching browser: %1", url.toString());
+                QDesktopServices::openUrl(url);
+            });
+        }
 
         {
             QAction* action = helpMenu->addAction(tr("Release Notes"));
@@ -1373,24 +1373,24 @@ void MainWindow::createMenus()
             });
         }
 
-		{
+        {
             QAction* action = helpMenu->addAction(tr("&Report an issue"));
-			QObject::connect(action, &QAction::triggered, [this]()
-			{
+            QObject::connect(action, &QAction::triggered, [this]()
+            {
                 QUrl url("http://bugs.owlclient.com");
                 logger()->trace("Launching browser: %1", url.toString());
                 QDesktopServices::openUrl(url);
 
-			});
-		}
+            });
+        }
 
-		helpMenu->addSeparator();
+        helpMenu->addSeparator();
 
 #if defined(Q_OS_WIN) || defined(Q_OS_MACOS)
-		{
+        {
             QAction* action = helpMenu->addAction(tr("Show Log Folder"));
-			QObject::connect(action, &QAction::triggered, [&]()
-			{
+            QObject::connect(action, &QAction::triggered, [&]()
+            {
                 SettingsObject settings;
                 if (settings.read("logs.file.enabled").toBool())
                 {
@@ -1410,23 +1410,23 @@ void MainWindow::createMenus()
                             tr("Invalid log file location.\n\nCheck Preferences->Advanced to configure."), QMessageBox::Ok);
                     }
                 }
-			});
-		}
+            });
+        }
 
-		helpMenu->addSeparator();
+        helpMenu->addSeparator();
 #endif
 
-		{
-			QAction* action = helpMenu->addAction("&About...");
-			action->setMenuRole(QAction::AboutRole);
+        {
+            QAction* action = helpMenu->addAction("&About...");
+            action->setMenuRole(QAction::AboutRole);
 
-			QObject::connect(action, &QAction::triggered, [this]()
-			{
-				AboutDlg about(this);
-				about.exec();
-			});
-		}
-	}
+            QObject::connect(action, &QAction::triggered, [this]()
+            {
+                AboutDlg about(this);
+                about.exec();
+            });
+        }
+    }
 
 #ifdef _DEBUG
     // Debug Menu
@@ -1463,7 +1463,7 @@ void MainWindow::createStatusBar()
 
 void MainWindow::createSignals()
 {
-	QObject::connect(actionExit, SIGNAL(triggered()), this, SLOT(close()));
+    QObject::connect(actionExit, SIGNAL(triggered()), this, SLOT(close()));
     QObject::connect(servicesTree, SIGNAL(linkActivated(const QString&)), this, SLOT(onLinkActivated(const QString&)));
 
     QObject::connect(threadListWidget, &owl::ThreadListWidget::threadLoading, [this]()
@@ -1472,49 +1472,49 @@ void MainWindow::createSignals()
         newPostBtn->setEnabled(false);
     });
 
-	auto gotoPrevPage = [this]()
-	{
+    auto gotoPrevPage = [this]()
+    {
         auto thread = this->threadListWidget->getCurrentThread().lock();
         if (thread)
-		{
-			navigateToPostListPage(thread, (thread->getPageNumber() - 1));
-		}
-	};
+        {
+            navigateToPostListPage(thread, (thread->getPageNumber() - 1));
+        }
+    };
 
-	QObject::connect(postPrevPageBtn, &QPushButton::clicked, gotoPrevPage);
+    QObject::connect(postPrevPageBtn, &QPushButton::clicked, gotoPrevPage);
 
-	auto gotoNextPage = [=]()
-	{
+    auto gotoNextPage = [=]()
+    {
         auto thread = this->threadListWidget->getCurrentThread().lock();
         if (thread)
-		{
-			navigateToPostListPage(thread, (thread->getPageNumber() + 1));
-		}
-	};
+        {
+            navigateToPostListPage(thread, (thread->getPageNumber() + 1));
+        }
+    };
 
-	QObject::connect(postNextPageBtn, &QPushButton::clicked, gotoNextPage);
+    QObject::connect(postNextPageBtn, &QPushButton::clicked, gotoNextPage);
 
-	auto gotoFirstPage = [=]()
-	{
+    auto gotoFirstPage = [=]()
+    {
         auto thread = this->threadListWidget->getCurrentThread().lock();
         if (thread)
-		{
-			navigateToPostListPage(thread, 1);
-		}
-	};
+        {
+            navigateToPostListPage(thread, 1);
+        }
+    };
 
-	QObject::connect(postFirstPageBtn, &QPushButton::clicked, gotoFirstPage);
+    QObject::connect(postFirstPageBtn, &QPushButton::clicked, gotoFirstPage);
 
-	auto gotoLastPage = [=]()
-	{
+    auto gotoLastPage = [=]()
+    {
         auto thread = this->threadListWidget->getCurrentThread().lock();
         if (thread)
-		{
-			navigateToPostListPage(thread, thread->getPageCount());
-		}
-	};
+        {
+            navigateToPostListPage(thread, thread->getPageCount());
+        }
+    };
 
-	QObject::connect(postLastPageBtn, &QPushButton::clicked, gotoLastPage);
+    QObject::connect(postLastPageBtn, &QPushButton::clicked, gotoLastPage);
     
     // items in the postNavFrame
     QObject::connect(expandAllBtn, &QPushButton::clicked, [this]()
@@ -1567,7 +1567,7 @@ void MainWindow::createSignals()
 
 void MainWindow::expandPostMenuPressed()
 {
-	postNavFrame->setVisible(!postNavFrame->isVisible());
+    postNavFrame->setVisible(!postNavFrame->isVisible());
 }
 
 void MainWindow::navigateToPostListPage(ThreadPtr thread, int iPageNumber)
@@ -1597,30 +1597,30 @@ void MainWindow::postPageNumberEnterPressed()
     ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
     
     if (thread && thread->getPageNumber())
-	{
-		QString strText(postPageNumEdit->text());
-		bool bOk = false;
-		int iPageNumber = strText.toInt(&bOk);
-		
-		if (bOk)
-		{
-			navigateToPostListPage(thread, iPageNumber);
-		}
-		else
-		{
-			postPageNumEdit->setText(QString::number(thread->getPageNumber()));
-		}
-	}
+    {
+        QString strText(postPageNumEdit->text());
+        bool bOk = false;
+        int iPageNumber = strText.toInt(&bOk);
+        
+        if (bOk)
+        {
+            navigateToPostListPage(thread, iPageNumber);
+        }
+        else
+        {
+            postPageNumEdit->setText(QString::number(thread->getPageNumber()));
+        }
+    }
 }
 
 void MainWindow::postFirstPageBtnClicked()
 {
     ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
-	
+    
     if (thread)
-	{
-		navigateToPostListPage(thread, 1);
-	}
+    {
+        navigateToPostListPage(thread, 1);
+    }
 }
 
 void MainWindow::postPrevPageBtnClicked()
@@ -1628,9 +1628,9 @@ void MainWindow::postPrevPageBtnClicked()
     ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
 
     if (thread)
-	{
-		navigateToPostListPage(thread, (thread->getPageNumber() - 1));
-	}
+    {
+        navigateToPostListPage(thread, (thread->getPageNumber() - 1));
+    }
 }
 
 void MainWindow::postNextPageBtnClicked()
@@ -1638,9 +1638,9 @@ void MainWindow::postNextPageBtnClicked()
     ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
 
     if (thread)
-	{
-		navigateToPostListPage(thread, (thread->getPageNumber() + 1));
-	}
+    {
+        navigateToPostListPage(thread, (thread->getPageNumber() + 1));
+    }
 }
 
 void MainWindow::postLastPageBtnClicked()
@@ -1648,9 +1648,9 @@ void MainWindow::postLastPageBtnClicked()
     ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
 
     if (thread)
-	{
-		navigateToPostListPage(thread, thread->getPageCount());
-	}
+    {
+        navigateToPostListPage(thread, thread->getPageCount());
+    }
 }
 
 void MainWindow::expandThreadMenuPressed()
@@ -1663,93 +1663,93 @@ void MainWindow::navigateToThreadListPage(ForumPtr forum, int iPageNumber)
     auto board = forum->getBoard().lock();
 
     if (board && iPageNumber != forum->getPageNumber())
-	{
-		if (iPageNumber > forum->getPageCount())
-		{
-			iPageNumber = forum->getPageCount();
-		}
-		else if (iPageNumber < 1)
-		{
-			iPageNumber = 1;
-		}
+    {
+        if (iPageNumber > forum->getPageCount())
+        {
+            iPageNumber = forum->getPageCount();
+        }
+        else if (iPageNumber < 1)
+        {
+            iPageNumber = 1;
+        }
 
-		startThreadLoading();
-		threadPageNumEdit->setText(QString::number(iPageNumber));
-		forum->setPageNumber(iPageNumber);
+        startThreadLoading();
+        threadPageNumEdit->setText(QString::number(iPageNumber));
+        forum->setPageNumber(iPageNumber);
         board->requestThreadList(forum);
-	}
+    }
 }
 
 void MainWindow::threadPageNumberEnterPressed()
 {
-	ForumPtr forum = getCurrentForum();
+    ForumPtr forum = getCurrentForum();
 
-	if (forum != NULL && forum->getPageNumber() >= 1)
-	{
-		QString strText(threadPageNumEdit->text());
-		bool bOk = false;
-		int iPageNumber = strText.toInt(&bOk);
-		
-		if (bOk)
-		{
-			navigateToThreadListPage(forum, iPageNumber);
-		}
-		else
-		{
-			threadPageNumEdit->setText(QString::number(forum->getPageNumber()));
-		}
-	}
+    if (forum != NULL && forum->getPageNumber() >= 1)
+    {
+        QString strText(threadPageNumEdit->text());
+        bool bOk = false;
+        int iPageNumber = strText.toInt(&bOk);
+        
+        if (bOk)
+        {
+            navigateToThreadListPage(forum, iPageNumber);
+        }
+        else
+        {
+            threadPageNumEdit->setText(QString::number(forum->getPageNumber()));
+        }
+    }
 }
 
 void MainWindow::threadFirstPageBtnClicked()
 {
-	ForumPtr forum = getCurrentForum();
+    ForumPtr forum = getCurrentForum();
 
-	if (forum != NULL)
-	{
-		navigateToThreadListPage(forum, 1);
-	}
+    if (forum != NULL)
+    {
+        navigateToThreadListPage(forum, 1);
+    }
 }
 
 void MainWindow::threadPrevPageBtnClicked()
 {
-	ForumPtr forum = getCurrentForum();
+    ForumPtr forum = getCurrentForum();
 
-	if (forum != NULL)
-	{
-		navigateToThreadListPage(forum, (forum->getPageNumber() - 1));
-	}
+    if (forum != NULL)
+    {
+        navigateToThreadListPage(forum, (forum->getPageNumber() - 1));
+    }
 }
 
 void MainWindow::threadNextPageBtnClicked()
 {
-	ForumPtr forum = getCurrentForum();
+    ForumPtr forum = getCurrentForum();
 
-	if (forum != NULL)
-	{
-		navigateToThreadListPage(forum, (forum->getPageNumber() + 1));
-	}
+    if (forum != NULL)
+    {
+        navigateToThreadListPage(forum, (forum->getPageNumber() + 1));
+    }
 }
 
 void MainWindow::threadLastPageBtnClicked()
 {
-	ForumPtr forum = getCurrentForum();
+    ForumPtr forum = getCurrentForum();
 
-	if (forum != NULL)
-	{
-		navigateToThreadListPage(forum, forum->getPageCount());
-	}
+    if (forum != NULL)
+    {
+        navigateToThreadListPage(forum, forum->getPageCount());
+    }
 }
     
 void MainWindow::newThreadBtnClicked()
 {
-	ForumPtr forum = this->getCurrentForum();
-	if (forum != NULL)
-	{
-		NewThreadDlg* newdlg = new NewThreadDlg(forum, this);
-		newdlg->setModal(false);
-		newdlg->show();
-	}
+    ForumPtr forum = this->getCurrentForum();
+    if (forum != NULL)
+    {
+        NewThreadDlg* newdlg = new NewThreadDlg(forum, this);
+        newdlg->setModal(false);
+        newdlg->show();
+    }
 }
 
 void MainWindow::newPostBtnClicked()
@@ -1767,42 +1767,42 @@ void MainWindow::newPostBtnClicked()
 // has been successfully posted
 void MainWindow::newPostHandler(BoardPtr b, PostPtr p)
 {
-	if (p)
-	{
+    if (p)
+    {
         ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
 
         if (thread && thread == p->getParent())
-		{
-			this->startPostsLoading();
-			this->newPostBtn->setEnabled(false);
-			b->requestPostList(thread, ParserEnums::REQUEST_NOCACHE);
-		}
-		else
-		{
-			Q_ASSERT(p->getParent() != nullptr);
+        {
+            this->startPostsLoading();
+            this->newPostBtn->setEnabled(false);
+            b->requestPostList(thread, ParserEnums::REQUEST_NOCACHE);
+        }
+        else
+        {
+            Q_ASSERT(p->getParent() != nullptr);
             QString msg = QString("New post successfully sent in thread '%1'").arg(p->getParent()->getTitle());
-			QMainWindow::statusBar()->showMessage(msg, 5000);
-		}
-	}
-	else
-	{
-		logger()->warn("Null new post returned for board %1 (%2)", b->getName(), b->getDBId());
-		QMainWindow::statusBar()->showMessage("New post saved", 5000);
-	}
+            QMainWindow::statusBar()->showMessage(msg, 5000);
+        }
+    }
+    else
+    {
+        logger()->warn("Null new post returned for board %1 (%2)", b->getName(), b->getDBId());
+        QMainWindow::statusBar()->showMessage("New post saved", 5000);
+    }
 }
 
 ForumPtr MainWindow::getCurrentForum() const
 {
-	ForumPtr forum;
-	QModelIndex index = servicesTree->currentIndex();
-	QStandardItem* item = _svcModel->itemFromIndex(index);
+    ForumPtr forum;
+    QModelIndex index = servicesTree->currentIndex();
+    QStandardItem* item = _svcModel->itemFromIndex(index);
 
-	if (item != NULL && item->data().canConvert<ForumPtr>())
-	{
-		forum = item->data().value<ForumPtr>();
-	}
+    if (item != NULL && item->data().canConvert<ForumPtr>())
+    {
+        forum = item->data().value<ForumPtr>();
+    }
 
-	return forum;
+    return forum;
 }
 
 void MainWindow::createLinkMessages()
@@ -1816,27 +1816,27 @@ void MainWindow::createBoardPanel()
     servicesTree->setAttribute(Qt::WA_MacShowFocusRect,0);
 #endif
     
-	servicesTree->collapseAll();
+    servicesTree->collapseAll();
 
-	servicesTree->setSelectionBehavior(QTreeView::SelectRows);
+    servicesTree->setSelectionBehavior(QTreeView::SelectRows);
     servicesTree->setSortingEnabled(false);
-	servicesTree->resizeColumnToContents(0);
-	servicesTree->setColumnWidth(0,servicesTree->width() * 0.66);
-	servicesTree->setContextMenuPolicy(Qt::CustomContextMenu);
-	//servicesTree->setModel(_svcModel);
+    servicesTree->resizeColumnToContents(0);
+    servicesTree->setColumnWidth(0,servicesTree->width() * 0.66);
+    servicesTree->setContextMenuPolicy(Qt::CustomContextMenu);
+    //servicesTree->setModel(_svcModel);
     
     auto itemDelegate = new BoardItemDelegate();
     servicesTree->setItemDelegate(itemDelegate);
     
-	connect(servicesTree, 
-		SIGNAL(clicked(const QModelIndex &)), 
-		this, 
-		SLOT(onSvcTreeClicked(const QModelIndex &)));
+    connect(servicesTree, 
+        SIGNAL(clicked(const QModelIndex &)), 
+        this, 
+        SLOT(onSvcTreeClicked(const QModelIndex &)));
 
-	connect(servicesTree, 
-		SIGNAL(customContextMenuRequested(const QPoint&)), 
-		this, 
-		SLOT(onSvcTreeContextMenu(const QPoint &)));
+    connect(servicesTree, 
+        SIGNAL(customContextMenuRequested(const QPoint&)), 
+        this, 
+        SLOT(onSvcTreeContextMenu(const QPoint &)));
     
     connect(servicesTree,
         SIGNAL(doubleClicked(const QModelIndex&)),
@@ -1904,7 +1904,7 @@ void MainWindow::createPostPanel()
     QObject::connect(newPostBtn, SIGNAL(clicked()), this, SLOT(newPostBtnClicked()));
 
     QObject::connect(postViewDockWidget, &QDockWidget::visibilityChanged, 
-		[this](bool bVisible)
+        [this](bool bVisible)
     {
         this->_actions.postPaneHidden->setChecked(!bVisible);
     });
@@ -1941,135 +1941,135 @@ void MainWindow::onRefreshForum()
 // Invoked from the board toolbar when user clicks 'Open in Browser'
 void MainWindow::onOpenBrowserToolbar()
 {
-	QAction* caller = qobject_cast<QAction*>(sender());
+    QAction* caller = qobject_cast<QAction*>(sender());
 
-	if (caller != NULL)
-	{
-		QString url;
+    if (caller != NULL)
+    {
+        QString url;
 
         if (caller->data().canConvert<BoardWeakPtr>())
-		{
+        {
             BoardPtr b = caller->data().value<BoardWeakPtr>().lock();
-			url = b->getUrl();
-		}
-		else if (caller->data().canConvert<ForumPtr>())
-		{
-			ForumPtr f = caller->data().value<ForumPtr>();
+            url = b->getUrl();
+        }
+        else if (caller->data().canConvert<ForumPtr>())
+        {
+            ForumPtr f = caller->data().value<ForumPtr>();
             auto board = f->getBoard().lock();
             if (board)
             {
                 url = board->getParser()->getItemUrl(f);
             }
-		}
+        }
 
-		if (!url.isEmpty())
-		{
-			QDesktopServices::openUrl(url);
-		}	
-	}
+        if (!url.isEmpty())
+        {
+            QDesktopServices::openUrl(url);
+        }	
+    }
 }
 
 void MainWindow::onCopyUrl()
 {
-	QAction* caller = qobject_cast<QAction*>(sender());
+    QAction* caller = qobject_cast<QAction*>(sender());
 
-	if (caller != NULL)
-	{
-		QString url;
-		BoardItemPtr boardItem;
+    if (caller != NULL)
+    {
+        QString url;
+        BoardItemPtr boardItem;
 
         if (caller->data().canConvert<BoardWeakPtr>())
-		{
+        {
             BoardPtr b = caller->data().value<BoardWeakPtr>().lock();
-			url = b->getUrl();
-		}
-		else if (caller->data().canConvert<ForumPtr>())
-		{
-			ForumPtr f = caller->data().value<ForumPtr>();
+            url = b->getUrl();
+        }
+        else if (caller->data().canConvert<ForumPtr>())
+        {
+            ForumPtr f = caller->data().value<ForumPtr>();
 
             auto board = f->getBoard().lock();
             if (board)
             {
                 url = board->getParser()->getItemUrl(f);
             }
-		}
+        }
 
-		if (!url.isEmpty())
-		{
-			qApp->clipboard()->setText(url);
-		}	
-	}
+        if (!url.isEmpty())
+        {
+            qApp->clipboard()->setText(url);
+        }	
+    }
 }
 
 void MainWindow::onBoardDelete()
 {
-	QAction* caller = qobject_cast<QAction*>(sender());
+    QAction* caller = qobject_cast<QAction*>(sender());
 
     if (caller != NULL && caller->data().canConvert<BoardWeakPtr>())
-	{
+    {
         BoardPtr b = caller->data().value<BoardWeakPtr>().lock();
-		QString strMsg = QString(tr("Are you sure you want to delete the board \"%1\"?\n\n"
-			"This will permanently delete the set up of the account.")).arg(b->getName());
+        QString strMsg = QString(tr("Are you sure you want to delete the board \"%1\"?\n\n"
+            "This will permanently delete the set up of the account.")).arg(b->getName());
 
-		QMessageBox* messageBox = new QMessageBox(
-			QMessageBox::Question,
-			tr("Delete Message Board"),
-			strMsg,
-			QMessageBox::Yes | QMessageBox::No,
-			this, 
+        QMessageBox* messageBox = new QMessageBox(
+            QMessageBox::Question,
+            tr("Delete Message Board"),
+            strMsg,
+            QMessageBox::Yes | QMessageBox::No,
+            this, 
             Qt::Drawer);
 
-		messageBox->setWindowModality(Qt::WindowModal);
+        messageBox->setWindowModality(Qt::WindowModal);
 
-		if (messageBox->exec() == QMessageBox::Yes)
-		{
+        if (messageBox->exec() == QMessageBox::Yes)
+        {
 //			onBoardDelete(b);
             QMetaObject::invokeMethod(this, "onBoardDelete", Q_ARG(BoardPtr, b));
-		}
-	}
+        }
+    }
 }
     
 void MainWindow::onBoardDelete(BoardPtr b)
 {
-	// stop any pending requests
-	QThread* thread = _workerMap.value(b->getDBId());
+    // stop any pending requests
+    QThread* thread = _workerMap.value(b->getDBId());
     thread->exit();
 
-	_workerMap.remove(b->getDBId());
+    _workerMap.remove(b->getDBId());
 
-	// search the toolbar (top of the client) and
-	// remove the board icon
-	for (QAction* a : boardToolbar->actions())
-	{
+    // search the toolbar (top of the client) and
+    // remove the board icon
+    for (QAction* a : boardToolbar->actions())
+    {
         if (b == a->data().value<BoardWeakPtr>().lock())
-		{
-			boardToolbar->removeAction(a);
-			boardToolbar->resize(boardToolbar->sizeHint());
-			break;
-		}
-	}
+        {
+            boardToolbar->removeAction(a);
+            boardToolbar->resize(boardToolbar->sizeHint());
+            break;
+        }
+    }
 
-	// clear the serviceTree selection and remove
-	// the board from the serviceTree
-	servicesTree->clearSelection();
-	_svcModel->removeBoardItem(b);
+    // clear the serviceTree selection and remove
+    // the board from the serviceTree
+    servicesTree->clearSelection();
+    _svcModel->removeBoardItem(b);
 
-	// remove the board from the database
-	BOARDMANAGER->deleteBoard(b);
+    // remove the board from the database
+    BOARDMANAGER->deleteBoard(b);
     //BOARDMANAGER->reload();
 
-	if (BOARDMANAGER->getBoardCount() == 0)
-	{
-		servicesTree->setHasBoards(false);
-		update();
+    if (BOARDMANAGER->getBoardCount() == 0)
+    {
+        servicesTree->setHasBoards(false);
+        update();
 
-		updateSelectedForum(ForumPtr());
+        updateSelectedForum(ForumPtr());
         updateSelectedThread(ThreadPtr());
 
         setWindowTitle(QStringLiteral(APP_NAME));
-	}
+    }
 
-	b.reset();
+    b.reset();
 }
     
 void MainWindow::readSettings()
@@ -2135,90 +2135,90 @@ void MainWindow::writeSettings()
                                                              
 void MainWindow::startThreadLoading()
 {
-	threadNavFrame->setEnabled(false);
+    threadNavFrame->setEnabled(false);
 //    threadPageNav->setEnabled(false);
 
-	threadLoadingImg->show();
-	threadLoadingImg->movie()->start();
-	currentForumLbl->setText("Loading...");
+    threadLoadingImg->show();
+    threadLoadingImg->movie()->start();
+    currentForumLbl->setText("Loading...");
 }
 
 void MainWindow::stopThreadLoading()
 {
-	threadNavFrame->setEnabled(true);
+    threadNavFrame->setEnabled(true);
 //    threadPageNav->setEnabled(true);
 
-	threadLoadingImg->hide();
+    threadLoadingImg->hide();
     threadLoadingImg->movie()->stop();
-	currentForumLbl->setText("");
+    currentForumLbl->setText("");
 }
 
 void MainWindow::startPostsLoading()
 {
-	postNavFrame->setEnabled(false);
-	postsLoadingImg->show();
-	postsLoadingImg->movie()->start();
-	currentThreadLabel->setText("Loading...");
+    postNavFrame->setEnabled(false);
+    postsLoadingImg->show();
+    postsLoadingImg->movie()->start();
+    currentThreadLabel->setText("Loading...");
 }
 
 void MainWindow::stopPostsLoading()
 {
-	postNavFrame->setEnabled(true);
-	postsLoadingImg->hide();
+    postNavFrame->setEnabled(true);
+    postsLoadingImg->hide();
     postsLoadingImg->movie()->stop();
-	currentThreadLabel->setText("");
+    currentThreadLabel->setText("");
 }
 
 void MainWindow::onDisplayOrderChanged(BoardPtr b, int iDirection)
 {	
-	QMutexLocker locker(&_updateMutex);
+    QMutexLocker locker(&_updateMutex);
 
-	// clear out any selection in the servicesTree the user may have
-	servicesTree->setCurrentIndex(QModelIndex());
+    // clear out any selection in the servicesTree the user may have
+    servicesTree->setCurrentIndex(QModelIndex());
 
-	// rearrange the board in the _svcModel 
-	auto boardItem = _svcModel->getBoardItem(b);
-	auto row = boardItem->row();
-	
-	auto takenBoardRow = _svcModel->takeRow(row);
-	auto takenSepRow = _svcModel->takeRow(row);
+    // rearrange the board in the _svcModel 
+    auto boardItem = _svcModel->getBoardItem(b);
+    auto row = boardItem->row();
+    
+    auto takenBoardRow = _svcModel->takeRow(row);
+    auto takenSepRow = _svcModel->takeRow(row);
 
-	auto newRow = row + (iDirection * 2);
-	_svcModel->insertRow(newRow, takenSepRow);
-	_svcModel->insertRow(newRow, takenBoardRow);
+    auto newRow = row + (iDirection * 2);
+    _svcModel->insertRow(newRow, takenSepRow);
+    _svcModel->insertRow(newRow, takenBoardRow);
 
-	// search through the toolbar looking for the board
-	auto actionIdx = -1;
-	QAction* tbAction = nullptr;
-	for (auto a : boardToolbar->actions())
-	{
-		actionIdx++;
+    // search through the toolbar looking for the board
+    auto actionIdx = -1;
+    QAction* tbAction = nullptr;
+    for (auto a : boardToolbar->actions())
+    {
+        actionIdx++;
 
         if (a->data().canConvert<BoardWeakPtr>() && a->data().value<BoardWeakPtr>().lock()->getDBId() == b->getDBId())
-		{
-			tbAction = a;
-			break;
-		}
-	}
+        {
+            tbAction = a;
+            break;
+        }
+    }
 
-	// if we found the board in the boardToolbar (and we should have) then and only
-	// then do we move it
-	if (tbAction)
-	{
-		if (iDirection > 0)
-		{
-			auto beforeIdx = actionIdx - +iDirection + 1;
-			auto numActions = boardToolbar->actions().size();
-			
-			if (beforeIdx >= numActions)
-			{
-				boardToolbar->addAction(tbAction);
-			}
-			else
-			{
+    // if we found the board in the boardToolbar (and we should have) then and only
+    // then do we move it
+    if (tbAction)
+    {
+        if (iDirection > 0)
+        {
+            auto beforeIdx = actionIdx - +iDirection + 1;
+            auto numActions = boardToolbar->actions().size();
+            
+            if (beforeIdx >= numActions)
+            {
+                boardToolbar->addAction(tbAction);
+            }
+            else
+            {
                 boardToolbar->removeAction(tbAction);
                 
-				// iDirection + 1 since we have to insert 'before'
+                // iDirection + 1 since we have to insert 'before'
                 auto otherIdx = row + iDirection + 1;
                 if (otherIdx >= boardToolbar->actions().size())
                 {
@@ -2231,9 +2231,9 @@ void MainWindow::onDisplayOrderChanged(BoardPtr b, int iDirection)
                     boardToolbar->insertAction(otherAction, tbAction);
                 }
             }
-		}
-		else if (iDirection < 0)
-		{
+        }
+        else if (iDirection < 0)
+        {
             auto otherIdx = actionIdx - 1;
             QAction* otherAction = boardToolbar->actions().at(otherIdx);
 
@@ -2242,8 +2242,8 @@ void MainWindow::onDisplayOrderChanged(BoardPtr b, int iDirection)
                 boardToolbar->removeAction(tbAction);
                 boardToolbar->insertAction(otherAction, tbAction);
             }
-		}
-	}
+        }
+    }
     else
     {
         logger()->warn("Board '%1' (%2) not found in boardToolbar", b->getName(), b->getDBId());
@@ -2252,20 +2252,20 @@ void MainWindow::onDisplayOrderChanged(BoardPtr b, int iDirection)
 
 void BoardMenu::onAboutToShow()
 {
-	// make things a little faster
+    // make things a little faster
     auto board = _board.lock();
 
     if (board && board->getStatus() != _lastStatus)
-	{
-		createMenu();
-	}
+    {
+        createMenu();
+    }
 }
 
 void BoardMenu::createMenu()
 {
-	MainWindow* parent = qobject_cast<MainWindow*>(this->parent());
+    MainWindow* parent = qobject_cast<MainWindow*>(this->parent());
 
-	clear();
+    clear();
 
     auto board = _board.lock();
     if (!board)
@@ -2274,20 +2274,20 @@ void BoardMenu::createMenu()
     }
 
     if (board->getStatus() == Board::ONLINE)
-	{
-		QAction* refresh = addAction(QIcon(":/icons/refresh.png"), tr("Refresh"));
-		refresh->setToolTip(tr("Refresh"));
+    {
+        QAction* refresh = addAction(QIcon(":/icons/refresh.png"), tr("Refresh"));
+        refresh->setToolTip(tr("Refresh"));
 #ifdef Q_OS_MACX
-		refresh->setIconVisibleInMenu(false);
+        refresh->setIconVisibleInMenu(false);
 #endif
-		QObject::connect(refresh, &QAction::triggered, [this]()
-		{
+        QObject::connect(refresh, &QAction::triggered, [this]()
+        {
             auto board = _board.lock();
             if (board)
             {
                 board->updateUnread();
             }
-		});
+        });
 
 //		auto signOut = addAction("Disconnect");
 //		signOut->setToolTip(tr("Disconnect"));
@@ -2295,29 +2295,29 @@ void BoardMenu::createMenu()
 //		{
 //			// TODO: signoff
 //		});
-	}
-	else
-	{
-		QAction* action = addAction(tr("Connect"));
-		action->setToolTip(tr("Connect"));
-		QObject::connect(action, &QAction::triggered, [this]()
-		{
+    }
+    else
+    {
+        QAction* action = addAction(tr("Connect"));
+        action->setToolTip(tr("Connect"));
+        QObject::connect(action, &QAction::triggered, [this]()
+        {
             auto board = _board.lock();
 
             if (board)
             {
                 board->login();
             }
-		});
-	}
+        });
+    }
 
-	addSeparator();
+    addSeparator();
 
-	{
-		QAction* action = addAction(tr("Copy Board Address"));
-		action->setToolTip(tr("Copy Board Address"));
-		connect(action, &QAction::triggered, [=]()
-		{
+    {
+        QAction* action = addAction(tr("Copy Board Address"));
+        action->setToolTip(tr("Copy Board Address"));
+        connect(action, &QAction::triggered, [=]()
+        {
             auto board = _board.lock();
 
             if (board)
@@ -2325,18 +2325,18 @@ void BoardMenu::createMenu()
                 auto url = board->getUrl();
                 qApp->clipboard()->setText(url);
             }
-		});
-	}
+        });
+    }
 
-	{
-		QAction* action = addAction(QIcon(":/icons/link.png"), tr("Open in Browser"));
-		action->setToolTip(tr("Open in Browser"));
+    {
+        QAction* action = addAction(QIcon(":/icons/link.png"), tr("Open in Browser"));
+        action->setToolTip(tr("Open in Browser"));
 #ifdef Q_OS_MACX
-		action->setIconVisibleInMenu(false);
+        action->setIconVisibleInMenu(false);
 #endif
 
-		connect(action, &QAction::triggered, [=]()
-		{
+        connect(action, &QAction::triggered, [=]()
+        {
             auto board = _board.lock();
 
             if (board)
@@ -2344,37 +2344,37 @@ void BoardMenu::createMenu()
                 auto url = board->getUrl();
                 QDesktopServices::openUrl(url);
             }
-		});
-	}
+        });
+    }
 
-	addSeparator();
+    addSeparator();
 
     if (board->getStatus() == Board::ONLINE)
-	{
-		QAction* action = addAction(QIcon(":/icons/markforumread.png"), tr("Mark All Forums Read"));
-		action->setToolTip(tr("Mark All Forums Read"));
+    {
+        QAction* action = addAction(QIcon(":/icons/markforumread.png"), tr("Mark All Forums Read"));
+        action->setToolTip(tr("Mark All Forums Read"));
 #ifdef Q_OS_MACX
-		action->setIconVisibleInMenu(false);
+        action->setIconVisibleInMenu(false);
 #endif
 
-		connect(action, &QAction::triggered, [=]()
-		{
+        connect(action, &QAction::triggered, [=]()
+        {
             auto board = _board.lock();
             if (board)
             {
                 board->markForumRead(board->getRoot());
             }
-		});
-	}
+        });
+    }
 
-	{
-		QAction* action = addAction(QIcon(":/icons/settings.png"), tr("Settings"));
+    {
+        QAction* action = addAction(QIcon(":/icons/settings.png"), tr("Settings"));
 #ifdef Q_OS_MACX
-		action->setIconVisibleInMenu(false);
+        action->setIconVisibleInMenu(false);
 #endif
 
-		connect(action, &QAction::triggered, [=]()
-		{
+        connect(action, &QAction::triggered, [=]()
+        {
             try
             {
                 auto board = _board.lock();
@@ -2399,20 +2399,20 @@ void BoardMenu::createMenu()
                 str << "There was an error opening the settings dialog: " << ex.what();
                 QMessageBox::warning(nullptr, APP_TITLE, QString::fromStdString(str.str()));
             }
-		});
-	}
+        });
+    }
 
-	addSeparator();
+    addSeparator();
 
-	{
-		QAction* action = addAction(QIcon(":/icons/delete.png"), tr("Delete"));
+    {
+        QAction* action = addAction(QIcon(":/icons/delete.png"), tr("Delete"));
         action->setData(QVariant::fromValue(_board));
 #ifdef Q_OS_MACX
-		action->setIconVisibleInMenu(false);
+        action->setIconVisibleInMenu(false);
 #endif
 
-		connect(action, SIGNAL(triggered()), parent, SLOT(onBoardDelete()));
-	}
+        connect(action, SIGNAL(triggered()), parent, SLOT(onBoardDelete()));
+    }
 }
 
 } // namespace owl

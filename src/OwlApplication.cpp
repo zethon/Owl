@@ -158,13 +158,13 @@ OwlApplication::~OwlApplication()
         logger()->error("There was an unknown error shutting down the application");
     }
 
-	logger()->info("Exiting Owl");
+    logger()->info("Exiting Owl");
 }
 
 void OwlApplication::init()
 {
-	try
-	{
+    try
+    {
         // initialize the JSON settings file
         const auto retval = initSettings(_jsonConfig,_settingsFile, &_settingsLock);
         if (!retval.first)
@@ -193,20 +193,20 @@ void OwlApplication::init()
 
         // create the board objects from the db
         BoardManager::instance()->init();
-	}
-	catch (const OwlException& ex)
-	{
-		ErrorReportDlg dlg("Initialization Error", ex);
-		dlg.exec();
+    }
+    catch (const OwlException& ex)
+    {
+        ErrorReportDlg dlg("Initialization Error", ex);
+        dlg.exec();
 
-		throw;
-	}
-	catch (const std::exception& ex)
-	{
-		QString msg("Owl has experienced an unexpected error. Please report this problem and any details.\n\n");
-		msg.append(ex.what());
+        throw;
+    }
+    catch (const std::exception& ex)
+    {
+        QString msg("Owl has experienced an unexpected error. Please report this problem and any details.\n\n");
+        msg.append(ex.what());
 
-		QMessageBox::critical(nullptr, APP_TITLE, msg);
+        QMessageBox::critical(nullptr, APP_TITLE, msg);
     }
 }
 
@@ -253,28 +253,28 @@ void OwlApplication::initCommandLine()
 
 void OwlApplication::registerMetaTypes()
 {
-	logger()->trace("Registering Metatypes");
+    logger()->trace("Registering Metatypes");
 
-	qRegisterMetaType<owl::BoardPtr>("BoardPtr");
+    qRegisterMetaType<owl::BoardPtr>("BoardPtr");
     qRegisterMetaType<owl::BoardWeakPtr>("BoardWeakPtr");
-	qRegisterMetaType<owl::BoardList>("BoardList");
+    qRegisterMetaType<owl::BoardList>("BoardList");
 
-	qRegisterMetaType<owl::ForumPtr>("ForumPtr");
-	qRegisterMetaType<owl::ForumList>("ForumList");
+    qRegisterMetaType<owl::ForumPtr>("ForumPtr");
+    qRegisterMetaType<owl::ForumList>("ForumList");
 
-	qRegisterMetaType<owl::ThreadPtr>("ThreadPtr");
-	qRegisterMetaType<owl::ThreadList>("ThreadList");
+    qRegisterMetaType<owl::ThreadPtr>("ThreadPtr");
+    qRegisterMetaType<owl::ThreadList>("ThreadList");
 
-	qRegisterMetaType<owl::PostPtr>("PostPtr");
-	qRegisterMetaType<owl::PostList>("PostList");
+    qRegisterMetaType<owl::PostPtr>("PostPtr");
+    qRegisterMetaType<owl::PostList>("PostList");
 
-	qRegisterMetaType<owl::ParserBasePtr>("ParserBasePtr");
+    qRegisterMetaType<owl::ParserBasePtr>("ParserBasePtr");
 
-	qRegisterMetaType<owl::OwlException>("OwlException");
-	qRegisterMetaType<owl::OwlExceptionPtr>("OwlExceptionPtr");
+    qRegisterMetaType<owl::OwlException>("OwlException");
+    qRegisterMetaType<owl::OwlExceptionPtr>("OwlExceptionPtr");
 
-	qRegisterMetaType<owl::StringMap>("StringMap");
-	qRegisterMetaType<owl::StringMapPtr>("StringMapPtr");
+    qRegisterMetaType<owl::StringMap>("StringMap");
+    qRegisterMetaType<owl::StringMapPtr>("StringMapPtr");
 
     qmlRegisterType<SettingsObject>("reader.owl", 1, 0, "Settings");
 }
@@ -302,34 +302,34 @@ void OwlApplication::initializeDatabase()
         
         _db.open();
 
-		QFile file(":sql/owl.sql");
-		
-		if (!file.open(QIODevice::ReadOnly))
-		{
-            OWL_THROW_EXCEPTION(OwlException("Could not load owl.sql file"));
-		}
-
-		QTextStream in(&file);
-		QString sqlFile = in.readAll();
-		file.close();
-
-		for(QString statement : sqlFile.split(';'))
-		{
-			statement = statement.trimmed();
-
-			if (!statement.isEmpty())
-			{
-				QSqlQuery query(_db);
-
-				if (!query.exec(statement))
-				{
-					logger()->fatal("Query failed: '%1'", statement);
-					logger()->fatal("Last error: %1", query.lastError().text());
-				}
-			}
-		}
+        QFile file(":sql/owl.sql");
         
-		BoardManager::instance()->firstTimeInit();
+        if (!file.open(QIODevice::ReadOnly))
+        {
+            OWL_THROW_EXCEPTION(OwlException("Could not load owl.sql file"));
+        }
+
+        QTextStream in(&file);
+        QString sqlFile = in.readAll();
+        file.close();
+
+        for(QString statement : sqlFile.split(';'))
+        {
+            statement = statement.trimmed();
+
+            if (!statement.isEmpty())
+            {
+                QSqlQuery query(_db);
+
+                if (!query.exec(statement))
+                {
+                    logger()->fatal("Query failed: '%1'", statement);
+                    logger()->fatal("Last error: %1", query.lastError().text());
+                }
+            }
+        }
+        
+        BoardManager::instance()->firstTimeInit();
     }
     else
     {
@@ -401,16 +401,16 @@ void OwlApplication::initConsoleAppender()
     p_layout->setDateFormat("yyyy-MMM-dd hh:mm:ss");
     p_layout->activateOptions();
     
-	ConsoleAppender *p_appender = new ConsoleAppender(p_layout, ConsoleAppender::STDOUT_TARGET);
-	p_appender->activateOptions();
+    ConsoleAppender *p_appender = new ConsoleAppender(p_layout, ConsoleAppender::STDOUT_TARGET);
+    p_appender->activateOptions();
 
-	// Set appender on root logger
+    // Set appender on root logger
     Log4Qt::Logger::rootLogger()->addAppender(p_appender);
 
 #ifdef _DEBUG
     Log4Qt::Logger::rootLogger()->setLevel(Log4Qt::Level::TRACE_INT);
 #else
-	Log4Qt::Logger::rootLogger()->setLevel(Log4Qt::Level::INFO_INT);
+    Log4Qt::Logger::rootLogger()->setLevel(Log4Qt::Level::INFO_INT);
 #endif
 }
 

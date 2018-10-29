@@ -18,12 +18,12 @@ int main(int argc, char *argv[])
     owl::OwlApplication app(argc, &argv);
     QLoggingCategory::setFilterRules(QStringLiteral("qt.network.ssl=false"));
 
-	// main() return value, assume error
+    // main() return value, assume error
     int retval = 1;
 
-	try
-	{
-		app.init();
+    try
+    {
+        app.init();
 
         owl::SplashScreen splash(QPixmap(":/images/splash-full.png"));
 
@@ -42,26 +42,26 @@ int main(int argc, char *argv[])
         // show the main window
         window.show();
         retval = app.exec();
-	}
+    }
     catch (const OwlException& ex)
     {
-		app.logger()->fatal("There was an unrecoverable error: %1", ex);
+        app.logger()->fatal("There was an unrecoverable error: %1", ex);
         retval = OWLEXCEPTION;
     }
-	catch (const std::exception& ex)
-	{
-		app.logger()->fatal("There was an unrecoverable error: %1", ex.what());
-		retval = STDEXCEPTION;
-	}
-	catch(...)
-	{
-		app.logger()->fatal("There was an unknown unrecoverable error");
+    catch (const std::exception& ex)
+    {
+        app.logger()->fatal("There was an unrecoverable error: %1", ex.what());
+        retval = STDEXCEPTION;
+    }
+    catch(...)
+    {
+        app.logger()->fatal("There was an unknown unrecoverable error");
 
-		QMessageBox::warning(nullptr, APP_TITLE, 
-			QString("There was an unknown error"));
+        QMessageBox::warning(nullptr, APP_TITLE, 
+            QString("There was an unknown error"));
 
-		retval = UNKNOWNEXCEPTION;
-	}
+        retval = UNKNOWNEXCEPTION;
+    }
     
     return retval;
 }
