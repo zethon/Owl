@@ -49,35 +49,35 @@ QStringList SpellChecker::suggestions(const QString& word)
 
 void SpellChecker::loadDictionary(const QString &dictFilePath)
 {
-	_spellcheck.reset();
+    _spellcheck.reset();
 
-	logger()->debug("Loading dictionary from: %1", dictFilePath);
+    logger()->debug("Loading dictionary from: %1", dictFilePath);
 
-	QString affixFilePath(dictFilePath);
-	affixFilePath.replace(".dic", ".aff");
+    QString affixFilePath(dictFilePath);
+    affixFilePath.replace(".dic", ".aff");
 
-	_spellcheck = std::make_shared<Hunspell>(affixFilePath.toLocal8Bit(), dictFilePath.toLocal8Bit());
-	_textCodec = QTextCodec::codecForName(_spellcheck->get_dic_encoding());
+    _spellcheck = std::make_shared<Hunspell>(affixFilePath.toLocal8Bit(), dictFilePath.toLocal8Bit());
+    _textCodec = QTextCodec::codecForName(_spellcheck->get_dic_encoding());
 
-	if (!_textCodec) 
-	{
-		_textCodec = QTextCodec::codecForName("UTF-8");
-	}
+    if (!_textCodec) 
+    {
+        _textCodec = QTextCodec::codecForName("UTF-8");
+    }
 
-	// also load user word list
+    // also load user word list
     loadUserWordlist();
 }
 
 void SpellChecker::loadUserWordlist()
 {
     QFile userWordlistFile { GetCustomDictionaryName() };
-	if (userWordlistFile.open(QIODevice::ReadOnly))
-	{
-		QTextStream stream(&userWordlistFile);
-		for (QString word = stream.readLine(); !word.isEmpty(); word = stream.readLine()) 
-		{
-			_spellcheck->add(_textCodec->fromUnicode(word).constData());
-		}
+    if (userWordlistFile.open(QIODevice::ReadOnly))
+    {
+        QTextStream stream(&userWordlistFile);
+        for (QString word = stream.readLine(); !word.isEmpty(); word = stream.readLine()) 
+        {
+            _spellcheck->add(_textCodec->fromUnicode(word).constData());
+        }
     }
 }
 
@@ -118,51 +118,51 @@ bool SpellChecker::resetWordlist()
 
 QMap<QString, Dictionary> SpellChecker::availableDictionaries()
 {
-	QMap<QString, Dictionary> dictionaries;
+    QMap<QString, Dictionary> dictionaries;
     QStringList paths;
 
 #ifdef Q_OS_WIN
     // TODO: Where will the dictionaries live on Windows? Where should we look for them?
     paths << QStandardPaths::standardLocations(QStandardPaths::DataLocation);
-	paths << qApp->applicationDirPath();
+    paths << qApp->applicationDirPath();
 #elif defined (Q_OS_OSX)
     // On OSX the dictionaries are in the bundle: Owl.app/Content/Resources/dictionaries
     QFileInfo temp(QCoreApplication::applicationDirPath() + "/../Resources");
     paths << temp.absoluteFilePath();
 #endif
 
-	for (auto& path : paths) 
-	{
-		QDir dictPath(path + QDir::separator() + "dictionaries");
-		dictPath.setFilter(QDir::Files);
-		dictPath.setNameFilters(QStringList() << "*.dic");
-		
-		if (dictPath.exists()) 
-		{
-			// loop over all dictionaries in directory
-			QDirIterator it(dictPath);
-			while (it.hasNext()) 
-			{
-				it.next();
+    for (auto& path : paths) 
+    {
+        QDir dictPath(path + QDir::separator() + "dictionaries");
+        dictPath.setFilter(QDir::Files);
+        dictPath.setNameFilters(QStringList() << "*.dic");
+        
+        if (dictPath.exists()) 
+        {
+            // loop over all dictionaries in directory
+            QDirIterator it(dictPath);
+            while (it.hasNext()) 
+            {
+                it.next();
 
-				QString language = it.fileName().remove(".dic");
-				language.truncate(5); // just language and country code
+                QString language = it.fileName().remove(".dic");
+                language.truncate(5); // just language and country code
 
-				Dictionary dict(it.fileName(), it.filePath());
-				dictionaries.insert(language, dict);
-			}
-		}
-	}
+                Dictionary dict(it.fileName(), it.filePath());
+                dictionaries.insert(language, dict);
+            }
+        }
+    }
 
-	return dictionaries;
+    return dictionaries;
 }
 
 owl::SpellCheckerPtr SpellChecker::instance()
 {
-	if (!_instance)
-	{
-		_instance.reset(new SpellChecker());
-	}
+    if (!_instance)
+    {
+        _instance.reset(new SpellChecker());
+    }
 
     return _instance;
 }
@@ -178,22 +178,22 @@ void SpellChecker::init()
     const QString languageStr = SettingsObject().read("editor.spellcheck.language").toString();
 
     const auto dictionaries = availableDictionaries().toStdMap();
-	for (auto& item : dictionaries)
-	{
+    for (auto& item : dictionaries)
+    {
         if (languageStr == item.first)
-		{
-			auto dict = item.second;
-			loadDictionary(dict.filePath());
-			bFound = true;
-			break;
-		}
-	}
+        {
+            auto dict = item.second;
+            loadDictionary(dict.filePath());
+            bFound = true;
+            break;
+        }
+    }
 
-	if (!bFound)
-	{
-		_spellcheck.reset();
-		_textCodec = nullptr;
-	}
+    if (!bFound)
+    {
+        _spellcheck.reset();
+        _textCodec = nullptr;
+    }
 }
 
 SpellCheckerPtr SpellChecker::_instance = nullptr;
@@ -203,13 +203,13 @@ SpellCheckerPtr SpellChecker::_instance = nullptr;
 /////////////////////////////////////////////////////////////////////////
 
 EditorHighlighter::EditorHighlighter(QTextDocument* document, SpellCheckerPtr spellChecker)
-	: QSyntaxHighlighter(document),
-	  _spellChecker(spellChecker),
+    : QSyntaxHighlighter(document),
+      _spellChecker(spellChecker),
       _charsOnly("[A-Za-z]*")
 {
-	// QTextCharFormat::SpellCheckUnderline has issues with Qt 5.
-	_spellFormat.setUnderlineStyle(QTextCharFormat::WaveUnderline);
-	_spellFormat.setUnderlineColor(Qt::red);
+    // QTextCharFormat::SpellCheckUnderline has issues with Qt 5.
+    _spellFormat.setUnderlineStyle(QTextCharFormat::WaveUnderline);
+    _spellFormat.setUnderlineColor(Qt::red);
 
     QObject::connect(this->document(), &QTextDocument::cursorPositionChanged,
         [this](const QTextCursor & cursor)
@@ -221,7 +221,7 @@ EditorHighlighter::EditorHighlighter(QTextDocument* document, SpellCheckerPtr sp
 void EditorHighlighter::highlightBlock(const QString &textBlock)
 {
     if (!_spellChecker || !document()->isEmpty())
-	{
+    {
         // get the position of the cursor in the current block
         auto positionInBlock = _currentCursor.positionInBlock();
         QStringList wordList = textBlock.split(QRegExp("\\W+"), QString::SkipEmptyParts);
@@ -244,7 +244,7 @@ void EditorHighlighter::highlightBlock(const QString &textBlock)
 
             index += word.length();
         }
-	}
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////
