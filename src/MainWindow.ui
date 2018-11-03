@@ -20,6 +20,12 @@
    <string>Owl</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="minimumSize">
+    <size>
+     <width>250</width>
+     <height>0</height>
+    </size>
+   </property>
    <layout class="QGridLayout" name="gridLayout">
     <property name="margin">
      <number>0</number>
@@ -643,6 +649,18 @@ QToolButton:hover
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="boardsViewDockWidget">
+   <property name="minimumSize">
+    <size>
+     <width>250</width>
+     <height>102</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>250</width>
+     <height>524287</height>
+    </size>
+   </property>
    <property name="floating">
     <bool>false</bool>
    </property>
