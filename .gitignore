@@ -5,3 +5,4 @@ bin-xcode
 /src/Owl/res/Owl.aps
 binQt5.9.2
 wincmake.sh
+build

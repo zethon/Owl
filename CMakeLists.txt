@@ -1,3 +1,6 @@
+# Owl - www.owlclient.com
+# Copyright 2012-2018, Adalid Claure
+
 project(Owl)
 set(OWL_VERSION "0.7.7")
 
