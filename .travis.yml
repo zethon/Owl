@@ -5,6 +5,7 @@ install:
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       sudo pip install conan
       alias python=python3
+      export CXX=${CXX_COMPILER}
     fi
 
   - |
@@ -17,18 +18,18 @@ install:
 
   - conan remote add owl https://api.bintray.com/conan/zethon/owl
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
-  - export CXX=${CXX_COMPILER}
+  
 
 matrix:
   include:
-    # - os: osx
-    #   osx_image: xcode10
-    #   compiler: clang
-    #   env: CONFIG=Release
-    # - os: osx
-    #   osx_image: xcode10
-    #   compiler: clang
-    #   env: CONFIG=Debug
+    - os: osx
+      osx_image: xcode10
+      compiler: clang
+      env: CONFIG=Release
+    - os: osx
+      osx_image: xcode10
+      compiler: clang
+      env: CONFIG=Debug
     - os: linux
       dist: trusty
       sudo: required
@@ -41,21 +42,25 @@ matrix:
       addons:
         apt:
           packages:
+            - gcc-7
+            - g++-7
             - qt510base
             - qt510tools
             - qt510webengine
-            - gcc-7
-            - g++-7
-            - binutils-2.29.1
           sources:
             - ubuntu-toolchain-r-test
             - sourceline: "ppa:beineri/opt-qt-5.10.1-trusty"
 
 script:
-  - source /opt/qt510/bin/qt510-env.sh;
   - mkdir build
   - cd build
-  - conan install .. --build missing -s compiler=gcc -s compiler.libcxx=libstdc++ -s compiler.version=7
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      source /opt/qt510/bin/qt510-env.sh;
+      conan install .. --build missing -s compiler=gcc -s compiler.libcxx=libstdc++ -s compiler.version=7
+    else if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      conan install .. --build missing
+    fi
   - cmake .. -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DBUILD_TEST=true
   - cmake --build . --config "${CONFIG}" -- -j3
 
