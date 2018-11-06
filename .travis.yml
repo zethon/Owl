@@ -1,7 +1,6 @@
 language: cpp
 
 install:
-  - echo "+++ $TRAVIS_OS_NAME ++++"
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       sudo pip3 install conan
