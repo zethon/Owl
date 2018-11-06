@@ -54,6 +54,9 @@ matrix:
 
 script:
   - ld --version
+  - c++ --version
+  - g++ --version
+
   - mkdir build
   - cd build
 
@@ -61,7 +64,7 @@ script:
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       source /opt/qt510/bin/qt510-env.sh;
-      conan install .. --build missing -s compiler=gcc -s compiler.libcxx=libstdc++ -s compiler.version=7
+      conan install .. --build missing -s compiler=g++ -s compiler.libcxx=libstdc++ -s compiler.version=7
     fi
 
   # OSX
