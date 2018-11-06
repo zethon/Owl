@@ -33,6 +33,7 @@ matrix:
     - os: linux
       dist: trusty
       sudo: required
+      compiler: gcc
       language: python
       python: "3.6"
       env:
@@ -54,13 +55,20 @@ matrix:
 script:
   - mkdir build
   - cd build
+
+  # Linux
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       source /opt/qt510/bin/qt510-env.sh;
       conan install .. --build missing -s compiler=gcc -s compiler.libcxx=libstdc++ -s compiler.version=7
-    else if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+    fi
+
+  # OSX
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       conan install .. --build missing
     fi
+
   - cmake .. -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DBUILD_TEST=true
   - cmake --build . --config "${CONFIG}" -- -j3
 
