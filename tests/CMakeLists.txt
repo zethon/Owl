@@ -17,7 +17,7 @@ set(UTILS_TESTS
     UtilsTest_WebClient.cpp
 )
 
-if (not CMAKE_COMPILER_IS_GNUCXX)
+if (NOT CMAKE_COMPILER_IS_GNUCXX)
 
     # TODO: For now we will exclude this test on Linux/GCC because of the
     # ABI build error mentioned above with GCC. It would be ideal to figure 
