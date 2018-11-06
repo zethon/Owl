@@ -44,7 +44,6 @@ matrix:
           packages:
             # - python3
             - qt510base
-            - qt510uitools
             - qt510tools
             - gcc-7
             - g++-7
