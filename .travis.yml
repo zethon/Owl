@@ -42,9 +42,9 @@ matrix:
       addons:
         apt:
           packages:
-            # - python3
             - qt510base
             - qt510tools
+            - qt510webengine
             - gcc-7
             - g++-7
           sources:
