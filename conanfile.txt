@@ -11,8 +11,7 @@
 #
 # Linux:
 #
-#   $ conan install .. --build missing \
-#       -s compiler.libcxx=libstdc++
+#   $ conan install .. --build missing  -s compiler.libcxx=libstdc++
 
 [requires]
 boost/1.68.0@conan/stable

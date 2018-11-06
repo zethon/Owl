@@ -21,29 +21,31 @@ install:
 
 matrix:
   include:
-    - os: osx
-      osx_image: xcode10
-      compiler: clang
-      env: CONFIG=Release
-    - os: osx
-      osx_image: xcode10
-      compiler: clang
-      env: CONFIG=Debug
-    # - os: linux
-    #   dist: trusty
-    #   sudo: required
-    #   env:
-    #     - CC_COMPILER=gcc-7
-    #     - CXX_COMPILER=g++-7
-    #     - BUILD_TYPE=RelWithDebInfo
-    #   addons:
-    #     apt:
-    #       packages:
-    #         - python3
-    #         - gcc-7
-    #         - g++-7
-    #       sources:
-    #         - ubuntu-toolchain-r-test
+    # - os: osx
+    #   osx_image: xcode10
+    #   compiler: clang
+    #   env: CONFIG=Release
+    # - os: osx
+    #   osx_image: xcode10
+    #   compiler: clang
+    #   env: CONFIG=Debug
+    - os: linux
+      dist: trusty
+      sudo: required
+      language: python
+      python: "3.7"
+      env:
+        - CC_COMPILER=gcc-7
+        - CXX_COMPILER=g++-7
+        - BUILD_TYPE=RelWithDebInfo
+      addons:
+        apt:
+          packages:
+            # - python3
+            - gcc-7
+            - g++-7
+          sources:
+            - ubuntu-toolchain-r-test
 
 script:
   - mkdir build
