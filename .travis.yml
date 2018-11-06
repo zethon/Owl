@@ -10,13 +10,14 @@ before_install:
 install:
   - |
     if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-      pip install --upgrade pip
-      pip install conan_package_tools --upgrade
-      pip install conan --upgrade
+      # sudo pip install --upgrade pip
+      # sudo pip install conan_package_tools --upgrade
+      sudo pip install conan
     fi
-    
+
   - conan remote add owl https://api.bintray.com/conan/zethon/owl
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
+  - export CXX=${CXX_COMPILER}
 
 matrix:
   include:
@@ -31,8 +32,17 @@ matrix:
     - os: linux
       dist: trusty
       sudo: required
-      compiler: g++
-      env: CONFIG=RelWithDebInfo CXX_COMPILER=g++-6
+      env:
+        - CC_COMPILER=gcc-7
+        - CXX_COMPILER=g++-7
+        - BUILD_TYPE=RelWithDebInfo
+      addons:
+        apt:
+          packages:
+            - gcc-7
+            - g++-7
+          sources:
+            - ubuntu-toolchain-r-test
 
 script:
   - mkdir build
