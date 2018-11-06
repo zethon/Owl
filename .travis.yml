@@ -5,7 +5,6 @@ install:
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       sudo pip install conan
       alias python=python3
-      sudo binutils-config x86_64-pc-linux-gnu-2.29.1
     fi
 
   - |
@@ -47,6 +46,7 @@ matrix:
             - qt510webengine
             - gcc-7
             - g++-7
+            - binutils-2.29.1
           sources:
             - ubuntu-toolchain-r-test
             - sourceline: "ppa:beineri/opt-qt-5.10.1-trusty"
