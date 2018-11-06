@@ -5,8 +5,7 @@ install:
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       sudo pip install conan
       alias python=python3
-      sudo apt-get install -qq qt510base; 
-      source /opt/qt510/bin/qt510-env.sh ;
+      # sudo apt-get install -qq qt510base; 
     fi
 
   - |
@@ -44,6 +43,9 @@ matrix:
         apt:
           packages:
             # - python3
+            - qt510base
+            - qt510uitools
+            - qt510tools
             - gcc-7
             - g++-7
           sources:
@@ -51,6 +53,7 @@ matrix:
             - sourceline: "ppa:beineri/opt-qt-5.10.1-trusty"
 
 script:
+  - source /opt/qt510/bin/qt510-env.sh;
   - mkdir build
   - cd build
   - conan install .. --build missing -s compiler=gcc -s compiler.libcxx=libstdc++ -s compiler.version=7
