@@ -39,7 +39,7 @@ matrix:
       env:
         - CC_COMPILER=gcc-7
         - CXX_COMPILER=g++-7
-        - BUILD_TYPE=RelWithDebInfo
+        - CONFIG=RelWithDebInfo
       addons:
         apt:
           packages:
@@ -55,7 +55,7 @@ matrix:
 script:
   - ld --version
   - c++ --version
-  - g++ --version
+  - gcc --version
 
   - mkdir build
   - cd build
@@ -63,8 +63,8 @@ script:
   # Linux
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      conan install .. --build missing -s compiler=gcc -s compiler.libcxx=libstdc++ -s compiler.version=7
       source /opt/qt510/bin/qt510-env.sh;
-      conan install .. --build missing -s compiler=g++ -s compiler.libcxx=libstdc++ -s compiler.version=7
     fi
 
   # OSX
