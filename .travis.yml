@@ -13,6 +13,7 @@ install:
       # sudo pip install --upgrade pip
       # sudo pip install conan_package_tools --upgrade
       sudo pip install conan
+      alias python=python3
     fi
 
   - conan remote add owl https://api.bintray.com/conan/zethon/owl
