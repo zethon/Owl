@@ -32,7 +32,6 @@ matrix:
     - os: linux
       dist: trusty
       sudo: required
-      python: "3.6"
       env:
         - CC_COMPILER=gcc-7
         - CXX_COMPILER=g++-7
@@ -40,6 +39,7 @@ matrix:
       addons:
         apt:
           packages:
+            - python3
             - gcc-7
             - g++-7
           sources:
