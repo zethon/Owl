@@ -35,6 +35,7 @@ add_library(Data STATIC
 )
 
 target_link_libraries(Data
+    ${CONAN_LIBS}
     Qt5::Concurrent
     Qt5::Core
     Qt5::Gui

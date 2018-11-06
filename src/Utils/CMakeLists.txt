@@ -47,6 +47,7 @@ add_library(Utils STATIC
 )
 
 target_link_libraries(Utils
+    ${CONAN_LIBS}
     Qt5::Concurrent
     Qt5::Core
     Qt5::Network
