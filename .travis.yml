@@ -3,7 +3,7 @@ language: cpp
 install:
   - |
     if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-      sudo pip install conan
+      sudo pip3 install conan
       alias python=python3
     fi
 
