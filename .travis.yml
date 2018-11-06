@@ -53,6 +53,7 @@ matrix:
             - sourceline: "ppa:beineri/opt-qt-5.10.1-trusty"
 
 script:
+  - ld --version
   - mkdir build
   - cd build
 
