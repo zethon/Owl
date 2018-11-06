@@ -26,7 +26,10 @@ QTreeView::item:selected
 BoardTreeView::BoardTreeView(QWidget* parent)
 	: QTreeView(parent)
 {
-    _noBoardsConfigured = new QLabel("No boards configured.<br/><a href=\"owl:///boardconfig\" style=\"color:lightblue;\">Click here</a> to configure.", this);
+    _noBoardsConfigured = new QLabel("No boards configured.<br/>"
+        "<a href=\"owl:///boardconfig\" style=\"color:lightblue;\">Click here</a> to configure.",
+        this);
+
 	_noBoardsConfigured->setFont(QFont("Verdana", 14, QFont::Bold, false));
     _noBoardsConfigured->setStyleSheet("color: lightgray;");
 	_noBoardsConfigured->setVisible(BoardManager::instance()->getBoardCount() <= 0);
@@ -41,7 +44,7 @@ BoardTreeView::BoardTreeView(QWidget* parent)
 	{
         loadStyleSettings();
         setStyleSheet(createStyle());
-		_noBoardsConfigured->move(rect().center() - _noBoardsConfigured->rect().center());
+        _noBoardsConfigured->move(rect().center() - _noBoardsConfigured->rect().center());
 	});
 
 	timer->setSingleShot(true);
