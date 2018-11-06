@@ -6,10 +6,13 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install conan; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install qt5; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew link --force qt5; fi
-# Linux setup
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then pip install conan; fi
 
 install:
+  - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      pip install --upgrade pip
+      pip install conan_package_tools --upgrade
+      pip install conan --upgrade
+    fi
   - conan remote add owl https://api.bintray.com/conan/zethon/owl
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
 
