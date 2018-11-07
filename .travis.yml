@@ -57,7 +57,7 @@ matrix:
             - gcc-7
             - g++-7
             - build-essential
-            - binutils-2.30
+            # - binutils-2.30
             - qt510base
             - qt510tools
             - qt510webengine
