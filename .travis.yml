@@ -6,11 +6,6 @@ install:
       sudo pip install conan
       alias python=python3
       export CXX=${CXX_COMPILER}
-
-      sudo find / -name "ld" -type f 2>&-
-      ld --version
-      /usr/amd64-mingw32msvc/bin/ld --version
-      /usr/i586-mingw32msvc/bin/ld --version
     fi
 
   - |
@@ -63,6 +58,11 @@ script:
   - c++ --version
   - gcc --version
   - g++ --version
+
+  - sudo find / -name "ld" -type f 2>&-
+  - ld --version
+  - /usr/amd64-mingw32msvc/bin/ld --version
+  - /usr/i586-mingw32msvc/bin/ld --version  
 
   - mkdir build
   - cd build
