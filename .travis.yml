@@ -1,11 +1,11 @@
 language: cpp
 
-before_install:
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      # sudo add-apt-repository ppa:jonathonf/binutils-2.30
+# before_install:
+#   - |
+#     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+#       # sudo add-apt-repository ppa:jonathonf/binutils-2.30
       
-    fi
+#     fi
 
 install:
   - |
