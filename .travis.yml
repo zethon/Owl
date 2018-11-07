@@ -13,7 +13,17 @@ install:
       sudo apt-get update
       sudo pip install conan
       alias python=python3
-      # export CXX=${CXX_COMPILER}
+      export CXX=${CXX_COMPILER}
+
+      mkdir $HOME/cross
+      git clone -b riscv-binutils-2.30 https://github.com/riscv/riscv-binutils-gdb.git
+      cd riscv-binutils-gdb
+      ./configure --prefix $HOME/cross
+      make
+      make install
+      export PATH=$PATH:$HOME/cross/bin
+      cd ..
+
     fi
 
   - |
@@ -45,8 +55,8 @@ matrix:
       language: python
       python: "3.6"
       env:
-        # - CC_COMPILER=gcc-7
-        # - CXX_COMPILER=g++-7
+        - CC_COMPILER=gcc-7
+        - CXX_COMPILER=g++-7
         - CONFIG=RelWithDebInfo
       addons:
         apt:
