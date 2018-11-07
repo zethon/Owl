@@ -15,15 +15,8 @@ install:
       alias python=python3
       export CXX=${CXX_COMPILER}
 
-      # mkdir $HOME/cross
-      git clone -b riscv-binutils-2.30 https://github.com/riscv/riscv-binutils-gdb.git
-      cd riscv-binutils-gdb
-      ./configure 
-      make
-      make install
-      # export PATH=$PATH:$HOME/cross/bin
-      cd ..
-
+      sudo rm -f /usr/bin/ld
+      sudo ln -s /usr/lib/binutils-2.30/bin/ld /usr/bin/ld
     fi
 
   - |
@@ -64,6 +57,7 @@ matrix:
             - gcc-7
             - g++-7
             - build-essential
+            - binutils-2.30
             - qt510base
             - qt510tools
             - qt510webengine
