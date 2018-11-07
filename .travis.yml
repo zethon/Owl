@@ -45,6 +45,7 @@ matrix:
           packages:
             - gcc-7
             - g++-7
+            - build-essential
             - qt510base
             - qt510tools
             - qt510webengine
@@ -64,11 +65,10 @@ script:
   # Linux
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      ld --version
+      find / -name "ld" -type f
       conan install .. --build missing -s compiler=gcc -s compiler.libcxx=libstdc++ -s compiler.version=7
       source /opt/qt510/bin/qt510-env.sh;
-
-      sudo apt-get install build-essential
-      ld --version
     fi
 
   # OSX
