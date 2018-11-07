@@ -6,6 +6,11 @@ install:
       sudo pip install conan
       alias python=python3
       export CXX=${CXX_COMPILER}
+
+      sudo find / -name "ld" -type f 2>&-
+      ld --version
+      /usr/amd64-mingw32msvc/bin/ld --version
+      /usr/i586-mingw32msvc/bin/ld --version
     fi
 
   - |
@@ -65,8 +70,6 @@ script:
   # Linux
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      ld --version
-      find / -name "ld" -type f 2>&-
       conan install .. --build missing -s compiler=gcc -s compiler.libcxx=libstdc++ -s compiler.version=7
       source /opt/qt510/bin/qt510-env.sh;
     fi
