@@ -15,13 +15,13 @@ install:
       alias python=python3
       export CXX=${CXX_COMPILER}
 
-      mkdir $HOME/cross
+      # mkdir $HOME/cross
       git clone -b riscv-binutils-2.30 https://github.com/riscv/riscv-binutils-gdb.git
       cd riscv-binutils-gdb
-      ./configure --prefix $HOME/cross
+      ./configure 
       make
       make install
-      export PATH=$PATH:$HOME/cross/bin
+      # export PATH=$PATH:$HOME/cross/bin
       cd ..
 
     fi
