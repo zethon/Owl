@@ -21,7 +21,7 @@ install:
       mkdir binutils
       cd binutils
       wget http://ftp.gnu.org/gnu/binutils/binutils-2.30.tar.gz
-      tar -xf binutils-2.27.tar.gz
+      tar -xf binutils-2.30.tar.gz
       mkdir binutils-build
       cd binutils-build
       ../binutils-2.30/configure --target=$TARGET --prefix="$PREFIX" --with-sysroot --disable-nls --disable-werror
