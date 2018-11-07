@@ -3,13 +3,14 @@ language: cpp
 before_install:
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      sudo add-apt-repository ppa:jonathonf/binutils-2.30
-      sudo apt-get update
+      # sudo add-apt-repository ppa:jonathonf/binutils-2.30
+      
     fi
 
 install:
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      sudo apt-get update
       sudo pip install conan
       alias python=python3
       # export CXX=${CXX_COMPILER}
@@ -59,6 +60,7 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
             - sourceline: "ppa:beineri/opt-qt-5.10.1-trusty"
+            - sourceline: "ppa:jonathonf/binutils-2.30"
 
 script:
   - ld --version
