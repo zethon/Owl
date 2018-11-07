@@ -5,7 +5,7 @@ install:
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       sudo pip install conan
       alias python=python3
-      export CXX=${CXX_COMPILER}
+      # export CXX=${CXX_COMPILER}
     fi
 
   - |
@@ -37,8 +37,8 @@ matrix:
       language: python
       python: "3.6"
       env:
-        - CC_COMPILER=gcc-7
-        - CXX_COMPILER=g++-7
+        # - CC_COMPILER=gcc-7
+        # - CXX_COMPILER=g++-7
         - CONFIG=RelWithDebInfo
       addons:
         apt:
