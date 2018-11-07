@@ -15,8 +15,25 @@ install:
       alias python=python3
       export CXX=${CXX_COMPILER}
 
-      sudo rm -f /usr/bin/ld
-      sudo ln -s /usr/lib/binutils-2.30/bin/ld /usr/bin/ld
+      # sudo rm -f /usr/bin/ld
+      # sudo ln -s /usr/lib/binutils-2.30/bin/ld /usr/bin/ld
+
+      mkdir binutils
+      cd binutils
+      wget http://ftp.gnu.org/gnu/binutils/binutils-2.30.tar.gz
+      tar -xf binutils-2.27.tar.gz
+      mkdir binutils-build
+      cd binutils-build
+      ../binutils-2.30/configure --target=$TARGET --prefix="$PREFIX" --with-sysroot --disable-nls --disable-werror
+      make
+      make install
+      cd ..
+
+      echo ---------------------------------------------
+      ld --version
+      find binutils-build -name "ld"
+      echo +++++++++++++++++++++++++++++++++++++++++++++
+
     fi
 
   - |
