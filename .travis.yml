@@ -1,26 +1,24 @@
 language: cpp
 
-# before_install:
-#   - |
-#     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-#       # sudo add-apt-repository ppa:jonathonf/binutils-2.30
-      
-#     fi
-
 install:
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      sudo apt-get update
-      sudo pip install conan
-      alias python=python3
       export CXX=${CXX_COMPILER}
 
-      # sudo rm -f /usr/bin/ld
-      # sudo ln -s /usr/lib/binutils-2.30/bin/ld /usr/bin/ld
+      sudo apt-get update
+      
+      # Install conan and make sure that it uses Python3, otherwise we will get a
+      # cert failure when trying to download curl
+      sudo pip install conan
+      alias python=python3
+      
 
+      # Since we are using GCC7 we need to update `ld`. The default version, 2.24, will
+      # fail to link the generated object files. There seems to be no other easier way
+      # to update "ld", so we pull down binutils, build it and then link the resulting
+      # executable to the system's path
       pushd .
       cd ..
-
       mkdir binutils
       cd binutils
       wget http://ftp.gnu.org/gnu/binutils/binutils-2.30.tar.gz
@@ -29,26 +27,11 @@ install:
       cd binutils-build
       ../binutils-2.30/configure --target=$TARGET --prefix="$PREFIX" --with-sysroot --disable-nls --disable-werror
       make
-      echo 111111111111111111111111111111111111111111111111111111111111111
       sudo make install
-      echo 222222222222222222222222222222222222222222222222222222222222222
       cd ..
-
-      echo aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-      # sudo rm -f /usr/bin/ld
-      # sudo ln -s binutils-build/ld/ld-new /usr/bin/ld
-      echo bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
-      ls -al /usr/lib/binutils-2.30
-      echo ccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-      binutils-build/ld/ld-new --version
-
-      echo ---------------------------------------------
-      ld --version
-      find binutils-build -name "ld"
-      echo +++++++++++++++++++++++++++++++++++++++++++++
-
+      sudo rm -f /usr/bin/ld
+      sudo ln -s binutils-build/ld/ld-new /usr/bin/ld
       popd
-
     fi
 
   - |
@@ -65,14 +48,14 @@ install:
 
 matrix:
   include:
-    # - os: osx
-    #   osx_image: xcode10
-    #   compiler: clang
-    #   env: CONFIG=Release
-    # - os: osx
-    #   osx_image: xcode10
-    #   compiler: clang
-    #   env: CONFIG=Debug
+    - os: osx
+      osx_image: xcode10
+      compiler: clang
+      env: CONFIG=Release
+    - os: osx
+      osx_image: xcode10
+      compiler: clang
+      env: CONFIG=Debug
     - os: linux
       dist: trusty
       sudo: required
@@ -89,7 +72,6 @@ matrix:
             - gcc-7
             - g++-7
             - build-essential
-            # - binutils-2.30
             - qt510base
             - qt510tools
             - qt510webengine
@@ -99,16 +81,6 @@ matrix:
             - sourceline: "ppa:jonathonf/binutils-2.30"
 
 script:
-  - ld --version
-  - c++ --version
-  - gcc --version
-  - g++ --version
-
-  - sudo find / -name "ld" -type f 2>&-
-  - ld --version
-  - /usr/amd64-mingw32msvc/bin/ld --version
-  - /usr/i586-mingw32msvc/bin/ld --version  
-
   - mkdir build
   - cd build
 
