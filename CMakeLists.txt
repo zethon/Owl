@@ -6,7 +6,6 @@ set(OWL_VERSION "0.7.7")
 
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_MACOSX_RPATH 1)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -102,6 +101,10 @@ if (MSVC)
         /WX
     )
 endif(MSVC)
+
+if (APPLE)
+    set(CMAKE_MACOSX_RPATH 1)
+endif(APPLE)
 
 #############################################
 # find QT
