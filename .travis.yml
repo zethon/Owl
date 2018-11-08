@@ -6,6 +6,8 @@ install:
       export CC=${CC_COMPILER}
       export CXX=${CXX_COMPILER}
 
+      /usr/bin/g++-7 --version
+
       # Install conan and make sure that it uses Python3, otherwise we will get a
       # cert failure when trying to download curl
       sudo pip install conan
