@@ -75,28 +75,28 @@ matrix:
       osx_image: xcode10
       compiler: clang
       env: CONFIG=Debug
-    - os: linux
-      dist: xenial
-      sudo: required
-      compiler: gcc
-      language: python
-      python: "3.6"
-      env:
-        - CC_COMPILER=gcc-7
-        - CXX_COMPILER=g++-7
-        - CONFIG=RelWithDebInfo
-      addons:
-        apt:
-          packages:
-            - gcc-7
-            - g++-7
-            - build-essential
-            - qt510base
-            - qt510tools
-            - qt510webengine
-          sources:
-            - ubuntu-toolchain-r-test
-            - sourceline: "ppa:beineri/opt-qt-5.10.1-trusty"
+    # - os: linux
+    #   dist: xenial
+    #   sudo: required
+    #   compiler: gcc
+    #   language: python
+    #   python: "3.6"
+    #   env:
+    #     - CC_COMPILER=gcc-7
+    #     - CXX_COMPILER=g++-7
+    #     - CONFIG=RelWithDebInfo
+    #   addons:
+    #     apt:
+    #       packages:
+    #         - gcc-7
+    #         - g++-7
+    #         - build-essential
+    #         - qt510base
+    #         - qt510tools
+    #         - qt510webengine
+    #       sources:
+    #         - ubuntu-toolchain-r-test
+    #         - sourceline: "ppa:beineri/opt-qt-5.10.1-trusty"
 
 script:
   - mkdir build
