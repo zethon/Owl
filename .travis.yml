@@ -5,9 +5,6 @@ install:
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       export CXX=${CXX_COMPILER}
 
-      # TODO: TEST
-      # sudo apt-get update
-      
       # Install conan and make sure that it uses Python3, otherwise we will get a
       # cert failure when trying to download curl
       sudo pip install conan
@@ -79,8 +76,6 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
             - sourceline: "ppa:beineri/opt-qt-5.10.1-trusty"
-            # TODO: TEST
-            # - sourceline: "ppa:jonathonf/binutils-2.30"
 
 script:
   - mkdir build
@@ -91,7 +86,7 @@ script:
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       conan install .. --build missing -s compiler=gcc -s compiler.libcxx=libstdc++11 -s compiler.version=7
       source /opt/qt510/bin/qt510-env.sh;
-      cmake .. -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DBUILD_TEST=ON
+      cmake .. -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DBUILD_TEST=ON -DCONAN_LIBCXX=libstdc++11
     fi
 
   # OSX
