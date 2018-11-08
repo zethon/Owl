@@ -1,3 +1,23 @@
+# NOTE: Where we left off -- the -D_GLIBCXX_USE_CXX11_ABI=[0|1] definition seems to do nothing
+# on the older version of Ubuntu (14.04) that Travis CI uses. Hence when I tried to link 
+# everything against the C++11 system libraries, I still got linker errors about 
+# "undefined reference to `std::__cxx11::basic_string...". When I tried to build against the
+# old libs, I get the same linker errors. These all seem related to hunspell. One possible
+# solution would be to re-build Hunspell and link against the old system libraries, but I'm
+# (1) not entirely that will work on 18.04, which is the Ubuntu version I'm using and (2)
+# I seem to remember something about static libraries not linking until they're linked with
+# an executable but maybe that depends on the implementation? I had to explicitly link the 
+# Conan libraries with the Owl libraries in order to avoid linking errors. ANOTHER possible
+# solution would be to use Docker, but that's an entire learning curve and pain in the ass 
+# that I don't want to deal with right now.
+# 
+# I'm going to put the rest for a little bit so I can move on and work on other areas I want 
+# to work on. Hopefully Travis will support Ubuntu 16.04 (or possibly 18.04) soon and this will
+# "just work". 
+#
+# Addy, November 8 2018
+#
+
 language: cpp
 
 install:
@@ -5,8 +25,6 @@ install:
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       export CC=${CC_COMPILER}
       export CXX=${CXX_COMPILER}
-
-      /usr/bin/g++-7 --version
 
       # Install conan and make sure that it uses Python3, otherwise we will get a
       # cert failure when trying to download curl
@@ -49,14 +67,14 @@ install:
 
 matrix:
   include:
-    # - os: osx
-    #   osx_image: xcode10
-    #   compiler: clang
-    #   env: CONFIG=Release
-    # - os: osx
-    #   osx_image: xcode10
-    #   compiler: clang
-    #   env: CONFIG=Debug
+    - os: osx
+      osx_image: xcode10
+      compiler: clang
+      env: CONFIG=Release
+    - os: osx
+      osx_image: xcode10
+      compiler: clang
+      env: CONFIG=Debug
     - os: linux
       dist: xenial
       sudo: required
@@ -87,6 +105,11 @@ script:
   # Linux
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      # NOTE: Ideally the "libstdc++" here would be "libstdc++11" but that seems to cause problems
+      # on Travis because they're using an old version of Ubuntu. Of course the "libstdc++" might 
+      # work as-is if Hunspell was built using the same standard library but as it stands now, my 
+      # Conan libs use "libstdc++11" and I don't feel like digging into this anymore right now in 
+      # order to fix that.
       conan install .. --build missing -s compiler=gcc -s compiler.libcxx=libstdc++ -s compiler.version=7
       source /opt/qt510/bin/qt510-env.sh;
       cmake .. -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DBUILD_TEST=ON -DCONAN_LIBCXX=libstdc++
