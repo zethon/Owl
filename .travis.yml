@@ -87,9 +87,9 @@ script:
   # Linux
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      conan install .. --build missing -s compiler=gcc -s compiler.libcxx=libstdc++11 -s compiler.version=7
+      conan install .. --build missing -s compiler=gcc -s compiler.libcxx=libstdc++ -s compiler.version=7
       source /opt/qt510/bin/qt510-env.sh;
-      cmake .. -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DBUILD_TEST=ON -DCONAN_LIBCXX=libstdc++11
+      cmake .. -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DBUILD_TEST=ON -DCONAN_LIBCXX=libstdc++
     fi
 
   # OSX
