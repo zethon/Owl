@@ -82,6 +82,15 @@ if (CMAKE_CXX_COMPILER_ID MATCHES Clang)
     )
 endif()
 
+if(CMAKE_COMPILER_IS_GNUCXX)
+
+    # TODO: This required, at least on Linux, because of GNU's
+    # handling of the C++ standard library with C++ and boost's
+    # unit test framework. See the comment below in regards to
+    # "UtilsTest_Version.cpp"
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")
+endif()
+
 if (MSVC)
     add_definitions(
         -DWIN32
