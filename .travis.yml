@@ -35,8 +35,8 @@ install:
       cd ..
 
       echo aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-      sudo rm -f /usr/bin/ld
-      sudo ln -s binutils-build/ld/ld-new /usr/bin/ld
+      # sudo rm -f /usr/bin/ld
+      # sudo ln -s binutils-build/ld/ld-new /usr/bin/ld
       echo bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
       ls -al /usr/lib/binutils-2.30
       echo ccccccccccccccccccccccccccccccccccccccccccccccccccccccc
