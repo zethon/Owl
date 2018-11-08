@@ -18,6 +18,9 @@ install:
       # sudo rm -f /usr/bin/ld
       # sudo ln -s /usr/lib/binutils-2.30/bin/ld /usr/bin/ld
 
+      pushd .
+      cd ..
+
       mkdir binutils
       cd binutils
       wget http://ftp.gnu.org/gnu/binutils/binutils-2.30.tar.gz
@@ -26,13 +29,21 @@ install:
       cd binutils-build
       ../binutils-2.30/configure --target=$TARGET --prefix="$PREFIX" --with-sysroot --disable-nls --disable-werror
       make
+      echo 111111111111111111111111111111111111111111111111111111111111111
       make install
+      echo 222222222222222222222222222222222222222222222222222222222222222
       cd ..
+
+      sudo rm -f /usr/bin/ld
+      sudo ln -s binutils-build/ld/ld-new /usr/bin/ld
+      ls -al /usr/lib/binutils-2.30
 
       echo ---------------------------------------------
       ld --version
       find binutils-build -name "ld"
       echo +++++++++++++++++++++++++++++++++++++++++++++
+
+      popd
 
     fi
 
