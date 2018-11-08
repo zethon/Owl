@@ -5,7 +5,8 @@ install:
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       export CXX=${CXX_COMPILER}
 
-      sudo apt-get update
+      # TODO: TEST
+      # sudo apt-get update
       
       # Install conan and make sure that it uses Python3, otherwise we will get a
       # cert failure when trying to download curl
@@ -78,7 +79,8 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
             - sourceline: "ppa:beineri/opt-qt-5.10.1-trusty"
-            - sourceline: "ppa:jonathonf/binutils-2.30"
+            # TODO: TEST
+            # - sourceline: "ppa:jonathonf/binutils-2.30"
 
 script:
   - mkdir build
