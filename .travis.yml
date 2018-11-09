@@ -67,36 +67,36 @@ install:
 
 matrix:
   include:
-    - os: osx
-      osx_image: xcode10
-      compiler: clang
-      env: CONFIG=Release
-    - os: osx
-      osx_image: xcode10
-      compiler: clang
-      env: CONFIG=Debug
-    # - os: linux
-    #   dist: xenial
-    #   sudo: required
-    #   compiler: gcc
-    #   language: python
-    #   python: "3.6"
-    #   env:
-    #     - CC_COMPILER=gcc-7
-    #     - CXX_COMPILER=g++-7
-    #     - CONFIG=RelWithDebInfo
-    #   addons:
-    #     apt:
-    #       packages:
-    #         - gcc-7
-    #         - g++-7
-    #         - build-essential
-    #         - qt510base
-    #         - qt510tools
-    #         - qt510webengine
-    #       sources:
-    #         - ubuntu-toolchain-r-test
-    #         - sourceline: "ppa:beineri/opt-qt-5.10.1-trusty"
+    # - os: osx
+    #   osx_image: xcode10
+    #   compiler: clang
+    #   env: CONFIG=Release
+    # - os: osx
+    #   osx_image: xcode10
+    #   compiler: clang
+    #   env: CONFIG=Debug
+    - os: linux
+      dist: xenial
+      sudo: required
+      compiler: gcc
+      language: python
+      python: "3.6"
+      env:
+        - CC_COMPILER=gcc-7
+        - CXX_COMPILER=g++-7
+        - CONFIG=RelWithDebInfo
+      addons:
+        apt:
+          packages:
+            - gcc-7
+            - g++-7
+            - build-essential
+            - qt510base
+            - qt510tools
+            - qt510webengine
+          sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: "ppa:beineri/opt-qt-5.10.1-trusty"
 
 script:
   - mkdir build
@@ -112,7 +112,7 @@ script:
       # order to fix that.
       conan install .. --build missing -s compiler=gcc -s compiler.libcxx=libstdc++ -s compiler.version=7
       source /opt/qt510/bin/qt510-env.sh;
-      cmake .. -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DBUILD_TEST=ON -DCONAN_LIBCXX=libstdc++
+      cmake .. -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DCONAN_LIBCXX=libstdc++ -DBUILD_TEST=ON -DBUILD_GUI=OFF 
     fi
 
   # OSX
