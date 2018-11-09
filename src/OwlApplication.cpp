@@ -406,7 +406,7 @@ void OwlApplication::initConsoleAppender()
 #ifdef RELEASE
     root->set_level(spdlog::level::info);
 #else
-    root->set_level(spdlog::level::release);
+    root->set_level(spdlog::level::debug);
 #endif
 
     using Log4Qt::TTCCLayout;
