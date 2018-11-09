@@ -38,7 +38,7 @@ private:
     void initializeDatabase();
     void initializeLogger();
 
-    void logStartupInfo();
+//    void logStartupInfo();
 
     QString                 _jsonConfig;
     QString                 _parserFolder;

@@ -9,9 +9,12 @@
 #include "Core.h"
 #include "OwlApplication.h"
 
+#include <spdlog/common.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/spdlog.h>
+
+#include <iostream>
 
 using namespace Log4Qt;
 
@@ -345,58 +348,79 @@ void OwlApplication::initializeLogger()
 {
     SettingsObject settings;
 
-    // set the main logging level
     const QString levelString = settings.read("logs.level").toString();
-    const Level level = Log4Qt::Level::fromString(levelString);
-    Log4Qt::Logger::rootLogger()->setLevel(level);
+    const auto configLevel = spdlog::level::from_str(levelString.toStdString());
+
+    auto logger = spdlog::get("Owl");
+    logger->set_level(configLevel);
+
 
     if (settings.read("logs.file.enabled").toBool())
     {
-        const QString logPath { settings.read("logs.file.path").toString() };
-        QFileInfo info(logPath);
-        if (!info.isDir() || !info.isWritable())
-        {
-            logger()->warn("The log file folder '%1' is invalid. Make sure it exists and is writable.", logPath);
-            return;
-        }
 
-        QDir logDir(logPath);
-        const QString logFilename { logDir.absoluteFilePath("owl.log") };
-
-
-
-
-        // create a new layout for this appender
-        // TODO: support configurable layouts?
-        TTCCLayout *p_layout = new TTCCLayout();
-        p_layout->setDateFormat(Log4Qt::TTCCLayout::DateFormat::ABSOLUTEFMT);
-        p_layout->activateOptions();
-
-        RollingFileAppender* appender = new RollingFileAppender(p_layout, logFilename, true);
-        appender->setName("static:app.rolling.appender");
-        appender->setMaxFileSize("100KB");
-        appender->setMaxBackupIndex(3);
-        appender->activateOptions();
-        Log4Qt::Logger::rootLogger()->addAppender(appender);
-
-        logStartupInfo();
-        logger()->debug("Logging initialized to level '%1' with logfile '%2'", level.toFullString(), logFilename);
     }
-    else
-    {
-        logStartupInfo();
-        logger()->debug("Logging initialized to level '%1'", level.toFullString());
-    }
+
+    std::cout << "Hi there!" << std::endl;
+    logger->info("Starting {} version {} built {}", APP_NAME, OWL_VERSION, OWL_VERSION_DATE_TIME);
+    logger->info("Logging initialized to level '{}'", spdlog::level::to_c_str(configLevel));
+    logger->debug("Operating System: {}", owl::getOSString());
+    logger->debug("Current working directory: {}", QDir::currentPath().toStdString());
+    logger->info("Settings file '{}'", _settingsFile->filePath().toStdString());
+
+
+
+//    // set the main logging level
+
+//    const Level level = Log4Qt::Level::fromString(levelString);
+//    Log4Qt::Logger::rootLogger()->setLevel(level);
+
+//    if (settings.read("logs.file.enabled").toBool())
+//    {
+//        const QString logPath { settings.read("logs.file.path").toString() };
+//        QFileInfo info(logPath);
+//        if (!info.isDir() || !info.isWritable())
+//        {
+//            logger()->warn("The log file folder '%1' is invalid. Make sure it exists and is writable.", logPath);
+//            return;
+//        }
+
+//        QDir logDir(logPath);
+//        const QString logFilename { logDir.absoluteFilePath("owl.log") };
+
+
+
+
+//        // create a new layout for this appender
+//        // TODO: support configurable layouts?
+//        TTCCLayout *p_layout = new TTCCLayout();
+//        p_layout->setDateFormat(Log4Qt::TTCCLayout::DateFormat::ABSOLUTEFMT);
+//        p_layout->activateOptions();
+
+//        RollingFileAppender* appender = new RollingFileAppender(p_layout, logFilename, true);
+//        appender->setName("static:app.rolling.appender");
+//        appender->setMaxFileSize("100KB");
+//        appender->setMaxBackupIndex(3);
+//        appender->activateOptions();
+//        Log4Qt::Logger::rootLogger()->addAppender(appender);
+
+//        logStartupInfo();
+//        logger()->debug("Logging initialized to level '%1' with logfile '%2'", level.toFullString(), logFilename);
+//    }
+//    else
+//    {
+//        logStartupInfo();
+//        logger()->debug("Logging initialized to level '%1'", level.toFullString());
+//    }
 }
 
-void OwlApplication::logStartupInfo()
-{
-    auto rootlogger = spdlog::get("Owl");
-    rootlogger->info("Starting {} version {} built {}", APP_NAME, OWL_VERSION, OWL_VERSION_DATE_TIME);
-    rootlogger->debug("Operating System: {}", owl::getOSString());
-    rootlogger->debug("Current working directory: {}", QDir::currentPath().toStdString());
-    rootlogger->info("Settings file '{}'", _settingsFile->filePath().toStdString());
-}
+//void OwlApplication::logStartupInfo()
+//{
+//    auto rootlogger = spdlog::get("Owl");
+//    rootlogger->info("Starting {} version {} built {}", APP_NAME, OWL_VERSION, OWL_VERSION_DATE_TIME);
+//    rootlogger->debug("Operating System: {}", owl::getOSString());
+//    rootlogger->debug("Current working directory: {}", QDir::currentPath().toStdString());
+//    rootlogger->info("Settings file '{}'", _settingsFile->filePath().toStdString());
+//}
 
 void OwlApplication::initConsoleAppender()
 {

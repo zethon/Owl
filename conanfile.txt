@@ -22,8 +22,8 @@ libtidy/5.6@owl/stable
 log4qt/0.3@owl/stable
 
 # new includes
- fmt/5.2.1@bincrafters/stable
 spdlog/1.2.1@bincrafters/stable
+fmt/5.2.1@bincrafters/stable
 
 
 [options]
