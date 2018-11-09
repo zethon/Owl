@@ -1,4 +1,4 @@
-q# Conan Packaging configuration for Owl
+# Conan Packaging configuration for Owl
 # Created by Adalid Claure <aclaure@gmail.com>
 #
 # Windows: 
@@ -11,7 +11,7 @@ q# Conan Packaging configuration for Owl
 #
 # Linux:
 #
-#   $ conan install .. --build missing  -s compiler.libcxx=libstdc++
+#   $ conan install .. --build missing  -s compiler.libcxx=libstdc++11
 
 [requires]
 boost/1.68.0@conan/stable
@@ -22,13 +22,15 @@ libtidy/5.6@owl/stable
 log4qt/0.3@owl/stable
 
 # new includes
-range-v3/0.3.7@ericniebler/stable
 # fmt/5.1.0@bincrafters/stable
 spdlog/1.2.1@bincrafters/stable
 
 
 [options]
-spdlog:fmt_external=False # implicitly include `fmt`
+# implicitly include `fmt`
+spdlog:fmt_external=False
+
+# only include the boost test library
 boost:shared=False
 boost:without_test=False
 boost:without_math=True
