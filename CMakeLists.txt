@@ -20,7 +20,6 @@ set(LUAPARSERS_FOLDER "" CACHE PATH "Lua Parses Folder")
 mark_as_advanced(LUAPARSERS_FOLDER)
 
 # configure optional projects
-option(BUILD_GUI "Build Owl GUI (default ON)" ON)
 option(BUILD_CONSOLE "Optionally build OwlConsole project (default OFF)" OFF)
 option(BUILD_TEST "Optionally build OwlTests unit test project (default OFF)" OFF)
 
@@ -138,9 +137,7 @@ include_directories(${CMAKE_BINARY_DIR})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-if (BUILD_GUI)
-    add_subdirectory(src)
-endif(BUILD_GUI)
+add_subdirectory(src)
 
 if (BUILD_CONSOLE)
     add_subdirectory(OwlConsole)

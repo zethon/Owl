@@ -43,6 +43,7 @@ add_library(Parsers STATIC
 )
 
 target_link_libraries(Parsers
+    ${CONAN_LIBS}
     Qt5::Concurrent
     Qt5::Core
     Qt5::Network
