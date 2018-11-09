@@ -13,9 +13,8 @@
 # 
 # I'm going to put this to rest for a little bit so I can move on and work on other areas I want 
 # to work on. Hopefully Travis will support Ubuntu 16.04 (or possibly 18.04) soon and this will
-# "just work". In the meantime I leave the Linux build info here for future reference.
-#
-# Addy, November 8 2018
+# "just work". In the meantime, we are able to build the unit tests on the old Ubuntu, so we will
+# go ahead and build those and skip building the GUI for now.
 #
 
 language: cpp
@@ -67,14 +66,14 @@ install:
 
 matrix:
   include:
-    # - os: osx
-    #   osx_image: xcode10
-    #   compiler: clang
-    #   env: CONFIG=Release
-    # - os: osx
-    #   osx_image: xcode10
-    #   compiler: clang
-    #   env: CONFIG=Debug
+    - os: osx
+      osx_image: xcode10
+      compiler: clang
+      env: CONFIG=Release
+    - os: osx
+      osx_image: xcode10
+      compiler: clang
+      env: CONFIG=Debug
     - os: linux
       dist: trusty
       sudo: required
