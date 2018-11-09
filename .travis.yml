@@ -1,4 +1,4 @@
-# NOTE: Where we left off -- the -D_GLIBCXX_USE_CXX11_ABI=[0|1] definition seems to do nothing
+# NOTE: Where we left off with Linux -- the -D_GLIBCXX_USE_CXX11_ABI=[0|1] does nothing
 # on the older version of Ubuntu (14.04) that Travis CI uses. Hence when I tried to link 
 # everything against the C++11 system libraries, I still got linker errors about 
 # "undefined reference to `std::__cxx11::basic_string...". When I tried to build against the
@@ -11,9 +11,9 @@
 # solution would be to use Docker, but that's an entire learning curve and pain in the ass 
 # that I don't want to deal with right now.
 # 
-# I'm going to put the rest for a little bit so I can move on and work on other areas I want 
+# I'm going to put this to rest for a little bit so I can move on and work on other areas I want 
 # to work on. Hopefully Travis will support Ubuntu 16.04 (or possibly 18.04) soon and this will
-# "just work". 
+# "just work". In the meantime I leave the Linux build info here for future reference.
 #
 # Addy, November 8 2018
 #
