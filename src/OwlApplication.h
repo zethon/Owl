@@ -40,8 +40,6 @@ private:
 
     void logStartupInfo();
 
-    void registerMetaTypes();
-
     QString                 _jsonConfig;
     QString                 _parserFolder;
     QString                 _dbFileName;

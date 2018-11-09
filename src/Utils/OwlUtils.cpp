@@ -50,9 +50,9 @@ QString getResourceHtmlFile(const QString& file)
     return QString();
 }
 
-const QString getOSString()
+const std::string getOSString()
 {
-    QString strOS("Unknown OS");
+    std::string strOS("Unknown OS");
 
 #ifdef Q_OS_WIN32
     switch(QSysInfo::windowsVersion())

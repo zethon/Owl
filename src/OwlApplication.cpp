@@ -9,7 +9,9 @@
 #include "Core.h"
 #include "OwlApplication.h"
 
-#include "spdlog/spdlog.h"
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/rotating_file_sink.h>
+#include <spdlog/spdlog.h>
 
 using namespace Log4Qt;
 
@@ -118,6 +120,33 @@ static std::pair<bool, QString>
     return std::make_pair(true, QString());
 }
 
+// NOTE: This is called before the logger is initialized
+void registerMetaTypes()
+{
+    qRegisterMetaType<owl::BoardPtr>("BoardPtr");
+    qRegisterMetaType<owl::BoardWeakPtr>("BoardWeakPtr");
+    qRegisterMetaType<owl::BoardList>("BoardList");
+
+    qRegisterMetaType<owl::ForumPtr>("ForumPtr");
+    qRegisterMetaType<owl::ForumList>("ForumList");
+
+    qRegisterMetaType<owl::ThreadPtr>("ThreadPtr");
+    qRegisterMetaType<owl::ThreadList>("ThreadList");
+
+    qRegisterMetaType<owl::PostPtr>("PostPtr");
+    qRegisterMetaType<owl::PostList>("PostList");
+
+    qRegisterMetaType<owl::ParserBasePtr>("ParserBasePtr");
+
+    qRegisterMetaType<owl::OwlException>("OwlException");
+    qRegisterMetaType<owl::OwlExceptionPtr>("OwlExceptionPtr");
+
+    qRegisterMetaType<owl::StringMap>("StringMap");
+    qRegisterMetaType<owl::StringMapPtr>("StringMapPtr");
+
+    qmlRegisterType<SettingsObject>("reader.owl", 1, 0, "Settings");
+}
+
 OwlApplication::OwlApplication(int& argc, char **argv[])
     : QApplication(argc,*argv),
       _settingsFile(new SettingsFile)
@@ -174,7 +203,7 @@ void OwlApplication::init()
             OWL_THROW_EXCEPTION(OwlException(retval.second));
         }
 
-        // initializ the logger and write the "Starting Owl..." message to the log
+        // initialize the logger and write the "Starting Owl..." message to the log
         initializeLogger();
 
         // initialize the application's db
@@ -251,34 +280,6 @@ void OwlApplication::initCommandLine()
         _parserFolder = parser.value("parser");
     }
     // else, leave it empty to signal we'll use the folder in the config file
-}
-
-void OwlApplication::registerMetaTypes()
-{
-    logger()->trace("Registering Metatypes");
-
-    qRegisterMetaType<owl::BoardPtr>("BoardPtr");
-    qRegisterMetaType<owl::BoardWeakPtr>("BoardWeakPtr");
-    qRegisterMetaType<owl::BoardList>("BoardList");
-
-    qRegisterMetaType<owl::ForumPtr>("ForumPtr");
-    qRegisterMetaType<owl::ForumList>("ForumList");
-
-    qRegisterMetaType<owl::ThreadPtr>("ThreadPtr");
-    qRegisterMetaType<owl::ThreadList>("ThreadList");
-
-    qRegisterMetaType<owl::PostPtr>("PostPtr");
-    qRegisterMetaType<owl::PostList>("PostList");
-
-    qRegisterMetaType<owl::ParserBasePtr>("ParserBasePtr");
-
-    qRegisterMetaType<owl::OwlException>("OwlException");
-    qRegisterMetaType<owl::OwlExceptionPtr>("OwlExceptionPtr");
-
-    qRegisterMetaType<owl::StringMap>("StringMap");
-    qRegisterMetaType<owl::StringMapPtr>("StringMapPtr");
-
-    qmlRegisterType<SettingsObject>("reader.owl", 1, 0, "Settings");
 }
     
 void OwlApplication::initializeDatabase()
@@ -390,15 +391,24 @@ void OwlApplication::initializeLogger()
 
 void OwlApplication::logStartupInfo()
 {
-    logger()->info("Starting %1 version %2 built %3",
-        QString(APP_NAME), QString(OWL_VERSION), QString(OWL_VERSION_DATE_TIME));
-    logger()->debug("Operating System: %1", owl::getOSString());
-    logger()->debug("Current working directory: %1", QDir::currentPath());
-    logger()->info("Loaded settings file '%1'", _settingsFile->filePath());
+    auto rootlogger = spdlog::get("Owl");
+    rootlogger->info("Starting {} version {} built {}", APP_NAME, OWL_VERSION, OWL_VERSION_DATE_TIME);
+    rootlogger->debug("Operating System: {}", owl::getOSString());
+    rootlogger->debug("Current working directory: {}", QDir::currentPath().toStdString());
+    rootlogger->info("Settings file '{}'", _settingsFile->filePath().toStdString());
 }
 
 void OwlApplication::initConsoleAppender()
 {
+    // create the root logger
+    auto root = spdlog::stdout_color_mt("Owl");
+
+#ifdef RELEASE
+    root->set_level(spdlog::level::info);
+#else
+    root->set_level(spdlog::level::release);
+#endif
+
     using Log4Qt::TTCCLayout;
     using Log4Qt::ConsoleAppender;
     

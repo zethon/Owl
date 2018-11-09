@@ -8,7 +8,7 @@ void openFolder(const QString& pathIn);
 
 QString getResourceHtmlFile(const QString& file);
 
-const QString getOSString();
+const std::string getOSString();
 const QString sanitizeUrl(const QString& url);
 
 int randomInteger(int low, int high);

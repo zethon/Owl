@@ -32,6 +32,13 @@ add_definitions(
     -DBOOST_TEST_NO_LIB
 )
 
+string(APPEND CMAKE_CXX_FLAGS_RELEASE " -DRELEASE")
+# TODO: Eventually support CMake 3.12 so we can use this
+# syntax instead of the above
+# add_compile_definitions(
+#     $<$<CONFIG:Release>:-DRELEASE>
+# )
+
 if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
 
     add_compile_options(
@@ -39,6 +46,7 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
         -ffunction-sections
         -fdata-sections
 
+        # enforced errors
         -Werror=format
         -Werror=trigraphs
         -Werror=missing-braces
@@ -56,8 +64,10 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
         -Werror=int-conversion
         -Werror=uninitialized
         -Werror=char-subscripts
-
         $<$<COMPILE_LANGUAGE:CXX>:-Werror=non-virtual-dtor>
+
+        # disabled errors/warnings
+        -Wno-error=date-time
     )
 endif()
 
