@@ -30,7 +30,6 @@ install:
       sudo pip install conan
       alias python=python3
       
-
       # Since we are using GCC7 we need to update `ld`. The default version, 2.24, will
       # fail to link the generated object files. There seems to be no other easier way
       # to update "ld", so we pull down binutils, build it and then link the resulting
