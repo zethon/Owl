@@ -317,7 +317,7 @@ HttpReplyPtr WebClient::doRequest(const QString& url,
     else
     {
         QString errorText = QString("Unhandled HTTP response code '%1' from %2 took %3 milliseconds").arg(status).arg(finalUrl).arg(timer.elapsed());
-        _logger->warn(errorText.toStdString());
+        _logger->debug(errorText.toStdString());
         if (bThrowOnFail)
         {
             OWL_THROW_EXCEPTION(WebException(errorText, url, status));
