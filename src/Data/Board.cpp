@@ -21,10 +21,17 @@ Board::Board(const QString& url)
     _bEnabled(true),
     _bAutoLogin(false),
     _status(Board::OFFLINE),
-    _options(StringMapPtr(new StringMap())),
-    _logger { spdlog::get("Owl")->clone("Board") }
+    _options(StringMapPtr(new StringMap()))
 {
-    spdlog::register_logger(_logger);
+    if (!spdlog::get("Board"))
+    {
+        _logger = spdlog::get("Owl")->clone("Board");
+        spdlog::register_logger(_logger);
+    }
+    else
+    {
+        _logger = spdlog::get("Board");
+    }
 }	
 
 Board::Board()

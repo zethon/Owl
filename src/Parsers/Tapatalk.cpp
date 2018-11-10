@@ -19,10 +19,17 @@ Tapatalk4x::Tapatalk4x(const QString& baseUrl)
 	  _bUseSha1(false),
       _apiLevel(3),
       _forumMapInitialized(false),
-      _mutex(QMutex::Recursive),
-      _logger { spdlog::get("Owl")->clone("Tapatalk4x") }
+      _mutex(QMutex::Recursive)
 {
-    spdlog::register_logger(_logger);
+    if (!spdlog::get("Tapatalk4x"))
+    {
+        _logger = spdlog::get("Owl")->clone("Tapatalk4x");
+        spdlog::register_logger(_logger);
+    }
+    else
+    {
+        _logger = spdlog::get("Tapatalk4x");
+    }
 
 	_options->add("boardware", "tapatalk");
 	_options->add("boardwaremax", "4.9.9.0");

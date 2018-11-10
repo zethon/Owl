@@ -21,10 +21,17 @@ ParserManagerPtr ParserManager::instance()
 }
 
 ParserManager::ParserManager()
-    : _isInitialized(false),
-      _logger { spdlog::get("Owl")->clone("ParserManager") }
+    : _isInitialized(false)
 {
-    spdlog::register_logger(_logger);
+    if (!spdlog::get("ParserManager"))
+    {
+        _logger = spdlog::get("Owl")->clone("ParserManager");
+        spdlog::register_logger(_logger);
+    }
+    else
+    {
+        _logger = spdlog::get("ParserManager");
+    }
 }	
 	
 ParserManager::~ParserManager()

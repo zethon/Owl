@@ -15,10 +15,18 @@ namespace owl
 
 BoardManager::BoardManager()
 	: _encryptor(new CRijndael()),
-    _mutex(QMutex::Recursive),
-    _logger { spdlog::get("Owl")->clone("BoardManager") }
+    _mutex(QMutex::Recursive)
 {
-    spdlog::register_logger(_logger);
+    if (!spdlog::get("BoardManager"))
+    {
+        _logger = spdlog::get("Owl")->clone("BoardManager");
+        spdlog::register_logger(_logger);
+    }
+    else
+    {
+        _logger = spdlog::get("BoardManager");
+    }
+
 	_encryptor->MakeKey(DBPASSWORD_KEY, DBPASSWORD_SEED);
 }	
 	

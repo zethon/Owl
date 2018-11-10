@@ -45,14 +45,21 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
     : QMainWindow(parent),
       _svcModel{new BoardsModel(this)},
       _splash(splash),
-      _imageOverlay{this},
-      _logger { spdlog::get("Owl")->clone("MainWindow") }
+      _imageOverlay{this}
 {
     setupUi(this);
     setDockNestingEnabled(true);
 //    setUnifiedTitleAndToolBarOnMac(true);
 
-    spdlog::register_logger(_logger);
+    if (!spdlog::get("MainWindow"))
+    {
+        _logger = spdlog::get("Owl")->clone("MainWindow");
+        spdlog::register_logger(_logger);
+    }
+    else
+    {
+        _logger = spdlog::get("MainWindow");
+    }
 
     // TODO: move this to the OwlApplication class
     readSettings();

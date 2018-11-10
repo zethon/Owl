@@ -38,11 +38,18 @@ public:
 };
 
 BoardUpdateWorker::BoardUpdateWorker(BoardPtr board)
-    : _board(board),
-      _logger { spdlog::get("Owl")->clone("BoardUpdateWorker") }
+    : _board(board)
 
 {
-    spdlog::register_logger(_logger);
+    if (!spdlog::get("BoardUpdateWorker"))
+    {
+        _logger = spdlog::get("Owl")->clone("BoardUpdateWorker");
+        spdlog::register_logger(_logger);
+    }
+    else
+    {
+        _logger = spdlog::get("BoardUpdateWorker");
+    }
 }
 
 void BoardUpdateWorker::doWork()
