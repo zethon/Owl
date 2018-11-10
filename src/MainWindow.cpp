@@ -16,11 +16,11 @@
 #include "MainWindow.h"
 #include "BoardUpdateWorker.h"
 
+#include <spdlog/spdlog.h>
+
 #ifdef Q_OS_MACOS
 #include <QtMac>
 #endif
-
-using namespace Log4Qt;
 
 namespace owl
 {
@@ -45,7 +45,8 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
     : QMainWindow(parent),
       _svcModel{new BoardsModel(this)},
       _splash(splash),
-      _imageOverlay{this}
+      _imageOverlay{this},
+      _logger { spdlog::get("Owl")->clone("MainWindow") }
 {
     setupUi(this);
     setDockNestingEnabled(true);
@@ -159,7 +160,9 @@ void MainWindow::loadBoards()
         {
             if (initBoard(b) == 0 && b->isAutoLogin())
             {
-                logger()->debug("Starting automatic login for board '%1' with user '%2'", b->getName(), b->getUsername());
+                _logger->debug("Starting automatic login for board '{}' with user '{}'",
+                    b->getName().toStdString(), b->getUsername().toStdString());
+
                 b->login();
             }
         }
@@ -247,7 +250,8 @@ int MainWindow::initBoard(const BoardPtr& b)
             QObject::connect(boardMenu, &BoardMenu::boardInfoSaved,
                 [this](BoardPtr b, StringMap oldvalues)
                 {
-                    logger()->trace("onBoardInfoSaved(%1:%2)", b->getDBId(), b->getName());
+                    _logger->trace("onBoardInfoSaved({}:{})",
+                        b->getDBId(), b->getName().toStdString());
 
                     auto doc = b->getBoardItemDocument();
                     doc->setOrAddVar("%BOARDNAME%", b->getName());
@@ -275,8 +279,8 @@ int MainWindow::initBoard(const BoardPtr& b)
     catch (const owl::OwlException& ex)
     {
         iRet++;
-        logger()->warn("Failed to create parser of type '%1' for board '%2': %3", 
-            b->getProtocolName(), b->getName(), ex);
+        _logger->warn("Failed to create parser of type '{}' for board '{}': {}",
+            b->getProtocolName().toStdString(), b->getName().toStdString(), ex.what());
     }
 
     return iRet;
@@ -360,6 +364,13 @@ bool MainWindow::event(QEvent *event)
     return true;
 }
 
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    _logger->debug("Closing Owl window");
+    writeSettings();
+    QMainWindow::closeEvent(event);
+}
+
 void MainWindow::onBoardToolbarItemClicked(QAction* action)
 {
     if (!action->data().canConvert<BoardWeakPtr>())
@@ -395,7 +406,8 @@ void MainWindow::boardwareInfoEvent(BoardPtr b, StringMap sp)
     QString bn = sp.getText("boardware");
     QString bv = sp.getText("version");
 
-    logger()->trace("[%1][%2][%3]", b->getName(), bn, bv);
+    _logger->trace("[{}][{}][{}]",
+        b->getName().toStdString(), bn.toStdString(), bv.toStdString());
 }
     
 void MainWindow::onForumStructureChanged(BoardPtr b)
@@ -423,7 +435,7 @@ void MainWindow::onForumStructureChanged(BoardPtr b)
 
         msgBox->setDetailedText(strDetails);
 
-        logger()->debug("Forum structure changed: %1", strMsg);
+        _logger->debug("Forum structure changed: {}", strMsg.toStdString());
         msgBox->open();
     }
 }
@@ -434,9 +446,9 @@ void MainWindow::loginEvent(BoardPtr b, StringMap sp)
     QString itemText;
     QString msg;
 
-    logger()->debug("Board '%1' login result with user '%2' was %3",
-        b->getName(),
-        b->getUsername(),
+    _logger->debug("Board '{}' login result with user '{}' was {}",
+        b->getName().toStdString(),
+        b->getUsername().toStdString(),
         sp.getBool("success") ? "successful" : "unsuccessful");
     
     if (sp.getBool("success"))
@@ -467,7 +479,7 @@ void MainWindow::loginEvent(BoardPtr b, StringMap sp)
             .arg(b->getUsername())
             .arg(b->getName());
 
-        logger()->debug(msg);
+        _logger->debug(msg.toStdString());
     }
     else
     {
@@ -487,7 +499,7 @@ void MainWindow::loginEvent(BoardPtr b, StringMap sp)
             msg += ".";
         }
 
-        logger()->info(msg);
+        _logger->info(msg.toStdString());
     }
     
     doc->reloadHtml();
@@ -593,7 +605,7 @@ void MainWindow::getUnreadForumsEvent(BoardPtr board, ForumList list)
     }
     else
     {
-        logger()->error("Trying to update null board item");
+        _logger->error("Trying to update null board item");
     }
 
 }
@@ -907,9 +919,9 @@ void MainWindow::onLinkActivated(const QString &urlStr)
             _linkMessageMap.value(path)(str.queryItems());
             
         }
-        else if (logger()->isWarnEnabled())
+        else
         {
-            logger()->warn("unknown url.path '%1' in url '%2'", url.path(), urlStr);
+            _logger->warn("unknown url.path '%1' in url '%2'", url.path().toStdString(), urlStr.toStdString());
         }
     }
 }
@@ -960,9 +972,9 @@ void MainWindow::onSvcTreeClicked(const QModelIndex& selected)
                     board->setLastForumId(forum->getId().toInt());
                 }
 
-                if (logger()->isTraceEnabled() && board->getStatus() == Board::OFFLINE)
+                if (board->getStatus() == Board::OFFLINE)
                 {
-                    logger()->trace("%1 offline", board->getName());
+                    _logger->trace("%1 offline", board->getName().toStdString());
                 }
             }
         }
@@ -1334,7 +1346,7 @@ void MainWindow::createMenus()
             QObject::connect(action, &QAction::triggered, [this]()
             {
                 QUrl url("http://wiki.owlclient.com");
-                logger()->trace("Launching browser: %1", url.toString());
+                _logger->trace("Launching browser: {}", url.toString().toStdString());
                 QDesktopServices::openUrl(url);
             });
         }
@@ -1345,7 +1357,7 @@ void MainWindow::createMenus()
             {
                 auto urlStr = QString("http://wiki.owlclient.com/index.php?title=Release_Notes_%1").arg(OWL_VERSION);
                 QUrl url(urlStr);
-                logger()->trace("Launching browser: %1", url.toString());
+                _logger->trace("Launching browser: {}", url.toString().toStdString());
                 QDesktopServices::openUrl(url);
             });
         }
@@ -1358,7 +1370,7 @@ void MainWindow::createMenus()
             {
                 auto urlStr = QString("https://www.paypal.me/zethon");
                 QUrl url(urlStr);
-                logger()->trace("Launching browser: %1", url.toString());
+                _logger->trace("Launching browser: %1", url.toString().toStdString());
                 QDesktopServices::openUrl(url);
             });
         }
@@ -1368,7 +1380,7 @@ void MainWindow::createMenus()
             QObject::connect(action, &QAction::triggered, [this]()
             {
                 QUrl url("http://www.twitter.com/OwlClient");
-                logger()->trace("Launching browser: %1", url.toString());
+                _logger->trace("Launching browser: %1", url.toString().toStdString());
                 QDesktopServices::openUrl(url);
             });
         }
@@ -1378,7 +1390,7 @@ void MainWindow::createMenus()
             QObject::connect(action, &QAction::triggered, [this]()
             {
                 QUrl url("http://bugs.owlclient.com");
-                logger()->trace("Launching browser: %1", url.toString());
+                _logger->trace("Launching browser: %1", url.toString().toStdString());
                 QDesktopServices::openUrl(url);
 
             });
@@ -1786,7 +1798,9 @@ void MainWindow::newPostHandler(BoardPtr b, PostPtr p)
     }
     else
     {
-        logger()->warn("Null new post returned for board %1 (%2)", b->getName(), b->getDBId());
+        _logger->warn("Null new post returned for board {} ({})",
+            b->getName().toStdString(), b->getDBId());
+
         QMainWindow::statusBar()->showMessage("New post saved", 5000);
     }
 }
@@ -2079,7 +2093,7 @@ void MainWindow::readSettings()
 
     if (QFile(iniFile).exists())
     {
-        logger()->debug("Loading MainWindow settings from '%1'", iniFile);
+        _logger->debug("Loading MainWindow settings from '%1'", iniFile.toStdString());
         QSettings settings(iniFile, QSettings::IniFormat);
 
         settings.beginGroup("MainWindow");
@@ -2112,7 +2126,7 @@ void MainWindow::readSettings()
     }
     else
     {
-        logger()->info("No settings file found at '%1', using defaults", iniFile);
+        _logger->info("No settings file found at '%1', using defaults", iniFile.toStdString());
     }
 }
 
@@ -2246,7 +2260,8 @@ void MainWindow::onDisplayOrderChanged(BoardPtr b, int iDirection)
     }
     else
     {
-        logger()->warn("Board '%1' (%2) not found in boardToolbar", b->getName(), b->getDBId());
+        _logger->warn("Board '%1' (%2) not found in boardToolbar",
+            b->getName().toStdString(), b->getDBId());
     }
 }
 
