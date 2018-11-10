@@ -9,6 +9,8 @@
 #include "Data/Board.h"
 #include "PostListWidget.h"
 
+#include  <spdlog/spdlog.h>
+
 namespace owl
 {
 
@@ -232,7 +234,8 @@ void PostListWebView::contextMenuEvent(QContextMenuEvent *e)
     if (_currentThread && _currentThread->getPosts().size() > 0)
     {
         menu.addAction(tr("Copy"),[this]()
-        {
+        {//    if (level == JavaScriptConsoleMessageLevel::WarningMessageLevel)
+
             this->triggerPageAction(QWebEnginePage::Copy);
         });
 
@@ -303,16 +306,18 @@ bool PostListWebPage::acceptNavigationRequest(const QUrl &url, NavigationType ty
 
 void PostListWebPage::javaScriptConsoleMessage(JavaScriptConsoleMessageLevel level, const QString &message, int lineNumber, const QString &sourceID)
 {
-    // TODO: OK?!
-//    auto loggerLevel = Log4Qt::Level::INFO_INT;
-//    if (level == JavaScriptConsoleMessageLevel::WarningMessageLevel)
-//    {
-//        loggerLevel = Log4Qt::Level::WARN_INT;
-//    }
-//    else if (level == JavaScriptConsoleMessageLevel::ErrorMessageLevel)
-//    {
-//        loggerLevel = Log4Qt::Level::ERROR_INT;
-//    }
+    auto loggerLevel = spdlog::level::info;
+    if (level == JavaScriptConsoleMessageLevel::WarningMessageLevel)
+    {
+        loggerLevel = spdlog::level::warn;
+    }
+    else if (level == JavaScriptConsoleMessageLevel::ErrorMessageLevel)
+    {
+        loggerLevel = spdlog::level::err;
+    }
+
+    spdlog::get("Owl")->log(loggerLevel,
+        "({}:{}): {}", lineNumber, message.toStdString(), sourceID.toStdString());
 }
 
 }

@@ -339,9 +339,9 @@ QStandardItem* BoardsModel::updateForumItem(BoardPtr b, ForumPtr forum)
         }
         else
         {
-            // TODO: what is going on here?
-//            logger()->error(QString("Unsupported forum type '%1/%2' with title '%3' on board '%4'")
-//                .arg(f->getForumType()).arg(f->getForumTypeString()).arg(f->getName()).arg(b->getUrl()));
+            spdlog::get("Owl")->error("Unsupported forum type '{}/{}' with title '{}' on board '{}'",
+                f->getForumType(), f->getForumTypeString().toStdString(),
+                f->getName().toStdString(), b->getUrl().toStdString());
         }
     }
 
