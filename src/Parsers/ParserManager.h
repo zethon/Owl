@@ -1,10 +1,14 @@
 #pragma once
 
 #include <QtCore>
-#include <log4qt/logger.h>
 #include "LuaParserBase.h"
 
 #define PARSERMGR		ParserManager::instance()
+
+namespace spdlog
+{
+    class logger;
+}
 
 namespace owl
 {
@@ -40,7 +44,6 @@ typedef QList<ParserBasePtr> ParserList;
 class ParserManager : public QObject
 {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
     
 public:
 	static ParserManagerPtr instance();
@@ -78,6 +81,8 @@ private:
 	bool _isInitialized;
 
 	static ParserManagerPtr _instance;
+
+    std::shared_ptr<spdlog::logger>  _logger;
 };
 
 } // namespace owl

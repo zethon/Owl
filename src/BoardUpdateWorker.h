@@ -41,7 +41,6 @@ private:
     bool     _isDeleted = false;
 
     std::shared_ptr<spdlog::logger>  _logger;
-
 };
 
 } // namespace

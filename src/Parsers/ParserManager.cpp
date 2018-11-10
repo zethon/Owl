@@ -5,6 +5,8 @@
 #include "Tapatalk.h"
 #include "Xenforo.h"
 
+#include <spdlog/spdlog.h>
+
 namespace owl
 {
 
@@ -19,7 +21,8 @@ ParserManagerPtr ParserManager::instance()
 }
 
 ParserManager::ParserManager()
-	: _isInitialized(false)
+    : _isInitialized(false),
+      _logger { spdlog::get("Owl")->clone("ParserManager") }
 {
 	// do nothing
 }	
@@ -45,12 +48,12 @@ void ParserManager::init(bool bLoadLuaParsers, QString luaParserFolder)
 	}
     else
     {
-        logger()->debug("Lua Parsers disabled");
+        _logger->debug("Lua Parsers disabled");
     }
 
 	_isInitialized = true;
 
-	logger()->info("%1 parser(s) loaded", (int)getParserTypeCount());
+    _logger->info("{} parser(s) loaded", (int)getParserTypeCount());
 }
 
 owl::ParserBasePtr ParserManager::createParser(const QString& name, const QString& baseUrl, bool bDoThrow /*= true*/ )
@@ -72,7 +75,7 @@ owl::ParserBasePtr ParserManager::createParser(const QString& name, const QStrin
 	else if (bDoThrow)
 	{
 		QString error = QString("CreateParser failed. Unknown parser type '%1'").arg(name);
-		logger()->warn(error);
+        _logger->warn(error.toStdString());
 
         OWL_THROW_EXCEPTION(OwlException(error));
 	}
@@ -98,7 +101,7 @@ void ParserManager::loadLuaParsers(QString parserFolder)
 	QDir parserDir(pathName);
 	parserDir.setSorting(QDir::Name);
 
-    logger()->debug("Loading parsers in folder '%1'", parserFolder);
+    _logger->debug("Loading parsers in folder '{}'", parserFolder.toStdString());
 
 	auto ignoredParsers = ignoredParserFiles(parserDir);
     
@@ -111,28 +114,28 @@ void ParserManager::loadLuaParsers(QString parserFolder)
 	{
 		if (ignoredParsers.contains(info.fileName(), Qt::CaseInsensitive))
 		{
-			logger()->trace("Skipping parser file '%1' on ignore list", info.fileName());
+            _logger->trace("Skipping parser file '{}' on ignore list", info.fileName().toStdString());
 			continue;
 		}
 
 		QString filePath(info.absoluteFilePath());
-        logger()->trace("Loading parser file '%1'", filePath);
+        _logger->trace("Loading parser file '{}'", filePath.toStdString());
 
 		initLuaParser(filePath, parserInfo);
 		if (!parserInfo.name.isEmpty())
 		{
 			if (ignoredParsers.contains(parserInfo.name, Qt::CaseInsensitive))
 			{
-				logger()->trace("Skipping parser named '%1' on ignore list", info.fileName());
+                _logger->trace("Skipping parser named '{}' on ignore list", info.fileName().toStdString());
 				continue;
 			}
 
 			_luaTypes.insert(parserInfo.name, parserInfo);
-            logger()->info("Sucesfully Loaded parser name `%1`", parserInfo.name);
+            _logger->info("Sucesfully Loaded parser name `{}`", parserInfo.name.toStdString());
 		}
 		else
 		{
-			logger()->error("Failed to load parser `%1`", filePath);
+            _logger->error("Failed to load parser `{}`", filePath.toStdString());
 		}
 	}
 }
@@ -153,14 +156,15 @@ void ParserManager::initLuaParser(const QString& filename, ParserInfo& info)
 		}
 		else
 		{
-			logger()->warn("Invalid parser file (%1): 'parserName' should be a string", filename);
+            _logger->warn("Invalid parser file ({}): 'parserName' should be a string", filename.toStdString());
 		}
         
         if (_luaTypes.contains(info.name))
         {
             auto otherInfo = _luaTypes[info.name];
             
-            logger()->warn("Parser with name '%1' already loaded from '%2'. Not loading from file '%3'",info.name, otherInfo.filename, filename);
+            _logger->warn("Parser with name '{}' already loaded from '{}'. Not loading from file '{}'",
+                info.name.toStdString(), otherInfo.filename.toStdString(), filename.toStdString());
             info.name.clear();
         }
         else
@@ -187,7 +191,7 @@ void ParserManager::initLuaParser(const QString& filename, ParserInfo& info)
 	else
 	{
 		QString strError(lua_tostring(L, -1));
-		logger()->error("Invalid parser file (%1): %2", filename, strError);
+        _logger->error("Invalid parser file ({}): {}", filename.toStdString(), strError.toStdString());
 	}
 
 	lua_close(L);
@@ -200,7 +204,7 @@ QStringList ParserManager::ignoredParserFiles(const QDir& luaPath)
 
 	if (file.exists() && file.open(QIODevice::ReadOnly))
 	{
-		logger()->debug("Using parser ignore file at: %1", file.fileName());
+        _logger->debug("Using parser ignore file at: {}", file.fileName().toStdString());
 
 		QTextStream in(&file);
 
