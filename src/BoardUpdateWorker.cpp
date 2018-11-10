@@ -3,6 +3,8 @@
 #include <Parsers/Forum.h>
 #include "BoardUpdateWorker.h"
 
+#include <spdlog/spdlog.h>
+
 namespace owl
 {
 
@@ -36,7 +38,9 @@ public:
 };
 
 BoardUpdateWorker::BoardUpdateWorker(BoardPtr board)
-    : _board(board)
+    : _board(board),
+      _logger { spdlog::get("Owl")->clone("BoardUpdateWorker") }
+
 {
     // do nothing
 }
@@ -52,15 +56,15 @@ void BoardUpdateWorker::doWork()
 
     if (!locker.isLocked())
     {
-        logger()->trace("Updater for board %1(%2) is running. Skipping this round...",
-                        _board->getName(), _board->getDBId());
+        _logger->trace("Updater for board {}({}) is running. Skipping this round...",
+            _board->getName().toStdString(), _board->getDBId());
 
         return;
     }
 
     if (_board != nullptr)
     {
-        logger()->debug("doWork() for board '%1'", _board->getName());
+        _logger->debug("doWork() for board '{}'", _board->getName().toStdString());
 
         try
         {
@@ -69,7 +73,7 @@ void BoardUpdateWorker::doWork()
         }
         catch (const WebException& ex)
         {
-            logger()->error("Error during BoardUpdateWorker::doWork(): %1", ex.what());
+            _logger->error("Error during BoardUpdateWorker::doWork(): %1", ex.what());
         }
     }
 
@@ -87,14 +91,14 @@ void BoardUpdateWorker::checkStructureUpdate()
     const uint iRefreshPeriod = 60 * 60 * 24; // one day
 
     QDateTime boardTime = _board->getLastUpdate();
-    if (logger()->isTraceEnabled())
-    {
-        logger()->trace("Board %1(%2) - last update was %3",_board->getName(), _board->getDBId(), boardTime);
-    }
+
+    _logger->trace("Board {}({}) - last update was {}",
+        _board->getName().toStdString(), _board->getDBId(), boardTime.toString().toStdString());
 
     if (boardTime.secsTo(QDateTime::currentDateTime()) >= iRefreshPeriod)
     {
-        logger()->debug("Board %1(%2) - verifying forum structure", _board->getName(), _board->getDBId());
+        _logger->debug("Board {}({}) - verifying forum structure",
+            _board->getName().toStdString(), _board->getDBId());
 
         BoardPtr savedBoard = BOARDMANAGER->loadBoard(_board->getDBId());
         ForumPtr savedRoot = savedBoard->getRoot();
@@ -107,25 +111,30 @@ void BoardUpdateWorker::checkStructureUpdate()
             {
                 if (_board->getRoot()->isStructureEqual(root))
                 {
-                    logger()->trace("Board %1(%2) - stored structure and online structure are the same", _board->getName(), _board->getDBId());
+                    _logger->trace("Board {}({}) - stored structure and online structure are the same",
+                        _board->getName().toStdString(), _board->getDBId());
                 }
                 else
                 {
-                    logger()->trace("Board %1(%2) - stored structure and online structure are NOT the same", _board->getName(), _board->getDBId());
+                    _logger->trace("Board %1(%2) - stored structure and online structure are NOT the same",
+                        _board->getName().toStdString(), _board->getDBId());
+
                     Q_EMIT onForumStructureChanged(_board);
                 }
 
                 _board->setLastUpdate(QDateTime::currentDateTime());
                 BOARDMANAGER->updateBoard(_board);
             }
-            else if (logger()->isWarnEnabled())
+            else
             {
-                logger()->warn("Board %1(%2) - getRootStructure() returned a 'nullptr' root", _board->getName(), _board->getDBId());
+                _logger->warn("Board {}({}) - getRootStructure() returned a 'nullptr' root",
+                    _board->getName().toStdString(), _board->getDBId());
             }
         }
-        else if (logger()->isWarnEnabled())
+        else
         {
-            logger()->warn("Board %1(%2) - loadBoard(), getRoot() returned a 'nullptr' root", _board->getName(), _board->getDBId());
+            _logger->warn("Board {}({}) - loadBoard(), getRoot() returned a 'nullptr' root",
+                _board->getName().toStdString(), _board->getDBId());
         }
     }
 }

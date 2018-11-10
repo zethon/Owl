@@ -2,7 +2,11 @@
 #include <memory>
 #include <QObject>
 #include <QMutex>
-#include <log4qt/logger.h>
+
+namespace spdlog
+{
+    class logger;
+}
 
 namespace owl
 {
@@ -13,7 +17,6 @@ using BoardPtr = std::shared_ptr<Board>;
 class BoardUpdateWorker : public QObject
 {
 	Q_OBJECT
-	LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
 
@@ -36,6 +39,8 @@ private:
 	BoardPtr _board;
 	QMutex	 _mutex;
     bool     _isDeleted = false;
+
+    std::shared_ptr<spdlog::logger>  _logger;
 
 };
 
