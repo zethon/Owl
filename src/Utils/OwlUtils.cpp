@@ -85,7 +85,9 @@ const std::string getOSString()
     utsname info{};
     if (uname(&info) == 0)
     {
-        strOS = QString("%1 %2").arg(info.sysname).arg(info.release);
+        strOS = std::string(info.sysname) 
+            + std::string(" ") 
+            + std::string(info.release);
     }
     else
     {
