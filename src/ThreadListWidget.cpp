@@ -129,7 +129,6 @@ void ThreadListWidget::loadInBrowser(uint index)
             if (board)
             {
                 const QString url = board->getParser()->getItemUrl(thread);
-                logger()->trace("Opening browser link: %1%", url);
                 QDesktopServices::openUrl(url);
             }
         }
@@ -147,7 +146,6 @@ void ThreadListWidget::copyUrl(uint index)
             if (board)
             {
                 const QString url = board->getParser()->getItemUrl(thread);
-                logger()->trace("Copying link: %1%", url);
                 qApp->clipboard()->setText(url);
             }
         }

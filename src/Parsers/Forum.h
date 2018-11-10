@@ -4,7 +4,6 @@
 #include <QtCore>
 #include <QCryptographicHash>
 #include <QtGui>
-#include <log4qt/logger.h>
 #include "../Utils/StringMap.h"
 
 namespace owl
@@ -48,7 +47,6 @@ public:
 class BoardItem : public QObject, public std::enable_shared_from_this<BoardItem>
 {
 	Q_OBJECT
-	LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
 

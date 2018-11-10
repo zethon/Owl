@@ -8,6 +8,8 @@
 #include <QNetworkAccessManager>
 #include <QtConcurrent>
 
+#include <spdlog/spdlog.h>
+
 namespace owl
 {
 
@@ -19,7 +21,16 @@ ParserBase::ParserBase(const QString& name, const QString& prettyName, const QSt
 	  _requestFuture(nullptr), 
       _requestWatcher(nullptr)
 {
-}	
+    if (!spdlog::get("ParserBase"))
+    {
+        _logger = spdlog::get("Owl")->clone("ParserBase");
+        spdlog::register_logger(_logger);
+    }
+    else
+    {
+        _logger = spdlog::get("ParserBase");
+    }
+}
 
 ParserBase::~ParserBase()
 {
@@ -104,7 +115,7 @@ void ParserBase::loginAsync(LoginInfo& info)
 	}
 	else
 	{
-		logger()->debug("loginAsync: ParserBase::_future.isRunning() == true");
+        _logger->debug("loginAsync: ParserBase::_future.isRunning() == true");
 	}
 }
 
@@ -127,7 +138,7 @@ void ParserBase::loginSlot()
 		{
             params.setOrAdd("success", (bool)false);
             params.setOrAdd("error", owe.details());
-            logger()->warn("loginSlot() owl::OwlException: " + owe.details());
+            _logger->warn("loginSlot() owl::OwlException: {}", owe.details().toStdString());
             Q_EMIT errorNotification(OwlExceptionPtr(owe.clone()));
 		}
 		catch (...)
@@ -135,13 +146,13 @@ void ParserBase::loginSlot()
             const auto errorMessage = QString("There was an error connecting to ") + this->getBaseUrl() + QString(". Please check your login credentials, firewall/proxy settings or your Internet connection.");
             params.setOrAdd("success", (bool)false);
             params.setOrAdd("error", errorMessage);
-            logger()->warn("loginSlot() error: " + errorMessage);
+            _logger->warn("loginSlot() error: {}", errorMessage.toStdString());
             Q_EMIT errorNotification(OwlExceptionPtr(new OwlException(errorMessage)));
         }
 	}
 	else
 	{
-        logger()->error("loginSlot() could not cast sender() to QFutureWatcher<StringMap>*");
+        _logger->error("loginSlot() could not cast sender() to QFutureWatcher<StringMap>*");
         params.setOrAdd("success", (bool)false);
         params.setOrAdd("error", "There was an unknown login error");
         Q_EMIT errorNotification(OwlExceptionPtr(new OwlException("There was an unknown error.")));
@@ -163,7 +174,7 @@ void ParserBase::logoutAsync(LoginInfo&)
 	}
 	else
 	{
-		logger()->debug("logoutAsync: ParserBase::_future.isRunning() == true");
+        _logger->debug("logoutAsync: ParserBase::_future.isRunning() == true");
 	}
 }
 
@@ -196,7 +207,7 @@ void ParserBase::logoutSlot()
 	}
 	else
 	{
-        logger()->error("logoutSlot() could not cast sender() to QFutureWatcher<StringMap>*");
+        _logger->error("logoutSlot() could not cast sender() to QFutureWatcher<StringMap>*");
         Q_EMIT errorNotification(OwlExceptionPtr(new OwlException("There was an unknown error.")));
 	}	
 }
@@ -216,7 +227,7 @@ void ParserBase::getBoardwareInfoAsync()
 	}
 	else
 	{
-		logger()->debug("getBoardwareInfoAsync: ParserBase::_future.isRunning() == true");
+        _logger->debug("getBoardwareInfoAsync: ParserBase::_future.isRunning() == true");
 	}
 }
 
@@ -241,7 +252,7 @@ void ParserBase::boardInfoSlot()
 	}
 	else
 	{
-        logger()->error("boardInfoSlot() could not cast sender() to QFutureWatcher<StringMap>*");
+        _logger->error("boardInfoSlot() could not cast sender() to QFutureWatcher<StringMap>*");
         Q_EMIT errorNotification(OwlExceptionPtr(new OwlException("There was an unknown error.")));
 	}
 }
@@ -268,7 +279,7 @@ void ParserBase::getForumListAsync(const QString& id)
 	}
 	else
 	{
-		logger()->debug("getForumListAsync: ParserBase::_future.isRunning() == true");
+        _logger->debug("getForumListAsync: ParserBase::_future.isRunning() == true");
 	}
 }
 
@@ -296,7 +307,7 @@ void ParserBase::getForumListSlot()
 	}
 	else
 	{
-		logger()->error("getForumListSlot() could not cast sender() to QFutureWatcher<QVariant>*");
+        _logger->error("getForumListSlot() could not cast sender() to QFutureWatcher<QVariant>*");
         Q_EMIT errorNotification(OwlExceptionPtr(new OwlException("There was an unknown error.")));
 	}	
 }
@@ -323,7 +334,7 @@ void ParserBase::getUnreadForumsAsync()
 	}
 	else
 	{
-		logger()->debug("getUnreadForumsAsync: ParserBase::_future.isRunning() == true");
+        _logger->debug("getUnreadForumsAsync: ParserBase::_future.isRunning() == true");
 	}
 }
 
@@ -351,7 +362,7 @@ void ParserBase::getUnreadForumsSlot()
 	}
 	else
 	{
-		logger()->error("getUnreadForumsSlot() could not cast sender() to QFutureWatcher<QVariant>*");
+        _logger->error("getUnreadForumsSlot() could not cast sender() to QFutureWatcher<QVariant>*");
         Q_EMIT errorNotification(OwlExceptionPtr(new OwlException("There was an unknown error.")));
 	}	
 }
@@ -378,7 +389,7 @@ void ParserBase::getThreadListAsync(ForumPtr forumInfo, int options)
 {
 	if (!_future.isFinished())
 	{
-        logger()->debug("ParserBase::getThreadListAsync(): _future.isFinished() is FALSE, cancelling.");
+        _logger->debug("ParserBase::getThreadListAsync(): _future.isFinished() is FALSE, cancelling.");
 
         _watcher.disconnect();
         _future.cancel();
@@ -415,7 +426,7 @@ void ParserBase::getThreadListSlot()
 	}
 	else
 	{
-		logger()->error("getThreadListSlot() could not cast sender() to QFutureWatcher<QVariant>*");
+        _logger->error("getThreadListSlot() could not cast sender() to QFutureWatcher<QVariant>*");
         Q_EMIT errorNotification(OwlExceptionPtr(new OwlException("There was an unknown error.")));
 	}	
 }
@@ -429,7 +440,7 @@ void ParserBase::getPostsAsync(ThreadPtr t, PostListOptions listOption, int webO
 {
 	if (!_future.isFinished())
 	{
-        logger()->debug("ParserBase::getPostsAsync(): _future.isFinished() is FALSE, cancelling.");
+        _logger->debug("ParserBase::getPostsAsync(): _future.isFinished() is FALSE, cancelling.");
         
         _watcher.disconnect();
         _future.cancel();
@@ -474,7 +485,7 @@ void ParserBase::markForumReadAsync(ForumPtr forumInfo)
 	}
 	else
 	{
-		logger()->debug("markForumReadAsync: ParserBase::_future.isRunning() == true");
+        _logger->debug("markForumReadAsync: ParserBase::_future.isRunning() == true");
 	}
 }
 
@@ -502,7 +513,7 @@ void ParserBase::markForumReadSlot()
 	}
 	else
 	{
-		logger()->error("markForumReadSlot() could not cast sender() to QFutureWatcher<QVariant>*");
+        _logger->error("markForumReadSlot() could not cast sender() to QFutureWatcher<QVariant>*");
         Q_EMIT errorNotification(OwlExceptionPtr(new OwlException("There was an unknown error.")));
 	}	
 }
@@ -540,7 +551,7 @@ void ParserBase::submitNewThreadAsync(ThreadPtr threadInfo)
     }
     else
     {
-        logger()->debug("submitNewThreadAsync: ParserBase::_future.isRunning() == true");
+        _logger->debug("submitNewThreadAsync: ParserBase::_future.isRunning() == true");
     }
 }
 
@@ -577,7 +588,7 @@ void ParserBase::submitNewPostAsync(PostPtr postInfo)
 	}
 	else
 	{
-		logger()->debug("submitNewPostAsync: ParserBase::_future.isRunning() == true");
+        _logger->debug("submitNewPostAsync: ParserBase::_future.isRunning() == true");
 	}
 }
 
@@ -627,7 +638,7 @@ void ParserBase::getFavIconBuffer(QByteArray* buffer, const QStringList& iconFil
 				uint iCount = 0;
 				do 
 				{
-					logger()->trace("Looking for favicon at URL: '%1'", url.toString());
+                    _logger->trace("Looking for favicon at URL: '{}'", url.toString().toStdString());
 					iCount++;
 
 					QNetworkRequest request(url);
@@ -651,7 +662,7 @@ void ParserBase::getFavIconBuffer(QByteArray* buffer, const QStringList& iconFil
 						QImage image = QImage::fromData(*buffer);
 						if (!image.isNull())
 						{
-							logger()->trace("Found favicon at URL: '%1'", url.toString());
+                            _logger->trace("Found favicon at URL: '{}'", url.toString().toStdString());
 							bUseDefault = false;
 							break;
 						}
@@ -680,14 +691,14 @@ void ParserBase::getFavIconBuffer(QByteArray* buffer, const QStringList& iconFil
 			}
 			else
 			{
-				logger()->warn("Invalid 'board-defaults.iconFiles' setting '%1'", url.toDisplayString());
+                _logger->warn("Invalid 'board-defaults.iconFiles' setting '{}'", url.toDisplayString().toStdString());
 			}
 		}
 	}
 
 	if (bUseDefault)
 	{
-		logger()->trace("Using default board icon for board '%1'", this->getBaseUrl());
+        _logger->trace("Using default board icon for board '{}'", this->getBaseUrl().toStdString());
 
 		// load the default board icon
 		QFile f(":/icons/board.png");
@@ -750,14 +761,20 @@ void ParserBase::getUnreadSubForums(ForumPtr parent, ForumList* pList)
 	}
 }
 
+QVariant ParserBase::doMarkForumRead(ForumPtr forumInfo)
+{
+    _logger->warn("Method 'doMarkForumRead()' not implemented.");
+    return QVariant::fromValue(ForumPtr());
+}
+
 void ParserBase::updateClients()
 {
-	WebClientConfig config = createWebClientConfig();
+    WebClientConfig config = createWebClientConfig();
 
     for (WebClient* client : _clientWatchers)
-	{
-		client->setConfig(config);
-	}
+    {
+        client->setConfig(config);
+    }
 }
 
 WebClientConfig ParserBase::createWebClientConfig()
@@ -797,7 +814,7 @@ void ParserBase::getEncryptionSettingsAsync()
 	}
 	else
 	{
-		logger()->debug("getEncryptionSettingsAsync: ParserBase::_future.isRunning() == true");
+        _logger->debug("getEncryptionSettingsAsync: ParserBase::_future.isRunning() == true");
 	}
 }
 
@@ -820,7 +837,7 @@ void ParserBase::getEncryptionSettingsSlot()
 	}
 	else
 	{
-        logger()->error("getEncryptionSettingsSlot() could not cast sender() to QFutureWatcher<StringMap>*");
+        _logger->error("getEncryptionSettingsSlot() could not cast sender() to QFutureWatcher<StringMap>*");
         Q_EMIT errorNotification(OwlExceptionPtr(new OwlException("There was an unknown error.")));
 	}	
 }

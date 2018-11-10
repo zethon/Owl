@@ -5,6 +5,8 @@
 #include <tidybuffio.h>
 #include "WebClient.h"
 
+#include <spdlog/spdlog.h>
+
 namespace owl
 {
 
@@ -32,6 +34,16 @@ CURLcode curlGlobalInit()
 
 WebClient::WebClient()
 {
+    if (!spdlog::get("WebClient"))
+    {
+        _logger = spdlog::get("Owl")->clone("WebClient");
+        spdlog::register_logger(_logger);
+    }
+    else
+    {
+        _logger = spdlog::get("WebClient");
+    }
+
     static CURLcode __global = curlGlobalInit();
     Q_UNUSED(__global)
 
@@ -220,29 +232,23 @@ HttpReplyPtr WebClient::doRequest(const QString& url,
     // set up a GET or POST, if not a GET assume a POST
     if (method == Method::GET)
     {
-        if (logger()->isDebugEnabled())
-        {
-            QUrl urlObj = QUrl::fromUserInput(url);
+        QUrl urlObj = QUrl::fromUserInput(url);
 
-            logger()->debug("Running %1 GET request of url '%2'",
-                urlObj.scheme().toUpper(),
-                url);
-        }
+        _logger->debug("Running {} GET request of url '{}'",
+            urlObj.scheme().toUpper().toStdString(),
+            url.toStdString());
 
         curl_easy_setopt(_curl, CURLOPT_HTTPGET, 1L);
         curl_easy_setopt(_curl, CURLOPT_POST, 0L);
     }
     else if (method == Method::POST)
     {
-        if (logger()->isDebugEnabled())
-        {
-            QUrl urlObj = QUrl::fromUserInput(url);
+        QUrl urlObj = QUrl::fromUserInput(url);
 
-            logger()->debug("Running %1 POST request for url '%2' with payload size of %3 bytes",
-                urlObj.scheme().toUpper(),
-                url,
-                payload.size());
-        }
+        _logger->debug("Running {} POST request for url '{}' with payload size of {} bytes",
+            urlObj.scheme().toUpper().toStdString(),
+            url.toStdString(),
+            payload.size());
 
         curl_easy_setopt(_curl, CURLOPT_HTTPGET, 0L);
         curl_easy_setopt(_curl, CURLOPT_POST, 1L);
@@ -289,7 +295,7 @@ HttpReplyPtr WebClient::doRequest(const QString& url,
                 .arg(curl_easy_strerror(result));
         }
 
-        logger()->warn(errorText);
+        _logger->warn(errorText.toStdString());
         if (bThrowOnFail)
         {
             // TODO: Add more details to this exception, like below:
@@ -314,12 +320,13 @@ HttpReplyPtr WebClient::doRequest(const QString& url,
             retval->data = owl::tidyHTML(retval->data);
         }
 
-        logger()->trace("HTTP Response from '%1' with length of '%2' took %3 milliseconds", finalUrl, (int)_buffer.size(), timer.elapsed());
+        _logger->trace("HTTP Response from '{}' with length of '{}' took {} milliseconds",
+            finalUrl, (int)_buffer.size(), timer.elapsed());
     }
     else
     {
         QString errorText = QString("Unhandled HTTP response code '%1' from %2 took %3 milliseconds").arg(status).arg(finalUrl).arg(timer.elapsed());
-        logger()->warn(errorText);
+        _logger->debug(errorText.toStdString());
         if (bThrowOnFail)
         {
             OWL_THROW_EXCEPTION(WebException(errorText, url, status));

@@ -1,8 +1,6 @@
 #include "Core.h"
 #include "ErrorReportDlg.h"
 
-using namespace Log4Qt;
-
 namespace owl
 {
 

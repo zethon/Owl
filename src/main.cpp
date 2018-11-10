@@ -5,6 +5,7 @@
 #include "Core.h"
 #include "MainWindow.h"
 #include "OwlApplication.h"
+#include <spdlog/spdlog.h>
 
 using namespace owl;
 
@@ -45,17 +46,25 @@ int main(int argc, char *argv[])
     }
     catch (const OwlException& ex)
     {
-        app.logger()->fatal("There was an unrecoverable error: %1", ex);
+        spdlog::get("Owl")->critical("There was an unrecoverable application error: {}", ex.message().toStdString());
+
+        QMessageBox::warning(nullptr, APP_TITLE,
+            QString("There was an unrecoverable application error: %1").arg(ex.message()));
+
         retval = OWLEXCEPTION;
     }
     catch (const std::exception& ex)
     {
-        app.logger()->fatal("There was an unrecoverable error: %1", ex.what());
+        spdlog::get("Owl")->critical("There was an unrecoverable system error: {}", ex.what());
+
+        QMessageBox::warning(nullptr, APP_TITLE,
+            QString("There was an unrecoverable system error: %1").arg(ex.what()));
+
         retval = STDEXCEPTION;
     }
     catch(...)
     {
-        app.logger()->fatal("There was an unknown unrecoverable error");
+        spdlog::get("Owl")->critical("There was an unknown unrecoverable error");
 
         QMessageBox::warning(nullptr, APP_TITLE, 
             QString("There was an unknown error"));

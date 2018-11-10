@@ -1,9 +1,13 @@
 #pragma once
 #include <QtCore>
-#include <log4qt/logger.h>
 #include "../Utils/StringMap.h"
 #include "xrvariant.h"
 #include "ParserBase.h"
+
+namespace spdlog
+{
+    class logger;
+}
 
 namespace owl
 {
@@ -24,7 +28,6 @@ using Tapatalk4xPtr = std::shared_ptr<Tapatalk4x>;
 class Tapatalk4x : public ParserBase
 {
 	Q_OBJECT
-	LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
     static const uint LOGINTIMEOUT;
@@ -164,6 +167,8 @@ private:
     QDateTime               _lastLogin;
 
 	QMutex					_mutex;
+
+    std::shared_ptr<spdlog::logger>  _logger;
 };
 
 } // namespace

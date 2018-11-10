@@ -4,7 +4,6 @@
 #pragma once
 #include <memory>
 #include <QtGui>
-#include <log4qt/logger.h>
 #include <Utils/Settings.h>
 #include "ui_PreferencesDlg.h"
 
@@ -22,7 +21,6 @@ using BoardPtr = std::shared_ptr<Board>;
 class PreferencesDlg : public QDialog, public Ui::PreferencesDlg
 {
 	Q_OBJECT
-	LOG4QT_DECLARE_QCLASS_LOGGER
 	
 public:
     enum class BoardEditAction

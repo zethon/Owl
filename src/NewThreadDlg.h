@@ -2,7 +2,6 @@
 #include <QtCore>
 #include <QtGui>
 #include <QPlainTextEdit>
-#include <log4qt/logger.h>
 #include <Parsers/Forum.h>
 #include "PostTextEditor.h"
 #include "ui_NewThreadDlg.h"
@@ -32,7 +31,6 @@ using ParserBasePtr = std::shared_ptr<ParserBase>;
 class NewThreadDlg : public QDialog, public Ui::NewThreadDlg
 {
 	Q_OBJECT
-	LOG4QT_DECLARE_QCLASS_LOGGER
 	
 	typedef enum { NEWPOST, NEWTHREAD } NewItemType;
 

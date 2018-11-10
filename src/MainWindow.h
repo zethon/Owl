@@ -1,7 +1,6 @@
 #pragma once
 #include <QtGui>
 #include <QtCore>
-#include <log4qt/logger.h>
 #include <Parsers/ParserManager.h>
 #include <Utils/Exception.h>
 #include <Utils/QThreadEx.h>
@@ -11,6 +10,8 @@
 #include "BoardsModel.h"
 #include "PostListWidget.h"
 #include "ui_MainWindow.h"
+
+#include <spdlog/spdlog.h>
 
 #define PANERIGHT   0
 #define PANEBOTTOM  1
@@ -177,8 +178,7 @@ private:
 
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
-	Q_OBJECT
-	LOG4QT_DECLARE_QCLASS_LOGGER
+    Q_OBJECT
 
 public:
     struct MenuActions
@@ -199,13 +199,7 @@ public:
 protected:
 
     virtual bool event(QEvent* event) override;
-    
-    virtual void closeEvent(QCloseEvent* event) override
-    {
-        logger()->debug("Closing Owl window");
-        writeSettings();
-        QMainWindow::closeEvent(event);
-    }
+    virtual void closeEvent(QCloseEvent* event) override;
 
 private Q_SLOTS:
 	void onLoaded();
@@ -345,12 +339,13 @@ private:
     BoardsModel*    _svcModel;
     SplashScreen*   _splash;
     ImageOverlay    _imageOverlay;
+
+    std::shared_ptr<spdlog::logger>  _logger;
 };
 
 class BoardMenu : public QMenu
 {
     Q_OBJECT
-        LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
     BoardMenu(BoardWeakPtr b, MainWindow* parent = nullptr)

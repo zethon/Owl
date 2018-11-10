@@ -1,5 +1,5 @@
 // Owl - www.owlclient.com
-// Copyright (c) 2012-2017, Adalid Claure <aclaure@gmail.com>
+// Copyright (c) 2012-2018, Adalid Claure <aclaure@gmail.com>
 
 #include <QFile>
 #include <QSqlDriver>
@@ -8,13 +8,25 @@
 #include <QSqlRecord>
 #include "BoardManager.h"
 
+#include <spdlog/spdlog.h>
+
 namespace owl
 {
 
 BoardManager::BoardManager()
 	: _encryptor(new CRijndael()),
-	_mutex(QMutex::Recursive)
+    _mutex(QMutex::Recursive)
 {
+    if (!spdlog::get("BoardManager"))
+    {
+        _logger = spdlog::get("Owl")->clone("BoardManager");
+        spdlog::register_logger(_logger);
+    }
+    else
+    {
+        _logger = spdlog::get("BoardManager");
+    }
+
 	_encryptor->MakeKey(DBPASSWORD_KEY, DBPASSWORD_SEED);
 }	
 	
@@ -35,7 +47,7 @@ void BoardManager::init()
 
     if (!db.isOpen())
     {
-        logger()->trace("datbase is not open, trying to open");
+        _logger->trace("datbase is not open, trying to open");
         db.open();
     }
     
@@ -94,9 +106,9 @@ void BoardManager::init()
 			QDateTime lastUpdate = QDateTime::fromString(updateStr, Qt::ISODate);
 			if (!lastUpdate.isValid())
 			{
-				logger()->warn("Could not parser last update for boardId '%1' with date value '%2'", 
+                _logger->warn("Could not parser last update for boardId '{}' with date value '{}'",
 					b->getDBId(),
-					updateStr
+                    updateStr.toStdString()
 				);
             
 				// Addy's birthday easter egg
@@ -111,13 +123,14 @@ void BoardManager::init()
 			retrieveBoardForums(b);
 
 			_boardList.push_back(b);
-			logger()->trace("Loaded '%1', last updated '%2'", b->getName(), b->getLastUpdate().toString());
+            _logger->trace("Loaded '{}', last updated '{}'",
+                b->getName().toStdString(), b->getLastUpdate().toString().toStdString());
 		}
 
 		qSort(_boardList.begin(), _boardList.end(), &BoardManager::boardDisplayOrderLessThan);
 	}
 
-	logger()->info("%1 board(s) loaded", (int)getBoardCount());
+    _logger->info("{} board(s) loaded", (int)getBoardCount());
 }
 
 owl::BoardPtr BoardManager::loadBoard(int boardId)
@@ -129,7 +142,7 @@ owl::BoardPtr BoardManager::loadBoard(int boardId)
 
 	if (!db.isOpen())
 	{
-		logger()->trace("datbase is not open, trying to open");
+        _logger->trace("datbase is not open, trying to open");
 		db.open();
 	}
 
@@ -176,9 +189,9 @@ owl::BoardPtr BoardManager::loadBoard(int boardId)
             QDateTime lastUpdate = QDateTime::fromString(updateStr, Qt::ISODate);
             if (!lastUpdate.isValid())
             {
-                logger()->warn("Could not parser last update for boardId '%1' with date value '%2'", 
+                _logger->warn("Could not parser last update for boardId '{}' with date value '{}'",
                     b->getDBId(),
-                    updateStr
+                    updateStr.toStdString()
                     );
                 
                 // Addy's birthday easter egg
@@ -193,11 +206,13 @@ owl::BoardPtr BoardManager::loadBoard(int boardId)
             retrieveBoardForums(b);
 
             _boardList.push_back(b);
-            logger()->trace("Loaded '%1', last updated '%2'", b->getName(), b->getLastUpdate().toString());
+
+            _logger->trace("Loaded '{}', last updated '{}'",
+                b->getName().toStdString(), b->getLastUpdate().toString().toStdString());
         }
     }
 
-	logger()->debug("Successfully loaded board '%1'", (int)getBoardCount());
+    _logger->debug("Successfully loaded board '%1'", (int)getBoardCount());
     query.finish();
 	return b;
 }
@@ -208,7 +223,7 @@ void BoardManager::loadBoardOptions(const BoardPtr& board)
 
     if (!db.isOpen())
     {
-        logger()->trace("datbase is not open, trying to open");
+        _logger->trace("datbase is not open, trying to open");
         db.open();
     }
     
@@ -232,8 +247,8 @@ void BoardManager::loadBoardOptions(const BoardPtr& board)
 	}
 	else
 	{
-		logger()->error("updateBoard() failed: %1", query.lastError().text());
-		logger()->debug("executed query: %1", query.lastQuery());
+        _logger->error("updateBoard() failed: {}", query.lastError().text().toStdString());
+        _logger->debug("executed query: {}", query.lastQuery().toStdString());
 	}
 }
 
@@ -299,8 +314,8 @@ void BoardManager::createForumVars(ForumPtr forum)
 
 		if (!query.exec())
 		{
-			logger()->error("createForumVars() failed: %1", query.lastError().text());
-			logger()->debug("executed query: %1", query.lastQuery());
+            _logger->error("createForumVars() failed: {}", query.lastError().text().toStdString());
+            _logger->debug("executed query: {}", query.lastQuery().toStdString());
 		}
 	}
 
@@ -335,8 +350,8 @@ void BoardManager::createForumEntries( ForumPtr forum, BoardPtr board )
 	}
 	else
 	{
-		logger()->error("createForumEntries() failed: %1", query.lastError().text());
-		logger()->debug("executed query: %1", query.lastQuery());
+        _logger->error("createForumEntries() failed: {}", query.lastError().text().toStdString());
+        _logger->debug("executed query: {}", query.lastQuery().toStdString());
 	}
 
     for (ForumPtr f : forum->getForums())
@@ -363,8 +378,8 @@ void BoardManager::createBoardOptions(BoardPtr board)
 
 		if (!query.exec())
 		{
-			logger()->error("createForumVars() failed: %1", query.lastError().text());
-			logger()->debug("executed query: %1", query.lastQuery());
+            _logger->error("createForumVars() failed: {}", query.lastError().text().toStdString());
+            _logger->debug("executed query: {}", query.lastQuery().toStdString());
 		}
 	}
 
@@ -410,8 +425,8 @@ bool BoardManager::createBoard(BoardPtr board)
 	}
 	else
 	{
-		logger()->error("createBoard() failed: %1", query.lastError().text());
-		logger()->debug("executed query: %1", query.lastQuery());
+        _logger->error("createBoard() failed: {}", query.lastError().text().toStdString());
+        _logger->debug("executed query: {}", query.lastQuery().toStdString());
 	}
 
 	if (bRet)
@@ -522,8 +537,8 @@ void BoardManager::retrieveSubForumList(BoardPtr board, ForumPtr forum, bool bDe
 	}
 	else
 	{
-		logger()->error("retrieveSubForumList() failed: %1", query.lastError().text());
-		logger()->debug("executed query: %1", query.lastQuery());
+        _logger->error("retrieveSubForumList() failed: {}", query.lastError().text().toStdString());
+        _logger->debug("executed query: {}", query.lastQuery().toStdString());
 	}
 
     for (ForumPtr current : forum->getForums())
@@ -605,8 +620,8 @@ bool BoardManager::updateBoard(BoardPtr board)
 	}
 	else
 	{
-		logger()->error("updateBoard() failed: %1", query.lastError().text());
-		logger()->debug("executed query: %1", query.lastQuery());
+        _logger->error("updateBoard() failed: {}", query.lastError().text().toStdString());
+        _logger->debug("executed query: {}", query.lastQuery().toStdString());
         OWL_THROW_EXCEPTION(BoardManagerException(query.lastError().text(), query.lastQuery()));
 	}
 
@@ -630,8 +645,8 @@ bool BoardManager::deleteBoard(BoardPtr board)
 
 		if (!query.exec())
 		{
-			logger()->error("deleteBoard() failed in 'boards' table: %1", query.lastError().text());
-			logger()->debug("executed query: %1", query.lastQuery());
+            _logger->error("deleteBoard() failed in 'boards' table: {}", query.lastError().text().toStdString());
+            _logger->debug("executed query: {}", query.lastQuery().toStdString());
 		}
         
         query.prepare(QString("DELETE FROM boardvars WHERE boardid = :id"));
@@ -639,8 +654,8 @@ bool BoardManager::deleteBoard(BoardPtr board)
         
         if (!query.exec())
         {
-			logger()->error("deleteBoard() failed in 'boardvars' table: %1", query.lastError().text());
-			logger()->debug("executed query: %1", query.lastQuery());
+            _logger->error("deleteBoard() failed in 'boardvars' table: {}", query.lastError().text().toStdString());
+            _logger->debug("executed query: {}", query.lastQuery().toStdString());
         }
         
         query.prepare("SELECT * FROM forums WHERE boardId=:boardid");
@@ -668,7 +683,7 @@ bool BoardManager::deleteBoard(BoardPtr board)
         
         if (query.exec())
         {
-			logger()->debug("executed query: %1", query.lastQuery());
+            _logger->debug("executed query: {}", query.lastQuery().toStdString());
 		}
 
         
@@ -697,7 +712,7 @@ bool BoardManager::deleteBoard(BoardPtr board)
 	}
 	else
 	{
-		logger()->warn("deleteBoard() failed. database not open");
+        _logger->warn("deleteBoard() failed. database not open");
 	}    
 
 	return bRet;
@@ -712,12 +727,12 @@ bool BoardManager::deleteForumVars(const QString& forumId) const
 
 	query.prepare(QString("DELETE FROM forumvars WHERE forumsid = :id"));
     query.bindValue(":id", forumId);
-	logger()->trace("deleteing vars in forum %1", forumId);
+    _logger->trace("deleteing vars in forum {}", forumId.toStdString());
 
     if (!query.exec())
     {
-		logger()->error("deleteForumVars() failed in 'forumvars' table: %1", query.lastError().text());
-		logger()->debug("executed query: %1", query.lastQuery());
+        _logger->error("deleteForumVars() failed in 'forumvars' table: {}", query.lastError().text().toStdString());
+        _logger->debug("executed query: {}", query.lastQuery().toStdString());
     }
     
     return bRet;
@@ -740,8 +755,8 @@ void BoardManager::updateBoardOptions(BoardPtr board, bool bDoCommit /*= false*/
 
 		if (!query.exec())
 		{
-			logger()->error("updateBoardOptions() failed: %1", query.lastError().text());
-			logger()->debug("executed query: %1", query.lastQuery());
+            _logger->error("updateBoardOptions() failed: {}", query.lastError().text().toStdString());
+            _logger->debug("executed query: {}", query.lastQuery().toStdString());
 		}
 	}
 

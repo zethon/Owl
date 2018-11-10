@@ -14,7 +14,6 @@ class PostListWebView;
 class PostListWebPage : public QWebEnginePage
 {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
     PostListWebPage(QObject* parent = nullptr)

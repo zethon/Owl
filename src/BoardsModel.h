@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QtWidgets>
-#include <log4qt/logger.h>
 #include "Data/Board.h"
 
 #define BOARDITEMPTR_ROLE      Qt::UserRole+1
@@ -21,7 +20,6 @@ protected:
 class BoardsModel : public QStandardItemModel
 {
 	Q_OBJECT
-	LOG4QT_DECLARE_QCLASS_LOGGER
 	
 public:
 	BoardsModel(QWidget* parent = 0);

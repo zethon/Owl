@@ -1,10 +1,14 @@
 #pragma once
 #include <QtCore>
-#include <log4qt/logger.h>
 #include "ParserBase.h"
 
 class QSgml;
 class QSgmlTag;
+
+namespace spdlog
+{
+    class logger;
+}
 
 namespace owl
 {
@@ -20,7 +24,6 @@ using XenforoPtr = std::shared_ptr<Xenforo>;
 class Xenforo : public ParserBase
 {
 	Q_OBJECT
-	LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
 
@@ -67,6 +70,8 @@ private:
 
     WebClient               _webclient;
     QString                 _logoutUrl;
+
+    std::shared_ptr<spdlog::logger>  _logger;
 };
 
 QSgmlTag*           getXParentsUp(QSgmlTag* source, uint i);

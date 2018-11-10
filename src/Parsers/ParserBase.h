@@ -1,8 +1,12 @@
 #pragma once
-//#include <QtGui>
 #include <QtCore>
 #include "../Parsers/Forum.h"
 #include "../Utils/WebClient.h"
+
+namespace spdlog
+{
+    class logger;
+}
 
 namespace owl
 {
@@ -28,7 +32,6 @@ class ParserBase :
     public std::enable_shared_from_this<ParserBase>
 {
 	Q_OBJECT
-	LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
 	enum PostListOptions
@@ -207,11 +210,7 @@ protected:
 	virtual QVariant doGetUnreadForums();
 	virtual void getUnreadSubForums(ForumPtr f, ForumList* list);
 
-    virtual QVariant doMarkForumRead(ForumPtr forumInfo)
-    {
-        logger()->warn("Method 'doMarkForumRead()' not implemented.");
-		return QVariant::fromValue(ForumPtr());
-    }
+    virtual QVariant doMarkForumRead(ForumPtr forumInfo);
 
 	// /virtual methods
 	////////////////////////////////////////////////////////////////
@@ -231,7 +230,9 @@ private:
 	QFutureWatcher<QVariant>*	_requestWatcher;
 	
 	QFuture<QVariant>			_future;
-	QFutureWatcher<QVariant>	_watcher;	
+    QFutureWatcher<QVariant>	_watcher;
+
+    std::shared_ptr<spdlog::logger>  _logger;
 };
 
 } // namespace owl

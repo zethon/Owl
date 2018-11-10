@@ -1,4 +1,5 @@
 #include "BoardsModel.h"
+#include <spdlog/spdlog.h>
 
 namespace owl
 {
@@ -162,8 +163,8 @@ QStandardItem* BoardsModel::addBoardItem(const BoardPtr& b, bool bThrowOnFail)
         }
         catch (const owl::OwlException& ex)
         {
-            logger()->error("Failed to create parser of type '%1' for board '%2': %3",
-                b->getProtocolName(), b->getName(), ex);
+            spdlog::get("Owl")->error("Failed to create parser of type '{}' for board '{}': {}",
+                b->getProtocolName().toStdString(), b->getName().toStdString(), ex.what());
 
             throw;
         }
@@ -338,8 +339,9 @@ QStandardItem* BoardsModel::updateForumItem(BoardPtr b, ForumPtr forum)
         }
         else
         {
-            logger()->error(QString("Unsupported forum type '%1/%2' with title '%3' on board '%4'")
-                .arg(f->getForumType()).arg(f->getForumTypeString()).arg(f->getName()).arg(b->getUrl()));
+            spdlog::get("Owl")->error("Unsupported forum type '{}/{}' with title '{}' on board '{}'",
+                f->getForumType(), f->getForumTypeString().toStdString(),
+                f->getName().toStdString(), b->getUrl().toStdString());
         }
     }
 

@@ -1,6 +1,5 @@
 #pragma once
 #include <QLineEdit>
-#include <log4qt/logger.h>
 
 namespace owl
 {
@@ -8,7 +7,6 @@ namespace owl
 class FocusEventLineEdit : public QLineEdit
 {
 	Q_OBJECT
-	LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
 	FocusEventLineEdit(QWidget* parent = 0);

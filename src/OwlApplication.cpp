@@ -9,7 +9,12 @@
 #include "Core.h"
 #include "OwlApplication.h"
 
-using namespace Log4Qt;
+#include <boost/optional/optional.hpp>
+
+#include <spdlog/common.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/rotating_file_sink.h>
+#include <spdlog/spdlog.h>
 
 namespace owl
 {
@@ -116,6 +121,33 @@ static std::pair<bool, QString>
     return std::make_pair(true, QString());
 }
 
+// NOTE: This is called before the logger is initialized
+void registerMetaTypes()
+{
+    qRegisterMetaType<owl::BoardPtr>("BoardPtr");
+    qRegisterMetaType<owl::BoardWeakPtr>("BoardWeakPtr");
+    qRegisterMetaType<owl::BoardList>("BoardList");
+
+    qRegisterMetaType<owl::ForumPtr>("ForumPtr");
+    qRegisterMetaType<owl::ForumList>("ForumList");
+
+    qRegisterMetaType<owl::ThreadPtr>("ThreadPtr");
+    qRegisterMetaType<owl::ThreadList>("ThreadList");
+
+    qRegisterMetaType<owl::PostPtr>("PostPtr");
+    qRegisterMetaType<owl::PostList>("PostList");
+
+    qRegisterMetaType<owl::ParserBasePtr>("ParserBasePtr");
+
+    qRegisterMetaType<owl::OwlException>("OwlException");
+    qRegisterMetaType<owl::OwlExceptionPtr>("OwlExceptionPtr");
+
+    qRegisterMetaType<owl::StringMap>("StringMap");
+    qRegisterMetaType<owl::StringMapPtr>("StringMapPtr");
+
+    qmlRegisterType<SettingsObject>("reader.owl", 1, 0, "Settings");
+}
+
 OwlApplication::OwlApplication(int& argc, char **argv[])
     : QApplication(argc,*argv),
       _settingsFile(new SettingsFile)
@@ -137,28 +169,30 @@ OwlApplication::OwlApplication(int& argc, char **argv[])
 
 OwlApplication::~OwlApplication()
 {
+    auto logger = spdlog::get("Owl");
+
     try
     {
         if (_db.isOpen())
         {
-            logger()->debug("Closing Owl database");
+            logger->debug("Closing Owl database");
             _db.close();
         }
     }
     catch (const OwlException& ex)
     {
-        logger()->error("Error destructing application object: %1", ex.message());
+        logger->error("Error destructing application object: {}", ex.message().toStdString());
     }
     catch (const std::exception& ex)
     {
-        logger()->error("There was an error shutting down the application: %1", ex.what());
+        logger->error("There was an error shutting down the application: {}", ex.what());
     }
     catch (...)
     {
-        logger()->error("There was an unknown error shutting down the application");
+        logger->error("There was an unknown error shutting down the application");
     }
 
-    logger()->info("Exiting Owl");
+    logger->info("Exiting Owl");
 }
 
 void OwlApplication::init()
@@ -172,7 +206,7 @@ void OwlApplication::init()
             OWL_THROW_EXCEPTION(OwlException(retval.second));
         }
 
-        // initializ the logger and write the "Starting Owl..." message to the log
+        // initialize the logger and write the "Starting Owl..." message to the log
         initializeLogger();
 
         // initialize the application's db
@@ -250,34 +284,6 @@ void OwlApplication::initCommandLine()
     }
     // else, leave it empty to signal we'll use the folder in the config file
 }
-
-void OwlApplication::registerMetaTypes()
-{
-    logger()->trace("Registering Metatypes");
-
-    qRegisterMetaType<owl::BoardPtr>("BoardPtr");
-    qRegisterMetaType<owl::BoardWeakPtr>("BoardWeakPtr");
-    qRegisterMetaType<owl::BoardList>("BoardList");
-
-    qRegisterMetaType<owl::ForumPtr>("ForumPtr");
-    qRegisterMetaType<owl::ForumList>("ForumList");
-
-    qRegisterMetaType<owl::ThreadPtr>("ThreadPtr");
-    qRegisterMetaType<owl::ThreadList>("ThreadList");
-
-    qRegisterMetaType<owl::PostPtr>("PostPtr");
-    qRegisterMetaType<owl::PostList>("PostList");
-
-    qRegisterMetaType<owl::ParserBasePtr>("ParserBasePtr");
-
-    qRegisterMetaType<owl::OwlException>("OwlException");
-    qRegisterMetaType<owl::OwlExceptionPtr>("OwlExceptionPtr");
-
-    qRegisterMetaType<owl::StringMap>("StringMap");
-    qRegisterMetaType<owl::StringMapPtr>("StringMapPtr");
-
-    qmlRegisterType<SettingsObject>("reader.owl", 1, 0, "Settings");
-}
     
 void OwlApplication::initializeDatabase()
 {
@@ -292,7 +298,7 @@ void OwlApplication::initializeDatabase()
     QFileInfo dbFileInfo(_dbFileName);
     if (!dbFileInfo.exists())
     {
-        logger()->debug("Creating database file '%1'", _dbFileName);
+        spdlog::get("Owl")->debug("Creating database file '{}'", _dbFileName.toStdString());
         
         QDir dbDir(dbFileInfo.absolutePath());
         if (!dbDir.exists())
@@ -323,8 +329,8 @@ void OwlApplication::initializeDatabase()
 
                 if (!query.exec(statement))
                 {
-                    logger()->fatal("Query failed: '%1'", statement);
-                    logger()->fatal("Last error: %1", query.lastError().text());
+                    spdlog::get("Owl")->warn("Query failed: '{}'", statement.toStdString());
+                    spdlog::get("Owl")->warn("Last error: {}", query.lastError().text().toStdString());
                 }
             }
         }
@@ -333,7 +339,7 @@ void OwlApplication::initializeDatabase()
     }
     else
     {
-        logger()->debug("Loading database file '%1'", _dbFileName);
+        spdlog::get("Owl")->debug("Loading database file '{}'", _dbFileName.toStdString());
         _db.open();
     }
 }
@@ -342,10 +348,13 @@ void OwlApplication::initializeLogger()
 {
     SettingsObject settings;
 
-    // set the main logging level
-    const QString levelString = settings.read("logs.level").toString();
-    const Level level = Log4Qt::Level::fromString(levelString);
-    Log4Qt::Logger::rootLogger()->setLevel(level);
+    const QString levelString = settings.read("logs.level").toString().toLower();
+    const auto configLevel = spdlog::level::from_str(levelString.toStdString());
+
+    auto logger = spdlog::get("Owl");
+    logger->set_level(configLevel);
+
+    boost::optional<std::string> errorMessage;
 
     if (settings.read("logs.file.enabled").toBool())
     {
@@ -353,64 +362,50 @@ void OwlApplication::initializeLogger()
         QFileInfo info(logPath);
         if (!info.isDir() || !info.isWritable())
         {
-            logger()->warn("The log file folder '%1' is invalid. Make sure it exists and is writable.", logPath);
+            errorMessage = fmt::format("The log file folder '{}' is invalid. Make sure it exists and is writable.", logPath.toStdString());
             return;
         }
 
         QDir logDir(logPath);
         const QString logFilename { logDir.absoluteFilePath("owl.log") };
 
-        // create a new layout for this appender
-        // TODO: support configurable layouts?
-        TTCCLayout *p_layout = new TTCCLayout();
-        p_layout->setDateFormat(Log4Qt::TTCCLayout::DateFormat::ABSOLUTEFMT);
-        p_layout->activateOptions();
+        auto rotating = make_shared<spdlog::sinks::rotating_file_sink_mt> (
+            logFilename.toStdString(), 1024 * 1024 * 5, 3);
 
-        RollingFileAppender* appender = new RollingFileAppender(p_layout, logFilename, true);
-        appender->setName("static:app.rolling.appender");
-        appender->setMaxFileSize("100KB");
-        appender->setMaxBackupIndex(3);
-        appender->activateOptions();
-        Log4Qt::Logger::rootLogger()->addAppender(appender);
-
-        logStartupInfo();
-        logger()->debug("Logging initialized to level '%1' with logfile '%2'", level.toFullString(), logFilename);
+        logger->sinks().push_back(rotating);
     }
-    else
+
+    // log startup info
+    logger->info("Starting {} version {} built {}", APP_NAME, OWL_VERSION, OWL_VERSION_DATE_TIME);
+    logger->info("Logging initialized to level '{}'", spdlog::level::to_c_str(configLevel));
+
+    if (settings.read("logs.file.enabled").toBool())
     {
-        logStartupInfo();
-        logger()->debug("Logging initialized to level '%1'", level.toFullString());
+        if (errorMessage)
+        {
+            logger->warn(errorMessage.value());
+        }
+        else
+        {
+            logger->info("Logging file initialized to folder: {}",
+                settings.read("logs.file.path").toString().toStdString());
+        }
     }
-}
 
-void OwlApplication::logStartupInfo()
-{
-    logger()->info("Starting %1 version %2 built %3",
-        QString(APP_NAME), QString(OWL_VERSION), QString(OWL_VERSION_DATE_TIME));
-    logger()->debug("Operating System: %1", owl::getOSString());
-    logger()->debug("Current working directory: %1", QDir::currentPath());
-    logger()->info("Loaded settings file '%1'", _settingsFile->filePath());
+    logger->debug("Operating System: {}", owl::getOSString());
+    logger->debug("Current working directory: {}", QDir::currentPath().toStdString());
+    logger->info("Settings file '{}'", _settingsFile->filePath().toStdString());
 }
 
 void OwlApplication::initConsoleAppender()
 {
-    using Log4Qt::TTCCLayout;
-    using Log4Qt::ConsoleAppender;
-    
-    TTCCLayout *p_layout = new TTCCLayout();
-    p_layout->setDateFormat("yyyy-MMM-dd hh:mm:ss");
-    p_layout->activateOptions();
-    
-    ConsoleAppender *p_appender = new ConsoleAppender(p_layout, ConsoleAppender::STDOUT_TARGET);
-    p_appender->activateOptions();
+    // create the root logger
+    spdlog::stdout_color_mt("Owl");
 
-    // Set appender on root logger
-    Log4Qt::Logger::rootLogger()->addAppender(p_appender);
-
-#ifdef _DEBUG
-    Log4Qt::Logger::rootLogger()->setLevel(Log4Qt::Level::TRACE_INT);
+#ifdef RELEASE
+    spdlog::set_level(spdlog::level::off);
 #else
-    Log4Qt::Logger::rootLogger()->setLevel(Log4Qt::Level::INFO_INT);
+    spdlog::set_level(spdlog::level::trace);
 #endif
 }
 

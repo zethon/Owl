@@ -3,6 +3,8 @@
 #include "Tapatalk.h"
 #include <cmath>
 
+#include <spdlog/spdlog.h>
+
 namespace owl
 {
 
@@ -19,6 +21,16 @@ Tapatalk4x::Tapatalk4x(const QString& baseUrl)
       _forumMapInitialized(false),
       _mutex(QMutex::Recursive)
 {
+    if (!spdlog::get("Tapatalk4x"))
+    {
+        _logger = spdlog::get("Owl")->clone("Tapatalk4x");
+        spdlog::register_logger(_logger);
+    }
+    else
+    {
+        _logger = spdlog::get("Tapatalk4x");
+    }
+
 	_options->add("boardware", "tapatalk");
 	_options->add("boardwaremax", "4.9.9.0");
 	_options->add("boardwaremin", "4.0");
@@ -313,7 +325,7 @@ QVariant Tapatalk4x::doThreadList(ForumPtr forumInfo, int)
 			}
 		}
 	}
-	else if (logger()->isErrorEnabled())
+    else
 	{
 		QString strError("Call to 'get_topic' for sticky-threads failed.");
 
@@ -322,7 +334,7 @@ QVariant Tapatalk4x::doThreadList(ForumPtr forumInfo, int)
 			strError.append(QString(" Error: '%1'").arg(responseMap["result_text"].toString()));
 		}
 
-		logger()->error(strError);
+        _logger->error(strError.toStdString());
 	}
 
 	// load the non-sticky threads
@@ -357,7 +369,7 @@ QVariant Tapatalk4x::doThreadList(ForumPtr forumInfo, int)
 			}
 		}
 	}
-	else if (logger()->isErrorEnabled())
+    else
 	{
 		QString strError("Call to 'get_topic' for threads failed.");
 
@@ -366,7 +378,7 @@ QVariant Tapatalk4x::doThreadList(ForumPtr forumInfo, int)
 			strError.append(QString(" Error: '%1'").arg(responseMap2["result_text"].toString()));
 		}
 
-		logger()->error(strError);
+        _logger->error(strError.toStdString());
 	}
 
 	int iTotalTopics = 0;
@@ -589,16 +601,16 @@ QVariant Tapatalk4x::doSubmitNewThread(ThreadPtr threadInfo)
 		QString newId(responseMap["topic_id"].toString());
 		ret = ThreadPtr(new Thread(newId));
 	}
-	else if (logger()->isErrorEnabled())
+    else
 	{
 		if (responseMap.contains("result_text"))
 		{
-			logger()->error("No threadId returned from doSubmitNewThread(): Error '%1'",
-				responseMap["result_text"].toString());
+            _logger->error("No threadId returned from doSubmitNewThread(): Error '{}'",
+                responseMap["result_text"].toString().toStdString());
 		}
 		else
 		{
-			logger()->error("No threadId returned from doSubmitNewThread()");
+            _logger->error("No threadId returned from doSubmitNewThread()");
 		}
 	}
 	
@@ -651,12 +663,12 @@ QVariant Tapatalk4x::doSubmitNewPost(PostPtr postInfo)
 		if (responseMap.contains("result_text"))
 		{
             const auto errorText = responseMap["result_text"].toString();
-            logger()->error("Tapatalk response had a blank or false result with error: '%1'", errorText);
+            _logger->error("Tapatalk response had a blank or false result with error: '{}'", errorText.toStdString());
             OWL_THROW_EXCEPTION(OwlException(errorText));
 		}
 		else
 		{
-            logger()->error("Tapatalk response had a blank or false result with no error text");
+            _logger->error("Tapatalk response had a blank or false result with no error text");
             OWL_THROW_EXCEPTION(OwlException(tr("There was an unkonwn error submitting the post.")));
 		}
 	}
@@ -752,7 +764,7 @@ QVariant Tapatalk4x::doGetUnreadForums()
 			}
 		}
 	}
-	else if (logger()->isErrorEnabled())
+    else
 	{
 		QString strError("Call to 'get_unread_topic' failed.");
 
@@ -761,7 +773,7 @@ QVariant Tapatalk4x::doGetUnreadForums()
 			strError.append(QString(" Error: '%1'").arg(map["result_text"].toString()));
 		}
 
-		logger()->error(strError);
+        _logger->error(strError.toStdString());
 	}
 
 	QHashIterator<QString, ForumPtr> it(unreadHash);
@@ -798,11 +810,11 @@ QString Tapatalk4x::getPostQuote(PostPtr postinfo)
             retval = QString("%1\n\n")
                 .arg(responsemap["post_content"].toString());
         }
-        else if (logger()->isDebugEnabled())
+        else
         {
-            logger()->debug("Failed to get post quote for post '%1' because: '%2'",
-                postinfo->getId(),
-                responsemap["result_text"].toString());
+            _logger->debug("Failed to get post quote for post '{}' because: '{}'",
+                postinfo->getId().toStdString(),
+                responsemap["result_text"].toString().toStdString());
         }
     }
 
@@ -1062,14 +1074,14 @@ void Tapatalk4x::getRootId(QString data)
 
 	if (!response.canConvert(QVariant::List))
 	{
-        logger()->error("Failed to get root ID. The response could not be converted to a List.");
+        _logger->error("Failed to get root ID. The response could not be converted to a List.");
 		return;
 	}
 
 	auto rootForumMap = response.toList();
 	if (rootForumMap.size() == 0)
 	{
-        logger()->error("Failed to get root ID. No forums were returned in the resulting List.");
+        _logger->error("Failed to get root ID. No forums were returned in the resulting List.");
 		return;
 	}
 
@@ -1078,7 +1090,7 @@ void Tapatalk4x::getRootId(QString data)
 	XRVariant firstChild = rootForumMap.at(0);
 	if (!firstChild.canConvert(QVariant::Map))
 	{
-        logger()->error("Failed to get root ID. First item in List could not be converted to Map.");
+        _logger->error("Failed to get root ID. First item in List could not be converted to Map.");
 		return;
 	}
 
@@ -1091,7 +1103,7 @@ void Tapatalk4x::getRootId(QString data)
 	}
     else
     {
-        logger()->error("Failed to get root ID. Forum Map does not contain a 'parent_id'.");
+        _logger->error("Failed to get root ID. Forum Map does not contain a 'parent_id'.");
     }
 
 	return;

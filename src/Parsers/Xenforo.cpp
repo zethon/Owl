@@ -8,12 +8,24 @@
 #include "Xenforo.h"
 #include <cmath>
 
+#include <spdlog/spdlog.h>
+
 namespace owl
 {
 
 Q_INVOKABLE Xenforo::Xenforo(const QString &baseUrl)
     : ParserBase(XENFORO_NAME,XENFORO_PRETTYNAME, baseUrl)
 {
+    if (!spdlog::get("Xenforo"))
+    {
+        _logger = spdlog::get("Owl")->clone("Xenforo");
+        spdlog::register_logger(_logger);
+    }
+    else
+    {
+        _logger = spdlog::get("Xenforo");
+    }
+
     addWatcher(&_webclient);
 }
 
@@ -211,7 +223,7 @@ QVariant Xenforo::doLogin(const LoginInfo& loginInfo)
     }
     else
     {
-        logger()->warn("Could not parse login response");
+        _logger->warn("Could not parse login response");
     }
 
     return QVariant::fromValue(result);
@@ -375,7 +387,8 @@ QVariant Xenforo::doThreadList(ForumPtr forumInfo, int options)
                     }
                     else
                     {
-                        logger()->warn("Could not extract a timestamp from thread '%1' (%2) at url '%3'", newthread->getTitle(), newthread->getId(), url);
+                        _logger->warn("Could not extract a timestamp from thread '{}' ({}) at url '{}'",
+                            newthread->getTitle().toStdString(), newthread->getId().toStdString(), url.toStdString());
                     }
 
                     newthread->setLastPost(lastpost);
@@ -407,22 +420,22 @@ QVariant Xenforo::doThreadList(ForumPtr forumInfo, int options)
                 }
                 else
                 {
-                    logger()->warn("Could not find any author information for a post at url '%1'", url);
+                    _logger->warn("Could not find any author information for a post at url '{}'", url.toStdString());
                 }
             }
             else
             {
                 if (!titleInfo)
                 {
-                    logger()->warn("Could not find any title information for a post at url '%1'", url);
+                    _logger->warn("Could not find any title information for a post at url '{}'", url.toStdString());
                 }
                 else if (!authorInfo)
                 {
-                    logger()->warn("Could not find any author information for a post at url '%1'", url);
+                    _logger->warn("Could not find any author information for a post at url '{}'", url.toStdString());
                 }
                 else if (!lastPostDiv)
                 {
-                    logger()->warn("Could not find any last post information for a post at url '%1'", url);
+                    _logger->warn("Could not find any last post information for a post at url '{}'", url.toStdString());
                 }
             }
         }
@@ -440,7 +453,7 @@ QVariant Xenforo::doThreadList(ForumPtr forumInfo, int options)
     }
     else
     {
-        logger()->warn("The url '%1' could not be parsed", url);
+        _logger->warn("The url '{}' could not be parsed", url.toStdString());
     }
 
     forumInfo->getThreads().clear();
@@ -571,7 +584,8 @@ QVariant Xenforo::doGetPostList(ThreadPtr threadInfo, ParserBase::PostListOption
                 }
                 else
                 {
-                    logger()->warn("Could not extract a timestamp from post id '%1' at url '%2'", strId, url);
+                    _logger->warn("Could not extract a timestamp from post id '{}' at url '{}'",
+                        strId.toStdString(), url.toStdString());
                 }
 
                 // extract the user avatar
@@ -897,7 +911,7 @@ ForumList Xenforo::getForumsPrivate(const QString &id)
         {
             if (nodeList.size() > 1)
             {
-                logger()->warn("More than one <ol class=\"nodeList\"> found, using the first one");
+                _logger->warn("More than one <ol class=\"nodeList\"> found, using the first one");
             }
 
             auto iDisplayOrder = 1u;
@@ -935,7 +949,7 @@ ForumList Xenforo::getForumsPrivate(const QString &id)
                     }
                     else
                     {
-                        logger()->warn("No <h3> element could be found. Skipping potential forum.");
+                        _logger->warn("No <h3> element could be found. Skipping potential forum.");
                     }
                 }
             }

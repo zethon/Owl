@@ -4,7 +4,6 @@
 #pragma once
 #include <QSqlDatabase>
 #include <QString>
-#include <log4qt/logger.h>
 #include <Utils/Exception.h>
 #include <Utils/Rijndael.h>
 #include "Board.h"
@@ -16,6 +15,11 @@
 
 #define BOARDMANAGER                BoardManager::instance()
 
+namespace spdlog
+{
+    class logger;
+}
+
 namespace owl
 {
 
@@ -25,7 +29,6 @@ using BoardManagerPtr = std::shared_ptr<BoardManager>;
 class BoardManager : public QObject
 {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
     
 public:
 	static BoardManagerPtr instance()
@@ -103,6 +106,8 @@ private:
 	QMutex _mutex;
 
 	static BoardManagerPtr _instance;
+
+    std::shared_ptr<spdlog::logger>  _logger;
 };
 
 class BoardManagerException : public OwlException

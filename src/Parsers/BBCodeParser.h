@@ -3,7 +3,6 @@
 #include <vector>
 #include <memory>
 #include <QtCore>
-#include <log4qt/logger.h>
 
 namespace owl
 {
@@ -119,7 +118,6 @@ public:
 class BBRegExParser : public QObject
 {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
 

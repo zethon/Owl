@@ -6,8 +6,6 @@
 #include "Data/Board.h"
 #include "NewThreadDlg.h"
 
-using namespace Log4Qt;
-
 namespace owl
 {
 

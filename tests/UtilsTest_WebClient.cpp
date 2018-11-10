@@ -5,6 +5,8 @@
 #include <boost/test/data/test_case.hpp>
 
 #include <iostream>
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 #include "../src/Utils/WebClient.h"
 
@@ -54,6 +56,11 @@ std::tuple<const char*, const char*, long> statusData[]
 
 BOOST_DATA_TEST_CASE(statusTests, data::make(statusData), url, expectedResponse, expectedStatus)
 {
+    if (!spdlog::get("Owl"))
+    {
+        spdlog::stdout_color_mt("Owl")->set_level(spdlog::level::off);
+    }
+
     owl::WebClient client;
     client.setThrowOnFail(false);
     auto reply = client.GetUrl(QString::fromLatin1(url), owl::WebClient::NOTIDY | owl::WebClient::NOCACHE);

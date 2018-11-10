@@ -4,8 +4,6 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QColorDialog>
-#include <log4qt/ttcclayout.h>
-#include <log4qt/rollingfileappender.h>
 #include <Parsers/ParserManager.h>
 #include <Utils/OwlUtils.h>
 #include "Data/BoardManager.h"
@@ -14,8 +12,8 @@
 #include "Core.h"
 #include "PreferencesDlg.h"
 
-
-using namespace Log4Qt;
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/rotating_file_sink.h>
 
 namespace owl
 {
@@ -565,7 +563,6 @@ void PreferencesDlg::connectAdvancedSettings()
                 {
                     const QString msg = QString("The selected folder does not exist or is read only. Please select another folder.");
                     QMessageBox msgBox { QMessageBox::Warning, tr("Invalid Folder"), msg, QMessageBox::Ok, this, Qt::Sheet};
-                    logger()->warn("The log file folder '%1' is invalid. Make sure it exists and is writable.", info.absolutePath());
                     msgBox.open();
                     return;
                 }
@@ -579,14 +576,15 @@ void PreferencesDlg::connectAdvancedSettings()
     QObject::connect(loggingLevelLB, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
         [this](int index)
         {
-            bool bOk = false;
-            const Log4Qt::Level level = Log4Qt::Level::fromString(this->loggingLevelLB->itemText(index), &bOk);
-            if (bOk && level != Log4Qt::Level::NULL_INT)
-            {
-                _settings.write("logs.level", loggingLevelLB->currentText());
-                const Level loglevel = Log4Qt::Level::fromString(loggingLevelLB->currentText());
-                Log4Qt::Logger::rootLogger()->setLevel(loglevel);
-            }
+            const std::string levelstr = this->loggingLevelLB->itemText(index).toLower().toStdString();
+            const spdlog::level::level_enum newLevel = spdlog::level::from_str(levelstr);
+            _settings.write("logs.level", loggingLevelLB->currentText());
+
+            spdlog::apply_all(
+                [&](std::shared_ptr<spdlog::logger> l)
+                {;
+                    l->set_level(newLevel);
+                });
         });
 
     QObject::connect(logToFileCB, &QCheckBox::clicked,
@@ -599,31 +597,28 @@ void PreferencesDlg::connectAdvancedSettings()
 
 void PreferencesDlg::resetLogFileAppender()
 {
-    if (_settings.read("logs.file.enabled").toBool())
+    if (_settings.read("logs.file.enabled").toBool()
+            && spdlog::get("Owl")->sinks().size() == 1)
     {
-        if (Log4Qt::Logger::rootLogger()->appender("static:app.rolling.appender") == nullptr)
-        {
-            QDir logDir(_settings.read("logs.file.path").toString());
-            const QString logFilename { logDir.absoluteFilePath("owl.log") };
+        QDir logDir(_settings.read("logs.file.path").toString());
+        const QString logFilename { logDir.absoluteFilePath("owl.log") };
 
-            TTCCLayout *p_layout = new TTCCLayout();
-            p_layout->setDateFormat(Log4Qt::TTCCLayout::DateFormat::ABSOLUTEFMT);
-            p_layout->activateOptions();
+        auto rotating = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
+            logFilename.toStdString(), 1024 * 1024 * 5, 3);
 
-            RollingFileAppender* appender = new RollingFileAppender(p_layout, logFilename, true);
-            appender->setName("static:app.rolling.appender");
-            appender->setMaxFileSize("100KB");
-            appender->setMaxBackupIndex(3);
-            appender->activateOptions();
-            Log4Qt::Logger::rootLogger()->addAppender(appender);
-        }
+        spdlog::apply_all(
+            [&](std::shared_ptr<spdlog::logger> l)
+            {
+                l->sinks().push_back(rotating);
+            });
     }
     else
     {
-        if (Log4Qt::Logger::rootLogger()->appender("static:app.rolling.appender") != nullptr)
-        {
-           Log4Qt::Logger::rootLogger()->removeAppender("static:app.rolling.appender");
-        }
+        spdlog::apply_all(
+            [&](std::shared_ptr<spdlog::logger> l)
+            {
+                l->sinks().pop_back();
+            });
     }
 }
 
@@ -655,7 +650,7 @@ void PreferencesDlg::renderGeneralSettings()
     }
     else
     {
-        logger()->warn("Invalid datetime.format, value is '%1'. Using 'default' instead.", dtFormat);
+        spdlog::get("Owl")->warn("Invalid datetime.format, value is '{}'. Using 'default' instead.", dtFormat.toStdString());
         _settings.write("datetime.format", "default");
         useDefaultFormatRB->setChecked(true);
     }

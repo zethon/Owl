@@ -1,8 +1,6 @@
 #include "Core.h"
 #include "AboutDlg.h"
 
-using namespace Log4Qt;
-
 namespace owl
 {
 
