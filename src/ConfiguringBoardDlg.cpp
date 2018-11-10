@@ -6,7 +6,7 @@
 #include "Data/BoardManager.h"
 #include "ConfiguringBoardDlg.h"
 
-using namespace Log4Qt;
+#include <spdlog/spdlog.h>
 
 #define DEFAULT_SHOWIMAGES              true
 #define DEFAULT_AUTOLOGIN_ENABLED       true
@@ -32,7 +32,8 @@ ConfiguringBoardDlg::ConfiguringBoardDlg(QWidget* parent)
 	  _future(new QFuture<void>),
 	  _watcher(new QFutureWatcher<void>),
       FORUMPATHS(QStringList { "", "forum", "forums", "community", "board", "messageboard" }),
-	  ICONFILES (QStringList { "/apple-touch-icon.png", "/favicon.ico" })
+      ICONFILES (QStringList { "/apple-touch-icon.png", "/favicon.ico" }),
+      _logger { spdlog::get("Owl")->clone("ConfiguringBoardDlg") }
 {
 	setupUi(this);
     
@@ -171,7 +172,7 @@ owl::StringMap ConfiguringBoardDlg::autoConfigure()
 	results.add("msg", "No board could be found");
 
 	QString	baseUrl(owl::sanitizeUrl(_targetUrl.toString()));
-	logger()->info("Searching for board at: %1", baseUrl);
+    _logger->info("Searching for board at: {}", baseUrl.toStdString());
 
 	QString testUrl;
 	bool bFound = false;
@@ -194,7 +195,7 @@ owl::StringMap ConfiguringBoardDlg::autoConfigure()
                 testUrl = testUrl + "/" + path;
             }
 
-            logger()->debug("Trying parser %1 at Url: %2", TAPATALK_NAME, testUrl);
+            _logger->debug("Trying parser {} at Url: {}", TAPATALK_NAME, testUrl.toStdString());
 
             // tapatalk is Owl's preferred parser, so try it first
             ParserBasePtr parser = PARSERMGR->createParser(TAPATALK_NAME, testUrl);
@@ -205,7 +206,8 @@ owl::StringMap ConfiguringBoardDlg::autoConfigure()
 
                 if (info.has("version") && info.getText("version").size() > 0)
                 {
-                    logger()->info("Board found at %1 with parser %2", testUrl, parser->getName());
+                    _logger->info("Board found at {} with parser {}",
+                        testUrl.toStdString(), parser->getName().toStdString());
 
                     results = createBoard(parser->getName(), testUrl);
                     if (results.getBool("success"))
@@ -282,12 +284,13 @@ owl::StringMap ConfiguringBoardDlg::autoConfigure()
                     html = reply->data;
                     for (QString parserName : parsers)
                     {
-                        logger()->debug("Trying parser %1 at Url: %2", parserName, testUrl);
+                        _logger->debug("Trying parser {} at Url: {}", parserName.toStdString(), testUrl.toStdString());
                         ParserBasePtr p = ParserManager::instance()->createParser(parserName, testUrl);
 
                         if (p->canParse(html))
                         {
-                            logger()->info("Board found at '%1' with parser '%2'", testUrl, p->getName());
+                            _logger->info("Board found at '{}' with parser '{}'",
+                                testUrl.toStdString(), p->getName().toStdString());
 
                             // settle up things like https vs http, and http://domain vs http://www.domain
                             testUrl = resolveFinalUrl(testUrl, reply->finalUrl);
@@ -326,7 +329,8 @@ owl::StringMap ConfiguringBoardDlg::autoConfigure()
 
 owl::StringMap ConfiguringBoardDlg::createBoard(const QString& parserName, const QString& urlText)
 {
-	logger()->info("Configuring new board with parser %1 at url %2", parserName, urlText);
+    _logger->info("Configuring new board with parser {} at url {}",
+        parserName.toStdString(), urlText.toStdString());
 
 	StringMap resultParams;
 
@@ -363,7 +367,7 @@ owl::StringMap ConfiguringBoardDlg::createBoard(const QString& parserName, const
 		.arg(boardwareInfo.getText("boardware"))
 		.arg(boardwareInfo.getText("version")));
 
-	logger()->info("Attempting login of new board");
+    _logger->info("Attempting login of new board");
 	LoginInfo loginInfo(_username, _password);
 	StringMap loginResult = parser->login(loginInfo);
 
@@ -387,21 +391,22 @@ owl::StringMap ConfiguringBoardDlg::createBoard(const QString& parserName, const
 		_newBoard->setStatus(Board::ONLINE);
 
 		statusLbl->setText(tr("Login successful. Retrieving forum list..."));
-		logger()->info("Crawling new board '%1' (%2)", _newBoard->getName(), _newBoard->getUrl());
+        _logger->info("Crawling new board '{}' ({})",
+            _newBoard->getName().toStdString(), _newBoard->getUrl().toStdString());
 
 		_newBoard->crawlRoot();
 
 		if (_newBoard->getRoot()->getForums().size() > 0)
 		{
 			statusLbl->setText(tr("Retrieving message board icon..."));
-			logger()->trace("Configuring '%1' -> retrieving message board icon", _newBoard->getName());
+            _logger->trace("Configuring '{}' -> retrieving message board icon", _newBoard->getName().toStdString());
 
 			QByteArray buffer;
             parser->getFavIconBuffer(&buffer, ICONFILES);
 			_newBoard->setFavIcon(buffer.toBase64());
 
 			statusLbl->setText(tr("Looking for encryption settings..."));
-			logger()->trace("Configuring '%1' -> looking for encryption settings", _newBoard->getName());
+            _logger->trace("Configuring '{}' -> looking for encryption settings", _newBoard->getName().toStdString());
 
 			StringMap s = parser->getEncryptionSettings();
 			if (s.has("success") && s.getBool("success"))
@@ -427,14 +432,14 @@ owl::StringMap ConfiguringBoardDlg::createBoard(const QString& parserName, const
 			// write the board info to the db
 			BoardManager::instance()->createBoard(_newBoard);
 
-			logger()->trace("Board saved. Name: '%1' Url: '%2' DBId: '%3'",
-				_newBoard->getName(), _newBoard->getUrl(), _newBoard->getDBId());
+            _logger->trace("Board saved. Name: '{}' Url: '{}' DBId: '{}'",
+                _newBoard->getName().toStdString(), _newBoard->getUrl().toStdString(), _newBoard->getDBId());
 
 			resultParams.add("success", true);
 		}
 		else
 		{
-			logger()->error("Unable to crawl the message board");
+            _logger->error("Unable to crawl the message board");
 
 			resultParams.add("success", false);
 			resultParams.add("msg", tr("The forum structure of the messageboard could not be determined."));
@@ -462,7 +467,8 @@ owl::StringMap ConfiguringBoardDlg::singleConfigure()
 	results.add("success", (bool)false); 
 	results.add("msg", "No board could be found");
 
-    logger()->info("Searching for board at user select url '%1' and parser '%2'", _targetUrl.toString(), _parser);
+    _logger->info("Searching for board at user select url '{}' and parser '{}'",
+        _targetUrl.toString().toStdString(), _parser.toStdString());
 
     if (_parser.toLower() == "tapatalk4x")
     {
@@ -495,7 +501,7 @@ owl::StringMap ConfiguringBoardDlg::singleConfigure()
 
             try
             {
-                logger()->debug("Trying Url: %1", testUrl);
+                _logger->debug("Trying Url: %1", testUrl.toStdString());
                 reply = client.GetUrl(testUrl, WebClient::NOCACHE);
             }
             catch (const WebException&)
@@ -510,7 +516,8 @@ owl::StringMap ConfiguringBoardDlg::singleConfigure()
 
                 if (parser->canParse(html))
                 {
-                    logger()->info("Board found at '%1' with parser '%2'", testUrl, parser->getName());
+                    _logger->info("Board found at '{}' with parser '{}'",
+                        testUrl.toStdString(), parser->getName().toStdString());
 
                     {
                         QUrl testUrlObj = QUrl::fromUserInput(testUrl);
@@ -544,7 +551,7 @@ owl::StringMap ConfiguringBoardDlg::singleConfigure()
                 }
                 else
                 {
-                    logger()->debug("No board found at '%1'", testUrl);
+                    _logger->debug("No board found at '%1'", testUrl.toStdString());
                 }
             }
         }
@@ -568,7 +575,7 @@ StringMap ConfiguringBoardDlg::manualTapatalkConfigure()
 
         try
         {
-            logger()->debug("Trying Url: %1", testUrl);
+            _logger->debug("Trying Url: {}", testUrl.toStdString());
             const auto info = parser->getBoardwareInfo();
 
             if (info.has("success"))
@@ -580,14 +587,11 @@ StringMap ConfiguringBoardDlg::manualTapatalkConfigure()
         catch (const WebException& wx)
         {
             // catch any errors since we might be testing a bad url
-            if (logger()->isDebugEnabled())
-            {
-                const QString error = QString("Could not request URL '%1' because: %2")
-                    .arg(testUrl)
-                    .arg(wx.details());
+            const QString error = QString("Could not request URL '%1' because: %2")
+                .arg(testUrl)
+                .arg(wx.details());
 
-                logger()->debug(error);
-            }
+            _logger->debug(error.toStdString());
         }
     }
     else
@@ -602,7 +606,7 @@ StringMap ConfiguringBoardDlg::manualTapatalkConfigure()
             try
             {
                 auto parser = PARSERMGR->createParser(_parser, testUrl);
-                logger()->debug("Searching url '%1' with parser '%2'", testUrl, _parser);
+                _logger->debug("Searching url '{}' with parser '{}'", testUrl.toStdString(), _parser.toStdString());
                 const auto info = parser->getBoardwareInfo();
 
                 if (info.has("success"))
@@ -615,14 +619,11 @@ StringMap ConfiguringBoardDlg::manualTapatalkConfigure()
             catch (const WebException& wx)
             {
                 // catch any errors since we might be testing a bad url
-                if (logger()->isDebugEnabled())
-                {
-                    const QString error = QString("Could not request URL '%1' because: %2")
-                        .arg(testUrl)
-                        .arg(wx.details());
+                const QString error = QString("Could not request URL '%1' because: %2")
+                    .arg(testUrl)
+                    .arg(wx.details());
 
-                    logger()->debug(error);
-                }
+                _logger->debug(error.toStdString());
             }
         }
     }

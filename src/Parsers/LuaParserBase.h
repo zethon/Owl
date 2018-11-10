@@ -3,10 +3,14 @@
 #include <setjmp.h>
 #include <QtCore>
 #include <lua/lua.hpp>
-#include <log4qt/logger.h>
 #include "../Utils/DateTimeParser.h"
 #include "../Utils/StringMap.h"
 #include "ParserBase.h"
+
+namespace spdlog
+{
+    class logger;
+}
 
 namespace owl
 {
@@ -71,7 +75,6 @@ private:
 class LuaParserBase : public ParserBase
 {
 	Q_OBJECT
-	LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
 	Q_INVOKABLE LuaParserBase(const QString& url, const QString& luaFile);
@@ -115,7 +118,7 @@ protected:
 private:
 	void registerFunctions();
 	StringMap tableToParams(int tablePos);
-	QString getItemUrlHelper(const QString funcName, const QString itemId);
+    QString getItemUrlHelper(const QString &funcName, const QString itemId);
 
 	DateTimeParser	_dtParser;
 
@@ -125,6 +128,8 @@ private:
 
     lua_State*      L;
     MutexPtr        _stateMutex;
+
+    std::shared_ptr<spdlog::logger>  _logger;
 };
 
 } // namespace

@@ -2,6 +2,8 @@
 #include "OwlLua.h"
 #include "LuaParserBase.h"
 
+#include <spdlog/spdlog.h>
+
 namespace owl
 {
 
@@ -15,7 +17,8 @@ LuaParserBase::LuaParserBase(const QString& url, const QString& luaFile)
 	: ParserBase("#luaparser", "#luaparser", url),
 	  _strLuaFile(luaFile),
 	  _stateObjIdx(0),
-      L(luaL_newstate())
+      L(luaL_newstate()),
+      _logger { spdlog::get("Owl")->clone("LuaParserBase") }
 {
     _stateMutex = std::make_shared<std::mutex>();
 	luaL_openlibs(L);
@@ -36,7 +39,7 @@ LuaParserBase::LuaParserBase(const QString& url, const QString& luaFile)
 		QString strMsg = QString("could not initialize lua parser '%1': %2")
 			.arg(luaFile)
 			.arg(lua_tostring(L, -1));
-		logger()->error(strMsg);
+        _logger->error(strMsg.toStdString());
 
         OWL_THROW_EXCEPTION(LuaException(strMsg));
 	}
@@ -50,7 +53,7 @@ LuaParserBase::LuaParserBase(const QString& url, const QString& luaFile)
 		QString strMsg = QString("problem calling 'createParser' in %1: %2")
 			.arg(luaFile)
 			.arg(lua_tostring(L, -1));
-		logger()->error(strMsg);
+        _logger->error(strMsg.toStdString());
 
         OWL_THROW_EXCEPTION(LuaException(strMsg));
 	}
@@ -190,7 +193,7 @@ QString LuaParserBase::getItemUrl(PostPtr post)
 	return getItemUrlHelper("getPostUrl", post->getId());
 }
 
-QString LuaParserBase::getItemUrlHelper(const QString funcName, const QString itemId)
+QString LuaParserBase::getItemUrlHelper(const QString& funcName, const QString itemId)
 {
     std::lock_guard<std::mutex> locker(*_stateMutex);
 
@@ -209,7 +212,7 @@ QString LuaParserBase::getItemUrlHelper(const QString funcName, const QString it
 
 	if (lua_pcall(L, 2, 1, 0) != 0)
 	{
-		logger()->error("Lua call to %1 failed: %2", funcName, lua_tostring(L, -1));
+        _logger->error("Lua call to {} failed: {}", funcName.toStdString(), lua_tostring(L, -1));
         OWL_THROW_EXCEPTION(LuaException(lua_tostring(L, -1)));
 	}
 
@@ -255,7 +258,7 @@ QString LuaParserBase::getPostQuote(PostPtr post)
 		QString strMsg = QString("problem calling 'getPostQuotein %1: %2")
 			.arg(_strLuaFile)
 			.arg(lua_tostring(L, -1));
-		logger()->warn(strMsg);
+        _logger->warn(strMsg.toStdString());
 
 		quote = ParserBase::getPostQuote(post);
 	}
@@ -299,7 +302,7 @@ QString LuaParserBase::getLastRequestUrl()
 
     if (lua_pcall(L, 1, 1, 0) != 0)
     {
-        logger()->error("Lua call to getLastRequestUrl failed: %1", lua_tostring(L, -1));
+        _logger->error("Lua call to getLastRequestUrl failed: {}", lua_tostring(L, -1));
         OWL_THROW_EXCEPTION(LuaException(lua_tostring(L, -1)));
     }
 
@@ -333,7 +336,7 @@ QVariant LuaParserBase::doLogin(const LoginInfo& info)
 		QString strMsg = QString("problem calling 'doLogin' in %1: %2")
 			.arg(_strLuaFile)
 			.arg(lua_tostring(L, -1));
-		logger()->error(strMsg);
+        _logger->error(strMsg.toStdString());
 
         OWL_THROW_EXCEPTION(OwlException(strMsg));
 	}
@@ -361,7 +364,7 @@ QVariant LuaParserBase::doLogout()
 
 	if (lua_pcall(L, 1, 1, 0) != 0)
 	{
-		logger()->error("Lua call to doLogout failed: %1", lua_tostring(L, -1));
+        _logger->error("Lua call to doLogout failed: {}", lua_tostring(L, -1));
         OWL_THROW_EXCEPTION(LuaException(lua_tostring(L, -1)));
 	}
 
@@ -385,7 +388,7 @@ QVariant LuaParserBase::doGetBoardwareInfo()
 	
 	if (lua_pcall(L, 1, 1, 0) != 0)
 	{
-		logger()->error("Lua call to doGetBoardwareInfo failed: %1", lua_tostring(L, -1));
+        _logger->error("Lua call to doGetBoardwareInfo failed: {}", lua_tostring(L, -1));
         OWL_THROW_EXCEPTION(LuaException(lua_tostring(L, -1)));
 	}
 
@@ -412,7 +415,7 @@ QVariant LuaParserBase::doGetForumList(const QString& forumId)
 	
 	if (lua_pcall(L, 2, 1, 0) != 0)
 	{
-		logger()->error("Lua call to doGetForumList failed: %1", lua_tostring(L, -1));
+        _logger->error("Lua call to doGetForumList failed: {}", lua_tostring(L, -1));
         OWL_THROW_EXCEPTION(LuaException(lua_tostring(L, -1)));
 	}
 
@@ -476,7 +479,7 @@ QVariant LuaParserBase::doThreadList(ForumPtr forumInfo, int options)
 	
 	if (lua_pcall(L, 5, 1, 0) != 0)
 	{
-		logger()->error("Lua error: %1", lua_tostring(L, -1));
+        _logger->error("Lua error: {}", lua_tostring(L, -1));
 		 //throw LuaExceptionExt("Lua call to `doThreadList` failed", lua_tostring(L, -1));
         OWL_THROW_EXCEPTION(LuaException(lua_tostring(L,1)));
 	}
@@ -544,7 +547,8 @@ QVariant LuaParserBase::doThreadList(ForumPtr forumInfo, int options)
 					}
 					catch (const StringMapException& ex)
 					{
-						logger()->warn("Ignoring threadId `%1` - %2", info.getText("threadId"), ex.message());
+                        _logger->warn("Ignoring threadId `{}` - {}",
+                            info.getText("threadId").toStdString(), ex.message().toStdString());
 					}
 				}
 			}
@@ -597,12 +601,12 @@ QVariant LuaParserBase::doGetPostList(ThreadPtr threadInfo, PostListOptions list
 		lua_pushstring(L, threadInfo->getId().toLatin1());
 		lua_pushboolean(L, webOptions & ParserEnums::REQUEST_NOCACHE);
 
-		logger()->trace("Lua call to 'doUnreadPostList'");
+        _logger->trace("Lua call to 'doUnreadPostList'");
 		if (lua_pcall(L, 3, 1, 0) != 0)
 		{
-			auto error("Lua call to 'doUnreadPostList' failed: " + std::string(lua_tostring(L, -1)));
+            const std::string error("Lua call to 'doUnreadPostList' failed: " + std::string(lua_tostring(L, -1)));
 
-			logger()->error(QString::fromStdString(error));
+            _logger->error(error);
             OWL_THROW_EXCEPTION(LuaException(QString::fromStdString(error)));
 		}
 	}
@@ -618,10 +622,10 @@ QVariant LuaParserBase::doGetPostList(ThreadPtr threadInfo, PostListOptions list
 		lua_pushnumber(L, threadInfo->getPerPage());
 		lua_pushboolean(L, webOptions & ParserEnums::REQUEST_NOCACHE);
 
-		logger()->trace("Lua call to 'doPostList'");
+        _logger->trace("Lua call to 'doPostList'");
 		if (lua_pcall(L, 5, 1, 0) != 0)
 		{
-			logger()->error("Lua call to `doPostList` failed: %1", lua_tostring(L, -1));
+            _logger->error("Lua call to `doPostList` failed: {}", lua_tostring(L, -1));
             OWL_THROW_EXCEPTION(LuaException(lua_tostring(L, -1)));
 		}
 	}
@@ -756,7 +760,7 @@ QVariant LuaParserBase::doSubmitNewThread(ThreadPtr threadInfo)
 		QString strMsg = QString("problem calling 'doSubmitNewThread' in %1: %2")
 			.arg(_strLuaFile)
 			.arg(lua_tostring(L, -1));
-		logger()->error(strMsg);
+        _logger->error(strMsg.toStdString());
 
         OWL_THROW_EXCEPTION(OwlException(strMsg));
 	}
@@ -766,9 +770,10 @@ QVariant LuaParserBase::doSubmitNewThread(ThreadPtr threadInfo)
 		ret.reset();
 		ret = ThreadPtr(new Thread(lua_tostring(L, -1)));
 	}
-	else if (logger()->isErrorEnabled())
+    else
 	{
-		logger()->error("No threadId returned from doSubmitNewThread(), threadId = %1", threadInfo->getId());
+        _logger->error("No threadId returned from doSubmitNewThread(), threadId = {}",
+            threadInfo->getId().toStdString());
 	}
 
 	return QVariant::fromValue(ret);
@@ -803,7 +808,7 @@ QVariant LuaParserBase::doSubmitNewPost(PostPtr postInfo)
 		QString strMsg = QString("problem calling 'doSubmitNewPost' in %1: %2")
 			.arg(_strLuaFile)
 			.arg(lua_tostring(L, -1));
-		logger()->error(strMsg);
+        _logger->error(strMsg.toStdString());
 
         OWL_THROW_EXCEPTION(OwlException(strMsg));
 	}
@@ -820,7 +825,7 @@ QVariant LuaParserBase::doSubmitNewPost(PostPtr postInfo)
 #ifdef _DEBUG
         lua::dumpStack(L);
 #endif
-		logger()->warn("LuaParser (%1) returned bad result from doSubmitNewPost()", getName());
+        _logger->warn("LuaParser (%1) returned bad result from doSubmitNewPost()", getName().toStdString());
 	}
 
 	return QVariant::fromValue(retPost);
@@ -845,13 +850,13 @@ QVariant LuaParserBase::doMarkForumRead(ForumPtr forumInfo)
 	
 	if (lua_pcall(L, 2, 1, 0) != 0)
 	{
-		logger()->error("Lua call to doMarkForumRead failed: %1", lua_tostring(L, -1));
+        _logger->error("Lua call to doMarkForumRead failed: {}", lua_tostring(L, -1));
         OWL_THROW_EXCEPTION(LuaException(lua_tostring(L, -1)));
 	}
 
 	if (!lua_toboolean(L, -1))
 	{
-		logger()->error("Lua call to 'doMarkForumRead()' failed: %1", lua_tostring(L, -1));
+        _logger->error("Lua call to 'doMarkForumRead()' failed: {}", lua_tostring(L, -1));
         OWL_THROW_EXCEPTION(LuaException(lua_tostring(L, -1)));
 	}
 
@@ -875,7 +880,7 @@ QVariant LuaParserBase::doGetUnreadForums()
 
 	if (lua_pcall(L, 1, 1, 0) != 0)
 	{
-		logger()->error("Lua call to `doGetUnreadForums` failed: %1", lua_tostring(L, -1));
+        _logger->error("Lua call to `doGetUnreadForums` failed: {}", lua_tostring(L, -1));
         OWL_THROW_EXCEPTION(LuaException(lua_tostring(L, -1)));
 	}
 
@@ -945,7 +950,7 @@ StringMap LuaParserBase::tableToParams(int tablePos)
 			break;
 
 			default:
-				logger()->warn("unsupported type in lua table");
+                _logger->warn("unsupported type in lua table");
 			break;
 		}
 
@@ -972,7 +977,7 @@ QVariant LuaParserBase::doGetEncryptionSettings()
 
 	if (lua_pcall(L, 1, 1, 0) != 0)
 	{
-		logger()->error("Lua call to doGetEncryptionSettings failed: %1", lua_tostring(L, -1));
+        _logger->error("Lua call to doGetEncryptionSettings failed: {}", lua_tostring(L, -1));
         OWL_THROW_EXCEPTION(LuaException(lua_tostring(L, -1)));
 	}
 
@@ -997,7 +1002,7 @@ QVariant LuaParserBase::doTestParser(const QString& html)
 
 	if (lua_pcall(L, 2, 1, 0) != 0)
 	{
-		logger()->error("Lua call to doTestParser failed: %1", lua_tostring(L, -1));
+        _logger->error("Lua call to doTestParser failed: {}", lua_tostring(L, -1));
         OWL_THROW_EXCEPTION(LuaException(lua_tostring(L, -1)));
 	}
 

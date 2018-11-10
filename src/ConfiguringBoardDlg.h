@@ -2,7 +2,6 @@
 // Copyright (c) 2012-2017, Adalid Claure <aclaure@gmail.com>
 
 #pragma once
-#include <log4qt/logger.h>
 #include "Data/Board.h"
 #include "ui_ConfiguringBoardDlg.h"
 
@@ -11,13 +10,17 @@ namespace Ui
 	class ConfiguringBoardDlg;
 }
 
+namespace spdlog
+{
+    class logger;
+}
+
 namespace owl
 {
 	
 class ConfiguringBoardDlg : public QDialog, public Ui::ConfiguringBoardDlg
 {
 	Q_OBJECT
-	LOG4QT_DECLARE_QCLASS_LOGGER
 	
 public:
 	ConfiguringBoardDlg(QWidget *parent = 0);
@@ -82,6 +85,8 @@ private:
     // The icon files that will be searched to find an icon to use for the board. The order in which
     // these filenames appear is the order in which they will be searched.
 	const QStringList ICONFILES;
+
+    std::shared_ptr<spdlog::logger>  _logger;
 };
 
 } //namespace owl
