@@ -2,7 +2,6 @@
 // Copyright Adalid Claure <aclaure@gmail.com>
 
 #pragma once
-#include <log4qt/logger.h>
 #include <Parsers/LuaParserBase.h>
 #include "ui_ErrorReportDlg.h"
 
@@ -17,7 +16,6 @@ namespace owl
 class ErrorReportDlg : public QDialog, public Ui::ErrorReportDlg
 {
 	Q_OBJECT
-	LOG4QT_DECLARE_QCLASS_LOGGER
 	
 public:
 	typedef enum { NEWPOST, NEWTHREAD } NewItemType;

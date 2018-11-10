@@ -28,7 +28,6 @@ using Tapatalk4xPtr = std::shared_ptr<Tapatalk4x>;
 class Tapatalk4x : public ParserBase
 {
 	Q_OBJECT
-	LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
     static const uint LOGINTIMEOUT;

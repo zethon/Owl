@@ -7,9 +7,13 @@
 #include <QtCore>
 #include <QtGui>
 #include <QSqlQuery>
-#include <log4qt/logger.h>
 #include <Parsers/ParserBase.h>
 #include <Parsers/Forum.h>
+
+namespace spdlog
+{
+    class logger;
+}
 
 namespace owl
 {
@@ -23,7 +27,6 @@ class Board :
 	public std::enable_shared_from_this<Board>
 {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
 	
@@ -218,6 +221,8 @@ private:
 
 	QMutex			_hashMutex;
     QMutex          _itemDocMutex;
+
+    std::shared_ptr<spdlog::logger>  _logger;
 };
     
 class BoardItemDoc : public QTextDocument

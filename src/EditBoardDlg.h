@@ -1,6 +1,5 @@
 #pragma once
 
-#include <log4qt/logger.h>
 #include "Data/Board.h"
 #include "ui_EditBoardDlg.h"
 
@@ -15,7 +14,6 @@ namespace owl
 class EditBoardDlg : public QDialog, public Ui::EditBoardDlg
 {
 	Q_OBJECT
-	LOG4QT_DECLARE_QCLASS_LOGGER
 	
 public:
 	EditBoardDlg(BoardPtr board, QWidget *parent = 0);

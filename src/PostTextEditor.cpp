@@ -11,9 +11,6 @@
 
 #include <hunspell/hunspell.hxx>
 
-using namespace Log4Qt;
-//using namespace hunspell;
-
 namespace owl
 {
 
@@ -51,7 +48,7 @@ void SpellChecker::loadDictionary(const QString &dictFilePath)
 {
     _spellcheck.reset();
 
-    logger()->debug("Loading dictionary from: %1", dictFilePath);
+//    _logger->debug("Loading dictionary from: %1", dictFilePath);
 
     QString affixFilePath(dictFilePath);
     affixFilePath.replace(".dic", ".aff");

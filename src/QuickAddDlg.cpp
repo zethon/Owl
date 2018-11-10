@@ -5,8 +5,6 @@
 #include "ConfiguringBoardDlg.h"
 #include "QuickAddDlg.h"
 
-using namespace Log4Qt;
-
 namespace owl
 {
 	

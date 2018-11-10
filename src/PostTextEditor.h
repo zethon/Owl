@@ -3,7 +3,6 @@
 #include <QtCore>
 #include <QtGui>
 #include <QPlainTextEdit>
-#include <log4qt/logger.h>
 
 class Hunspell;
 typedef std::shared_ptr<Hunspell> HunspellPtr;
@@ -71,7 +70,6 @@ private:
 class SpellChecker : public QObject
 {
 	Q_OBJECT
-	LOG4QT_DECLARE_QCLASS_LOGGER
 
 	HunspellPtr	_spellcheck;
 	QTextCodec*	_textCodec = nullptr;
@@ -107,7 +105,6 @@ private:
 class EditorHighlighter : public QSyntaxHighlighter
 {
 	Q_OBJECT
-	LOG4QT_DECLARE_QCLASS_LOGGER
 
 public:
 	EditorHighlighter(QTextDocument *document, SpellCheckerPtr spellChecker);
@@ -133,7 +130,6 @@ private:
 class SpellCheckEdit : public QPlainTextEdit
 {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
 
     EditorHighlighterPtr		_highlighter;
     SpellCheckerPtr				_spellChecker;

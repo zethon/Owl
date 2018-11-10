@@ -1,8 +1,10 @@
 // Owl - www.owlclient.com
-// Copyright (c) 2012-2017, Adalid Claure <aclaure@gmail.com>
+// Copyright (c) 2012-2018, Adalid Claure <aclaure@gmail.com>
 
 #include <Utils/Settings.h>
 #include "Board.h"
+
+#include <spdlog/spdlog.h>
 
 namespace owl
 {
@@ -19,7 +21,8 @@ Board::Board(const QString& url)
     _bEnabled(true),
     _bAutoLogin(false),
     _status(Board::OFFLINE),
-    _options(StringMapPtr(new StringMap()))
+    _options(StringMapPtr(new StringMap())),
+    _logger { spdlog::get("Owl")->clone("Board") }
 {
     // nothing to do
 }	
@@ -314,15 +317,15 @@ void Board::getThreadListEvent(ForumPtr forum)
             
             Q_EMIT onGetThreads(sharedFromThis, forum);
 		}
-        else if (logger()->isWarnEnabled())
+        else
         {
-            logger()->warn("Board::getThreadListEvent() invoked with non-matching forumIds");
+            _logger->warn("Board::getThreadListEvent() invoked with non-matching forumIds");
             Q_EMIT onGetThreads(sharedFromThis, forum);
         }
 	}
-	else if (logger()->isErrorEnabled())
+    else
 	{
-		logger()->error("Bad forum passed to getThreadListEvent()");
+        _logger->error("Bad forum passed to getThreadListEvent()");
 	}
 }
 
@@ -347,9 +350,9 @@ void Board::getPostsEvent(ThreadPtr thread)
 			Q_EMIT onGetPosts(shared_from_this(), thread);
 		}
 	}
-	else if (logger()->isErrorEnabled())
+    else
 	{
-		logger()->error("Bad thread passed to getPostsEvent()");
+        _logger->error("Bad thread passed to getPostsEvent()");
 	}
 }
 
@@ -375,7 +378,9 @@ void Board::crawlSubForum(ForumPtr parent, ForumIdList* dupList /*= NULL*/, bool
 			&& !dupList->contains(forum->getId())
 			&& forum->getForumType() != owl::Forum::LINK)
 		{
-            logger()->debug("Crawling Sub Forum '%1' (%2)", forum->getName(), forum->getId());
+            _logger->debug("Crawling Sub Forum '{}' ({})",
+                forum->getName().toStdString(), forum->getId().toStdString());
+
 			dupList->push_back(forum->getId());
 			crawlSubForum(forum, dupList, bThrow);
 		}
@@ -406,7 +411,9 @@ void Board::crawlRoot(bool bThrow /*= true*/)
 
 				if (forum->getForumType() != owl::Forum::LINK)
 				{
-					logger()->debug("Crawling Root Forum: %1 (%2)", forum->getName(), forum->getId());
+                    _logger->debug("Crawling Root Forum: {} ({})",
+                        forum->getName().toStdString(), forum->getId().toStdString());
+
 					crawlSubForum(forum, &dupList, bThrow);
 				}
 
@@ -425,7 +432,7 @@ void Board::crawlRoot(bool bThrow /*= true*/)
 				}
 				else
 				{
-					logger()->warn("Parser error:'%1'", e.message());
+                    _logger->warn("Parser error:'%1'", e.message().toStdString());
 				}
 			}
 		}
@@ -434,7 +441,8 @@ void Board::crawlRoot(bool bThrow /*= true*/)
 	catch (const owl::OwlException& e)
 	{
 		_root.reset();
-		logger()->error("Parsing exception while crawling '%1': %2", _url, e.message());
+        _logger->error("Parsing exception while crawling '%1': %2",
+            _url.toStdString(), e.message().toStdString());
 
 		if (bThrow)
 		{
@@ -462,7 +470,9 @@ ForumPtr Board::getRootStructure(bool bThrow /* = true */)
                 
 				if (forum->getForumType() != owl::Forum::LINK)
 				{
-					logger()->debug("Crawling Root Forum: %1 (%2)", forum->getName(), forum->getId());
+                    _logger->debug("Crawling Root Forum: {} ({})",
+                        forum->getName().toStdString(), forum->getId().toStdString());
+
 					crawlSubForum(forum, &dupList, bThrow);
 				}
                 
@@ -481,7 +491,7 @@ ForumPtr Board::getRootStructure(bool bThrow /* = true */)
 				}
 				else
 				{
-					logger()->warn("Parser error:'%1'", e.message());
+                    _logger->warn("Parser error:'{}'", e.message().toStdString());
 				}
 			}
 		}
@@ -489,7 +499,8 @@ ForumPtr Board::getRootStructure(bool bThrow /* = true */)
 	}
 	catch (const owl::OwlException& e)
 	{
-		logger()->error("Parsing exception while crawling '%1': %2", _url, e.message());
+        _logger->error("Parsing exception while crawling '%1': %2",
+            _url.toStdString(), e.message().toStdString());
         
 		if (bThrow)
 		{
@@ -502,7 +513,7 @@ ForumPtr Board::getRootStructure(bool bThrow /* = true */)
 
 void Board::updateUnread()
 {
-    logger()->info("Updating unread threads for %1", this->getName());
+    _logger->info("Updating unread threads for %1", this->getName().toStdString());
     
 	try
 	{
@@ -512,10 +523,10 @@ void Board::updateUnread()
 	}
 	catch (const owl::OwlException& e)
 	{
-		logger()->error("Exception '%1'", e.message());
+        _logger->error("Exception '%1'", e.message().toStdString());
 	}
 
-    logger()->info("Leaving updateUnread of %1", this->getName());
+    _logger->info("Leaving updateUnread of %1", this->getName().toStdString());
 }
 
 /// Called when changes to the forum structre of the Board are made

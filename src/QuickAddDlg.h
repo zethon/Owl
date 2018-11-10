@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include <log4qt/logger.h>
 #include "ui_QuickAddDlg.h"
 
 namespace Ui
@@ -20,7 +19,6 @@ class ConfiguringBoardDlg;
 class QuickAddDlg : public QDialog, public Ui::QuickAddDlg
 {
 	Q_OBJECT
-	LOG4QT_DECLARE_QCLASS_LOGGER
 	
 public:
 	~QuickAddDlg() = default;

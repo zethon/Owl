@@ -3,10 +3,14 @@
 
 #pragma once
 #include <mutex>
-#include <log4qt/logger.h>
 #include "StringMap.h"
 
 #include <curl/curl.h>
+
+namespace spdlog
+{
+    class logger;
+}
 
 namespace owl
 {
@@ -52,7 +56,6 @@ using HttpReplyPtr = std::shared_ptr<HttpReply>;
 class WebClient :  public QObject
 {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
 
     using Mutex         = std::mutex;
     using Lock          = std::lock_guard<std::mutex>;
@@ -141,6 +144,8 @@ private:
     bool                _useEncryption = false;                 // whether or not to encrypt the result, can be overridden in actual call
     QString             _strEncyrptionKey;
     QString             _strEncryptionSeed;
+
+    std::shared_ptr<spdlog::logger>  _logger;
 };
 
 const QString tidyHTML(const QString& html);

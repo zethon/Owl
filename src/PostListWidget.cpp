@@ -303,17 +303,16 @@ bool PostListWebPage::acceptNavigationRequest(const QUrl &url, NavigationType ty
 
 void PostListWebPage::javaScriptConsoleMessage(JavaScriptConsoleMessageLevel level, const QString &message, int lineNumber, const QString &sourceID)
 {
-    auto loggerLevel = Log4Qt::Level::INFO_INT;
-    if (level == JavaScriptConsoleMessageLevel::WarningMessageLevel)
-    {
-        loggerLevel = Log4Qt::Level::WARN_INT;
-    }
-    else if (level == JavaScriptConsoleMessageLevel::ErrorMessageLevel)
-    {
-        loggerLevel = Log4Qt::Level::ERROR_INT;
-    }
-
-    logger()->log(loggerLevel, "(%1:%2): %3", lineNumber, message, sourceID);
+    // TODO: OK?!
+//    auto loggerLevel = Log4Qt::Level::INFO_INT;
+//    if (level == JavaScriptConsoleMessageLevel::WarningMessageLevel)
+//    {
+//        loggerLevel = Log4Qt::Level::WARN_INT;
+//    }
+//    else if (level == JavaScriptConsoleMessageLevel::ErrorMessageLevel)
+//    {
+//        loggerLevel = Log4Qt::Level::ERROR_INT;
+//    }
 }
 
 }

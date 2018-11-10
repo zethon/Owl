@@ -11,7 +11,6 @@ struct DateTimeFormatOptions;
 class ThreadObject final : public QObject
 {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
 
     Q_PROPERTY(QString threadID READ threadID WRITE setThreadID NOTIFY threadIDChanged)
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
@@ -101,7 +100,6 @@ using ThreadObjectPtr = std::shared_ptr<ThreadObject>;
 class ThreadListWidget : public QQuickWidget
 {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
 
     Q_PROPERTY(bool showStickies READ showStickies WRITE setShowStickies NOTIFY showStickiesChanged)
 

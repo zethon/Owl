@@ -2,8 +2,6 @@
 #include "Data/BoardManager.h"
 #include "EditBoardDlg.h"
 
-using namespace Log4Qt;
-
 namespace owl
 {
 

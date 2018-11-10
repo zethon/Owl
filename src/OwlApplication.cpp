@@ -16,8 +16,6 @@
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/spdlog.h>
 
-using namespace Log4Qt;
-
 namespace owl
 {
 
