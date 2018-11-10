@@ -36,6 +36,8 @@ ConfiguringBoardDlg::ConfiguringBoardDlg(QWidget* parent)
       _logger { spdlog::get("Owl")->clone("ConfiguringBoardDlg") }
 {
 	setupUi(this);
+
+    spdlog::register_logger(_logger);
     
     setFixedSize(this->width(),this->height());
 

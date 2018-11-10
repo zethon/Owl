@@ -355,7 +355,6 @@ void OwlApplication::initializeLogger()
     logger->set_level(configLevel);
 
     std::optional<std::string> errorMessage;
-    std::string logFileMessage;
 
     if (settings.read("logs.file.enabled").toBool())
     {
@@ -382,8 +381,15 @@ void OwlApplication::initializeLogger()
 
     if (settings.read("logs.file.enabled").toBool())
     {
-        logger->info("Logging file initialized to folder: {}",
-            settings.read("logs.file.path").toString().toStdString());
+        if (errorMessage)
+        {
+            logger->warn(errorMessage.value());
+        }
+        else
+        {
+            logger->info("Logging file initialized to folder: {}",
+                settings.read("logs.file.path").toString().toStdString());
+        }
     }
 
     logger->debug("Operating System: {}", owl::getOSString());
@@ -394,12 +400,12 @@ void OwlApplication::initializeLogger()
 void OwlApplication::initConsoleAppender()
 {
     // create the root logger
-    auto root = spdlog::stdout_color_mt("Owl");
+    spdlog::stdout_color_mt("Owl");
 
 #ifdef RELEASE
-    root->set_level(spdlog::level::off);
+    spdlog::set_level(spdlog::level::off);
 #else
-    root->set_level(spdlog::level::debug);
+    spdlog::set_level(spdlog::level::trace);
 #endif
 }
 

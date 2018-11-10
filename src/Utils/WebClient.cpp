@@ -35,6 +35,8 @@ CURLcode curlGlobalInit()
 WebClient::WebClient()
     : _logger { spdlog::get("Owl")->clone("WebClient") }
 {
+    spdlog::register_logger(_logger);
+
     static CURLcode __global = curlGlobalInit();
     Q_UNUSED(__global)
 

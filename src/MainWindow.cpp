@@ -52,6 +52,8 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
     setDockNestingEnabled(true);
 //    setUnifiedTitleAndToolBarOnMac(true);
 
+    spdlog::register_logger(_logger);
+
     // TODO: move this to the OwlApplication class
     readSettings();
     

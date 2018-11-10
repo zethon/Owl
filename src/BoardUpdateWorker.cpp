@@ -42,7 +42,7 @@ BoardUpdateWorker::BoardUpdateWorker(BoardPtr board)
       _logger { spdlog::get("Owl")->clone("BoardUpdateWorker") }
 
 {
-    // do nothing
+    spdlog::register_logger(_logger);
 }
 
 void BoardUpdateWorker::doWork()

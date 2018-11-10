@@ -20,6 +20,8 @@ LuaParserBase::LuaParserBase(const QString& url, const QString& luaFile)
       L(luaL_newstate()),
       _logger { spdlog::get("Owl")->clone("LuaParserBase") }
 {
+    spdlog::register_logger(_logger);
+
     _stateMutex = std::make_shared<std::mutex>();
 	luaL_openlibs(L);
 

@@ -22,6 +22,8 @@ Tapatalk4x::Tapatalk4x(const QString& baseUrl)
       _mutex(QMutex::Recursive),
       _logger { spdlog::get("Owl")->clone("Tapatalk4x") }
 {
+    spdlog::register_logger(_logger);
+
 	_options->add("boardware", "tapatalk");
 	_options->add("boardwaremax", "4.9.9.0");
 	_options->add("boardwaremin", "4.0");

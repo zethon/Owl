@@ -17,6 +17,7 @@ Q_INVOKABLE Xenforo::Xenforo(const QString &baseUrl)
     : ParserBase(XENFORO_NAME,XENFORO_PRETTYNAME, baseUrl),
       _logger { spdlog::get("Owl")->clone("Xenforo") }
 {
+    spdlog::register_logger(_logger);
     addWatcher(&_webclient);
 }
 

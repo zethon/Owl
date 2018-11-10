@@ -24,7 +24,7 @@ ParserManager::ParserManager()
     : _isInitialized(false),
       _logger { spdlog::get("Owl")->clone("ParserManager") }
 {
-	// do nothing
+    spdlog::register_logger(_logger);
 }	
 	
 ParserManager::~ParserManager()

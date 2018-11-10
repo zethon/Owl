@@ -24,7 +24,7 @@ Board::Board(const QString& url)
     _options(StringMapPtr(new StringMap())),
     _logger { spdlog::get("Owl")->clone("Board") }
 {
-    // nothing to do
+    spdlog::register_logger(_logger);
 }	
 
 Board::Board()
@@ -526,7 +526,7 @@ void Board::updateUnread()
         _logger->error("Exception '%1'", e.message().toStdString());
 	}
 
-    _logger->info("Leaving updateUnread of %1", this->getName().toStdString());
+    _logger->info("Leaving updateUnread of {}", this->getName().toStdString());
 }
 
 /// Called when changes to the forum structre of the Board are made

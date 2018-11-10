@@ -22,7 +22,8 @@ ParserBase::ParserBase(const QString& name, const QString& prettyName, const QSt
       _requestWatcher(nullptr),
       _logger { spdlog::get("Owl")->clone("ParserBase") }
 {
-}	
+    spdlog::register_logger(_logger);
+}
 
 ParserBase::~ParserBase()
 {

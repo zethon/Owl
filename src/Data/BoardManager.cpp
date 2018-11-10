@@ -18,6 +18,7 @@ BoardManager::BoardManager()
     _mutex(QMutex::Recursive),
     _logger { spdlog::get("Owl")->clone("BoardManager") }
 {
+    spdlog::register_logger(_logger);
 	_encryptor->MakeKey(DBPASSWORD_KEY, DBPASSWORD_SEED);
 }	
 	
