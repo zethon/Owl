@@ -16,11 +16,10 @@ install:
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
 
 build_script:
-  - dir /s c:\Qt
   - mkdir build
   - cd build
   - conan install .. --build missing
-  - cmake .. "-GVisual Studio 15 2017 Win64" -DCMAKE_PREFIX_PATH=C:/Qt/5.11.1/msvc2017_64 -DBUILD_TEST=true
+  - cmake .. "-GVisual Studio 15 2017 Win64" -DCMAKE_PREFIX_PATH=C:/Qt/5.10.1/msvc2017_64 -DBUILD_TEST=true
   - cmake --build . --config "%CONFIG%" -- /maxcpucount:4
-  - set PATH=%PATH%;C:\Qt\5.11.1\msvc2017_64\bin
+  - set PATH=%PATH%;C:\Qt\5.10.1\msvc2017_64\bin
   - ctest -VV -C "%CONFIG%"
