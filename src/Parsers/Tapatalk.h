@@ -1,9 +1,13 @@
 #pragma once
 #include <QtCore>
-#include <log4qt/logger.h>
 #include "../Utils/StringMap.h"
 #include "xrvariant.h"
 #include "ParserBase.h"
+
+namespace spdlog
+{
+    class logger;
+}
 
 namespace owl
 {
@@ -164,6 +168,8 @@ private:
     QDateTime               _lastLogin;
 
 	QMutex					_mutex;
+
+    std::shared_ptr<spdlog::logger>  _logger;
 };
 
 } // namespace
