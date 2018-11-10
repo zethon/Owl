@@ -9,7 +9,7 @@
 #include "Core.h"
 #include "OwlApplication.h"
 
-#include <optional>
+#include <boost/optional/optional.hpp>
 
 #include <spdlog/common.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -354,7 +354,7 @@ void OwlApplication::initializeLogger()
     auto logger = spdlog::get("Owl");
     logger->set_level(configLevel);
 
-    std::optional<std::string> errorMessage;
+    boost::optional<std::string> errorMessage;
 
     if (settings.read("logs.file.enabled").toBool())
     {
