@@ -181,11 +181,11 @@ OwlApplication::~OwlApplication()
     }
     catch (const OwlException& ex)
     {
-        logger->error("Error destructing application object: %1", ex.message().toStdString());
+        logger->error("Error destructing application object: {}", ex.message().toStdString());
     }
     catch (const std::exception& ex)
     {
-        logger->error("There was an error shutting down the application: %1", ex.what());
+        logger->error("There was an error shutting down the application: {}", ex.what());
     }
     catch (...)
     {
@@ -298,7 +298,7 @@ void OwlApplication::initializeDatabase()
     QFileInfo dbFileInfo(_dbFileName);
     if (!dbFileInfo.exists())
     {
-        spdlog::get("Owl")->debug("Creating database file '%1'", _dbFileName.toStdString());
+        spdlog::get("Owl")->debug("Creating database file '{}'", _dbFileName.toStdString());
         
         QDir dbDir(dbFileInfo.absolutePath());
         if (!dbDir.exists())
@@ -329,8 +329,8 @@ void OwlApplication::initializeDatabase()
 
                 if (!query.exec(statement))
                 {
-                    spdlog::get("Owl")->warn("Query failed: '%1'", statement.toStdString());
-                    spdlog::get("Owl")->warn("Last error: %1", query.lastError().text().toStdString());
+                    spdlog::get("Owl")->warn("Query failed: '{}'", statement.toStdString());
+                    spdlog::get("Owl")->warn("Last error: {}", query.lastError().text().toStdString());
                 }
             }
         }

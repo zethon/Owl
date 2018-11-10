@@ -827,7 +827,7 @@ QVariant LuaParserBase::doSubmitNewPost(PostPtr postInfo)
 #ifdef _DEBUG
         lua::dumpStack(L);
 #endif
-        _logger->warn("LuaParser (%1) returned bad result from doSubmitNewPost()", getName().toStdString());
+        _logger->warn("LuaParser ({}) returned bad result from doSubmitNewPost()", getName().toStdString());
 	}
 
 	return QVariant::fromValue(retPost);

@@ -503,7 +503,7 @@ owl::StringMap ConfiguringBoardDlg::singleConfigure()
 
             try
             {
-                _logger->debug("Trying Url: %1", testUrl.toStdString());
+                _logger->debug("Trying Url: {}", testUrl.toStdString());
                 reply = client.GetUrl(testUrl, WebClient::NOCACHE);
             }
             catch (const WebException&)
@@ -553,7 +553,7 @@ owl::StringMap ConfiguringBoardDlg::singleConfigure()
                 }
                 else
                 {
-                    _logger->debug("No board found at '%1'", testUrl.toStdString());
+                    _logger->debug("No board found at '{}'", testUrl.toStdString());
                 }
             }
         }

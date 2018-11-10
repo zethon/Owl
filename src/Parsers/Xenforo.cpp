@@ -445,7 +445,7 @@ QVariant Xenforo::doThreadList(ForumPtr forumInfo, int options)
     }
     else
     {
-        _logger->warn("The url '%1' could not be parsed", url.toStdString());
+        _logger->warn("The url '{}' could not be parsed", url.toStdString());
     }
 
     forumInfo->getThreads().clear();

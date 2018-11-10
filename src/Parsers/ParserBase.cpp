@@ -684,14 +684,14 @@ void ParserBase::getFavIconBuffer(QByteArray* buffer, const QStringList& iconFil
 			}
 			else
 			{
-                _logger->warn("Invalid 'board-defaults.iconFiles' setting '%1'", url.toDisplayString().toStdString());
+                _logger->warn("Invalid 'board-defaults.iconFiles' setting '{}'", url.toDisplayString().toStdString());
 			}
 		}
 	}
 
 	if (bUseDefault)
 	{
-        _logger->trace("Using default board icon for board '%1'", this->getBaseUrl().toStdString());
+        _logger->trace("Using default board icon for board '{}'", this->getBaseUrl().toStdString());
 
 		// load the default board icon
 		QFile f(":/icons/board.png");

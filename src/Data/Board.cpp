@@ -432,7 +432,7 @@ void Board::crawlRoot(bool bThrow /*= true*/)
 				}
 				else
 				{
-                    _logger->warn("Parser error:'%1'", e.message().toStdString());
+                    _logger->warn("Parser error:'{}'", e.message().toStdString());
 				}
 			}
 		}
@@ -441,7 +441,7 @@ void Board::crawlRoot(bool bThrow /*= true*/)
 	catch (const owl::OwlException& e)
 	{
 		_root.reset();
-        _logger->error("Parsing exception while crawling '%1': %2",
+        _logger->error("Parsing exception while crawling '{}': {}",
             _url.toStdString(), e.message().toStdString());
 
 		if (bThrow)
@@ -499,7 +499,7 @@ ForumPtr Board::getRootStructure(bool bThrow /* = true */)
 	}
 	catch (const owl::OwlException& e)
 	{
-        _logger->error("Parsing exception while crawling '%1': %2",
+        _logger->error("Parsing exception while crawling '{}': {}",
             _url.toStdString(), e.message().toStdString());
         
 		if (bThrow)
@@ -513,7 +513,7 @@ ForumPtr Board::getRootStructure(bool bThrow /* = true */)
 
 void Board::updateUnread()
 {
-    _logger->info("Updating unread threads for %1", this->getName().toStdString());
+    _logger->info("Updating unread threads for {}", this->getName().toStdString());
     
 	try
 	{
@@ -523,7 +523,7 @@ void Board::updateUnread()
 	}
 	catch (const owl::OwlException& e)
 	{
-        _logger->error("Exception '%1'", e.message().toStdString());
+        _logger->error("Exception '{}'", e.message().toStdString());
 	}
 
     _logger->info("Leaving updateUnread of {}", this->getName().toStdString());

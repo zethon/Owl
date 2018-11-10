@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     }
     catch (const OwlException& ex)
     {
-        spdlog::get("Owl")->critical("There was an unrecoverable application error: %1", ex.message().toStdString());
+        spdlog::get("Owl")->critical("There was an unrecoverable application error: {}", ex.message().toStdString());
 
         QMessageBox::warning(nullptr, APP_TITLE,
             QString("There was an unrecoverable application error: %1").arg(ex.message()));
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
     }
     catch (const std::exception& ex)
     {
-        spdlog::get("Owl")->critical("There was an unrecoverable system error: %1", ex.what());
+        spdlog::get("Owl")->critical("There was an unrecoverable system error: {}", ex.what());
 
         QMessageBox::warning(nullptr, APP_TITLE,
             QString("There was an unrecoverable system error: %1").arg(ex.what()));

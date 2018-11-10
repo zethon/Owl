@@ -923,7 +923,7 @@ void MainWindow::onLinkActivated(const QString &urlStr)
         }
         else
         {
-            _logger->warn("unknown url.path '%1' in url '%2'", url.path().toStdString(), urlStr.toStdString());
+            _logger->warn("unknown url.path '{}' in url '{}'", url.path().toStdString(), urlStr.toStdString());
         }
     }
 }
@@ -976,7 +976,7 @@ void MainWindow::onSvcTreeClicked(const QModelIndex& selected)
 
                 if (board->getStatus() == Board::OFFLINE)
                 {
-                    _logger->trace("%1 offline", board->getName().toStdString());
+                    _logger->trace("{} offline", board->getName().toStdString());
                 }
             }
         }
@@ -1372,7 +1372,7 @@ void MainWindow::createMenus()
             {
                 auto urlStr = QString("https://www.paypal.me/zethon");
                 QUrl url(urlStr);
-                _logger->trace("Launching browser: %1", url.toString().toStdString());
+                _logger->trace("Launching browser: {}", url.toString().toStdString());
                 QDesktopServices::openUrl(url);
             });
         }
@@ -1382,7 +1382,7 @@ void MainWindow::createMenus()
             QObject::connect(action, &QAction::triggered, [this]()
             {
                 QUrl url("http://www.twitter.com/OwlClient");
-                _logger->trace("Launching browser: %1", url.toString().toStdString());
+                _logger->trace("Launching browser: {}", url.toString().toStdString());
                 QDesktopServices::openUrl(url);
             });
         }
@@ -1392,7 +1392,7 @@ void MainWindow::createMenus()
             QObject::connect(action, &QAction::triggered, [this]()
             {
                 QUrl url("http://bugs.owlclient.com");
-                _logger->trace("Launching browser: %1", url.toString().toStdString());
+                _logger->trace("Launching browser: {}", url.toString().toStdString());
                 QDesktopServices::openUrl(url);
 
             });
@@ -2095,7 +2095,7 @@ void MainWindow::readSettings()
 
     if (QFile(iniFile).exists())
     {
-        _logger->debug("Loading MainWindow settings from '%1'", iniFile.toStdString());
+        _logger->debug("Loading MainWindow settings from '{}'", iniFile.toStdString());
         QSettings settings(iniFile, QSettings::IniFormat);
 
         settings.beginGroup("MainWindow");
@@ -2128,7 +2128,7 @@ void MainWindow::readSettings()
     }
     else
     {
-        _logger->info("No settings file found at '%1', using defaults", iniFile.toStdString());
+        _logger->info("No settings file found at '{}', using defaults", iniFile.toStdString());
     }
 }
 
@@ -2262,7 +2262,7 @@ void MainWindow::onDisplayOrderChanged(BoardPtr b, int iDirection)
     }
     else
     {
-        _logger->warn("Board '%1' (%2) not found in boardToolbar",
+        _logger->warn("Board '{}' ({}) not found in boardToolbar",
             b->getName().toStdString(), b->getDBId());
     }
 }

@@ -73,7 +73,7 @@ void BoardUpdateWorker::doWork()
         }
         catch (const WebException& ex)
         {
-            _logger->error("Error during BoardUpdateWorker::doWork(): %1", ex.what());
+            _logger->error("Error during BoardUpdateWorker::doWork(): {}", ex.what());
         }
     }
 
@@ -116,7 +116,7 @@ void BoardUpdateWorker::checkStructureUpdate()
                 }
                 else
                 {
-                    _logger->trace("Board %1(%2) - stored structure and online structure are NOT the same",
+                    _logger->trace("Board {}({}) - stored structure and online structure are NOT the same",
                         _board->getName().toStdString(), _board->getDBId());
 
                     Q_EMIT onForumStructureChanged(_board);
