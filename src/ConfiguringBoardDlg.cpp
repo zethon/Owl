@@ -32,12 +32,19 @@ ConfiguringBoardDlg::ConfiguringBoardDlg(QWidget* parent)
 	  _future(new QFuture<void>),
 	  _watcher(new QFutureWatcher<void>),
       FORUMPATHS(QStringList { "", "forum", "forums", "community", "board", "messageboard" }),
-      ICONFILES (QStringList { "/apple-touch-icon.png", "/favicon.ico" }),
-      _logger { spdlog::get("Owl")->clone("ConfiguringBoardDlg") }
+      ICONFILES (QStringList { "/apple-touch-icon.png", "/favicon.ico" })
 {
 	setupUi(this);
 
-    spdlog::register_logger(_logger);
+    if (!spdlog::get("ConfiguringBoardDlg"))
+    {
+        _logger = spdlog::get("Owl")->clone("ConfiguringBoardDlg");
+        spdlog::register_logger(_logger);
+    }
+    else
+    {
+        _logger = spdlog::get("ConfiguringBoardDlg");
+    }
     
     setFixedSize(this->width(),this->height());
 
