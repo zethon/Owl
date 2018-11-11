@@ -1604,11 +1604,6 @@
                     <string>Trace</string>
                    </property>
                   </item>
-                  <item>
-                   <property name="text">
-                    <string>All</string>
-                   </property>
-                  </item>
                  </widget>
                 </item>
                 <item>
