@@ -289,7 +289,7 @@ int MainWindow::initBoard(const BoardPtr& b)
     {
         iRet++;
         _logger->warn("Failed to create parser of type '{}' for board '{}': {}",
-            b->getProtocolName().toStdString(), b->getName().toStdString(), ex.what());
+            b->getProtocolName().toStdString(), b->getName().toStdString(), ex.message().toStdString());
     }
 
     return iRet;

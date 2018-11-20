@@ -437,6 +437,7 @@ void PreferencesDlg::connectParserSettings()
                 if (dir.exists())
                 {
                     luaParsersPathTB->setText(dlg.selectedFiles().at(0));
+                    this->_settings.write("parsers.path", luaParsersPathTB->text());
                 }
             }
     });

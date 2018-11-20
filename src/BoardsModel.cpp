@@ -164,7 +164,7 @@ QStandardItem* BoardsModel::addBoardItem(const BoardPtr& b, bool bThrowOnFail)
         catch (const owl::OwlException& ex)
         {
             spdlog::get("Owl")->error("Failed to create parser of type '{}' for board '{}': {}",
-                b->getProtocolName().toStdString(), b->getName().toStdString(), ex.what());
+                b->getProtocolName().toStdString(), b->getName().toStdString(), ex.message().toStdString());
 
             throw;
         }

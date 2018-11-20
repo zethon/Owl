@@ -80,7 +80,7 @@ void BoardUpdateWorker::doWork()
         }
         catch (const WebException& ex)
         {
-            _logger->error("Error during BoardUpdateWorker::doWork(): {}", ex.what());
+            _logger->error("Error during BoardUpdateWorker::doWork(): {}", ex.message().toStdString());
         }
     }
 
