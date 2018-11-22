@@ -438,13 +438,21 @@ owl::StringMap ConfiguringBoardDlg::createBoard(const QString& parserName, const
 			// save the parser we found
 			_parser = parserName;
 
-			// write the board info to the db
-			BoardManager::instance()->createBoard(_newBoard);
+            try
+            {
+                // write the board info to the db
+                BoardManager::instance()->createBoard(_newBoard);
 
-            _logger->trace("Board saved. Name: '{}' Url: '{}' DBId: '{}'",
-                _newBoard->getName().toStdString(), _newBoard->getUrl().toStdString(), _newBoard->getDBId());
+                _logger->trace("Board saved. Name: '{}' Url: '{}' DBId: '{}'",
+                    _newBoard->getName().toStdString(), _newBoard->getUrl().toStdString(), _newBoard->getDBId());
 
-			resultParams.add("success", true);
+                resultParams.add("success", true);
+            }
+            catch (const OwlException& ex)
+            {
+                resultParams.add("success", false);
+                resultParams.add("msg", ex.message());
+            }
 		}
 		else
 		{

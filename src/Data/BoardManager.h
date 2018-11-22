@@ -44,6 +44,9 @@ public:
     BoardManager (const BoardManager&) = delete;
 	virtual ~BoardManager(); 
 
+    QSqlDatabase getDatabase(bool doOpen = true) const;
+    void setDatabaseFilename(const std::string& filename);
+
 	size_t getBoardCount() const;
     
     void init();
@@ -98,16 +101,15 @@ private:
 		return iB1DisplayOrder < iB2DisplayOrder;
 	}
 
+    static BoardManagerPtr _instance;
+
 	QSqlDatabase _db;
 	CRijndaelPtr _encryptor;
-
     BoardList _boardList;
-
 	QMutex _mutex;
-
-	static BoardManagerPtr _instance;
-
-    std::shared_ptr<spdlog::logger>  _logger;
+    
+    std::string                         _databaseFilename;
+    std::shared_ptr<spdlog::logger>     _logger;
 };
 
 class BoardManagerException : public OwlException
