@@ -364,7 +364,7 @@ void OwlApplication::initializeLogger()
         QDir logDir(logPath);
         const QString logFilename { logDir.absoluteFilePath("owl.log") };
 
-        auto rotating = make_shared<spdlog::sinks::rotating_file_sink_mt> (
+        auto rotating = std::make_shared<spdlog::sinks::rotating_file_sink_mt> (
             logFilename.toStdString(), 1024 * 1024 * 5, 3);
 
         logger->sinks().push_back(rotating);

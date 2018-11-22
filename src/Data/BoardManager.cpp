@@ -14,8 +14,7 @@ namespace owl
 {
 
 BoardManager::BoardManager()
-	: _encryptor(new CRijndael()),
-    _mutex(QMutex::Recursive)
+    : _mutex(QMutex::Recursive)
 {
     if (!spdlog::get("BoardManager"))
     {
@@ -26,8 +25,6 @@ BoardManager::BoardManager()
     {
         _logger = spdlog::get("BoardManager");
     }
-
-	_encryptor->MakeKey(DBPASSWORD_KEY, DBPASSWORD_SEED);
 }	
 	
 BoardManager::~BoardManager()
@@ -132,9 +129,7 @@ void BoardManager::init()
 			b->setProtocolName(query.value(iParser).toString());
 
 			b->setUsername(query.value(iUsername).toString());
-
-			QString rawPassword(query.value(iPassword).toString());
-			b->setPassword(_encryptor->Decrypt(rawPassword).toLatin1());
+            b->setPassword(query.value(iPassword).toString());
 
 			b->setEnabled(query.value(iEnabledIdx).toBool());
 			b->setAutoLogin(query.value(iAutoLogin).toBool());
@@ -215,9 +210,7 @@ owl::BoardPtr BoardManager::loadBoard(int boardId)
             b->setProtocolName(query.value(iParser).toString());
 
             b->setUsername(query.value(iUsername).toString());
-
-			QString rawPassword(query.value(iPassword).toString());
-			b->setPassword(_encryptor->Decrypt(rawPassword).toLatin1());
+            b->setPassword(query.value(iPassword).toString());
 
             b->setEnabled(query.value(iEnabledIdx).toBool());
             b->setAutoLogin(query.value(iAutoLogin).toBool());
@@ -443,9 +436,7 @@ bool BoardManager::createBoard(BoardPtr board)
 	query.bindValue(":parser", board->getParser()->getName());
 	query.bindValue(":serviceurl", board->getServiceUrl());
 	query.bindValue(":username", board->getUsername());
-	
-	QString plainTextPW(board->getPassword());
-	query.bindValue(":password", _encryptor->Encrypt(plainTextPW));
+    query.bindValue(":password", board->getPassword());
 	
 	query.bindValue(":icon", board->getFavIcon());
 	query.bindValue(":lastupdate", QDateTime::currentDateTime());
@@ -642,11 +633,10 @@ bool BoardManager::updateBoard(BoardPtr board)
 	query.bindValue(":name", board->getName());
 	query.bindValue(":url", board->getUrl());
 	query.bindValue(":serviceurl", board->getServiceUrl());
-	query.bindValue(":username", board->getUsername());
 	query.bindValue(":lastupdate", board->getLastUpdate());
-    
-	QString plainTextPW(board->getPassword());
-	query.bindValue(":password", _encryptor->Encrypt(plainTextPW));
+
+    query.bindValue(":username", board->getUsername());
+    query.bindValue(":password", board->getPassword());
 	
 	query.bindValue(":id", board->getDBId());
 	query.bindValue(":autologin", board->isAutoLogin() ? "1" : "0");

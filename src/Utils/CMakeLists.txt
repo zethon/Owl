@@ -10,7 +10,6 @@ set (SOURCE_FILES
     Moment.cpp
     QSgml.cpp
     QSgmlTag.cpp
-    Rijndael.cpp
     Settings.cpp
     StringMap.cpp
     OwlUtils.cpp
@@ -32,7 +31,6 @@ set (HEADER_FILES
     QSgmlTag.cpp
     QThreadEx.h
     OwlUtils.h
-    Rijndael.h
     StringMap.h
     Version.h
     ${MOC_HEADERS}
