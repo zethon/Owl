@@ -5,7 +5,6 @@
 #include <QSqlDatabase>
 #include <QString>
 #include <Utils/Exception.h>
-#include <Utils/Rijndael.h>
 #include "Board.h"
 
 #define MAX_BOARDS                  32
@@ -104,7 +103,6 @@ private:
     static BoardManagerPtr _instance;
 
 	QSqlDatabase _db;
-	CRijndaelPtr _encryptor;
     BoardList _boardList;
 	QMutex _mutex;
     
