@@ -53,11 +53,6 @@ QuickAddDlg::QuickAddDlg(QWidget* parent)
 	guestCB->setVisible(false);	
 }
 
-BoardPtr QuickAddDlg::getNewBoard() const
-{
-    return _configureDlg->getNewBoardPtr();
-}
-
 void QuickAddDlg::accept()
 {
     QString strError;

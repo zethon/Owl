@@ -100,7 +100,7 @@ public:
 private:
 	QString			_message;
 	QString			_filename;
-	int				_line;
+    std::uint32_t	_line = 0;
 };
 
 class NotImplementedException final : public OwlException

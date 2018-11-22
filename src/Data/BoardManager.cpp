@@ -39,15 +39,53 @@ size_t BoardManager::getBoardCount() const
 {
 	return _boardList.size();
 }
+
+void BoardManager::setDatabaseFilename(const std::string& filename)
+{
+    this->_databaseFilename = filename;
+}
+
+QSqlDatabase BoardManager::getDatabase(bool doOpen) const
+{
+    // each thread has to have a unique connection to the
+    // database so we will use the thread address as the
+    // connection name. This solution was conceived at:
+    // https://github.com/mumble-voip/mumble/pull/3419/files
+    const QString thread_address = QLatin1String("0x") 
+        + QString::number((quintptr)QThread::currentThreadId(), 16);
+
+    QSqlDatabase db = QSqlDatabase::database(thread_address);
+    if (!db.isOpen() || !db.isValid())
+    {
+        if (_databaseFilename.empty())
+        {
+            _logger->error("Could not get database instance because no database filename as been specified");
+            OWL_THROW_EXCEPTION(OwlException("No database filename has been specified"));
+        }
+
+        _logger->trace("Creating database connection for thread {}", thread_address.toStdString());
+
+        db = QSqlDatabase::addDatabase(QLatin1String("QSQLITE"), thread_address);
+        db.setDatabaseName(QString::fromStdString(_databaseFilename));
+
+        if (doOpen && !db.open())
+        {
+            const std::string msg = fmt::format("Could not open database file '{}'", _databaseFilename);
+            OWL_THROW_EXCEPTION(OwlException(QString::fromStdString(msg)));
+        }
+    }
+
+    return db;
+}
     
 void BoardManager::init()
 {
 	QMutexLocker locker(&_mutex);
-    QSqlDatabase db = QSqlDatabase::database(OWL_DATABASE_NAME);
+    QSqlDatabase db = getDatabase();
 
     if (!db.isOpen())
     {
-        _logger->trace("datbase is not open, trying to open");
+        _logger->trace("database is not open, trying to open");
         db.open();
     }
     
@@ -138,11 +176,11 @@ owl::BoardPtr BoardManager::loadBoard(int boardId)
 	QMutexLocker locker(&_mutex);
 
 	BoardPtr b(new Board());
-	QSqlDatabase db = QSqlDatabase::database(OWL_DATABASE_NAME);
+	QSqlDatabase db = getDatabase();
 
 	if (!db.isOpen())
 	{
-        _logger->trace("datbase is not open, trying to open");
+        _logger->trace("database is not open, trying to open");
 		db.open();
 	}
 
@@ -207,23 +245,22 @@ owl::BoardPtr BoardManager::loadBoard(int boardId)
 
             _boardList.push_back(b);
 
-            _logger->trace("Loaded '{}', last updated '{}'",
-                b->getName().toStdString(), b->getLastUpdate().toString().toStdString());
+            _logger->debug("Loaded board [{}]'{}', last updated '{}'",
+                b->getDBId(), b->getName().toStdString(), b->getLastUpdate().toString().toStdString());
         }
     }
 
-    _logger->debug("Successfully loaded board '%1'", (int)getBoardCount());
     query.finish();
 	return b;
 }
 
 void BoardManager::loadBoardOptions(const BoardPtr& board)
 {
-    QSqlDatabase db = QSqlDatabase::database(OWL_DATABASE_NAME);
+    QSqlDatabase db = getDatabase();
 
     if (!db.isOpen())
     {
-        _logger->trace("datbase is not open, trying to open");
+        _logger->trace("database is not open, trying to open");
         db.open();
     }
     
@@ -298,7 +335,7 @@ void BoardManager::firstTimeInit()
 
 void BoardManager::createForumVars(ForumPtr forum)
 {
-	QSqlDatabase	db = QSqlDatabase::database(OWL_DATABASE_NAME);
+	QSqlDatabase	db = getDatabase();
 	QSqlQuery		query(db);
 
 	query.prepare("INSERT INTO forumvars "
@@ -324,7 +361,7 @@ void BoardManager::createForumVars(ForumPtr forum)
 
 void BoardManager::createForumEntries( ForumPtr forum, BoardPtr board )
 {
-	QSqlDatabase	db = QSqlDatabase::database(OWL_DATABASE_NAME);
+	QSqlDatabase	db = getDatabase();
 	QSqlQuery		query(db);
 
 	query.prepare("INSERT INTO forums "
@@ -362,7 +399,7 @@ void BoardManager::createForumEntries( ForumPtr forum, BoardPtr board )
 
 void BoardManager::createBoardOptions(BoardPtr board)
 {
-	QSqlDatabase	db = QSqlDatabase::database(OWL_DATABASE_NAME);
+	QSqlDatabase	db = getDatabase();
 	QSqlQuery		query(db);
 
 	query.prepare("INSERT INTO boardvars "
@@ -389,9 +426,9 @@ void BoardManager::createBoardOptions(BoardPtr board)
 bool BoardManager::createBoard(BoardPtr board)
 {
 	QMutexLocker	locker(&_mutex);
-	QSqlDatabase	db = QSqlDatabase::database(OWL_DATABASE_NAME);
+	QSqlDatabase	db = getDatabase();
 	QSqlQuery		query(db);
-	bool			bRet(false);
+	bool			bRet = false;
 
 	query.prepare("INSERT INTO boards "
 		"(enabled, autologin, name, url, parser, "
@@ -425,8 +462,12 @@ bool BoardManager::createBoard(BoardPtr board)
 	}
 	else
 	{
-        _logger->error("createBoard() failed: {}", query.lastError().text().toStdString());
-        _logger->debug("executed query: {}", query.lastQuery().toStdString());
+        const std::string lastError = query.lastError().text().toStdString();
+
+        _logger->error("createBoard() failed because '{}'", lastError);
+
+        const QString qError = QString::fromStdString(fmt::format("Database error: {}", lastError));
+        OWL_THROW_EXCEPTION(OwlException(qError));
 	}
 
 	if (bRet)
@@ -444,7 +485,7 @@ bool BoardManager::createBoard(BoardPtr board)
 
 void BoardManager::retrieveSubForumVars(ForumPtr forum)
 {
-	QSqlDatabase	db(QSqlDatabase::database(OWL_DATABASE_NAME));
+	QSqlDatabase	db = getDatabase();
 
 	if (!db.isOpen())
 	{
@@ -478,7 +519,7 @@ void BoardManager::retrieveSubForumVars(ForumPtr forum)
 void BoardManager::retrieveSubForumList(BoardPtr board, ForumPtr forum, bool bDeep /*= false*/)
 {
 	ForumList		list; 
-    QSqlDatabase	db(QSqlDatabase::database(OWL_DATABASE_NAME));
+    QSqlDatabase	db = getDatabase();
 
 	if (!db.isOpen())
 	{
@@ -587,7 +628,7 @@ uint BoardManager::updateBoards()
 bool BoardManager::updateBoard(BoardPtr board)
 {
 	QMutexLocker locker(&_mutex);
-	QSqlDatabase db = QSqlDatabase::database(OWL_DATABASE_NAME);
+	QSqlDatabase db = getDatabase();
 	bool bRet = false;
 
 	QSqlQuery query(db);
@@ -631,7 +672,7 @@ bool BoardManager::updateBoard(BoardPtr board)
 bool BoardManager::deleteBoard(BoardPtr board)
 {
 	QMutexLocker locker(&_mutex);
-	QSqlDatabase db = QSqlDatabase::database(OWL_DATABASE_NAME);
+	QSqlDatabase db = getDatabase();
 	bool bRet = false;
 
 	if (db.open())
@@ -721,7 +762,7 @@ bool BoardManager::deleteBoard(BoardPtr board)
 bool BoardManager::deleteForumVars(const QString& forumId) const
 {
     bool bRet = false;
-	QSqlDatabase db = QSqlDatabase::database(OWL_DATABASE_NAME);
+	QSqlDatabase db = getDatabase();
 
 	QSqlQuery query(db);
 
@@ -740,7 +781,7 @@ bool BoardManager::deleteForumVars(const QString& forumId) const
 
 void BoardManager::updateBoardOptions(BoardPtr board, bool bDoCommit /*= false*/)
 {
-	QSqlDatabase db = QSqlDatabase::database(OWL_DATABASE_NAME);
+	QSqlDatabase db = getDatabase();
 	QSqlQuery query(db);
 
     for (const auto& p : *(board->getOptions()))

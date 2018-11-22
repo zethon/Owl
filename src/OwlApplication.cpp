@@ -287,13 +287,8 @@ void OwlApplication::initCommandLine()
     
 void OwlApplication::initializeDatabase()
 {
-    _db = QSqlDatabase::addDatabase("QSQLITE",OWL_DATABASE_NAME);
-    if (!_db.isValid())
-    {
-        OWL_THROW_EXCEPTION(OwlException("SQLite database driver could not be loaded"));
-    }
-    
-    _db.setDatabaseName(_dbFileName);
+    BoardManager::instance()->setDatabaseFilename(_dbFileName.toStdString());
+    _db = BoardManager::instance()->getDatabase(false);
 
     QFileInfo dbFileInfo(_dbFileName);
     if (!dbFileInfo.exists())

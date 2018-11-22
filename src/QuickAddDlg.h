@@ -25,7 +25,6 @@ public:
 
 	QuickAddDlg(QWidget *parent = 0);
 	
-    BoardPtr getNewBoard() const;
 	void setParserByName(const QString& name);
 
 protected Q_SLOTS:

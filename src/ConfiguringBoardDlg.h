@@ -36,7 +36,6 @@ public:
 	void start();
 
 	QString getErrorString() const { return _errorStr; }
-	BoardPtr getNewBoardPtr() const { return _newBoard; }
 	bool getSuccess() const { return _bSuccess; }
 
 Q_SIGNALS:
