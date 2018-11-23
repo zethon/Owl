@@ -107,7 +107,7 @@ void BoardUpdateWorker::checkStructureUpdate()
         _logger->debug("Board {}({}) - verifying forum structure",
             _board->getName().toStdString(), _board->getDBId());
 
-        BoardPtr savedBoard = BOARDMANAGER->loadBoard(_board->getDBId());
+        BoardPtr savedBoard = BOARDMANAGER->getBoardInfo(_board->getDBId());
         ForumPtr savedRoot = savedBoard->getRoot();
 
         if (savedRoot != nullptr)
@@ -140,7 +140,7 @@ void BoardUpdateWorker::checkStructureUpdate()
         }
         else
         {
-            _logger->warn("Board {}({}) - loadBoard(), getRoot() returned a 'nullptr' root",
+            _logger->warn("Board {}({}) - getBoardInfo(), getRoot() returned a 'nullptr' root",
                 _board->getName().toStdString(), _board->getDBId());
         }
     }

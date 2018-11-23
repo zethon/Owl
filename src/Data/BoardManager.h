@@ -40,9 +40,9 @@ public:
 		return _instance;
 	}
 
+    virtual ~BoardManager() = default;
     BoardManager (const BoardManager&) = delete;
-	virtual ~BoardManager(); 
-
+	
     QSqlDatabase getDatabase(bool doOpen = true) const;
     void setDatabaseFilename(const std::string& filename);
 
@@ -64,7 +64,7 @@ public:
 
 	// returns a shared ptr to the board object loaded
 	// if the board doesn't exist, then the boardId = -1
-	BoardPtr loadBoard(int boardId);
+	BoardPtr getBoardInfo(int boardId);
 
 	uint updateBoards();
 	bool updateBoard(BoardPtr board);
@@ -77,12 +77,10 @@ public:
     // FORUM - CRUD
     bool deleteForumVars(const QString& forumId) const;
     
-protected:
-  	BoardManager();
-
 private:
-	void createBoardOptions(BoardPtr board);
-	
+    BoardManager();
+
+	void createBoardOptions(BoardPtr board);	
 	void createForumEntries(ForumPtr forum, BoardPtr board);
 	void createForumVars(ForumPtr forum);
 

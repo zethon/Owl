@@ -26,11 +26,6 @@ BoardManager::BoardManager()
         _logger = spdlog::get("BoardManager");
     }
 }	
-	
-BoardManager::~BoardManager()
-{
-	//_instance = 0;
-}
 
 size_t BoardManager::getBoardCount() const
 {
@@ -166,7 +161,7 @@ void BoardManager::init()
     _logger->info("{} board(s) loaded", (int)getBoardCount());
 }
 
-owl::BoardPtr BoardManager::loadBoard(int boardId)
+owl::BoardPtr BoardManager::getBoardInfo(int boardId)
 {
 	QMutexLocker locker(&_mutex);
 
@@ -236,9 +231,7 @@ owl::BoardPtr BoardManager::loadBoard(int boardId)
             loadBoardOptions(b);
             retrieveBoardForums(b);
 
-            _boardList.push_back(b);
-
-            _logger->debug("Loaded board [{}]'{}', last updated '{}'",
+            _logger->debug("Getting board info of [{}]'{}', last updated '{}'",
                 b->getDBId(), b->getName().toStdString(), b->getLastUpdate().toString().toStdString());
         }
     }
