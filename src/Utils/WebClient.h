@@ -36,23 +36,30 @@ class WebClient :  public QObject
     using UniqueLock    = std::unique_lock<std::mutex>;
 
 public:
-    struct Reply
+    class Reply
     {
-        long        status = -1;    // the http status
-        QString     data;           // the body of the reply
-        QString     finalUrl;       // the final url that sent the response (redirects & rewrites)
+        long            _status = -1;    // the http status
+        QString         _data;           // the body of the reply
+        std::string     _finalUrl;       // the final url that sent the response (redirects & rewrites)
 
-        Reply(long s)
-            : Reply(s, QString{}, QString{})
-        {}
+        public:
+            Reply(long status)
+                : _status { status }
+//                : Reply(s, QString{})
+            {}
 
-        Reply(long s, const QString& d)
-            : Reply(s, d, QString{})
-        {}
+//            Reply(long s, const QString& d)
+//                : Reply(s, d, QString{})
+//            {}
 
-        Reply(long s, const QString& d, const QString& fu)
-            : status{s}, data{d}, finalUrl{fu}
-        {}
+            long status() const { return _status; }
+            void setStatus(long status) { _status = status; }
+
+            QString data() const { return _data; }
+            void setData(const QString& data) { _data = data; }
+
+            std::string finalUrl() const { return _finalUrl; }
+            void setFinalUrl(const std::string& finalUrl) { _finalUrl = finalUrl; }
     };
     using ReplyPtr = std::shared_ptr<Reply>;
 

@@ -186,7 +186,7 @@ QString WebClient::DownloadString(const QString &url, uint options /*=Options::D
 
     if (reply)
     {
-        return std::move(reply->data);
+        return std::move(reply->data());
     }
 
     return QString();
@@ -203,7 +203,7 @@ QString WebClient::UploadString(const QString& url, const QString &payload, uint
 
     if (reply)
     {
-        return std::move(reply->data);
+        return std::move(reply->data());
     }
 
     return QString();
@@ -307,16 +307,17 @@ WebClient::ReplyPtr WebClient::doRequest(const QString& url,
     char *finalUrl;
     curl_easy_getinfo(_curl, CURLINFO_EFFECTIVE_URL, &finalUrl);
 
+    _lastUrl = QString::fromLatin1(finalUrl);
+
     auto retval = std::make_shared<Reply>(status);
-	retval->status = status;
-    retval->finalUrl = _lastUrl = QString::fromLatin1(finalUrl);
-    retval->data = _textCodec->toUnicode(_buffer.c_str());
+    retval->setFinalUrl(finalUrl);
+    retval->setData(_textCodec->toUnicode(_buffer.c_str()));
 
     if (status == 200)
     {
         if (!(options & Options::NOTIDY))
         {
-            retval->data = owl::tidyHTML(retval->data);
+            retval->setData(owl::tidyHTML(retval->data()));
         }
 
         _logger->trace("HTTP Response from '{}' with length of '{}' took {} milliseconds",

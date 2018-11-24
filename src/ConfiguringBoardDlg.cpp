@@ -286,9 +286,9 @@ owl::StringMap ConfiguringBoardDlg::autoConfigure()
                     continue;
                 }
 
-                if (reply && reply->data.size() > 0)
+                if (reply && reply->data().size() > 0)
                 {
-                    QString html = reply->data;
+                    QString html = reply->data();
                     for (QString parserName : parsers)
                     {
                         _logger->debug("Trying parser {} at Url: {}", parserName.toStdString(), testUrl.toStdString());
@@ -300,7 +300,7 @@ owl::StringMap ConfiguringBoardDlg::autoConfigure()
                                 testUrl.toStdString(), p->getName().toStdString());
 
                             // settle up things like https vs http, and http://domain vs http://www.domain
-                            testUrl = resolveFinalUrl(testUrl, reply->finalUrl);
+                            testUrl = resolveFinalUrl(testUrl, QString::fromStdString(reply->finalUrl()));
 
                             results = createBoard(p->getName(), testUrl);
                             if (results.getBool("success"))
@@ -525,9 +525,9 @@ owl::StringMap ConfiguringBoardDlg::singleConfigure()
                 continue;
             }
 
-            if (reply && reply->data.size() > 0)
+            if (reply && reply->data().size() > 0)
             {
-                html = reply->data;
+                html = reply->data();
 
                 if (parser->canParse(html))
                 {
@@ -536,7 +536,7 @@ owl::StringMap ConfiguringBoardDlg::singleConfigure()
 
                     {
                         QUrl testUrlObj = QUrl::fromUserInput(testUrl);
-                        QUrl foundUrl = QUrl::fromUserInput(reply->finalUrl);
+                        QUrl foundUrl = QUrl::fromUserInput(QString::fromStdString(reply->finalUrl()));
 
                         // if the user enters 'http' but the site is redirecting to 'https'
                         // we want to save the 'https'
