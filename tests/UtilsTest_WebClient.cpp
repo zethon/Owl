@@ -65,8 +65,8 @@ BOOST_DATA_TEST_CASE(statusTests, data::make(statusData), url, expectedResponse,
     client.setThrowOnFail(false);
     auto reply = client.GetUrl(QString::fromLatin1(url), owl::WebClient::NOTIDY | owl::WebClient::NOCACHE);
     BOOST_REQUIRE(reply != nullptr);
-    BOOST_CHECK_EQUAL(reply->data.toStdString(), expectedResponse);
-    BOOST_CHECK_EQUAL(reply->status, expectedStatus);
+    BOOST_CHECK_EQUAL(reply->data().toStdString(), expectedResponse);
+    BOOST_CHECK_EQUAL(reply->status(), expectedStatus);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

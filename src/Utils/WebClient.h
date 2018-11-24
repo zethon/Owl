@@ -45,12 +45,7 @@ public:
         public:
             Reply(long status)
                 : _status { status }
-//                : Reply(s, QString{})
             {}
-
-//            Reply(long s, const QString& d)
-//                : Reply(s, d, QString{})
-//            {}
 
             long status() const { return _status; }
             void setStatus(long status) { _status = status; }
