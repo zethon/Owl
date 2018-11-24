@@ -493,19 +493,12 @@ owl::StringMap ConfiguringBoardDlg::singleConfigure()
     {
         QString	baseUrl(owl::sanitizeUrl(_targetUrl.toString()));
 
-        WebClient::ReplyPtr reply;
-        QString html;
-        QString testUrl;
-        bool bFound = false;
-
         WebClient client;
         client.setThrowOnFail(true);
 
-        for (QString path : FORUMPATHS)
+        for (const QString& path : FORUMPATHS)
         {
-            reply.reset();
-            html.clear();
-            testUrl = baseUrl;
+            QString testUrl = baseUrl;
 
             if (!path.isEmpty() && path != "/")
             {
@@ -514,6 +507,7 @@ owl::StringMap ConfiguringBoardDlg::singleConfigure()
 
             auto parser = PARSERMGR->createParser(_parser, testUrl);
 
+            WebClient::ReplyPtr reply;
             try
             {
                 _logger->debug("Trying Url: {}", testUrl.toStdString());
@@ -527,40 +521,33 @@ owl::StringMap ConfiguringBoardDlg::singleConfigure()
 
             if (reply && reply->data().size() > 0)
             {
-                html = reply->data();
+                QString html = reply->data();
 
                 if (parser->canParse(html))
                 {
                     _logger->info("Board found at '{}' with parser '{}'",
                         testUrl.toStdString(), parser->getName().toStdString());
 
+                    QUrl testUrlObj = QUrl::fromUserInput(testUrl);
+                    QUrl foundUrl = QUrl::fromUserInput(QString::fromStdString(reply->finalUrl()));
+
+                    // if the user enters 'http' but the site is redirecting to 'https'
+                    // we want to save the 'https'
+                    if (testUrlObj.scheme().toLower() != foundUrl.scheme().toLower())
                     {
-                        QUrl testUrlObj = QUrl::fromUserInput(testUrl);
-                        QUrl foundUrl = QUrl::fromUserInput(QString::fromStdString(reply->finalUrl()));
-
-                        // if the user enters 'http' but the site is redirecting to 'https'
-                        // we want to save the 'https'
-                        if (testUrlObj.scheme().toLower() != foundUrl.scheme().toLower())
-                        {
-                            testUrlObj.setScheme(foundUrl.scheme());
-                        }
-
-                        // if the user enters something like http://juot.net but the requests
-                        // keep getting redirect to http://www.juot.net, we want to know about
-                        // that too
-                        if (testUrlObj.host().toLower() != foundUrl.host().toLower())
-                        {
-                            testUrlObj.setHost(foundUrl.host());
-                        }
-
-                        testUrl = testUrlObj.toString();
+                        testUrlObj.setScheme(foundUrl.scheme());
                     }
 
+                    // if the user enters something like http://juot.net but the requests
+                    // keep getting redirect to http://www.juot.net, we want to know about
+                    // that too
+                    if (testUrlObj.host().toLower() != foundUrl.host().toLower())
+                    {
+                        testUrlObj.setHost(foundUrl.host());
+                    }
+
+                    testUrl = testUrlObj.toString();
                     results = createBoard(parser->getName(), testUrl);
-                    if (results.getBool("success"))
-                    {
-                        bFound = true;
-                    }
 
                     break;
                 }
@@ -612,7 +599,7 @@ StringMap ConfiguringBoardDlg::manualTapatalkConfigure()
     else
     {        
         // a non-specific url, so we will do our usual forum path search for a tapatalk parser
-        for (QString path : FORUMPATHS)
+        for (const QString& path : FORUMPATHS)
         {
             QString testUrl = QString("%1/%2")
                 .arg(_targetUrl.toString())

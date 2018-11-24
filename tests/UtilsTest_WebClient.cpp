@@ -69,4 +69,38 @@ BOOST_DATA_TEST_CASE(statusTests, data::make(statusData), url, expectedResponse,
     BOOST_CHECK_EQUAL(reply->status(), expectedStatus);
 }
 
+// [0] - the initial url
+// [1] - the expected finalUrl
+std::tuple<const char*, const char*> redirectData[]
+{
+    std::tuple<const char*, const char*>
+    {
+        "http://google.com",
+        "http://www.google.com/"
+    },
+    std::tuple<const char*, const char*>
+    {
+        "http://amb.la",
+        "https://amb.la/"
+    },
+    std::tuple<const char*, const char*>
+    {
+        "http://lulzapps.com",
+        "http://www.owlclient.com/"
+    }
+};
+
+BOOST_DATA_TEST_CASE(redirectTest, data::make(redirectData), url, expectedFinalUrl)
+{
+    if (!spdlog::get("Owl"))
+    {
+        spdlog::stdout_color_mt("Owl")->set_level(spdlog::level::off);
+    }
+
+    owl::WebClient client;
+    client.setThrowOnFail(false);
+    owl::WebClient::ReplyPtr reply = client.GetUrl(QString::fromLatin1(url), owl::WebClient::NOTIDY | owl::WebClient::NOCACHE);
+    BOOST_CHECK_EQUAL(reply->finalUrl(), expectedFinalUrl);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
