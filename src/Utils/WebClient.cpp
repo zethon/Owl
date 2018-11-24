@@ -186,7 +186,7 @@ QString WebClient::DownloadString(const QString &url, uint options /*=Options::D
 
     if (reply)
     {
-        return std::move(reply->data());
+        return reply->data();
     }
 
     return QString();
@@ -203,7 +203,7 @@ QString WebClient::UploadString(const QString& url, const QString &payload, uint
 
     if (reply)
     {
-        return std::move(reply->data());
+        return reply->data();
     }
 
     return QString();
@@ -321,7 +321,7 @@ WebClient::ReplyPtr WebClient::doRequest(const QString& url,
         }
 
         _logger->trace("HTTP Response from '{}' with length of '{}' took {} milliseconds",
-            finalUrl, (int)_buffer.size(), timer.elapsed());
+            finalUrl, _buffer.size(), timer.elapsed());
     }
     else
     {

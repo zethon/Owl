@@ -177,7 +177,7 @@ owl::StringMap ConfiguringBoardDlg::autoConfigure()
 	StringMap results;
 
 	// assume failure!
-	results.add("success", (bool)false); 
+    results.add("success", false);
 	results.add("msg", "No board could be found");
 
 	QString	baseUrl(owl::sanitizeUrl(_targetUrl.toString()));
@@ -191,7 +191,7 @@ owl::StringMap ConfiguringBoardDlg::autoConfigure()
     protocols << "https" << "http";
 
 	// try Tapatalk parser first
-    for (const auto protocol : protocols)
+    for (const auto& protocol : protocols)
     {
         for (QString path : FORUMPATHS)
         {
@@ -479,7 +479,7 @@ owl::StringMap ConfiguringBoardDlg::singleConfigure()
 	StringMap results;
 
 	// assume failure!
-	results.add("success", (bool)false); 
+    results.add("success", false);
 	results.add("msg", "No board could be found");
 
     _logger->info("Searching for board at user select url '{}' and parser '{}'",
@@ -579,7 +579,7 @@ StringMap ConfiguringBoardDlg::manualTapatalkConfigure()
 {
     StringMap results;
 
-    results.add("success", (bool)false);
+    results.add("success", false);
     results.add("msg", QString("No board could be found at '%1'").arg(_targetUrl.toString()));
 
     if (_targetUrl.fileName().compare("mobiquo.php", Qt::CaseInsensitive) == 0)
