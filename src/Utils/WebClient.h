@@ -20,38 +20,12 @@ const uint      DEFAULT_MAX_REDIRECTS	= 5;
 
 struct WebClientConfig
 {
-	QString userAgent;
-    
+    QString userAgent;
+
     bool    useEncryption;
     QString encryptKey;
     QString encryptSeed;
 };
-
-struct HttpReply
-{
-    long        status = -1;    // the http status
-    QString     data;           // the body of the reply
-    QString     finalUrl;       // the final url that sent the response (redirects & rewrites)
-
-    HttpReply(long s)
-        : HttpReply(s, QString{}, QString{})
-    {
-        // nothing to do
-    }
-
-    HttpReply(long s, const QString& d)
-        : HttpReply(s, d, QString{})
-    {
-        // nothing to do
-    }
-
-    HttpReply(long s, const QString& d, const QString& fu)
-        : status{s}, data{d}, finalUrl{fu}
-    {
-        // nothing to do
-    }
-};
-using HttpReplyPtr = std::shared_ptr<HttpReply>;
 
 class WebClient :  public QObject
 {
@@ -62,6 +36,25 @@ class WebClient :  public QObject
     using UniqueLock    = std::unique_lock<std::mutex>;
 
 public:
+    struct Reply
+    {
+        long        status = -1;    // the http status
+        QString     data;           // the body of the reply
+        QString     finalUrl;       // the final url that sent the response (redirects & rewrites)
+
+        Reply(long s)
+            : Reply(s, QString{}, QString{})
+        {}
+
+        Reply(long s, const QString& d)
+            : Reply(s, d, QString{})
+        {}
+
+        Reply(long s, const QString& d, const QString& fu)
+            : status{s}, data{d}, finalUrl{fu}
+        {}
+    };
+    using ReplyPtr = std::shared_ptr<Reply>;
 
     enum Method
     {
@@ -106,27 +99,27 @@ public:
     void deleteAllCookies();
 
     // Submits an HTTP GET and returns the webpage contents or an empty string
-    QString DownloadString(const QString& url, uint options = Options::DEFAULT, const StringMap& params = StringMap());
+    QString DownloadString(const QString& url, uint options = Options::DEFAULT);
 
     // Submits an HTTP GET and returns a reply object or NULL
-    HttpReplyPtr GetUrl(const QString& url, uint options = Options::DEFAULT, const StringMap& params = StringMap());
+    ReplyPtr GetUrl(const QString& url, uint options = Options::DEFAULT);
 
     // Submits an HTTP POST and returns the result's string or an empty string
-    QString UploadString(const QString& address, const QString& payload, uint options = Options::DEFAULT, const StringMap& params = StringMap());
+    QString UploadString(const QString& address, const QString& payload, uint options = Options::DEFAULT);
 
     // Submits an HTTP POST and returns a reply object or NULL
-    HttpReplyPtr PostUrl(const QString& url, const QString& payload, uint options = Options::DEFAULT, const StringMap& params = StringMap());
+    ReplyPtr PostUrl(const QString& url, const QString& payload, uint options = Options::DEFAULT);
 
+private:
     // If successful, will return a new object and release ownership to the caller
     // If unsucessful, throw an error OR return null if throwOnFail=false
-    HttpReplyPtr doRequest(const QString& url,
+    ReplyPtr doRequest(const QString& url,
                            const QString& payload = QString(),
                            Method method = Method::GET,
-                           uint options = Options::DEFAULT,
-                           const StringMap& params = StringMap());
-private:
+                           uint options = Options::DEFAULT);
+
     curl_slist* setHeaders();
-	void unsetHeaders(curl_slist* headers);
+    void unsetHeaders(curl_slist* headers);
     void initCurlSettings();
 
     Mutex               _curlMutex;

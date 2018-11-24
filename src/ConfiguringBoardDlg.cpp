@@ -252,7 +252,6 @@ owl::StringMap ConfiguringBoardDlg::autoConfigure()
 	if (!bFound && bKeepTrying)
 	{
         QString html;
-        HttpReplyPtr reply;
 
 		// loop through each parser testing each url until we run 
 		// out or find a compatible parser
@@ -262,13 +261,10 @@ owl::StringMap ConfiguringBoardDlg::autoConfigure()
 
 		QList<QString> parsers = ParserManager::instance()->getParserNames();
 
-        for (const auto protocol : protocols)
+        for (const auto& protocol : protocols)
         {
-            for (QString path : FORUMPATHS)
+            for (const QString& path : FORUMPATHS)
             {
-                reply.reset();
-                html.clear();
-
                 QUrl tempUrl { baseUrl };
                 tempUrl.setScheme(protocol);
 
@@ -276,6 +272,8 @@ owl::StringMap ConfiguringBoardDlg::autoConfigure()
                 {
                     testUrl = testUrl + "/" + path;
                 }
+
+                WebClient::ReplyPtr reply;
 
                 try
                 {
@@ -290,7 +288,7 @@ owl::StringMap ConfiguringBoardDlg::autoConfigure()
 
                 if (reply && reply->data.size() > 0)
                 {
-                    html = reply->data;
+                    QString html = reply->data;
                     for (QString parserName : parsers)
                     {
                         _logger->debug("Trying parser {} at Url: {}", parserName.toStdString(), testUrl.toStdString());
@@ -495,7 +493,7 @@ owl::StringMap ConfiguringBoardDlg::singleConfigure()
     {
         QString	baseUrl(owl::sanitizeUrl(_targetUrl.toString()));
 
-        HttpReplyPtr reply;
+        WebClient::ReplyPtr reply;
         QString html;
         QString testUrl;
         bool bFound = false;
