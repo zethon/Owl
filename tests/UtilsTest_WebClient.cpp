@@ -1,10 +1,12 @@
 // Owl - www.owlclient.com
 // Copyright (c) 2012-2018, Adalid Claure <aclaure@gmail.com>
+#include <QCryptographicHash>
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
 
 #include <iostream>
+
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
@@ -102,5 +104,42 @@ BOOST_DATA_TEST_CASE(redirectTest, data::make(redirectData), url, expectedFinalU
     owl::WebClient::ReplyPtr reply = client.GetUrl(QString::fromLatin1(url), owl::WebClient::NOTIDY | owl::WebClient::NOCACHE);
     BOOST_CHECK_EQUAL(reply->finalUrl(), expectedFinalUrl);
 }
+
+std::tuple<const char*, const char*> webtextData[]
+{
+    std::tuple<const char*, const char*>
+    {
+        "http://www.cnn.com/US/OJ/",
+        "2c9afb562185beeb1138b4676dc0f4b4cf1ead87"
+    }
+};
+
+BOOST_DATA_TEST_CASE(webtextTest, data::make(webtextData), url, expectedhash)
+{
+    if (!spdlog::get("Owl"))
+    {
+        spdlog::stdout_color_mt("Owl")->set_level(spdlog::level::off);
+    }
+
+    owl::WebClient client;
+    client.setThrowOnFail(false);
+
+    QString rawtext = client.DownloadString(QString::fromStdString(url), owl::WebClient::NOTIDY);
+    QFile file("/home/addy/Desktop/file.txt");
+    if ( file.open(QIODevice::ReadWrite) )
+    {
+        QTextStream stream( &file );
+        stream << rawtext;
+    }
+    file.close();
+
+    QByteArray hash = QCryptographicHash::hash(rawtext.toUtf8(), QCryptographicHash::Sha1);
+
+    QString result = hash.toHex();
+    qDebug() << result;
+//    56170f5429b35dea081bb659b884b475ca9329a9
+
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()
