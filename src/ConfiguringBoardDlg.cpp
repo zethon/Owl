@@ -177,7 +177,7 @@ owl::StringMap ConfiguringBoardDlg::autoConfigure()
 	StringMap results;
 
 	// assume failure!
-	results.add("success", (bool)false); 
+    results.add("success", false);
 	results.add("msg", "No board could be found");
 
 	QString	baseUrl(owl::sanitizeUrl(_targetUrl.toString()));
@@ -191,7 +191,7 @@ owl::StringMap ConfiguringBoardDlg::autoConfigure()
     protocols << "https" << "http";
 
 	// try Tapatalk parser first
-    for (const auto protocol : protocols)
+    for (const auto& protocol : protocols)
     {
         for (QString path : FORUMPATHS)
         {
@@ -252,7 +252,6 @@ owl::StringMap ConfiguringBoardDlg::autoConfigure()
 	if (!bFound && bKeepTrying)
 	{
         QString html;
-        HttpReplyPtr reply;
 
 		// loop through each parser testing each url until we run 
 		// out or find a compatible parser
@@ -262,13 +261,10 @@ owl::StringMap ConfiguringBoardDlg::autoConfigure()
 
 		QList<QString> parsers = ParserManager::instance()->getParserNames();
 
-        for (const auto protocol : protocols)
+        for (const auto& protocol : protocols)
         {
-            for (QString path : FORUMPATHS)
+            for (const QString& path : FORUMPATHS)
             {
-                reply.reset();
-                html.clear();
-
                 QUrl tempUrl { baseUrl };
                 tempUrl.setScheme(protocol);
 
@@ -276,6 +272,8 @@ owl::StringMap ConfiguringBoardDlg::autoConfigure()
                 {
                     testUrl = testUrl + "/" + path;
                 }
+
+                WebClient::ReplyPtr reply;
 
                 try
                 {
@@ -288,9 +286,9 @@ owl::StringMap ConfiguringBoardDlg::autoConfigure()
                     continue;
                 }
 
-                if (reply && reply->data.size() > 0)
+                if (reply && reply->text().size() > 0)
                 {
-                    html = reply->data;
+                    QString html = reply->text();
                     for (QString parserName : parsers)
                     {
                         _logger->debug("Trying parser {} at Url: {}", parserName.toStdString(), testUrl.toStdString());
@@ -302,7 +300,7 @@ owl::StringMap ConfiguringBoardDlg::autoConfigure()
                                 testUrl.toStdString(), p->getName().toStdString());
 
                             // settle up things like https vs http, and http://domain vs http://www.domain
-                            testUrl = resolveFinalUrl(testUrl, reply->finalUrl);
+                            testUrl = resolveFinalUrl(testUrl, QString::fromStdString(reply->finalUrl()));
 
                             results = createBoard(p->getName(), testUrl);
                             if (results.getBool("success"))
@@ -481,7 +479,7 @@ owl::StringMap ConfiguringBoardDlg::singleConfigure()
 	StringMap results;
 
 	// assume failure!
-	results.add("success", (bool)false); 
+    results.add("success", false);
 	results.add("msg", "No board could be found");
 
     _logger->info("Searching for board at user select url '{}' and parser '{}'",
@@ -495,19 +493,12 @@ owl::StringMap ConfiguringBoardDlg::singleConfigure()
     {
         QString	baseUrl(owl::sanitizeUrl(_targetUrl.toString()));
 
-        HttpReplyPtr reply;
-        QString html;
-        QString testUrl;
-        bool bFound = false;
-
         WebClient client;
         client.setThrowOnFail(true);
 
-        for (QString path : FORUMPATHS)
+        for (const QString& path : FORUMPATHS)
         {
-            reply.reset();
-            html.clear();
-            testUrl = baseUrl;
+            QString testUrl = baseUrl;
 
             if (!path.isEmpty() && path != "/")
             {
@@ -516,6 +507,7 @@ owl::StringMap ConfiguringBoardDlg::singleConfigure()
 
             auto parser = PARSERMGR->createParser(_parser, testUrl);
 
+            WebClient::ReplyPtr reply;
             try
             {
                 _logger->debug("Trying Url: {}", testUrl.toStdString());
@@ -527,42 +519,35 @@ owl::StringMap ConfiguringBoardDlg::singleConfigure()
                 continue;
             }
 
-            if (reply && reply->data.size() > 0)
+            if (reply && reply->text().size() > 0)
             {
-                html = reply->data;
+                QString html = reply->text();
 
                 if (parser->canParse(html))
                 {
                     _logger->info("Board found at '{}' with parser '{}'",
                         testUrl.toStdString(), parser->getName().toStdString());
 
+                    QUrl testUrlObj = QUrl::fromUserInput(testUrl);
+                    QUrl foundUrl = QUrl::fromUserInput(QString::fromStdString(reply->finalUrl()));
+
+                    // if the user enters 'http' but the site is redirecting to 'https'
+                    // we want to save the 'https'
+                    if (testUrlObj.scheme().toLower() != foundUrl.scheme().toLower())
                     {
-                        QUrl testUrlObj = QUrl::fromUserInput(testUrl);
-                        QUrl foundUrl = QUrl::fromUserInput(reply->finalUrl);
-
-                        // if the user enters 'http' but the site is redirecting to 'https'
-                        // we want to save the 'https'
-                        if (testUrlObj.scheme().toLower() != foundUrl.scheme().toLower())
-                        {
-                            testUrlObj.setScheme(foundUrl.scheme());
-                        }
-
-                        // if the user enters something like http://juot.net but the requests
-                        // keep getting redirect to http://www.juot.net, we want to know about
-                        // that too
-                        if (testUrlObj.host().toLower() != foundUrl.host().toLower())
-                        {
-                            testUrlObj.setHost(foundUrl.host());
-                        }
-
-                        testUrl = testUrlObj.toString();
+                        testUrlObj.setScheme(foundUrl.scheme());
                     }
 
+                    // if the user enters something like http://juot.net but the requests
+                    // keep getting redirect to http://www.juot.net, we want to know about
+                    // that too
+                    if (testUrlObj.host().toLower() != foundUrl.host().toLower())
+                    {
+                        testUrlObj.setHost(foundUrl.host());
+                    }
+
+                    testUrl = testUrlObj.toString();
                     results = createBoard(parser->getName(), testUrl);
-                    if (results.getBool("success"))
-                    {
-                        bFound = true;
-                    }
 
                     break;
                 }
@@ -581,7 +566,7 @@ StringMap ConfiguringBoardDlg::manualTapatalkConfigure()
 {
     StringMap results;
 
-    results.add("success", (bool)false);
+    results.add("success", false);
     results.add("msg", QString("No board could be found at '%1'").arg(_targetUrl.toString()));
 
     if (_targetUrl.fileName().compare("mobiquo.php", Qt::CaseInsensitive) == 0)
@@ -614,7 +599,7 @@ StringMap ConfiguringBoardDlg::manualTapatalkConfigure()
     else
     {        
         // a non-specific url, so we will do our usual forum path search for a tapatalk parser
-        for (QString path : FORUMPATHS)
+        for (const QString& path : FORUMPATHS)
         {
             QString testUrl = QString("%1/%2")
                 .arg(_targetUrl.toString())

@@ -180,51 +180,50 @@ void WebClient::setConfig(const WebClientConfig &config)
     curl_easy_setopt(_curl, CURLOPT_USERAGENT, config.userAgent.toLocal8Bit().data());
 }
 
-QString WebClient::DownloadString(const QString &url, uint options /*=Options::DEFAULT*/, const StringMap& params /*= StringMap()*/)
+QString WebClient::DownloadString(const QString &url, uint options /*=Options::DEFAULT*/)
 {
-    const auto reply = GetUrl(url, options, params);
+    const auto reply = GetUrl(url, options);
 
     if (reply)
     {
-        return std::move(reply->data);
+        return reply->text();
     }
 
     return QString();
 }
 
-HttpReplyPtr WebClient::GetUrl(const QString &url, uint options, const StringMap& params /*= StringMap()*/)
+WebClient::ReplyPtr WebClient::GetUrl(const QString &url, uint options)
 {
-    return doRequest(url, QString(), Method::GET, options, params);
+    return doRequest(url, QString(), Method::GET, options);
 }
 
-QString WebClient::UploadString(const QString& url, const QString &payload, uint options, const StringMap &params /*= StringMap()*/)
+QString WebClient::UploadString(const QString& url, const QString &payload, uint options)
 {
-    const auto reply = PostUrl(url, payload, options, params);
+    const auto reply = PostUrl(url, payload, options);
 
     if (reply)
     {
-        return std::move(reply->data);
+        return reply->text();
     }
 
     return QString();
 }
 
-HttpReplyPtr WebClient::PostUrl(const QString& url, const QString &payload, uint options, const StringMap& params /*= StringMap()*/)
+WebClient::ReplyPtr WebClient::PostUrl(const QString& url, const QString &payload, uint options)
 {
-    return doRequest(url, payload, Method::POST, options, params);
+    return doRequest(url, payload, Method::POST, options);
 }
 
-HttpReplyPtr WebClient::doRequest(const QString& url,
+WebClient::ReplyPtr WebClient::doRequest(const QString& url,
                                    const QString& payload /*= QString()*/,
                                    Method method /*= Method::GET*/,
-                                   uint options /*= Options::DEFAULT*/,
-                                   const StringMap& params /*= StringMap()*/)
+                                   uint options /*= Options::DEFAULT*/)
 {
     Lock lock(_curlMutex);
     QTime timer;
     timer.start();
 
-    bool bThrowOnFail = params.has("throwOnFail") ? params.getBool("thowOnFail") : getThrowOnFail();
+    bool bThrowOnFail = getThrowOnFail();
 
     // set the URL we're getting
     curl_easy_setopt(_curl, CURLOPT_URL, url.toLatin1().data());
@@ -308,20 +307,25 @@ HttpReplyPtr WebClient::doRequest(const QString& url,
     char *finalUrl;
     curl_easy_getinfo(_curl, CURLINFO_EFFECTIVE_URL, &finalUrl);
 
-	auto retval = std::make_shared<HttpReply>(status);
-	retval->status = status;
-    retval->finalUrl = _lastUrl = QString::fromLatin1(finalUrl);
-    retval->data = _textCodec->toUnicode(_buffer.c_str());
+    _lastUrl = QString::fromLatin1(finalUrl);
+
+    auto retval = std::make_shared<Reply>(status);
+    retval->setFinalUrl(finalUrl);
 
     if (status == 200)
     {
         if (!(options & Options::NOTIDY))
         {
-            retval->data = owl::tidyHTML(retval->data);
+            std::string temp{ owl::tidyHTML(_buffer.c_str()) };
+            retval->setData(temp, temp.size());
+        }
+        else
+        {
+            retval->setData(_buffer, _buffer.size());
         }
 
         _logger->trace("HTTP Response from '{}' with length of '{}' took {} milliseconds",
-            finalUrl, (int)_buffer.size(), timer.elapsed());
+            finalUrl, _buffer.size(), timer.elapsed());
     }
     else
     {
@@ -330,6 +334,12 @@ HttpReplyPtr WebClient::doRequest(const QString& url,
         if (bThrowOnFail)
         {
             OWL_THROW_EXCEPTION(WebException(errorText, url, status));
+        }
+        else
+        {
+            // sometimes the data is still needed even if we don't get
+            // a 200 result, but we can safely NOT tidy it
+            retval->setData(_buffer, _buffer.size());
         }
     }
 
@@ -344,7 +354,7 @@ curl_slist* WebClient::setHeaders()
     const QString contentType = QString("Content-Type: %1").arg(_contentType);
     headers = curl_slist_append(headers, contentType.toLatin1().data());
 
-    for (const auto kv : _headers)
+    for (const auto& kv : _headers)
     {
         const QString header = QString("%1: %2")
             .arg(kv.first)
@@ -405,7 +415,7 @@ void WebClient::initCurlSettings()
 //#endif
 }
 
-const QString tidyHTML(const QString& html)
+const std::string tidyHTML(const std::string& html)
 {
     // see:http://tidy.sourceforge.net/libintro.html
     TidyDoc tdoc = tidyCreate();
@@ -413,7 +423,7 @@ const QString tidyHTML(const QString& html)
     TidyBuffer errbuf = {0};
     Bool ok;
     int rc = -1;
-    QString retStr;
+    std::string retStr;
 
     tidyOptSetBool(tdoc, TidyMark, no);
     tidyOptSetInt(tdoc, TidyWrapLen, 0);
@@ -423,16 +433,16 @@ const QString tidyHTML(const QString& html)
         rc = tidySetErrorBuffer( tdoc, &errbuf );      // Capture diagnostics (required!)
 
     if ( rc >= 0 )
-        rc = tidyParseString( tdoc, html.toLatin1() );           // Parse the input
+        rc = tidyParseString( tdoc, html.data() );           // Parse the input
 
     if ( rc >= 0 )
         rc = tidyCleanAndRepair( tdoc );               // Tidy it up!
 
-    if ( rc >= 0 )
-        rc = tidyRunDiagnostics( tdoc );               // Kvetch
+    //if ( rc >= 0 )
+    //    rc = tidyRunDiagnostics( tdoc );               // Kvetch
 
-    if ( rc > 1 )                                    // If error, force output.
-        rc = ( tidyOptSetBool(tdoc, TidyForceOutput, yes) ? rc : -1 );
+    //if ( rc > 1 )                                    // If error, force output.
+    //    rc = ( tidyOptSetBool(tdoc, TidyForceOutput, yes) ? rc : -1 );
 
     if ( rc >= 0 )
         rc = tidySaveBuffer( tdoc, &output );          // Pretty Print
@@ -440,7 +450,7 @@ const QString tidyHTML(const QString& html)
     if ( rc >= 0 )
     {
         std::string str(reinterpret_cast<char const*>(output.bp), output.size);
-        retStr = QString::fromStdString(str);
+        retStr = std::move(str);
     }
     else
     {
