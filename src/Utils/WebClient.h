@@ -39,7 +39,7 @@ public:
     class Reply
     {
         long            _status = -1;    // the http status
-        QString         _data;           // the body of the reply
+        std::string     _data;
         std::string     _finalUrl;       // the final url that sent the response (redirects & rewrites)
 
         public:
@@ -50,8 +50,13 @@ public:
             long status() const { return _status; }
             void setStatus(long status) { _status = status; }
 
-            QString text() const { return _data; }
-            void setData(const QString& data) { _data = data; }
+            QString text() const { return QString::fromStdString(_data); }
+
+            std::string const data() { return _data; }
+            void setData(const std::string& data, std::size_t size) 
+            { 
+                _data.append(data.data(), size); 
+            }
 
             std::string finalUrl() const { return _finalUrl; }
             void setFinalUrl(const std::string& finalUrl) { _finalUrl = finalUrl; }
@@ -143,6 +148,6 @@ private:
     std::shared_ptr<spdlog::logger>  _logger;
 };
 
-const QString tidyHTML(const QString& html);
+const std::string tidyHTML(const std::string& html);
 
 } // namespace

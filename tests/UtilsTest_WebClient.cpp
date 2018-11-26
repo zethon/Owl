@@ -200,9 +200,9 @@ BOOST_DATA_TEST_CASE(postTest, data::make(postGetData), urlData, postData, expec
 
     QString echoerUrl = R"(http://owlclient.com/tools/echoer.php)";
 
-    if (!std::string{ urlData }.empty())
+    if (auto params = QString::fromLatin1(urlData); !params.isEmpty())
     {
-        echoerUrl += "?" + QString::fromLatin1(urlData);
+        echoerUrl += "?" + params;
     }
 
     owl::WebClient client;
@@ -211,6 +211,45 @@ BOOST_DATA_TEST_CASE(postTest, data::make(postGetData), urlData, postData, expec
 
     BOOST_CHECK_EQUAL(reply->status(), 200);
     BOOST_CHECK_EQUAL(reply->text().toStdString(), expectedData);
+}
+
+std::tuple<const char*, const char*> rawData[]
+{
+    std::tuple<const char*, const char*>
+    {
+        "https://amb.la/images/amb-logo7.png",
+        "B33F9B748EE1FF67954380DE76F3BDE8CEC91400"
+    },
+    std::tuple<const char*, const char*>
+    {
+        "https://i.imgur.com/c9m4pfC.jpg",
+        "2EF53F7871CC673F69695013E4E5A28727F30CCA"
+    },
+    std::tuple<const char*, const char*>
+    {
+        "https://i.imgur.com/wsHc3pQ.png",
+        "E8C04BE4737AA2F44C9ECB600EB6189BEC642030"
+    }
+};
+
+BOOST_DATA_TEST_CASE(rawDataTest, data::make(rawData), url, expectedHash)
+{
+    if (!spdlog::get("Owl"))
+    {
+        spdlog::stdout_color_mt("Owl")->set_level(spdlog::level::off);
+    }
+
+    owl::WebClient client;
+    client.setThrowOnFail(false);
+
+    auto reply = client.GetUrl(QString::fromLatin1(url), owl::WebClient::NOTIDY);
+
+    QByteArray byteArray(reply->data().c_str(), reply->data().size());
+    const QByteArray hash = QCryptographicHash::hash(byteArray, QCryptographicHash::Sha1);
+    const QString result = QString{ hash.toHex() }.toUpper();
+
+    BOOST_CHECK_EQUAL(reply->status(), 200);
+    BOOST_CHECK_EQUAL(result.toStdString(), expectedHash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

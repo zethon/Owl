@@ -311,13 +311,17 @@ WebClient::ReplyPtr WebClient::doRequest(const QString& url,
 
     auto retval = std::make_shared<Reply>(status);
     retval->setFinalUrl(finalUrl);
-    retval->setData(_textCodec->toUnicode(_buffer.c_str()));
 
     if (status == 200)
     {
         if (!(options & Options::NOTIDY))
         {
-            retval->setData(owl::tidyHTML(retval->text()));
+            std::string temp{ owl::tidyHTML(_buffer.c_str()) };
+            retval->setData(temp, temp.size());
+        }
+        else
+        {
+            retval->setData(_buffer, _buffer.size());
         }
 
         _logger->trace("HTTP Response from '{}' with length of '{}' took {} milliseconds",
@@ -330,6 +334,12 @@ WebClient::ReplyPtr WebClient::doRequest(const QString& url,
         if (bThrowOnFail)
         {
             OWL_THROW_EXCEPTION(WebException(errorText, url, status));
+        }
+        else
+        {
+            // sometimes the data is still needed even if we don't get
+            // a 200 result, but we can safely NOT tidy it
+            retval->setData(_buffer, _buffer.size());
         }
     }
 
@@ -405,7 +415,7 @@ void WebClient::initCurlSettings()
 //#endif
 }
 
-const QString tidyHTML(const QString& html)
+const std::string tidyHTML(const std::string& html)
 {
     // see:http://tidy.sourceforge.net/libintro.html
     TidyDoc tdoc = tidyCreate();
@@ -413,7 +423,7 @@ const QString tidyHTML(const QString& html)
     TidyBuffer errbuf = {0};
     Bool ok;
     int rc = -1;
-    QString retStr;
+    std::string retStr;
 
     tidyOptSetBool(tdoc, TidyMark, no);
     tidyOptSetInt(tdoc, TidyWrapLen, 0);
@@ -423,7 +433,7 @@ const QString tidyHTML(const QString& html)
         rc = tidySetErrorBuffer( tdoc, &errbuf );      // Capture diagnostics (required!)
 
     if ( rc >= 0 )
-        rc = tidyParseString( tdoc, html.toLatin1() );           // Parse the input
+        rc = tidyParseString( tdoc, html.data() );           // Parse the input
 
     if ( rc >= 0 )
         rc = tidyCleanAndRepair( tdoc );               // Tidy it up!
@@ -440,7 +450,7 @@ const QString tidyHTML(const QString& html)
     if ( rc >= 0 )
     {
         std::string str(reinterpret_cast<char const*>(output.bp), output.size);
-        retStr = QString::fromStdString(str);
+        retStr = std::move(str);
     }
     else
     {
