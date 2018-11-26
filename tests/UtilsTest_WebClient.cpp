@@ -67,7 +67,7 @@ BOOST_DATA_TEST_CASE(statusTests, data::make(statusData), url, expectedResponse,
     client.setThrowOnFail(false);
     auto reply = client.GetUrl(QString::fromLatin1(url), owl::WebClient::NOTIDY | owl::WebClient::NOCACHE);
     BOOST_REQUIRE(reply != nullptr);
-    BOOST_CHECK_EQUAL(reply->data().toStdString(), expectedResponse);
+    BOOST_CHECK_EQUAL(reply->text().toStdString(), expectedResponse);
     BOOST_CHECK_EQUAL(reply->status(), expectedStatus);
 }
 
@@ -89,6 +89,11 @@ std::tuple<const char*, const char*> redirectData[]
     {
         "http://lulzapps.com",
         "http://www.owlclient.com/"
+    },
+    std::tuple<const char*, const char*>
+    {
+        "http://www.washingtonpost.com/wp-srv/projects/yrreview/year.htm",
+        "http://www.washingtonpost.com/wp-srv/projects/yrreview/year.htm?noredirect=on"
     }
 };
 
@@ -102,6 +107,8 @@ BOOST_DATA_TEST_CASE(redirectTest, data::make(redirectData), url, expectedFinalU
     owl::WebClient client;
     client.setThrowOnFail(false);
     owl::WebClient::ReplyPtr reply = client.GetUrl(QString::fromLatin1(url), owl::WebClient::NOTIDY | owl::WebClient::NOCACHE);
+    
+    BOOST_CHECK_EQUAL(reply->status(), 200);
     BOOST_CHECK_EQUAL(reply->finalUrl(), expectedFinalUrl);
 }
 
@@ -132,12 +139,7 @@ std::tuple<const char*, const char*> webtextData[]
     {
         "http://web.ics.purdue.edu/~gchopra/class/public/pages/webdesign/05_simple.html",
         "9F871718676BD6175EDE3EECAD1A9D137E81E842"
-    },
-//   std::tuple<const char*, const char*>
-//   {
-//      "http://www.columbia.edu/~fdc/sample.html",
-//      "AC23DF162A142F7657C0573923A51D7D611D0396"
-//  }    
+    }  
 };
 
 BOOST_DATA_TEST_CASE(webtextTest, data::make(webtextData), url, expectedhash)
@@ -150,12 +152,65 @@ BOOST_DATA_TEST_CASE(webtextTest, data::make(webtextData), url, expectedhash)
     owl::WebClient client;
     client.setThrowOnFail(false);
 
-    QString rawtext = client.DownloadString(QString::fromStdString(url), owl::WebClient::NOTIDY);
-    QByteArray hash = QCryptographicHash::hash(rawtext.toUtf8(), QCryptographicHash::Sha1);
+    const QString rawtext = client.DownloadString(QString::fromStdString(url), owl::WebClient::NOTIDY);
+    const QByteArray hash = QCryptographicHash::hash(rawtext.toUtf8(), QCryptographicHash::Sha1);
     const QString result = QString{ hash.toHex() }.toUpper();
 
     BOOST_CHECK_EQUAL(result.toStdString(), expectedhash);
 }
 
+// URL params
+// POST params
+// expected result
+std::tuple<const char*, const char*, const char*> postGetData[]
+{
+    std::tuple<const char*, const char*, const char*>
+    {
+        "key1=val1&key2=val2",
+        "",
+        R"([g]~key1~ : ~val1~
+[g]~key2~ : ~val2~
+)"
+    },
+    std::tuple<const char*, const char*, const char*>
+    {
+        "",
+        "key1=val1&key2=val2",
+        R"([p]~key1~ : ~val1~
+[p]~key2~ : ~val2~
+)"
+    },
+    std::tuple<const char*, const char*, const char*>
+    {
+        "k1=v1",
+        "key1=val1&key2=val2",
+        R"([g]~k1~ : ~v1~
+[p]~key1~ : ~val1~
+[p]~key2~ : ~val2~
+)"
+    }
+};
+
+BOOST_DATA_TEST_CASE(postTest, data::make(postGetData), urlData, postData, expectedData)
+{
+    if (!spdlog::get("Owl"))
+    {
+        spdlog::stdout_color_mt("Owl")->set_level(spdlog::level::off);
+    }
+
+    QString echoerUrl = R"(http://owlclient.com/tools/echoer.php)";
+
+    if (!std::string{ urlData }.empty())
+    {
+        echoerUrl += "?" + QString::fromLatin1(urlData);
+    }
+
+    owl::WebClient client;
+    client.setThrowOnFail(false);
+    owl::WebClient::ReplyPtr reply = client.PostUrl(echoerUrl, QString::fromStdString(postData), owl::WebClient::NOTIDY);
+
+    BOOST_CHECK_EQUAL(reply->status(), 200);
+    BOOST_CHECK_EQUAL(reply->text().toStdString(), expectedData);
+}
 
 BOOST_AUTO_TEST_SUITE_END()

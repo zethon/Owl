@@ -50,7 +50,7 @@ public:
             long status() const { return _status; }
             void setStatus(long status) { _status = status; }
 
-            QString data() const { return _data; }
+            QString text() const { return _data; }
             void setData(const QString& data) { _data = data; }
 
             std::string finalUrl() const { return _finalUrl; }

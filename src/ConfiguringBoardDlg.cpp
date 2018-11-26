@@ -286,9 +286,9 @@ owl::StringMap ConfiguringBoardDlg::autoConfigure()
                     continue;
                 }
 
-                if (reply && reply->data().size() > 0)
+                if (reply && reply->text().size() > 0)
                 {
-                    QString html = reply->data();
+                    QString html = reply->text();
                     for (QString parserName : parsers)
                     {
                         _logger->debug("Trying parser {} at Url: {}", parserName.toStdString(), testUrl.toStdString());
@@ -519,9 +519,9 @@ owl::StringMap ConfiguringBoardDlg::singleConfigure()
                 continue;
             }
 
-            if (reply && reply->data().size() > 0)
+            if (reply && reply->text().size() > 0)
             {
-                QString html = reply->data();
+                QString html = reply->text();
 
                 if (parser->canParse(html))
                 {

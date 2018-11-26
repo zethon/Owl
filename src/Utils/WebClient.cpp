@@ -186,7 +186,7 @@ QString WebClient::DownloadString(const QString &url, uint options /*=Options::D
 
     if (reply)
     {
-        return reply->data();
+        return reply->text();
     }
 
     return QString();
@@ -203,7 +203,7 @@ QString WebClient::UploadString(const QString& url, const QString &payload, uint
 
     if (reply)
     {
-        return reply->data();
+        return reply->text();
     }
 
     return QString();
@@ -317,7 +317,7 @@ WebClient::ReplyPtr WebClient::doRequest(const QString& url,
     {
         if (!(options & Options::NOTIDY))
         {
-            retval->setData(owl::tidyHTML(retval->data()));
+            retval->setData(owl::tidyHTML(retval->text()));
         }
 
         _logger->trace("HTTP Response from '{}' with length of '{}' took {} milliseconds",
@@ -428,11 +428,11 @@ const QString tidyHTML(const QString& html)
     if ( rc >= 0 )
         rc = tidyCleanAndRepair( tdoc );               // Tidy it up!
 
-    if ( rc >= 0 )
-        rc = tidyRunDiagnostics( tdoc );               // Kvetch
+    //if ( rc >= 0 )
+    //    rc = tidyRunDiagnostics( tdoc );               // Kvetch
 
-    if ( rc > 1 )                                    // If error, force output.
-        rc = ( tidyOptSetBool(tdoc, TidyForceOutput, yes) ? rc : -1 );
+    //if ( rc > 1 )                                    // If error, force output.
+    //    rc = ( tidyOptSetBool(tdoc, TidyForceOutput, yes) ? rc : -1 );
 
     if ( rc >= 0 )
         rc = tidySaveBuffer( tdoc, &output );          // Pretty Print
