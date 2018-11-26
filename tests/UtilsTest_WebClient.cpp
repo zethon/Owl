@@ -244,7 +244,8 @@ BOOST_DATA_TEST_CASE(rawDataTest, data::make(rawData), url, expectedHash)
 
     auto reply = client.GetUrl(QString::fromLatin1(url), owl::WebClient::NOTIDY);
 
-    QByteArray byteArray(reply->data().c_str(), reply->data().size());
+    QByteArray byteArray(reply->data().c_str(), 
+        static_cast<uint>(reply->data().size()));
     const QByteArray hash = QCryptographicHash::hash(byteArray, QCryptographicHash::Sha1);
     const QString result = QString{ hash.toHex() }.toUpper();
 

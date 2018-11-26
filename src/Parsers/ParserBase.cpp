@@ -1,11 +1,5 @@
 #include "ParserBase.h"
 
-// ParserBase::getFavIcon() uses QNetwork* to get the favorite icon of
-// the board, so it needs these.
-// TODO: switch this over to the libcurl WebClient
-#include <QNetworkReply>
-#include <QNetworkRequest>
-#include <QNetworkAccessManager>
 #include <QtConcurrent>
 
 #include <spdlog/spdlog.h>
@@ -620,7 +614,6 @@ void ParserBase::getFavIconBuffer(QByteArray* buffer, const QStringList& iconFil
 
 	if (iconFiles.size() > 0)
 	{
-		QNetworkAccessManager manager;
 		QUrl url(_baseUrl);
 
 		for (auto iconFile : iconFiles)
@@ -634,60 +627,26 @@ void ParserBase::getFavIconBuffer(QByteArray* buffer, const QStringList& iconFil
 
 			if (url.isValid())
 			{
-				bool bDone = false;
-				uint iCount = 0;
-				do 
-				{
-                    _logger->trace("Looking for favicon at URL: '{}'", url.toString().toStdString());
-					iCount++;
+                _logger->trace("Looking for favicon at URL: '{}'", url.toString().toStdString());
 
-					QNetworkRequest request(url);
+                owl::WebClient client;
+                client.setThrowOnFail(false);
 
-					// some servers return 406 if we don't set the User-Agent
-					request.setRawHeader("User-Agent", QByteArray(getUserAgent().toLatin1()));
+                auto reply = client.GetUrl(url.toString(), owl::WebClient::NOTIDY);
+                if (reply->status() == 200)
+                {
+                    buffer->clear();
+                    buffer->append(reply->data().c_str(),
+                        static_cast<uint>(reply->data().size()));
 
-					QNetworkReply* pReply = manager.get(request);
-
-					QEventLoop loop;
-					connect(pReply, SIGNAL(finished()), &loop, SLOT(quit()), Qt::DirectConnection);
-					loop.exec(QEventLoop::ExcludeUserInputEvents);
-
-					QVariant statusCode = pReply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
-					int status = statusCode.toInt();
-
-					if (pReply->error() == QNetworkReply::NoError && status == 200)
-					{
-						buffer->clear();
-						buffer->append(pReply->readAll());
-						QImage image = QImage::fromData(*buffer);
-						if (!image.isNull())
-						{
-                            _logger->trace("Found favicon at URL: '{}'", url.toString().toStdString());
-							bUseDefault = false;
-							break;
-						}
-
-						bDone = true;
-					}
-					else if (status == 301)
-					{
-						QVariant locationVar = pReply->header(QNetworkRequest::LocationHeader);
-						url = locationVar.toString();
-					}
-
-					// ensure that we don't redirect indefinitely
-					if (iCount > 3)
-					{
-						bDone = true;
-					}
-
-				} while (!bDone);
-
-				// we found a favicon, so stop searching
-				if (!bUseDefault)
-				{
-					break;
-				}
+                	QImage image = QImage::fromData(*buffer);
+                	if (!image.isNull())
+                	{
+                        _logger->trace("Found favicon at URL: '{}'", url.toString().toStdString());
+                		bUseDefault = false;
+                		break;
+                	}
+                }
 			}
 			else
 			{
