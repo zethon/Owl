@@ -108,6 +108,7 @@ BOOST_DATA_TEST_CASE(redirectTest, data::make(redirectData), url, expectedFinalU
     client.setThrowOnFail(false);
     owl::WebClient::ReplyPtr reply = client.GetUrl(QString::fromLatin1(url), owl::WebClient::NOTIDY | owl::WebClient::NOCACHE);
     
+    BOOST_REQUIRE(reply != nullptr);
     BOOST_CHECK_EQUAL(reply->status(), 200);
     BOOST_CHECK_EQUAL(reply->finalUrl(), expectedFinalUrl);
 }
@@ -249,6 +250,7 @@ BOOST_DATA_TEST_CASE(rawDataTest, data::make(rawData), url, expectedHash)
     const QByteArray hash = QCryptographicHash::hash(byteArray, QCryptographicHash::Sha1);
     const QString result = QString{ hash.toHex() }.toUpper();
 
+    BOOST_REQUIRE(reply != nullptr);
     BOOST_CHECK_EQUAL(reply->status(), 200);
     BOOST_CHECK_EQUAL(result.toStdString(), expectedHash);
 }
