@@ -25,5 +25,5 @@
 #define OWLCONSOLE_VERSION			__EXPAND__(OWLCONSOLE_MAJOR) "." __EXPAND__(OWLCONSOLE_MINOR) "." __EXPAND__(OWLCONSOLE_BUILD)
 #define OWLCONSOLE_BUILDTIMESTAMP	__DATE__ " " __TIME__
 
-#define COPYRIGHT                   "Copyright (c) 2012-2017, " ORGANIZATION_NAME ". All Rights Reserved."
+#define COPYRIGHT                   "Copyright (c) 2012-2018, " ORGANIZATION_NAME ". All Rights Reserved."
 #define DEFAULT_USER_AGENT			"Mozilla/5.0 Firefox/3.5.6 " APP_NAME "/" OWL_VERSION
