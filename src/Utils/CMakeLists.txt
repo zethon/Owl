@@ -4,7 +4,6 @@
 project(Utils)
 
 set (SOURCE_FILES
-    Base64.cpp
     DateTimeParser.cpp
     Exception.cpp
     Moment.cpp
@@ -23,7 +22,6 @@ set (MOC_HEADERS
 )
 
 set (HEADER_FILES
-    Base64.h
     DateTimeParser.h
     Exception.h
     Moment.h
