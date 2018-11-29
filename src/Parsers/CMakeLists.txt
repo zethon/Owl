@@ -4,6 +4,7 @@ project(Parsers)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set (SOURCE_FILES
+    Base64.cpp
     BBCodeParser.cpp
     Forum.cpp
     LuaParserBase.cpp
@@ -27,6 +28,7 @@ set (MOC_HEADERS
 )
 
 set (HEADER_FILES
+    Base64.cpp
     OwlLua.h
     xrbase64.h
     xrvariant.h
