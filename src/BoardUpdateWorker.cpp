@@ -3,7 +3,7 @@
 #include <Parsers/Forum.h>
 #include "BoardUpdateWorker.h"
 
-#include <spdlog/spdlog.h>
+#include <Utils/OwlLogger.h>
 
 namespace owl
 {
@@ -38,19 +38,10 @@ public:
 };
 
 BoardUpdateWorker::BoardUpdateWorker(BoardPtr board)
-    : _board(board)
+    : _board(board),
+    _logger(owl::initializeLogger("BoardUpdateWorker"))
 
-{
-    if (!spdlog::get("BoardUpdateWorker"))
-    {
-        _logger = spdlog::get("Owl")->clone("BoardUpdateWorker");
-        spdlog::register_logger(_logger);
-    }
-    else
-    {
-        _logger = spdlog::get("BoardUpdateWorker");
-    }
-}
+{}
 
 void BoardUpdateWorker::doWork()
 {

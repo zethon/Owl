@@ -7,6 +7,7 @@
 #include <Utils/Exception.h>
 #include <Utils/Settings.h>
 #include <Utils/OwlUtils.h>
+#include <Utils/OwlLogger.h>
 #include "AboutDlg.h"
 #include "EditBoardDlg.h"
 #include "ErrorReportDlg.h"
@@ -15,8 +16,6 @@
 #include "Core.h"
 #include "MainWindow.h"
 #include "BoardUpdateWorker.h"
-
-#include <spdlog/spdlog.h>
 
 #ifdef Q_OS_MACOS
 #include <QtMac>
@@ -45,21 +44,12 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
     : QMainWindow(parent),
       _svcModel{new BoardsModel(this)},
       _splash(splash),
-      _imageOverlay{this}
+      _imageOverlay{this},
+      _logger(owl::initializeLogger("MainWindow"))
 {
     setupUi(this);
     setDockNestingEnabled(true);
 //    setUnifiedTitleAndToolBarOnMac(true);
-
-    if (!spdlog::get("MainWindow"))
-    {
-        _logger = spdlog::get("Owl")->clone("MainWindow");
-        spdlog::register_logger(_logger);
-    }
-    else
-    {
-        _logger = spdlog::get("MainWindow");
-    }
 
     // TODO: move this to the OwlApplication class
     readSettings();

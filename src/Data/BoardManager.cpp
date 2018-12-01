@@ -8,24 +8,16 @@
 #include <QSqlRecord>
 #include "BoardManager.h"
 
-#include <spdlog/spdlog.h>
+#include <Utils/OwlLogger.h>
 
 namespace owl
 {
 
 BoardManager::BoardManager()
-    : _mutex(QMutex::Recursive)
-{
-    if (!spdlog::get("BoardManager"))
-    {
-        _logger = spdlog::get("Owl")->clone("BoardManager");
-        spdlog::register_logger(_logger);
-    }
-    else
-    {
-        _logger = spdlog::get("BoardManager");
-    }
-}	
+    : _mutex(QMutex::Recursive),
+    _logger(owl::initializeLogger("BoardManager"))
+
+{}	
 
 size_t BoardManager::getBoardCount() const
 {

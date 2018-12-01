@@ -1,8 +1,7 @@
 #include "../Utils/OwlUtils.h"
+#include "../Utils/OwlLogger.h"
 #include "OwlLua.h"
 #include "LuaParserBase.h"
-
-#include <spdlog/spdlog.h>
 
 namespace owl
 {
@@ -17,18 +16,9 @@ LuaParserBase::LuaParserBase(const QString& url, const QString& luaFile)
 	: ParserBase("#luaparser", "#luaparser", url),
 	  _strLuaFile(luaFile),
 	  _stateObjIdx(0),
-      L(luaL_newstate())
+      L(luaL_newstate()),
+      _logger(owl::initializeLogger("LuaParserBase"))
 {
-    if (!spdlog::get("LuaParserBase"))
-    {
-        _logger = spdlog::get("Owl")->clone("LuaParserBase");
-        spdlog::register_logger(_logger);
-    }
-    else
-    {
-        _logger = spdlog::get("LuaParserBase");
-    }
-
     _stateMutex = std::make_shared<std::mutex>();
 	luaL_openlibs(L);
 

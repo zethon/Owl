@@ -11,6 +11,7 @@ set (SOURCE_FILES
     QSgmlTag.cpp
     Settings.cpp
     StringMap.cpp
+    OwlLogger.cpp
     OwlUtils.cpp
     Version.cpp
     WebClient.cpp
@@ -28,6 +29,7 @@ set (HEADER_FILES
     QSgml.cpp
     QSgmlTag.cpp
     QThreadEx.h
+    OwlLogger.h
     OwlUtils.h
     StringMap.h
     Version.h

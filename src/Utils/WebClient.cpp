@@ -5,7 +5,7 @@
 #include <tidybuffio.h>
 #include "WebClient.h"
 
-#include <spdlog/spdlog.h>
+#include <Utils/OwlLogger.h>
 
 namespace owl
 {
@@ -33,17 +33,8 @@ CURLcode curlGlobalInit()
 }
 
 WebClient::WebClient()
+    : _logger(owl::initializeLogger("Xenforo"))
 {
-    if (!spdlog::get("WebClient"))
-    {
-        _logger = spdlog::get("Owl")->clone("WebClient");
-        spdlog::register_logger(_logger);
-    }
-    else
-    {
-        _logger = spdlog::get("WebClient");
-    }
-
     static CURLcode __global = curlGlobalInit();
     Q_UNUSED(__global)
 

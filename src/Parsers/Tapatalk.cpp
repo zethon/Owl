@@ -3,7 +3,7 @@
 #include "Tapatalk.h"
 #include <cmath>
 
-#include <spdlog/spdlog.h>
+#include <Utils/OwlLogger.h>
 
 namespace owl
 {
@@ -19,18 +19,9 @@ Tapatalk4x::Tapatalk4x(const QString& baseUrl)
 	  _bUseSha1(false),
       _apiLevel(3),
       _forumMapInitialized(false),
-      _mutex(QMutex::Recursive)
+      _mutex(QMutex::Recursive),
+      _logger(owl::initializeLogger("Tapatalk4x"))
 {
-    if (!spdlog::get("Tapatalk4x"))
-    {
-        _logger = spdlog::get("Owl")->clone("Tapatalk4x");
-        spdlog::register_logger(_logger);
-    }
-    else
-    {
-        _logger = spdlog::get("Tapatalk4x");
-    }
-
 	_options->add("boardware", "tapatalk");
 	_options->add("boardwaremax", "4.9.9.0");
 	_options->add("boardwaremin", "4.0");
