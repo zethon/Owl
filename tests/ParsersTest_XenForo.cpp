@@ -17,11 +17,6 @@ BOOST_AUTO_TEST_SUITE(Forum)
 
 BOOST_AUTO_TEST_CASE(testXenforo)
 {
-    if (!spdlog::get("Owl"))
-    {
-        spdlog::stdout_color_mt("Owl")->set_level(spdlog::level::off);
-    }
-
     owl::Xenforo temp("https://xenforo.com/community/");
     BOOST_CHECK_EQUAL(temp.defaultPostsPerPage().first, static_cast<uint>(20));
 }
