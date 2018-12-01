@@ -68,6 +68,7 @@ if (NOT Linux)
     target_link_libraries(TestOwl
         ${CONAN_LIBS}
         Qt5::Core
+        Qt5::Sql
         Data
         Parsers
         Utils
