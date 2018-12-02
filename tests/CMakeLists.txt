@@ -53,7 +53,7 @@ add_test(NAME TestParsers
 
 # Diasble tests using hunspell for now (which the Owl Qt libraries
 # do) on Linux. See .travis.yml for details
-if (NOT Linux)
+if (NOT UNIX)
 
     set(OWL_TESTS
         OwlTest_BoardManager.cpp
