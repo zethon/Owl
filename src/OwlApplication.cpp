@@ -231,7 +231,7 @@ void OwlApplication::init()
         }
 
         // create the board objects from the db
-        BoardManager::instance()->init();
+        BoardManager::instance()->loadBoards();
     }
     catch (const OwlException& ex)
     {

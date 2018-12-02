@@ -45,16 +45,11 @@ public:
     BoardManager (const BoardManager&) = delete;
 	
     QSqlDatabase initializeDatabase(const QString& filename);
+    
+    void loadBoards();
+    void reload();
 
 	size_t getBoardCount() const;
-    
-    void init();
-	void reload();
-
-    
-    // sorts the _boardList according to the board's displayOrder option
-    void sort();
-
     const BoardList& getBoardList() const { return _boardList; }
 
 	// CRUD
@@ -89,6 +84,9 @@ private:
 	bool retrieveBoardForums(BoardPtr b);
     
     void loadBoardOptions(const BoardPtr& b);
+
+    // sorts the _boardList according to the board's displayOrder option
+    void sort();
 
 	static bool boardDisplayOrderLessThan(BoardPtr b1, BoardPtr b2)
 	{

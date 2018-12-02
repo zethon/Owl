@@ -59,7 +59,7 @@ QSqlDatabase BoardManager::getDatabase(bool doOpen) const
     return db;
 }
     
-void BoardManager::init()
+void BoardManager::loadBoards()
 {
 	QMutexLocker locker(&_mutex);
     QSqlDatabase db = getDatabase();
@@ -128,8 +128,7 @@ void BoardManager::init()
                     updateStr.toStdString()
 				);
             
-				// Addy's birthday easter egg
-                b->setLastUpdate(QDateTime(QDate(1975,3,24), QTime(15,55)));
+                b->setLastUpdate(QDateTime(QDate(1970,1,1), QTime(15,55)));
 			}
             else
             {
@@ -320,7 +319,7 @@ void BoardManager::loadBoardOptions(const BoardPtr& board)
 void BoardManager::reload()
 {
 	_boardList.clear();
-	init();
+    loadBoards();
 }
     
 void BoardManager::sort()

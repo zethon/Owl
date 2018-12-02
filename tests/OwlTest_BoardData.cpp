@@ -21,12 +21,16 @@ BOOST_AUTO_TEST_CASE(simpleBoardTest)
 
 BOOST_AUTO_TEST_CASE(simpleBoardManagerTest)
 {
-    //const auto temp_path = boost::filesystem::temp_directory_path() 
-    //    / boost::filesystem::unique_path("owltest%%%%%%");
-    //_tempDir = temp_path.string();
-    //try
-    //{
-    //    boost::filesystem::create_directories(temp_path);
+    const auto temp_db = boost::filesystem::temp_directory_path() 
+        / boost::filesystem::unique_path("owltest%%%%%%") / "owl.sqlite";
+
+    const QString dbFilename{ QString::fromStdString(temp_db.string()) };
+
+    auto db = owl::BoardManager::instance()->initializeDatabase(dbFilename);
+    
+    BOOST_REQUIRE(QFileInfo{ dbFilename }.exists());
+    BOOST_REQUIRE(db.isValid());
+    BOOST_REQUIRE(db.isOpen());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
