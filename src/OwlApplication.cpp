@@ -210,7 +210,12 @@ void OwlApplication::init()
         initializeLogger();
 
         // initialize the application's db
-        initializeDatabase();
+        _db = BoardManager::instance()->initializeDatabase(_dbFileName);
+        if (!_db.isValid() || !_db.isOpen())
+        {
+            const QString msg = QString("Could not initialize database at %1").arg(_dbFileName);
+            OWL_THROW_EXCEPTION(owl::OwlException(msg));
+        }
 
         // load the native and Lua parsers
         SettingsObject object;
@@ -285,60 +290,6 @@ void OwlApplication::initCommandLine()
     // else, leave it empty to signal we'll use the folder in the config file
 }
     
-void OwlApplication::initializeDatabase()
-{
-    BoardManager::instance()->setDatabaseFilename(_dbFileName.toStdString());
-    _db = BoardManager::instance()->getDatabase(false);
-
-    QFileInfo dbFileInfo(_dbFileName);
-    if (!dbFileInfo.exists())
-    {
-        owl::rootLogger()->debug("Creating database file '{}'", _dbFileName.toStdString());
-        
-        QDir dbDir(dbFileInfo.absolutePath());
-        if (!dbDir.exists())
-        {
-            dbDir.mkpath(dbFileInfo.absolutePath());
-        }
-        
-        _db.open();
-
-        QFile file(":sql/owl.sql");
-        
-        if (!file.open(QIODevice::ReadOnly))
-        {
-            OWL_THROW_EXCEPTION(OwlException("Could not load owl.sql file"));
-        }
-
-        QTextStream in(&file);
-        QString sqlFile = in.readAll();
-        file.close();
-
-        for(QString statement : sqlFile.split(';'))
-        {
-            statement = statement.trimmed();
-
-            if (!statement.isEmpty())
-            {
-                QSqlQuery query(_db);
-
-                if (!query.exec(statement))
-                {
-                    owl::rootLogger()->warn("Query failed: '{}'", statement.toStdString());
-                    owl::rootLogger()->warn("Last error: {}", query.lastError().text().toStdString());
-                }
-            }
-        }
-        
-        BoardManager::instance()->firstTimeInit();
-    }
-    else
-    {
-        owl::rootLogger()->debug("Loading database file '{}'", _dbFileName.toStdString());
-        _db.open();
-    }
-}
-
 void OwlApplication::initializeLogger()
 {
     SettingsObject settings;

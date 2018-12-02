@@ -56,8 +56,7 @@ add_test(NAME TestParsers
 if (NOT UNIX)
 
     set(OWL_TESTS
-        OwlTest_BoardManager.cpp
-        OwlTest_Board.cpp
+        OwlTest_BoardData.cpp
     )
 
     add_executable(TestOwl

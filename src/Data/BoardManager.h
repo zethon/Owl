@@ -25,7 +25,8 @@ namespace owl
 class BoardManager;
 using BoardManagerPtr = std::shared_ptr<BoardManager>;
 
-class BoardManager : public QObject
+class BoardManager final
+    : public QObject
 {
     Q_OBJECT
     
@@ -43,8 +44,7 @@ public:
     virtual ~BoardManager() = default;
     BoardManager (const BoardManager&) = delete;
 	
-    QSqlDatabase getDatabase(bool doOpen = true) const;
-    void setDatabaseFilename(const std::string& filename);
+    QSqlDatabase initializeDatabase(const QString& filename);
 
 	size_t getBoardCount() const;
     
@@ -55,8 +55,6 @@ public:
     // sorts the _boardList according to the board's displayOrder option
     void sort();
 
-    void firstTimeInit();
-    
     const BoardList& getBoardList() const { return _boardList; }
 
 	// CRUD
@@ -76,9 +74,11 @@ public:
     
     // FORUM - CRUD
     bool deleteForumVars(const QString& forumId) const;
-    
+
 private:
     BoardManager();
+
+    QSqlDatabase getDatabase(bool doOpen = true) const;
 
 	void createBoardOptions(BoardPtr board);	
 	void createForumEntries(ForumPtr forum, BoardPtr board);
@@ -100,7 +100,6 @@ private:
 
     static BoardManagerPtr _instance;
 
-	QSqlDatabase _db;
     BoardList _boardList;
 	QMutex _mutex;
     
