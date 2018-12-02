@@ -9,7 +9,7 @@
 #include "Data/Board.h"
 #include "PostListWidget.h"
 
-#include  <spdlog/spdlog.h>
+#include  <Utils/OwlLogger.h>
 
 namespace owl
 {
@@ -316,7 +316,7 @@ void PostListWebPage::javaScriptConsoleMessage(JavaScriptConsoleMessageLevel lev
         loggerLevel = spdlog::level::err;
     }
 
-    spdlog::get("Owl")->log(loggerLevel,
+    owl::rootLogger()->log(loggerLevel,
         "({}:{}): {}", lineNumber, message.toStdString(), sourceID.toStdString());
 }
 

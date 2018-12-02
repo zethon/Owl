@@ -10,11 +10,13 @@ namespace owl
 
 static const char* GLOBAL_LOGGER = "Owl";
 
-SpdLogPtr initializeLogger(const std::string& name)
+[[maybe_unused]] SpdLogPtr rootLogger()
 {
-    if (!spdlog::get(GLOBAL_LOGGER))
+    SpdLogPtr root = spdlog::get(GLOBAL_LOGGER);
+
+    if (!root)
     {
-        spdlog::stdout_color_mt(owl::GLOBAL_LOGGER);
+        root = spdlog::stdout_color_mt(owl::GLOBAL_LOGGER);
 
 #ifdef RELEASE
         spdlog::set_level(spdlog::level::off);
@@ -22,6 +24,13 @@ SpdLogPtr initializeLogger(const std::string& name)
         spdlog::set_level(spdlog::level::trace);
 #endif
     }
+
+    return root;
+}
+
+SpdLogPtr initializeLogger(const std::string& name)
+{
+    owl::rootLogger();
 
     SpdLogPtr logger = spdlog::get(name);
     if (!logger)

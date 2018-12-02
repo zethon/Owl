@@ -14,7 +14,7 @@
 #include <spdlog/common.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/rotating_file_sink.h>
-#include <spdlog/spdlog.h>
+#include <Utils/OwlLogger.h>
 
 namespace owl
 {
@@ -169,7 +169,7 @@ OwlApplication::OwlApplication(int& argc, char **argv[])
 
 OwlApplication::~OwlApplication()
 {
-    auto logger = spdlog::get("Owl");
+    owl::SpdLogPtr logger = owl::rootLogger();
 
     try
     {
@@ -293,7 +293,7 @@ void OwlApplication::initializeDatabase()
     QFileInfo dbFileInfo(_dbFileName);
     if (!dbFileInfo.exists())
     {
-        spdlog::get("Owl")->debug("Creating database file '{}'", _dbFileName.toStdString());
+        owl::rootLogger()->debug("Creating database file '{}'", _dbFileName.toStdString());
         
         QDir dbDir(dbFileInfo.absolutePath());
         if (!dbDir.exists())
@@ -324,8 +324,8 @@ void OwlApplication::initializeDatabase()
 
                 if (!query.exec(statement))
                 {
-                    spdlog::get("Owl")->warn("Query failed: '{}'", statement.toStdString());
-                    spdlog::get("Owl")->warn("Last error: {}", query.lastError().text().toStdString());
+                    owl::rootLogger()->warn("Query failed: '{}'", statement.toStdString());
+                    owl::rootLogger()->warn("Last error: {}", query.lastError().text().toStdString());
                 }
             }
         }
@@ -334,7 +334,7 @@ void OwlApplication::initializeDatabase()
     }
     else
     {
-        spdlog::get("Owl")->debug("Loading database file '{}'", _dbFileName.toStdString());
+        owl::rootLogger()->debug("Loading database file '{}'", _dbFileName.toStdString());
         _db.open();
     }
 }
@@ -346,7 +346,7 @@ void OwlApplication::initializeLogger()
     const QString levelString = settings.read("logs.level").toString().toLower();
     const auto configLevel = spdlog::level::from_str(levelString.toStdString());
 
-    auto logger = spdlog::get("Owl");
+    auto logger = owl::rootLogger();
     logger->set_level(configLevel);
 
     boost::optional<std::string> errorMessage;

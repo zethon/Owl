@@ -12,7 +12,7 @@
 #include "Core.h"
 #include "PreferencesDlg.h"
 
-#include <spdlog/spdlog.h>
+#include <Utils/OwlLogger.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 
 namespace owl
@@ -599,7 +599,7 @@ void PreferencesDlg::connectAdvancedSettings()
 void PreferencesDlg::resetLogFileAppender()
 {
     if (_settings.read("logs.file.enabled").toBool()
-            && spdlog::get("Owl")->sinks().size() == 1)
+            && owl::rootLogger()->sinks().size() == 1)
     {
         QDir logDir(_settings.read("logs.file.path").toString());
         const QString logFilename { logDir.absoluteFilePath("owl.log") };
@@ -651,7 +651,7 @@ void PreferencesDlg::renderGeneralSettings()
     }
     else
     {
-        spdlog::get("Owl")->warn("Invalid datetime.format, value is '{}'. Using 'default' instead.", dtFormat.toStdString());
+        owl::rootLogger()->warn("Invalid datetime.format, value is '{}'. Using 'default' instead.", dtFormat.toStdString());
         _settings.write("datetime.format", "default");
         useDefaultFormatRB->setChecked(true);
     }
