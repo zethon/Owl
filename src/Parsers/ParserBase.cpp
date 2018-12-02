@@ -2,7 +2,7 @@
 
 #include <QtConcurrent>
 
-#include <spdlog/spdlog.h>
+#include <Utils/OwlLogger.h>
 
 namespace owl
 {
@@ -13,18 +13,9 @@ ParserBase::ParserBase(const QString& name, const QString& prettyName, const QSt
 	  _description(prettyName),
       _baseUrl(baseUrl),
 	  _requestFuture(nullptr), 
-      _requestWatcher(nullptr)
-{
-    if (!spdlog::get("ParserBase"))
-    {
-        _logger = spdlog::get("Owl")->clone("ParserBase");
-        spdlog::register_logger(_logger);
-    }
-    else
-    {
-        _logger = spdlog::get("ParserBase");
-    }
-}
+      _requestWatcher(nullptr),
+      _logger(owl::initializeLogger("ParserBase"))
+{}
 
 ParserBase::~ParserBase()
 {

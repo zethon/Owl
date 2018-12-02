@@ -14,6 +14,7 @@ set (SOURCE_FILES
 set (MOC_HEADERS
     Board.h
     BoardManager.h
+    BoardManagerSQL.h
 )
 
 set (HEADER_FILES

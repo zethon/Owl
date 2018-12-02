@@ -1,3 +1,8 @@
+namespace owl
+{
+
+const char* createDatabaseSQLString = R"SQL(
+
 -- NOTE: Because of limitations in Qt's SQLite implementation, SQL query strings can only contain on
 -- statement. Multiple statements in a single query string will cause the query to fail. When Owl 
 -- creates a blank database, it seperates each statement in this file by a semicolon. Hence, indidvidual
@@ -62,3 +67,7 @@ CREATE TABLE template
 );
 
 COMMIT;
+
+)SQL";
+
+}

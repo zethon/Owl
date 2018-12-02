@@ -2,9 +2,9 @@
 // Copyright (c) 2012-2018, Adalid Claure <aclaure@gmail.com>
 
 #include <Utils/Settings.h>
-#include "Board.h"
+#include <Utils/OwlLogger.h>
 
-#include <spdlog/spdlog.h>
+#include "Board.h"
 
 namespace owl
 {
@@ -21,18 +21,9 @@ Board::Board(const QString& url)
     _bEnabled(true),
     _bAutoLogin(false),
     _status(Board::OFFLINE),
-    _options(StringMapPtr(new StringMap()))
-{
-    if (!spdlog::get("Board"))
-    {
-        _logger = spdlog::get("Owl")->clone("Board");
-        spdlog::register_logger(_logger);
-    }
-    else
-    {
-        _logger = spdlog::get("Board");
-    }
-}	
+    _options(StringMapPtr(new StringMap())),
+    _logger(owl::initializeLogger("Board"))
+{}
 
 Board::Board()
 	: Board(QString())

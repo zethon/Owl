@@ -14,7 +14,7 @@
 #include <spdlog/common.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/rotating_file_sink.h>
-#include <spdlog/spdlog.h>
+#include <Utils/OwlLogger.h>
 
 namespace owl
 {
@@ -169,7 +169,7 @@ OwlApplication::OwlApplication(int& argc, char **argv[])
 
 OwlApplication::~OwlApplication()
 {
-    auto logger = spdlog::get("Owl");
+    owl::SpdLogPtr logger = owl::rootLogger();
 
     try
     {
@@ -210,7 +210,12 @@ void OwlApplication::init()
         initializeLogger();
 
         // initialize the application's db
-        initializeDatabase();
+        _db = BoardManager::instance()->initializeDatabase(_dbFileName);
+        if (!_db.isValid() || !_db.isOpen())
+        {
+            const QString msg = QString("Could not initialize database at %1").arg(_dbFileName);
+            OWL_THROW_EXCEPTION(owl::OwlException(msg));
+        }
 
         // load the native and Lua parsers
         SettingsObject object;
@@ -226,7 +231,7 @@ void OwlApplication::init()
         }
 
         // create the board objects from the db
-        BoardManager::instance()->init();
+        BoardManager::instance()->loadBoards();
     }
     catch (const OwlException& ex)
     {
@@ -285,60 +290,6 @@ void OwlApplication::initCommandLine()
     // else, leave it empty to signal we'll use the folder in the config file
 }
     
-void OwlApplication::initializeDatabase()
-{
-    BoardManager::instance()->setDatabaseFilename(_dbFileName.toStdString());
-    _db = BoardManager::instance()->getDatabase(false);
-
-    QFileInfo dbFileInfo(_dbFileName);
-    if (!dbFileInfo.exists())
-    {
-        spdlog::get("Owl")->debug("Creating database file '{}'", _dbFileName.toStdString());
-        
-        QDir dbDir(dbFileInfo.absolutePath());
-        if (!dbDir.exists())
-        {
-            dbDir.mkpath(dbFileInfo.absolutePath());
-        }
-        
-        _db.open();
-
-        QFile file(":sql/owl.sql");
-        
-        if (!file.open(QIODevice::ReadOnly))
-        {
-            OWL_THROW_EXCEPTION(OwlException("Could not load owl.sql file"));
-        }
-
-        QTextStream in(&file);
-        QString sqlFile = in.readAll();
-        file.close();
-
-        for(QString statement : sqlFile.split(';'))
-        {
-            statement = statement.trimmed();
-
-            if (!statement.isEmpty())
-            {
-                QSqlQuery query(_db);
-
-                if (!query.exec(statement))
-                {
-                    spdlog::get("Owl")->warn("Query failed: '{}'", statement.toStdString());
-                    spdlog::get("Owl")->warn("Last error: {}", query.lastError().text().toStdString());
-                }
-            }
-        }
-        
-        BoardManager::instance()->firstTimeInit();
-    }
-    else
-    {
-        spdlog::get("Owl")->debug("Loading database file '{}'", _dbFileName.toStdString());
-        _db.open();
-    }
-}
-
 void OwlApplication::initializeLogger()
 {
     SettingsObject settings;
@@ -346,7 +297,7 @@ void OwlApplication::initializeLogger()
     const QString levelString = settings.read("logs.level").toString().toLower();
     const auto configLevel = spdlog::level::from_str(levelString.toStdString());
 
-    auto logger = spdlog::get("Owl");
+    auto logger = owl::rootLogger();
     logger->set_level(configLevel);
 
     boost::optional<std::string> errorMessage;

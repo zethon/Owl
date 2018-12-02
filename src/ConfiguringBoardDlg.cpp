@@ -1,12 +1,11 @@
 #include <QtConcurrent>
 #include <Parsers/ParserManager.h>
 #include <Parsers/Tapatalk.h>
+#include <Utils/OwlLogger.h>
 #include <Utils/OwlUtils.h>
 #include <Utils/Settings.h>
 #include "Data/BoardManager.h"
 #include "ConfiguringBoardDlg.h"
-
-#include <spdlog/spdlog.h>
 
 #define DEFAULT_SHOWIMAGES              true
 #define DEFAULT_AUTOLOGIN_ENABLED       true
@@ -32,19 +31,10 @@ ConfiguringBoardDlg::ConfiguringBoardDlg(QWidget* parent)
 	  _future(new QFuture<void>),
 	  _watcher(new QFutureWatcher<void>),
       FORUMPATHS(QStringList { "", "forum", "forums", "community", "board", "messageboard" }),
-      ICONFILES (QStringList { "/apple-touch-icon.png", "/favicon.ico" })
+      ICONFILES (QStringList { "/apple-touch-icon.png", "/favicon.ico" }),
+      _logger(owl::initializeLogger("ConfiguringBoardDlg"))
 {
 	setupUi(this);
-
-    if (!spdlog::get("ConfiguringBoardDlg"))
-    {
-        _logger = spdlog::get("Owl")->clone("ConfiguringBoardDlg");
-        spdlog::register_logger(_logger);
-    }
-    else
-    {
-        _logger = spdlog::get("ConfiguringBoardDlg");
-    }
     
     setFixedSize(this->width(),this->height());
 

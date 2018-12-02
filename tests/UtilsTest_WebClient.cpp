@@ -58,11 +58,6 @@ std::tuple<const char*, const char*, long> statusData[]
 
 BOOST_DATA_TEST_CASE(statusTests, data::make(statusData), url, expectedResponse, expectedStatus)
 {
-    if (!spdlog::get("Owl"))
-    {
-        spdlog::stdout_color_mt("Owl")->set_level(spdlog::level::off);
-    }
-
     owl::WebClient client;
     client.setThrowOnFail(false);
     auto reply = client.GetUrl(QString::fromLatin1(url), owl::WebClient::NOTIDY | owl::WebClient::NOCACHE);
@@ -99,11 +94,6 @@ std::tuple<const char*, const char*> redirectData[]
 
 BOOST_DATA_TEST_CASE(redirectTest, data::make(redirectData), url, expectedFinalUrl)
 {
-    if (!spdlog::get("Owl"))
-    {
-        spdlog::stdout_color_mt("Owl")->set_level(spdlog::level::off);
-    }
-
     owl::WebClient client;
     client.setThrowOnFail(false);
     owl::WebClient::ReplyPtr reply = client.GetUrl(QString::fromLatin1(url), owl::WebClient::NOTIDY | owl::WebClient::NOCACHE);
@@ -145,11 +135,6 @@ std::tuple<const char*, const char*> webtextData[]
 
 BOOST_DATA_TEST_CASE(webtextTest, data::make(webtextData), url, expectedhash)
 {
-    if (!spdlog::get("Owl"))
-    {
-        spdlog::stdout_color_mt("Owl")->set_level(spdlog::level::off);
-    }
-
     owl::WebClient client;
     client.setThrowOnFail(false);
 
@@ -194,11 +179,6 @@ std::tuple<const char*, const char*, const char*> postGetData[]
 
 BOOST_DATA_TEST_CASE(postTest, data::make(postGetData), urlData, postData, expectedData)
 {
-    if (!spdlog::get("Owl"))
-    {
-        spdlog::stdout_color_mt("Owl")->set_level(spdlog::level::off);
-    }
-
     QString echoerUrl = R"(http://owlclient.com/tools/echoer.php)";
 
     if (auto params = QString::fromLatin1(urlData); !params.isEmpty())
@@ -235,11 +215,6 @@ std::tuple<const char*, const char*> rawData[]
 
 BOOST_DATA_TEST_CASE(rawDataTest, data::make(rawData), url, expectedHash)
 {
-    if (!spdlog::get("Owl"))
-    {
-        spdlog::stdout_color_mt("Owl")->set_level(spdlog::level::off);
-    }
-
     owl::WebClient client;
     client.setThrowOnFail(false);
 

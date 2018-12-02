@@ -8,24 +8,15 @@
 #include "Xenforo.h"
 #include <cmath>
 
-#include <spdlog/spdlog.h>
+#include <Utils/OwlLogger.h>
 
 namespace owl
 {
 
 Q_INVOKABLE Xenforo::Xenforo(const QString &baseUrl)
-    : ParserBase(XENFORO_NAME,XENFORO_PRETTYNAME, baseUrl)
+    : ParserBase(XENFORO_NAME,XENFORO_PRETTYNAME, baseUrl),
+      _logger(owl::initializeLogger("Xenforo"))
 {
-    if (!spdlog::get("Xenforo"))
-    {
-        _logger = spdlog::get("Owl")->clone("Xenforo");
-        spdlog::register_logger(_logger);
-    }
-    else
-    {
-        _logger = spdlog::get("Xenforo");
-    }
-
     addWatcher(&_webclient);
 }
 

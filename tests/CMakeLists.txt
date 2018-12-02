@@ -1,5 +1,8 @@
 project(tests)
 
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
+
 set(UTILS_TESTS
     UtilsTest_Moment.cpp
     UtilsTest_OwlUtils.cpp
@@ -47,3 +50,35 @@ target_link_libraries(TestParsers
 add_test(NAME TestParsers
     COMMAND ${CMAKE_CURRENT_BINARY_DIR}/TestParsers
 )
+
+# Diasble tests using hunspell for now (which the Owl Qt libraries
+# do) on Linux. See .travis.yml for details
+if (NOT UNIX)
+
+    set(OWL_TESTS
+        OwlTest_BoardData.cpp
+    )
+
+    add_executable(TestOwl
+        main.cpp
+        ${OWL_TESTS}
+    )
+
+    target_link_libraries(TestOwl
+        ${CONAN_LIBS}
+        Qt5::Core
+        Qt5::Sql
+        Data
+        Parsers
+        Utils
+    )
+
+    include_directories(../src)
+    include_directories(../src/Parsers)
+    include_directories(../src/Utils)
+
+    add_test(NAME TestOwl
+        COMMAND ${CMAKE_CURRENT_BINARY_DIR}/TestOwl
+    )
+    
+endif()

@@ -5,7 +5,7 @@
 #include "Tapatalk.h"
 #include "Xenforo.h"
 
-#include <spdlog/spdlog.h>
+#include <Utils/OwlLogger.h>
 
 namespace owl
 {
@@ -21,18 +21,9 @@ ParserManagerPtr ParserManager::instance()
 }
 
 ParserManager::ParserManager()
-    : _isInitialized(false)
-{
-    if (!spdlog::get("ParserManager"))
-    {
-        _logger = spdlog::get("Owl")->clone("ParserManager");
-        spdlog::register_logger(_logger);
-    }
-    else
-    {
-        _logger = spdlog::get("ParserManager");
-    }
-}	
+    : _isInitialized(false),
+      _logger(owl::initializeLogger("ParserManager"))
+{}	
 	
 ParserManager::~ParserManager()
 {

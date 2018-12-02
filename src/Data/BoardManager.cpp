@@ -6,35 +6,24 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlRecord>
-#include "BoardManager.h"
 
-#include <spdlog/spdlog.h>
+#include <Utils/OwlLogger.h>
+
+#include "BoardManager.h"
+#include "BoardManagerSQL.h"
 
 namespace owl
 {
 
 BoardManager::BoardManager()
-    : _mutex(QMutex::Recursive)
-{
-    if (!spdlog::get("BoardManager"))
-    {
-        _logger = spdlog::get("Owl")->clone("BoardManager");
-        spdlog::register_logger(_logger);
-    }
-    else
-    {
-        _logger = spdlog::get("BoardManager");
-    }
-}	
+    : _mutex(QMutex::Recursive),
+    _logger(owl::initializeLogger("BoardManager"))
+
+{}	
 
 size_t BoardManager::getBoardCount() const
 {
 	return _boardList.size();
-}
-
-void BoardManager::setDatabaseFilename(const std::string& filename)
-{
-    this->_databaseFilename = filename;
 }
 
 QSqlDatabase BoardManager::getDatabase(bool doOpen) const
@@ -70,7 +59,7 @@ QSqlDatabase BoardManager::getDatabase(bool doOpen) const
     return db;
 }
     
-void BoardManager::init()
+void BoardManager::loadBoards()
 {
 	QMutexLocker locker(&_mutex);
     QSqlDatabase db = getDatabase();
@@ -139,8 +128,7 @@ void BoardManager::init()
                     updateStr.toStdString()
 				);
             
-				// Addy's birthday easter egg
-                b->setLastUpdate(QDateTime(QDate(1975,3,24), QTime(15,55)));
+                b->setLastUpdate(QDateTime(QDate(1970,1,1), QTime(15,55)));
 			}
             else
             {
@@ -159,6 +147,59 @@ void BoardManager::init()
 	}
 
     _logger->info("{} board(s) loaded", (int)getBoardCount());
+}
+
+QSqlDatabase BoardManager::initializeDatabase(const QString& filename)
+{
+    if (filename.isEmpty()) return QSqlDatabase{};
+
+    _databaseFilename.assign(filename.toStdString());
+
+    QFileInfo dbFileInfo(filename);
+    if (!dbFileInfo.exists())
+    {
+        _logger->debug("Creating database file '{}'", _databaseFilename);
+
+        QDir dbDir(dbFileInfo.absolutePath());
+        if (!dbDir.exists())
+        {
+            dbDir.mkpath(dbFileInfo.absolutePath());
+        }
+
+        QSqlDatabase db = getDatabase();
+        db.open();
+
+        QString sqlStatements = QString::fromLatin1(owl::createDatabaseSQLString);
+        for (const QString& statement : sqlStatements.split(';'))
+        {
+            if (!statement.trimmed().isEmpty())
+            {
+                QSqlQuery query(db);
+
+                if (!query.exec(statement.trimmed()))
+                {
+                    const std::string lastError = query.lastError().text().toStdString();
+                    const QString msg = QString::fromStdString(fmt::format(
+                        "There was a problem initializing the database at {}: {}",
+                        _databaseFilename, lastError));
+                    
+                    owl::rootLogger()->error(msg.toStdString());
+                    owl::rootLogger()->error("Query failed: '{}'", statement.toStdString());
+
+                    // make sure we remove the file, else the next time Owl runs, it will not
+                    // try to create the database file
+                    db.close();
+                    QFile{ QString::fromStdString(_databaseFilename) }.remove();
+
+                    OWL_THROW_EXCEPTION(owl::OwlException(msg));
+                }
+            }
+        }
+
+        db.close();
+    }
+
+    return getDatabase(true);
 }
 
 owl::BoardPtr BoardManager::getBoardInfo(int boardId)
@@ -278,7 +319,7 @@ void BoardManager::loadBoardOptions(const BoardPtr& board)
 void BoardManager::reload()
 {
 	_boardList.clear();
-	init();
+    loadBoards();
 }
     
 void BoardManager::sort()
@@ -287,38 +328,6 @@ void BoardManager::sort()
     qSort(_boardList.begin(), _boardList.end(), &BoardManager::boardDisplayOrderLessThan);
 }
     
-void BoardManager::firstTimeInit()
-{
- //   QSqlDatabase db = QSqlDatabase::database(OWL_DATABASE_NAME);
-
-	//QFile file(":sql/owl.sql");
-
- //   if(!file.open(QIODevice::ReadOnly)) 
-	//{
-	//	throw OWL_EXCEPTION("Could not load owl.sql file");   
-	//}
-
-	//QTextStream in(&file);
-	//QString sqlFile = in.readAll();
-	//file.close();
-
-	//BOOST_FOREACH(QString statement, sqlFile.split(';'))
-	//{
-	//	statement = statement.trimmed();
-
-	//	if (!statement.isEmpty())
-	//	{
-	//		QSqlQuery query(db);
-
-	//		if (!query.exec(statement))
-	//		{
-	//		   logger()->fatal("Query failed: '%1'", statement);
-	//		   logger()->fatal("Last error: %1", query.lastError().text());
-	//		}
-	//	}
-	//}
-}
-
 void BoardManager::createForumVars(ForumPtr forum)
 {
 	QSqlDatabase	db = getDatabase();

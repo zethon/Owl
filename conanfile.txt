@@ -26,6 +26,9 @@ libtidy/5.6@owl/stable
 spdlog:fmt_external=True
 boost:shared=False
 boost:without_test=False
+boost:without_filesystem=False
+boost:without_stacktrace=False
+boost:without_system=False
 boost:without_math=True
 boost:without_wave=True
 boost:without_container=True
@@ -49,11 +52,8 @@ boost:without_thread=True
 boost:without_chrono=True
 boost:without_date_time=True
 boost:without_atomic=True
-boost:without_filesystem=True
-boost:without_system=True
 boost:without_graph_parallel=True
 boost:without_python=True
-boost:without_stacktrace=True
 boost:without_type_erasure=True
 
 [generators]
