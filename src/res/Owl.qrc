@@ -56,8 +56,9 @@
         <file>images/quote-button-hover.png</file>
         <file>images/quote-button-normal.png</file>
         <file>icons/boardview-expand-button.png</file>
-        <file>qml/threadList.qml</file>
+        <file>qml/boardIconList.qml</file>
         <file>qml/postList.qml</file>
+        <file>qml/threadList.qml</file>
         <file>icons/pin.png</file>
         <file>icons/views.png</file>
         <file>icons/replies.png</file>

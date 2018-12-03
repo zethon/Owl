@@ -607,8 +607,7 @@ void Board::refreshOptions()
 }
     
 /**
- * Returns configuration data of a board that can change during runtime.
- * @returns a pointer to StringMap object containg relevant data
+ * @returns returns a copy of the Board's StringMap data
  */
 StringMap Board::getBoardData()
 {

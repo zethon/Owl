@@ -10,6 +10,7 @@ set(OWL_PARSERS_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/../parsers")
 SET (SOURCE_FILES
     AboutDlg.cpp
     AspectRatioPixmapLabel.cpp
+    BoardIconTree.cpp
     BoardTreeView.cpp
     BoardsModel.cpp
     BoardUpdateWorker.cpp
@@ -33,6 +34,7 @@ SET (MOC_HEADERS
     AboutDlg.h
     AspectRatioPixmapLabel.h
     BoardsModel.h
+    BoardIconTree.h
     BoardTreeView.h
     BoardUpdateWorker.h
     ClickableLabel.h
