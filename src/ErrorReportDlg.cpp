@@ -4,6 +4,14 @@
 namespace owl
 {
 
+ErrorReportDlg::ErrorReportDlg(const OwlException& ex, QWidget* parent)
+    : ErrorReportDlg(ex, QString(), QString(), ErrorActionType::OK, parent)
+{}
+
+ErrorReportDlg::ErrorReportDlg(const OwlException& ex, QString strTitle)
+    : ErrorReportDlg(ex, strTitle, QString(), ErrorActionType::OK, nullptr)
+{}
+
 ErrorReportDlg::ErrorReportDlg(const OwlException& ex,
         QString errorTitle, 
         QString errorMessage,
@@ -14,38 +22,9 @@ ErrorReportDlg::ErrorReportDlg(const OwlException& ex,
 	  _errorDetailsHtml(errorMessage),
 	  _actionType(actionType)
 {
-	init();
+    init(ex);
 }
 
-ErrorReportDlg::ErrorReportDlg(const OwlException& ex, QWidget* parent)
-	: ErrorReportDlg(ex, QString(), QString(), ErrorActionType::OK, parent)
-{
-	// do nothing
-}
-
-ErrorReportDlg::ErrorReportDlg(QString strTitle, const OwlException& ex)
-	: ErrorReportDlg(ex, strTitle, QString(), ErrorActionType::OK, nullptr)
-{
-    // do nothing
-}
-
-ErrorReportDlg::ErrorReportDlg()
-    : ErrorReportDlg(OwlException{}, QString(), QString(), ErrorActionType::OK, nullptr)
-{
-	// do nothing
-}
-
-ErrorReportDlg::ErrorReportDlg(QWidget *parent)
-    : ErrorReportDlg(OwlException{}, QString(), QString(), ErrorActionType::OK, parent)
-{
-	// do nothing
-}
-
-ErrorReportDlg::ErrorReportDlg(QString strTitle, QString strError)
-    : ErrorReportDlg(OwlException{}, strTitle, strError, ErrorActionType::OK, nullptr)
-{
-	// do nothing
-}
 
 void ErrorReportDlg::displayException(LuaParserException* lex)
 {
@@ -98,17 +77,16 @@ void ErrorReportDlg::onOKClicked()
     this->close();
 }
 
-void ErrorReportDlg::init()
+void ErrorReportDlg::init(const OwlException& ex)
 {
 	// set up the ui objects in the dialog
 	setupUi(this);
 
 	// set the window title
-	QString windowTitle = QString("%1 Error").arg(APP_TITLE);
-	this->setWindowTitle(windowTitle);
+    setWindowTitle(QString{APP_TITLE});
 
 	// adding the sad face icon
-	this->picLabel->setPixmap(QPixmap(":/images/sad.png"));
+    picLabel->setPixmap(QPixmap(":/images/sad.png"));
 
 	// set up signals
 	QObject::connect(OKBtn,SIGNAL(clicked()), this, SLOT(onOKClicked()));
@@ -136,6 +114,8 @@ void ErrorReportDlg::init()
 	//	}
 	//}	
 
+    _errorDetailsHtml.append(ex.message());
+
 	QString actionLabel;
 	switch (_actionType)
 	{
@@ -154,25 +134,26 @@ void ErrorReportDlg::init()
 	// set the text items
 	actionLbl->setText(actionLabel);
 	
-    appendStackTrace();
+    appendStackTrace(ex);
     errorDetails->setHtml(_errorDetailsHtml);
 	errorTitle->setText(_errorTitle);
 }
 
-void ErrorReportDlg::appendStackTrace()
+void ErrorReportDlg::appendStackTrace(const OwlException& ex)
 {
     //if (!_error) return;
 
-    //if (auto st = boost::get_error_info<owl::traced>(*_error); st)
-    //{
-    //    std::stringstream ss;
-    //    ss << *st;
+    const boost::stacktrace::stacktrace* st = boost::get_error_info<traced>(ex);
+    if (st)
+    {
+        std::stringstream ss;
+        ss << *st;
 
-    //    const QString trace =
-    //        QString("<pre>%1</pre>").arg(QString::fromStdString(ss.str()));
+        const QString trace =
+            QString("<pre>%1</pre>").arg(QString::fromStdString(ss.str()));
 
-    //    _errorDetailsHtml.append(trace);
-    //}
+        _errorDetailsHtml.append(trace);
+    }
 }
 
 void ErrorReportDlg::onCancelClicked()

@@ -670,8 +670,14 @@ void MainWindow::connectBoard(BoardPtr board)
 
     QObject::connect(board.get(),
         &Board::onRequestError,
-        [this]
-        SIGNAL(onRequestError(OwlExceptionPtr)), this, SLOT(requestErrorHandler(OwlExceptionPtr)));
+        [this](const OwlException& ex)
+        {
+            this->_errorReportDlg = new ErrorReportDlg(ex, this);
+            this->_errorReportDlg->show();
+
+            // show the message in the status bar
+            QMainWindow::statusBar()->showMessage(ex.message(), 5000);
+        });
 }
 
 // called after the board's HTTP request to make a forum read returns   
@@ -705,15 +711,6 @@ void MainWindow::newThreadHandler(BoardPtr b, ThreadPtr t)
     }
 
     QMainWindow::statusBar()->showMessage("New thread sent", 5000);
-}
-
-void MainWindow::requestErrorHandler(const OwlException& ex)
-{
-    _errorReportDlg = new ErrorReportDlg(ex, this);
-    _errorReportDlg->show();
-
-    // show the message in the status bar
-    QMainWindow::statusBar()->showMessage(ex.message(), 5000); 
 }
 
 void MainWindow::onSvcTreeContextMenu(const QPoint& pnt)

@@ -23,29 +23,26 @@ public:
 
     virtual ~ErrorReportDlg() = default;
 
-    ErrorReportDlg();
-    ErrorReportDlg(QWidget *parent);
-    ErrorReportDlg(QString strTitle, QString strError);
-    ErrorReportDlg(QString strTitle, const OwlException& ex);
+    ErrorReportDlg(const OwlException& ex, QString strTitle);
     ErrorReportDlg(const OwlException& ex, QWidget* parent);
 
-	ErrorReportDlg(
-		const OwlException& ex,
-		QString errorTitle, 
-		QString errorMessage,
-		ErrorActionType actionType,
-		QWidget* parent);
-    
 protected Q_SLOTS:
 	void onOKClicked();
 	void onCancelClicked();
 
 private:
-	void displayException(LuaParserException* lex);
-	void displayException(WebException* ex);
-    void appendStackTrace();
+    ErrorReportDlg(
+        const OwlException& ex,
+        QString errorTitle,
+        QString errorMessage,
+        ErrorActionType actionType,
+        QWidget* parent);
 
-	void init();
+    void displayException(LuaParserException* lex);
+	void displayException(WebException* ex);
+
+    void init(const OwlException& ex);
+    void appendStackTrace(const OwlException& ex);
 
 	QString				_errorTitle;
 	QString				_errorDetailsHtml;

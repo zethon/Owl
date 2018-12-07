@@ -88,7 +88,28 @@ NewThreadDlg::NewThreadDlg(BoardItemPtr itemParent, NewItemType type, QWidget* p
 
     // the parser will throw errors upon submitting the thread or post, so connect to that handler
     // so we can display those errors here in this dialog
-    QObject::connect(_parser.get(), SIGNAL(errorNotification(OwlExceptionPtr)), this, SLOT(showError(OwlExceptionPtr)));
+    QObject::connect(_parser.get(), &ParserBase::errorNotification,
+        [this](const OwlException& ex)
+        {
+            _bSubmitted = false;
+            unlockForm();
+
+            // clear the status window
+            statusImgLbl->setPixmap(QPixmap());
+            statusLbl->setText("");
+
+            const QString strTitle { tr("Error submitting post") };
+
+            QMessageBox msgBox(
+                QMessageBox::Warning,
+                strTitle,
+                ex.message(),
+                QMessageBox::Ok,
+                this,
+                Qt::Sheet);
+
+            msgBox.exec();
+        });
 
     // set the font for the editor
     QFont editorFont(SettingsObject().read("editor.font.family").toString());
@@ -342,28 +363,6 @@ void NewThreadDlg::onSubmitClicked()
     {
         _parser->submitNewThreadAsync(getNewThread());
     }
-}
-
-void NewThreadDlg::showError(OwlExceptionPtr ex)
-{
-    _bSubmitted = false;
-    unlockForm();
-
-    // clear the status window
-    statusImgLbl->setPixmap(QPixmap());
-    statusLbl->setText("");
-
-    const QString strTitle { tr("Error submitting post") };
-
-    QMessageBox msgBox(
-        QMessageBox::Warning,
-        strTitle,
-        ex->message(),
-        QMessageBox::Ok,
-        this,
-        Qt::Sheet);
-
-    msgBox.exec();
 }
 
 } // namespace

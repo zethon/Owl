@@ -24,7 +24,6 @@ set (HEADER_FILES
 qt5_wrap_cpp(MOC_SOURCE_FILES ${MOC_HEADERS})
 
 set(DEPENDENCY_LIST
-    log4qt
     Parsers
     Utils
 )

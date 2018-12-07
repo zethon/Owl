@@ -13,6 +13,9 @@
 #include <boost/exception/all.hpp>
 #include <boost/stacktrace.hpp>
 
+
+#include <iostream>
+
 namespace owl
 {
 
@@ -21,9 +24,10 @@ using traced = boost::error_info<struct tag_stacktrace, boost::stacktrace::stack
 template<class E>
 void ThrowException(const E & ex, const char * function, int line)
 {
-	throw ex << boost::throw_function(function) 
-        << boost::errinfo_at_line(line)
-        << traced(boost::stacktrace::stacktrace());
+    throw boost::enable_error_info(ex)
+//            << boost::throw_function(function)
+//            << boost::errinfo_at_line(line)
+            << traced(boost::stacktrace::stacktrace());
 }
 
 #define OWL_THROW_EXCEPTION(x)      ThrowException((x), BOOST_CURRENT_FUNCTION, __LINE__);
