@@ -665,9 +665,13 @@ void MainWindow::connectBoard(BoardPtr board)
     connect(board.get(), SIGNAL(onGetPosts(BoardPtr, ThreadPtr)), this, SLOT(getPostsHandler(BoardPtr, ThreadPtr)));
     connect(board.get(), SIGNAL(onGetUnreadForums(BoardPtr, ForumList)), this, SLOT(getUnreadForumsEvent(BoardPtr, ForumList)));
     connect(board.get(), SIGNAL(onMarkedForumRead(BoardPtr, ForumPtr)), this, SLOT(markForumReadHandler(BoardPtr, ForumPtr)));
-    connect(board.get(), SIGNAL(onRequestError(OwlExceptionPtr)), this, SLOT(requestErrorHandler(OwlExceptionPtr)));
     connect(board.get(), SIGNAL(onNewThread(BoardPtr, ThreadPtr)), this, SLOT(newThreadHandler(BoardPtr, ThreadPtr)));
     connect(board.get(), SIGNAL(onNewPost(BoardPtr, PostPtr)), this, SLOT(newPostHandler(BoardPtr, PostPtr)));
+
+    QObject::connect(board.get(),
+        &Board::onRequestError,
+        [this]
+        SIGNAL(onRequestError(OwlExceptionPtr)), this, SLOT(requestErrorHandler(OwlExceptionPtr)));
 }
 
 // called after the board's HTTP request to make a forum read returns   
@@ -703,13 +707,13 @@ void MainWindow::newThreadHandler(BoardPtr b, ThreadPtr t)
     QMainWindow::statusBar()->showMessage("New thread sent", 5000);
 }
 
-void MainWindow::requestErrorHandler(OwlExceptionPtr ex)
+void MainWindow::requestErrorHandler(const OwlException& ex)
 {
     _errorReportDlg = new ErrorReportDlg(ex, this);
     _errorReportDlg->show();
 
     // show the message in the status bar
-    QMainWindow::statusBar()->showMessage(ex->message(), 5000); 
+    QMainWindow::statusBar()->showMessage(ex.message(), 5000); 
 }
 
 void MainWindow::onSvcTreeContextMenu(const QPoint& pnt)

@@ -11,17 +11,19 @@
 #include <QException>
 
 #include <boost/exception/all.hpp>
-#include <boost/exception/exception.hpp>
-#include <boost/exception/info.hpp>
-#include <boost/exception/errinfo_at_line.hpp>
+#include <boost/stacktrace.hpp>
 
 namespace owl
 {
 
+using traced = boost::error_info<struct tag_stacktrace, boost::stacktrace::stacktrace>;
+
 template<class E>
 void ThrowException(const E & ex, const char * function, int line)
 {
-	throw (ex << boost::throw_function(function) << boost::errinfo_at_line(line));
+	throw ex << boost::throw_function(function) 
+        << boost::errinfo_at_line(line)
+        << traced(boost::stacktrace::stacktrace());
 }
 
 #define OWL_THROW_EXCEPTION(x)      ThrowException((x), BOOST_CURRENT_FUNCTION, __LINE__);

@@ -4,52 +4,45 @@
 namespace owl
 {
 
-ErrorReportDlg::ErrorReportDlg(
-					OwlExceptionPtr ex,
-					QString errorTitle, 
-					QString errorMessage,
-					ErrorActionType actionType,
-					QWidget* parent)
+ErrorReportDlg::ErrorReportDlg(const OwlException& ex,
+        QString errorTitle, 
+        QString errorMessage,
+        ErrorActionType actionType,
+        QWidget* parent)
 	: QDialog(parent),
 	  _errorTitle(errorTitle),
 	  _errorDetailsHtml(errorMessage),
-	  _error(ex),
 	  _actionType(actionType)
 {
 	init();
 }
 
-ErrorReportDlg::ErrorReportDlg(OwlExceptionPtr ex, QWidget* parent)
+ErrorReportDlg::ErrorReportDlg(const OwlException& ex, QWidget* parent)
 	: ErrorReportDlg(ex, QString(), QString(), ErrorActionType::OK, parent)
 {
 	// do nothing
 }
 
-ErrorReportDlg::ErrorReportDlg(QString strTitle, OwlExceptionPtr ex)
+ErrorReportDlg::ErrorReportDlg(QString strTitle, const OwlException& ex)
 	: ErrorReportDlg(ex, strTitle, QString(), ErrorActionType::OK, nullptr)
 {
-
+    // do nothing
 }
 
 ErrorReportDlg::ErrorReportDlg()
-	: ErrorReportDlg(OwlExceptionPtr(), QString(), QString(), ErrorActionType::OK, nullptr)
+    : ErrorReportDlg(OwlException{}, QString(), QString(), ErrorActionType::OK, nullptr)
 {
 	// do nothing
 }
 
 ErrorReportDlg::ErrorReportDlg(QWidget *parent)
-	: ErrorReportDlg(OwlExceptionPtr(), QString(), QString(), ErrorActionType::OK, parent)
+    : ErrorReportDlg(OwlException{}, QString(), QString(), ErrorActionType::OK, parent)
 {
 	// do nothing
 }
 
 ErrorReportDlg::ErrorReportDlg(QString strTitle, QString strError)
-	: ErrorReportDlg(OwlExceptionPtr(), strTitle, strError, ErrorActionType::OK,  nullptr)
-{
-	// do nothing
-}
-
-ErrorReportDlg::~ErrorReportDlg()
+    : ErrorReportDlg(OwlException{}, strTitle, strError, ErrorActionType::OK, nullptr)
 {
 	// do nothing
 }
@@ -121,27 +114,27 @@ void ErrorReportDlg::init()
 	QObject::connect(OKBtn,SIGNAL(clicked()), this, SLOT(onOKClicked()));
 	QObject::connect(cancelBtn,SIGNAL(clicked()), this, SLOT(onCancelClicked()));
 
-	// if we have an error object, get the info we want from that
-	if (_error != nullptr)
-	{
-		if (dynamic_cast<owl::LuaParserException*>(_error.get()) != nullptr)
-		{
-			displayException(dynamic_cast<owl::LuaParserException*>(_error.get()));
-		}
-		else if (dynamic_cast<owl::WebException*>(_error.get()) != nullptr)
-		{
-			displayException(dynamic_cast<owl::WebException*>(_error.get()));
-		}
-		else if (!_error->message().isEmpty())
-		{
-			_errorDetailsHtml = _error->message();
-			_errorTitle = "An unexpected error has occurred";
-		}
-		else
-		{
-			_errorDetailsHtml = "There was an unknown error.";
-		}
-	}	
+	//// if we have an error object, get the info we want from that
+	//if (_error != nullptr)
+	//{
+	//	if (dynamic_cast<owl::LuaParserException*>(_error.get()) != nullptr)
+	//	{
+	//		displayException(dynamic_cast<owl::LuaParserException*>(_error.get()));
+	//	}
+	//	else if (dynamic_cast<owl::WebException*>(_error.get()) != nullptr)
+	//	{
+	//		displayException(dynamic_cast<owl::WebException*>(_error.get()));
+	//	}
+	//	else if (!_error->message().isEmpty())
+	//	{
+	//		_errorDetailsHtml = _error->message();
+	//		_errorTitle = "An unexpected error has occurred";
+	//	}
+	//	else
+	//	{
+	//		_errorDetailsHtml = "There was an unknown error.";
+	//	}
+	//}	
 
 	QString actionLabel;
 	switch (_actionType)
@@ -159,9 +152,27 @@ void ErrorReportDlg::init()
 	}
 
 	// set the text items
-	this->actionLbl->setText(actionLabel);
-	this->errorDetails->setHtml(_errorDetailsHtml);
-	this->errorTitle->setText(_errorTitle);
+	actionLbl->setText(actionLabel);
+	
+    appendStackTrace();
+    errorDetails->setHtml(_errorDetailsHtml);
+	errorTitle->setText(_errorTitle);
+}
+
+void ErrorReportDlg::appendStackTrace()
+{
+    //if (!_error) return;
+
+    //if (auto st = boost::get_error_info<owl::traced>(*_error); st)
+    //{
+    //    std::stringstream ss;
+    //    ss << *st;
+
+    //    const QString trace =
+    //        QString("<pre>%1</pre>").arg(QString::fromStdString(ss.str()));
+
+    //    _errorDetailsHtml.append(trace);
+    //}
 }
 
 void ErrorReportDlg::onCancelClicked()

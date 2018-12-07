@@ -230,6 +230,8 @@ void OwlApplication::init()
            ParserManager::instance()->init(false);
         }
 
+        OWL_THROW_EXCEPTION(owl::OwlException("THIS IS A TEST"));
+
         // create the board objects from the db
         BoardManager::instance()->loadBoards();
     }
@@ -237,8 +239,6 @@ void OwlApplication::init()
     {
         ErrorReportDlg dlg("Initialization Error", ex);
         dlg.exec();
-
-        throw;
     }
     catch (const std::exception& ex)
     {

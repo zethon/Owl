@@ -245,7 +245,7 @@ private Q_SLOTS:
 	void getThreadsHandler(BoardPtr, ForumPtr);
 	void getPostsHandler(BoardPtr, ThreadPtr);
     void markForumReadHandler(BoardPtr, ForumPtr);
-	void requestErrorHandler(OwlExceptionPtr);
+	void requestErrorHandler(const OwlException&);
 
     // handlers when a new thread or post is submitted successfully
     void newThreadHandler(BoardPtr, ThreadPtr);

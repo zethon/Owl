@@ -21,23 +21,20 @@ public:
 	typedef enum { NEWPOST, NEWTHREAD } NewItemType;
 	typedef enum { SUBMITCANEL, OK } ErrorActionType;
 
+    virtual ~ErrorReportDlg() = default;
+
+    ErrorReportDlg();
+    ErrorReportDlg(QWidget *parent);
+    ErrorReportDlg(QString strTitle, QString strError);
+    ErrorReportDlg(QString strTitle, const OwlException& ex);
+    ErrorReportDlg(const OwlException& ex, QWidget* parent);
+
 	ErrorReportDlg(
-		OwlExceptionPtr ex,
+		const OwlException& ex,
 		QString errorTitle, 
 		QString errorMessage,
 		ErrorActionType actionType,
 		QWidget* parent);
-
-	ErrorReportDlg(
-		OwlExceptionPtr ex, 
-		QWidget* parent);
-
-	ErrorReportDlg();
-	ErrorReportDlg(QWidget *parent);
-	ErrorReportDlg(QString strTitle, QString strError);
-	ErrorReportDlg(QString strTitle, OwlExceptionPtr ex);
-
-	virtual ~ErrorReportDlg();
     
 protected Q_SLOTS:
 	void onOKClicked();
@@ -46,12 +43,12 @@ protected Q_SLOTS:
 private:
 	void displayException(LuaParserException* lex);
 	void displayException(WebException* ex);
+    void appendStackTrace();
 
 	void init();
 
 	QString				_errorTitle;
 	QString				_errorDetailsHtml;
-	OwlExceptionPtr		_error;
 
 	ErrorActionType		_actionType;
 };
