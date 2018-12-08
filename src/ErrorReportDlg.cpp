@@ -141,16 +141,36 @@ void ErrorReportDlg::init(const OwlException& ex)
 
 void ErrorReportDlg::appendStackTrace(const OwlException& ex)
 {
-    //if (!_error) return;
+    std::stringstream ss;
 
-    const boost::stacktrace::stacktrace* st = boost::get_error_info<traced>(ex);
-    if (st)
+    if (auto fn = boost::get_error_info<boost::throw_function>(ex); fn)
     {
-        std::stringstream ss;
-        ss << *st;
+        ss << "Function: " << *fn << std::endl;
+    }
+    
+    auto tf = boost::get_error_info<boost::throw_file>(ex);
+    auto ln = boost::get_error_info<boost::throw_line>(ex);
+    if (tf && ln)
+    {
+        ss << "Location: " << *tf << ':' << *ln << std::endl;
+    }
 
+    if (auto st = boost::get_error_info<traced>(ex); st)
+    {
+        ss << "------------------------------------------\n" << *st;
+        ss << *st;
+    }
+
+    if (const std::string output = ss.str(); output.size() > 0)
+    {
         const QString trace =
-            QString("<pre>%1</pre>").arg(QString::fromStdString(ss.str()));
+            QString(R"(
+<br/>
+<hr/>
+<pre>
+%1
+</pre>
+)").arg(QString::fromStdString(output));
 
         _errorDetailsHtml.append(trace);
     }

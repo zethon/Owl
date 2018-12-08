@@ -25,8 +25,9 @@ template<class E>
 void ThrowException(const E & ex, const char * function, int line)
 {
     throw boost::enable_error_info(ex)
-//            << boost::throw_function(function)
-//            << boost::errinfo_at_line(line)
+            << boost::throw_function(function)
+            << boost::throw_file(__FILE__)
+            << boost::throw_line(line)
             << traced(boost::stacktrace::stacktrace());
 }
 
@@ -55,6 +56,8 @@ public:
 	}
 
 	OwlException(const OwlException& other)
+        : boost::exception(other),
+          QException(other)
 	{
 		_message = other.message();
 		_filename = other.filename();
