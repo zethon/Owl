@@ -228,6 +228,12 @@ void OwlApplication::init()
        ParserManager::instance()->init(false);
     }
 
+//    OWL_THROW_EXCEPTION(owl::WebException(
+//        "This is a web exception",
+//        "http://www.google.com",
+//        "404"
+//                                          ))
+
     // create the board objects from the db
     BoardManager::instance()->loadBoards();
 }

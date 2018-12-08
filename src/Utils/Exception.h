@@ -38,6 +38,9 @@ class OwlException :
         public QException
 {
 public:
+
+    virtual ~OwlException() noexcept = default;
+
 	OwlException() = default;
 
     OwlException(const QString& msg)
@@ -60,27 +63,12 @@ public:
           QException(other)
 	{
 		_message = other.message();
-		_filename = other.filename();
-		_line = other.line();
 	}
 
-	OwlException& operator=(const OwlException& other)
-	{
-		_message = other.message();
-		_filename = other.filename();
-		_line = other.line();
-        return *this;
-	}
 
-	virtual ~OwlException() throw()
-	{
-	}
 
-	virtual void raise() const { throw *this; }
-	virtual OwlException* clone() const { return new OwlException(*this); }
-	
-	virtual QString filename() const { return _filename; }
-	virtual int line()  const { return _line; }
+//	virtual void raise() const { throw *this; }
+//	virtual OwlException* clone() const { return new OwlException(*this); }
 
 	virtual QString message() const { return _message; }
     
@@ -102,9 +90,40 @@ public:
         
         return retval;
     }
-    
-	virtual operator std::string() const { return this->message().toStdString(); }
-	virtual operator QString() const { return this->message(); }
+
+    [[nodiscard]] std::int32_t line() const
+    {
+        if (auto ln = boost::get_error_info<boost::throw_line>(*this); ln)
+        {
+            return *ln;
+        }
+
+        return -1;
+    }
+
+    [[nodiscard]] QString filename() const
+    {
+        if (auto fn = boost::get_error_info<boost::throw_file>(*this); fn)
+        {
+            return QString::fromStdString(*fn);
+        }
+
+        return QString{};
+    }
+
+
+    [[nodiscard]] QString function() const
+    {
+        if (auto fn = boost::get_error_info<boost::throw_function>(*this); fn)
+        {
+            return *fn;
+        }
+
+        return QString{};
+    }
+
+//	virtual operator std::string() const { return this->message().toStdString(); }
+//	virtual operator QString() const { return this->message(); }
 
 private:
 	QString			_message;
@@ -129,28 +148,29 @@ class WebException : public OwlException
 {
     
 public:
+
+    virtual ~WebException() throw() = default;
+
     WebException(const QString& msg, const QString& lastUrl = QString(), int statusCode = -1)
         : WebException(msg, lastUrl, statusCode, QString(), -1)
     {
     }
     
-	WebException(const QString& msg, const QString& lastUrl, const QString& filename, int line)
-		: OwlException(msg, filename, line),
-		  _lastUrl(lastUrl),
-		  _statusCode(-1)
-	{
-	}
+    WebException(const QString& msg, const QString& lastUrl, const QString& filename, int line)
+        : OwlException(msg, filename, line),
+          _lastUrl(lastUrl),
+          _statusCode(-1)
+    {
+    }
     
-	WebException(const QString& msg, const QString& lastUrl, int statusCode, const QString& filename, int line)
-		: OwlException(msg, filename, line),
-		  _lastUrl(lastUrl),
-		  _statusCode(statusCode)
-	{
-	}
+    WebException(const QString& msg, const QString& lastUrl, int statusCode, const QString& filename, int line)
+        : OwlException(msg, filename, line),
+          _lastUrl(lastUrl),
+          _statusCode(statusCode)
+    {
+    }
     
-    virtual ~WebException() throw()
-	{
-	}
+
     
     virtual QString details() const override
     {
