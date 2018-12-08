@@ -20,7 +20,8 @@ ErrorReportDlg::ErrorReportDlg(const OwlException& ex,
 	: QDialog(parent),
 	  _errorTitle(errorTitle),
 	  _errorDetailsHtml(errorMessage),
-	  _actionType(actionType)
+	  _actionType(actionType),
+      _logger(owl::initializeLogger("ErrorReportDlg"))
 {
     init(ex);
 }
@@ -157,12 +158,14 @@ void ErrorReportDlg::appendStackTrace(const OwlException& ex)
 
     if (auto st = boost::get_error_info<traced>(ex); st)
     {
-        ss << "------------------------------------------\n" << *st;
+        ss << "\n" << *st;
         ss << *st;
     }
 
     if (const std::string output = ss.str(); output.size() > 0)
     {
+        _logger->debug(output);
+
         const QString trace =
             QString(R"(
 <br/>

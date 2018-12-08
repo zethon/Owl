@@ -3,6 +3,8 @@
 
 #pragma once
 #include <Parsers/LuaParserBase.h>
+#include <Utils/OwlLogger.h>
+
 #include "ui_ErrorReportDlg.h"
 
 namespace Ui
@@ -48,6 +50,8 @@ private:
 	QString				_errorDetailsHtml;
 
 	ErrorActionType		_actionType;
+
+    SpdLogPtr           _logger;
 };
 
 } // namespace

@@ -228,8 +228,6 @@ void OwlApplication::init()
        ParserManager::instance()->init(false);
     }
 
-    OWL_THROW_EXCEPTION(owl::OwlException("THIS IS A TEST"));
-
     // create the board objects from the db
     BoardManager::instance()->loadBoards();
 }

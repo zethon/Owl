@@ -22,16 +22,16 @@ namespace owl
 using traced = boost::error_info<struct tag_stacktrace, boost::stacktrace::stacktrace>;
 
 template<class E>
-void ThrowException(const E & ex, const char * function, int line)
+void ThrowException(const E & ex, const char * function, const char* filename, int line)
 {
     throw boost::enable_error_info(ex)
             << boost::throw_function(function)
-            << boost::throw_file(__FILE__)
+            << boost::throw_file(filename)
             << boost::throw_line(line)
             << traced(boost::stacktrace::stacktrace());
 }
 
-#define OWL_THROW_EXCEPTION(x)      ThrowException((x), BOOST_CURRENT_FUNCTION, __LINE__);
+#define OWL_THROW_EXCEPTION(x)  ThrowException((x), BOOST_CURRENT_FUNCTION, __FILE__, __LINE__);
 
 class OwlException :
         public boost::exception,
