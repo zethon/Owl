@@ -6,12 +6,6 @@
 namespace owl
 {
 
-LuaParserException::LuaParserException(StringMap params, const QString& filename, const int iLine)
-	: OwlException(params.getText("error-text", false), filename, iLine),
-	  _params(params)
-{
-}
-
 LuaParserBase::LuaParserBase(const QString& url, const QString& luaFile)
 	: ParserBase("#luaparser", "#luaparser", url),
 	  _strLuaFile(luaFile),

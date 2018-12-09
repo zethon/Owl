@@ -3,6 +3,8 @@
 
 #pragma once
 #include <Parsers/LuaParserBase.h>
+#include <Utils/OwlLogger.h>
+
 #include "ui_ErrorReportDlg.h"
 
 namespace Ui
@@ -21,39 +23,35 @@ public:
 	typedef enum { NEWPOST, NEWTHREAD } NewItemType;
 	typedef enum { SUBMITCANEL, OK } ErrorActionType;
 
-	ErrorReportDlg(
-		OwlExceptionPtr ex,
-		QString errorTitle, 
-		QString errorMessage,
-		ErrorActionType actionType,
-		QWidget* parent);
+    virtual ~ErrorReportDlg() = default;
 
-	ErrorReportDlg(
-		OwlExceptionPtr ex, 
-		QWidget* parent);
+    ErrorReportDlg(const OwlException& ex, QString strTitle);
+    ErrorReportDlg(const OwlException& ex, QWidget* parent);
 
-	ErrorReportDlg();
-	ErrorReportDlg(QWidget *parent);
-	ErrorReportDlg(QString strTitle, QString strError);
-	ErrorReportDlg(QString strTitle, OwlExceptionPtr ex);
-
-	virtual ~ErrorReportDlg();
-    
 protected Q_SLOTS:
 	void onOKClicked();
 	void onCancelClicked();
 
 private:
-	void displayException(LuaParserException* lex);
-	void displayException(WebException* ex);
+    ErrorReportDlg(
+        const OwlException& ex,
+        QString errorTitle,
+        QString errorMessage,
+        ErrorActionType actionType,
+        QWidget* parent);
 
-	void init();
+//    void displayException(LuaParserException* lex);
+//	void displayException(WebException* ex);
+
+    void init(const OwlException& ex);
+    void appendDetails(const OwlException& ex);
 
 	QString				_errorTitle;
 	QString				_errorDetailsHtml;
-	OwlExceptionPtr		_error;
 
 	ErrorActionType		_actionType;
+
+    SpdLogPtr           _logger;
 };
 
 } // namespace

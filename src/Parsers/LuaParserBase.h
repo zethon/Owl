@@ -29,47 +29,41 @@ using MutexPtr = std::shared_ptr<std::mutex>;
 class LuaParserException : public OwlException
 {
 public:
-	LuaParserException() { }
-	virtual ~LuaParserException() throw() { }
+    virtual ~LuaParserException() = default;
 
-	LuaParserException& operator=(const LuaParserException other)
-	{
-		OwlException::operator=(other);
+	LuaParserException(StringMap params, const QString& luaFile, const int luaLine)
+        : OwlException(params.getText("error-text", false)),
+          _params(params),
+          _luaFile{ luaFile },
+          _luaLine{ luaLine }
+    {
+    }
 
-		_params.clear();
-		_params.merge(*(other.getParams()));
+	const StringMap& getParams() const { return _params; }
+    QString luaFile() const { return _luaFile; }
+    std::int32_t luaLine() const { return _luaLine; }
 
-		return *this;
-	}
+    QString details() const override
+    {
+        std::stringstream ss;
 
-	LuaParserException(const QString& msg, const QString scriptFile = "", int line = 0)
-		: OwlException(msg, scriptFile, line)
-	{
-		// do nothing
-	}
+        if (_luaFile.size() > 0 && _luaLine > 0)
+        {
+            ss << "Lua file: " << _luaFile.toStdString() << ":" << _luaLine << '\n';
+        }
 
-	LuaParserException(
-		const QString& msg,				
-		const QString& data,			
-		const QString& url,				
-		const QString scriptFile = "",	
-		int line = 0)					
-		: OwlException(msg, scriptFile, line)
-	{
-        _params.add("data", data);
-        _params.add("url", url);
-	}
+        if (_params.size() > 0)
+        {
+            ss << "Params: " << _params << '\n';
+        }
 
-	LuaParserException(StringMap params, const QString& filename, const int iLine);
-
-	
-	virtual void raise() const { throw *this; }
-	virtual LuaParserException* clone() const { return new LuaParserException(*this); }
-
-	const StringMap* getParams() const { return &_params; }
+        return QString::fromStdString(ss.str()) + OwlException::details();
+    }
 
 private: 
-	StringMap _params;
+	StringMap       _params;
+    QString         _luaFile;
+    std::int32_t    _luaLine;
 };
    
 class LuaParserBase : public ParserBase

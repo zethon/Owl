@@ -105,8 +105,8 @@ void Board::setParser(ParserBasePtr parser)
 		QObject::connect(_parser.get(), SIGNAL(markForumReadCompleted(ForumPtr)),
 			this, SLOT(markForumReadEvent(ForumPtr)), Qt::DirectConnection);
 
-		QObject::connect(_parser.get(), SIGNAL(errorNotification(OwlExceptionPtr)),
-			this, SIGNAL(onRequestError(OwlExceptionPtr)), Qt::DirectConnection);
+        QObject::connect(_parser.get(), SIGNAL(errorNotification(const OwlException&)),
+            this, SIGNAL(onRequestError(const OwlException&)), Qt::DirectConnection);
 	}
 }
 

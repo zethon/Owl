@@ -131,3 +131,22 @@ QString StringMap::encode() const
 }
 
 } // namespace
+
+std::ostream &operator<<(std::ostream &os, const owl::StringMap &params)
+{
+    char prefix = '{';
+
+    for (const auto& [key, value] : params)
+    {
+        os << prefix
+            << "{ "
+            << key.toStdString()
+            << ", "
+            << value.toStdString()
+            << " }";
+
+        prefix = ',';
+    }
+
+    return os << '}';
+}

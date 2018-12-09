@@ -581,7 +581,7 @@ StringMap ConfiguringBoardDlg::manualTapatalkConfigure()
             // catch any errors since we might be testing a bad url
             const QString error = QString("Could not request URL '%1' because: %2")
                 .arg(testUrl)
-                .arg(wx.details());
+                .arg(wx.message());
 
             _logger->debug(error.toStdString());
         }
@@ -613,7 +613,7 @@ StringMap ConfiguringBoardDlg::manualTapatalkConfigure()
                 // catch any errors since we might be testing a bad url
                 const QString error = QString("Could not request URL '%1' because: %2")
                     .arg(testUrl)
-                    .arg(wx.details());
+                    .arg(wx.message());
 
                 _logger->debug(error.toStdString());
             }

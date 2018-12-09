@@ -164,7 +164,7 @@ Q_SIGNALS:
 	void submitNewPostCompleted(PostPtr post);
     void markForumReadCompleted(ForumPtr forum);
     void getEncryptionSettingsCompleted(StringMap settings);
-	void errorNotification(OwlExceptionPtr ex);
+    void errorNotification(const OwlException& ex);
 
 private Q_SLOTS:
 	void loginSlot();

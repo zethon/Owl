@@ -15,16 +15,8 @@ class StringMapException : public OwlException
 {
 
 public:
-    StringMapException(const QString& msg, const QString& filename = "", int line = 0)
-        : OwlException(msg, filename, line)
-    {
-        // do nothing
-    }
-
-    virtual ~StringMapException() throw()
-    {
-        // do nothing
-    }
+    virtual ~StringMapException() = default;
+    using OwlException::OwlException;
 };
 
 class StringMap
@@ -158,6 +150,8 @@ public:
 };
 
 } // namespace
+
+std::ostream & operator<<(std::ostream& os, const owl::StringMap& params);
 
 Q_DECLARE_METATYPE(owl::StringMap)
 Q_DECLARE_METATYPE(owl::StringMapPtr)

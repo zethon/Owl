@@ -30,6 +30,7 @@ add_definitions(
     -DCURL_STATICLIB
     -DHUNSPELL_STATIC
     -DBOOST_TEST_NO_LIB
+    -DBOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
 )
 
 # Add this definition for release since we cannot rely on 

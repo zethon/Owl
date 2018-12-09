@@ -85,7 +85,7 @@ private:
 
 private Q_SLOTS:
     void onSubmitClicked();
-    void showError(OwlExceptionPtr);
+
 };
 
 } // namespace

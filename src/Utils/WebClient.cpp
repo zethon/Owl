@@ -256,7 +256,7 @@ WebClient::ReplyPtr WebClient::doRequest(const QString& url,
     }
     else
     {
-        OWL_THROW_EXCEPTION(WebException("Unsupported HTTP method"));
+        OWL_THROW_EXCEPTION(owl::WebException("Unsupported HTTP method"));
     }
 
     auto headers = setHeaders();
@@ -289,7 +289,7 @@ WebClient::ReplyPtr WebClient::doRequest(const QString& url,
         if (bThrowOnFail)
         {
             // TODO: Add more details to this exception, like below:
-            OWL_THROW_EXCEPTION(WebException(errorText, url, status));
+            OWL_THROW_EXCEPTION(owl::WebException(errorText, url, status));
         }
 
         return nullptr;
@@ -324,7 +324,7 @@ WebClient::ReplyPtr WebClient::doRequest(const QString& url,
         _logger->debug(errorText.toStdString());
         if (bThrowOnFail)
         {
-            OWL_THROW_EXCEPTION(WebException(errorText, url, status));
+            OWL_THROW_EXCEPTION(owl::WebException(errorText, url, status));
         }
         else
         {

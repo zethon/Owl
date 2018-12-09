@@ -2,9 +2,13 @@
 #include <WinSock2.h>
 #endif
 
+#include <QTranslator>
+
 #include "Core.h"
 #include "MainWindow.h"
 #include "OwlApplication.h"
+#include "ErrorReportDlg.h"
+
 #include <Utils/OwlLogger.h>
 
 using namespace owl;
@@ -48,8 +52,8 @@ int main(int argc, char *argv[])
     {
         owl::rootLogger()->critical("There was an unrecoverable application error: {}", ex.message().toStdString());
 
-        QMessageBox::warning(nullptr, APP_TITLE,
-            QString("There was an unrecoverable application error: %1").arg(ex.message()));
+        owl::ErrorReportDlg dlg{ ex, QObject::tr( "Application Error") };
+        dlg.exec();
 
         retval = OWLEXCEPTION;
     }
@@ -58,7 +62,7 @@ int main(int argc, char *argv[])
         owl::rootLogger()->critical("There was an unrecoverable system error: {}", ex.what());
 
         QMessageBox::warning(nullptr, APP_TITLE,
-            QString("There was an unrecoverable system error: %1").arg(ex.what()));
+            QString(QObject::tr("There was an unrecoverable system error: %1").arg(ex.what())));
 
         retval = STDEXCEPTION;
     }
@@ -67,7 +71,7 @@ int main(int argc, char *argv[])
         owl::rootLogger()->critical("There was an unknown unrecoverable error");
 
         QMessageBox::warning(nullptr, APP_TITLE, 
-            QString("There was an unknown error"));
+            QString(QObject::tr("There was an unknown error")));
 
         retval = UNKNOWNEXCEPTION;
     }

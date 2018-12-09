@@ -139,9 +139,6 @@ void registerMetaTypes()
 
     qRegisterMetaType<owl::ParserBasePtr>("ParserBasePtr");
 
-    qRegisterMetaType<owl::OwlException>("OwlException");
-    qRegisterMetaType<owl::OwlExceptionPtr>("OwlExceptionPtr");
-
     qRegisterMetaType<owl::StringMap>("StringMap");
     qRegisterMetaType<owl::StringMapPtr>("StringMapPtr");
 
@@ -197,56 +194,39 @@ OwlApplication::~OwlApplication()
 
 void OwlApplication::init()
 {
-    try
+    // initialize the JSON settings file
+    const auto retval = initSettings(_jsonConfig,_settingsFile, &_settingsLock);
+    if (!retval.first)
     {
-        // initialize the JSON settings file
-        const auto retval = initSettings(_jsonConfig,_settingsFile, &_settingsLock);
-        if (!retval.first)
-        {
-            OWL_THROW_EXCEPTION(OwlException(retval.second));
-        }
-
-        // initialize the logger and write the "Starting Owl..." message to the log
-        initializeLogger();
-
-        // initialize the application's db
-        _db = BoardManager::instance()->initializeDatabase(_dbFileName);
-        if (!_db.isValid() || !_db.isOpen())
-        {
-            const QString msg = QString("Could not initialize database at %1").arg(_dbFileName);
-            OWL_THROW_EXCEPTION(owl::OwlException(msg));
-        }
-
-        // load the native and Lua parsers
-        SettingsObject object;
-        const bool parsersEnabled = object.read("parsers.enabled").toBool();
-        if (parsersEnabled)
-        {
-            const auto parsersPath = !_parserFolder.isEmpty() ? _parserFolder : object.read("parsers.path").toString();
-            ParserManager::instance()->init(true, parsersPath);
-        }
-        else
-        {
-           ParserManager::instance()->init(false);
-        }
-
-        // create the board objects from the db
-        BoardManager::instance()->loadBoards();
+        OWL_THROW_EXCEPTION(OwlException(retval.second));
     }
-    catch (const OwlException& ex)
+
+    // initialize the logger and write the "Starting Owl..." message to the log
+    initializeLogger();
+
+    // initialize the application's db
+    _db = BoardManager::instance()->initializeDatabase(_dbFileName);
+    if (!_db.isValid() || !_db.isOpen())
     {
-        ErrorReportDlg dlg("Initialization Error", ex);
-        dlg.exec();
-
-        throw;
+        const QString msg = QString("Could not initialize database at %1").arg(_dbFileName);
+        OWL_THROW_EXCEPTION(owl::OwlException(msg));
     }
-    catch (const std::exception& ex)
+
+    // load the native and Lua parsers
+    SettingsObject object;
+    const bool parsersEnabled = object.read("parsers.enabled").toBool();
+    if (parsersEnabled)
     {
-        QString msg("Owl has experienced an unexpected error. Please report this problem and any details.\n\n");
-        msg.append(ex.what());
-
-        QMessageBox::critical(nullptr, APP_TITLE, msg);
+        const auto parsersPath = !_parserFolder.isEmpty() ? _parserFolder : object.read("parsers.path").toString();
+        ParserManager::instance()->init(true, parsersPath);
     }
+    else
+    {
+       ParserManager::instance()->init(false);
+    }
+
+    // create the board objects from the db
+    BoardManager::instance()->loadBoards();
 }
 
 // TODO: finish this when I'm sober
@@ -333,7 +313,7 @@ void OwlApplication::initializeLogger()
         }
         else
         {
-            logger->info("Logging file initialized to folder: {}",
+            logger->info("Logging files will be stored in {}",
                 settings.read("logs.file.path").toString().toStdString());
         }
     }
