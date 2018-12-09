@@ -122,8 +122,8 @@ void ParserBase::loginSlot()
 		catch (const owl::OwlException& owe)
 		{
             params.setOrAdd("success", (bool)false);
-            params.setOrAdd("error", owe.details());
-            _logger->warn("loginSlot() owl::OwlException: {}", owe.details().toStdString());
+            params.setOrAdd("error", owe.message());
+            _logger->warn("loginSlot() owl::OwlException: {}", owe.message().toStdString());
             Q_EMIT errorNotification(owe);
 		}
 		catch (...)

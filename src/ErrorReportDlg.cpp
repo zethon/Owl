@@ -27,52 +27,6 @@ ErrorReportDlg::ErrorReportDlg(const OwlException& ex,
 }
 
 
-void ErrorReportDlg::displayException(LuaParserException* lex)
-{
-	_errorTitle = "Lua Parser Error";
-
-	_errorDetailsHtml  = QString(
-		"<b>Location</b>: %1(%2)<br/>"
-		"<b>Error</b>:<blockquote>%3</blockquote><br/>")
-		.arg(lex->filename())
-		.arg(lex->line())
-		.arg(lex->message());
-
-	//QString keyDump;
-	//owl::StringMap* params = const_cast<StringMap*>(lex->getParams());
-	//
-	//if (params != NULL && params->getPairs() != NULL && params->getPairs()->size() > 0)
-	//{
-	//	QHash<QString, QString>::const_iterator i;
-	//	for (i = params->getPairs()->begin(); i != params->getPairs()->end(); ++i)
-	//	{
-	//		QString newText = QString("<b>%1</b>: <pre>%2</pre><br/>")
-	//							.arg(i.key())
-	//							.arg(i.value());
-
-	//		keyDump.append(newText);
-	//	}
-	//}
-
-	//errorText.append("<hr/>");
-	//errorText.append(keyDump);
-
-	//this->errorDetails->setHtml(errorText);
-}
-
-void ErrorReportDlg::displayException(WebException* ex)
-{
-	_errorTitle = "Web Exception";
-
-	_errorDetailsHtml = QString(
-		"Url:&nbsp;<b>%1</b><br/>"
-		"HTTP Response:&nbsp;<b>%2</b><br/>"
-		"Error:<br/><b><i>%3</i></b><br/>")
-		.arg(ex->url())
-		.arg(ex->statuscode())
-		.arg(ex->message());
-}
-
 void ErrorReportDlg::onOKClicked()
 {
     this->close();
@@ -93,30 +47,6 @@ void ErrorReportDlg::init(const OwlException& ex)
 	QObject::connect(OKBtn,SIGNAL(clicked()), this, SLOT(onOKClicked()));
 	QObject::connect(cancelBtn,SIGNAL(clicked()), this, SLOT(onCancelClicked()));
 
-	//// if we have an error object, get the info we want from that
-	//if (_error != nullptr)
-	//{
-	//	if (dynamic_cast<owl::LuaParserException*>(_error.get()) != nullptr)
-	//	{
-	//		displayException(dynamic_cast<owl::LuaParserException*>(_error.get()));
-	//	}
-	//	else if (dynamic_cast<owl::WebException*>(_error.get()) != nullptr)
-	//	{
-	//		displayException(dynamic_cast<owl::WebException*>(_error.get()));
-	//	}
-	//	else if (!_error->message().isEmpty())
-	//	{
-	//		_errorDetailsHtml = _error->message();
-	//		_errorTitle = "An unexpected error has occurred";
-	//	}
-	//	else
-	//	{
-	//		_errorDetailsHtml = "There was an unknown error.";
-	//	}
-	//}	
-
-    _errorDetailsHtml.append(ex.message());
-
 	QString actionLabel;
 	switch (_actionType)
 	{
@@ -134,49 +64,25 @@ void ErrorReportDlg::init(const OwlException& ex)
 
 	// set the text items
 	actionLbl->setText(actionLabel);
-	
-    appendStackTrace(ex);
+
+    appendDetails(ex);
     errorDetails->setHtml(_errorDetailsHtml);
 	errorTitle->setText(_errorTitle);
 }
 
-void ErrorReportDlg::appendStackTrace(const OwlException& ex)
+void ErrorReportDlg::appendDetails(const OwlException& ex)
 {
-    std::stringstream ss;
+    const QString header = QString(R"(<big><b>%1</b></big>)").arg(ex.message());
+    _errorDetailsHtml.append(header);
 
-    if (auto fn = boost::get_error_info<boost::throw_function>(ex); fn)
-    {
-        ss << "Function: " << *fn << std::endl;
-    }
-    
-    auto tf = boost::get_error_info<boost::throw_file>(ex);
-    auto ln = boost::get_error_info<boost::throw_line>(ex);
-    if (tf && ln)
-    {
-        ss << "Location: " << *tf << ':' << *ln << std::endl;
-    }
-
-    if (auto st = boost::get_error_info<traced>(ex); st)
-    {
-        ss << "\n" << *st;
-        ss << *st;
-    }
-
-    if (const std::string output = ss.str(); output.size() > 0)
-    {
-        _logger->debug(output);
-
-        const QString trace =
-            QString(R"(
-<br/>
+    const QString details = QString(R"(
 <hr/>
 <pre>
 %1
 </pre>
-)").arg(QString::fromStdString(output));
+)").arg(ex.details());
 
-        _errorDetailsHtml.append(trace);
-    }
+    _errorDetailsHtml.append(details);
 }
 
 void ErrorReportDlg::onCancelClicked()

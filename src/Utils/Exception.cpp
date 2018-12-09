@@ -6,15 +6,4 @@
 namespace owl
 {
 
-LuaException::LuaException(const QString &msg)
-    : OwlException(msg)
-{
-    // nothing to do
-}
-
-const QString &LuaException::luaError() const throw()
-{
-    return _luaError;
-}
-
 } // namespace

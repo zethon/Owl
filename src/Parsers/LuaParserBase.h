@@ -43,6 +43,23 @@ public:
     QString luaFile() const { return _luaFile; }
     std::int32_t luaLine() const { return _luaLine; }
 
+    QString details() const override
+    {
+        std::stringstream ss;
+
+        if (_luaFile.size() > 0 && _luaLine > 0)
+        {
+            ss << "Lua file: " << _luaFile.toStdString() << ":" << _luaLine << '\n';
+        }
+
+        if (_params.size() > 0)
+        {
+            ss << "Params: " << _params << '\n';
+        }
+
+        return QString::fromStdString(ss.str()) + OwlException::details();
+    }
+
 private: 
 	StringMap       _params;
     QString         _luaFile;

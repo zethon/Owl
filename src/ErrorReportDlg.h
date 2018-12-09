@@ -40,11 +40,11 @@ private:
         ErrorActionType actionType,
         QWidget* parent);
 
-    void displayException(LuaParserException* lex);
-	void displayException(WebException* ex);
+//    void displayException(LuaParserException* lex);
+//	void displayException(WebException* ex);
 
     void init(const OwlException& ex);
-    void appendStackTrace(const OwlException& ex);
+    void appendDetails(const OwlException& ex);
 
 	QString				_errorTitle;
 	QString				_errorDetailsHtml;

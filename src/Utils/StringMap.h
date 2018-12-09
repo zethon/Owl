@@ -151,5 +151,7 @@ public:
 
 } // namespace
 
+std::ostream & operator<<(std::ostream& os, const owl::StringMap& params);
+
 Q_DECLARE_METATYPE(owl::StringMap)
 Q_DECLARE_METATYPE(owl::StringMapPtr)
