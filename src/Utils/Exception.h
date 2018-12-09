@@ -44,43 +44,31 @@ public:
 	OwlException() = default;
 
     OwlException(const QString& msg)
-        : _message(msg), _line(0)
+        : _message(msg)
     {
     }
-
-    OwlException(const QString& msg, const QString& filename)
-        : _message(msg), _filename(filename), _line(0)
-    {
-    }
-
-    OwlException(const QString& msg, const QString& filename, int line)
-		: _message(msg), _filename(filename), _line(line)
-	{
-	}
 
 	OwlException(const OwlException& other)
         : boost::exception(other),
           QException(other)
 	{
-		_message = other.message();
+        _message = other._message;
 	}
-
-
-
-//	virtual void raise() const { throw *this; }
-//	virtual OwlException* clone() const { return new OwlException(*this); }
 
 	virtual QString message() const { return _message; }
     
     virtual QString details() const
     {
         QString retval;
+
+        const QString fn { filename() };
+        const auto ln { line() };
         
-        if (_filename.length() > 0 && _line > 0)
+        if (fn.length() > 0 && ln > 0)
         {
             retval = QString("[%1:%2] %3")
-                .arg(_filename)
-                .arg(_line)
+                .arg(fn)
+                .arg(ln)
                 .arg(_message);
         }
         else
@@ -122,26 +110,17 @@ public:
         return QString{};
     }
 
-//	virtual operator std::string() const { return this->message().toStdString(); }
-//	virtual operator QString() const { return this->message(); }
-
 private:
 	QString			_message;
-	QString			_filename;
-    std::uint32_t	_line = 0;
 };
 
 class NotImplementedException final : public OwlException
 {
 
 public:
-    NotImplementedException(const QString msg)
-        : OwlException(msg)
-	{
-        // do nothing
-    }
-
     virtual ~NotImplementedException() = default;
+
+    using OwlException::OwlException;
 };
 
 class WebException : public OwlException
@@ -152,26 +131,11 @@ public:
     virtual ~WebException() throw() = default;
 
     WebException(const QString& msg, const QString& lastUrl = QString(), int statusCode = -1)
-        : WebException(msg, lastUrl, statusCode, QString(), -1)
-    {
-    }
-    
-    WebException(const QString& msg, const QString& lastUrl, const QString& filename, int line)
-        : OwlException(msg, filename, line),
-          _lastUrl(lastUrl),
-          _statusCode(-1)
-    {
-    }
-    
-    WebException(const QString& msg, const QString& lastUrl, int statusCode, const QString& filename, int line)
-        : OwlException(msg, filename, line),
-          _lastUrl(lastUrl),
+        : OwlException(msg),
+          _lastUrl(lastUrl), 
           _statusCode(statusCode)
-    {
-    }
-    
-
-    
+    {}
+      
     virtual QString details() const override
     {
         QString retval = OwlException::details();
@@ -189,22 +153,6 @@ private:
     int     _statusCode;    
 };
 
-class ConfigureException : public OwlException
-{
-
-public:
-    ConfigureException(const QString& msg);
-    virtual ~ConfigureException() throw() {}
-};
-
-class FormatException : public OwlException
-{
-
-public:
-    FormatException(const QString& msg, const QString& filename, int line);
-    virtual ~FormatException() throw() {}
-};
-
 class LuaException : public OwlException
 {
 
@@ -218,9 +166,6 @@ private:
 	QString _luaError;
 };
 
-typedef std::shared_ptr<owl::OwlException>	OwlExceptionPtr;
-
 } // namespace
 
 Q_DECLARE_METATYPE(owl::OwlException)
-Q_DECLARE_METATYPE(owl::OwlExceptionPtr)

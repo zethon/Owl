@@ -139,9 +139,6 @@ void registerMetaTypes()
 
     qRegisterMetaType<owl::ParserBasePtr>("ParserBasePtr");
 
-    qRegisterMetaType<owl::OwlException>("OwlException");
-    qRegisterMetaType<owl::OwlExceptionPtr>("OwlExceptionPtr");
-
     qRegisterMetaType<owl::StringMap>("StringMap");
     qRegisterMetaType<owl::StringMapPtr>("StringMapPtr");
 

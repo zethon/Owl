@@ -29,47 +29,24 @@ using MutexPtr = std::shared_ptr<std::mutex>;
 class LuaParserException : public OwlException
 {
 public:
-	LuaParserException() { }
-	virtual ~LuaParserException() throw() { }
+    virtual ~LuaParserException() = default;
 
-	LuaParserException& operator=(const LuaParserException other)
-	{
-		OwlException::operator=(other);
+	LuaParserException(StringMap params, const QString& luaFile, const int luaLine)
+        : OwlException(params.getText("error-text", false)),
+          _params(params),
+          _luaFile{ luaFile },
+          _luaLine{ luaLine }
+    {
+    }
 
-		_params.clear();
-		_params.merge(*(other.getParams()));
-
-		return *this;
-	}
-
-	LuaParserException(const QString& msg, const QString scriptFile = "", int line = 0)
-		: OwlException(msg, scriptFile, line)
-	{
-		// do nothing
-	}
-
-	LuaParserException(
-		const QString& msg,				
-		const QString& data,			
-		const QString& url,				
-		const QString scriptFile = "",	
-		int line = 0)					
-		: OwlException(msg, scriptFile, line)
-	{
-        _params.add("data", data);
-        _params.add("url", url);
-	}
-
-	LuaParserException(StringMap params, const QString& filename, const int iLine);
-
-	
-	virtual void raise() const { throw *this; }
-	virtual LuaParserException* clone() const { return new LuaParserException(*this); }
-
-	const StringMap* getParams() const { return &_params; }
+	const StringMap& getParams() const { return _params; }
+    QString luaFile() const { return _luaFile; }
+    std::int32_t luaLine() const { return _luaLine; }
 
 private: 
-	StringMap _params;
+	StringMap       _params;
+    QString         _luaFile;
+    std::int32_t    _luaLine;
 };
    
 class LuaParserBase : public ParserBase
