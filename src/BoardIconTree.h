@@ -1,7 +1,12 @@
 #pragma once
 
 #include <memory>
-#include <QQuickWidget>
+
+#include <QWidget>
+
+class QListView;
+class QStandardItemModel;
+class QVBoxLayout;
 
 namespace spdlog
 {
@@ -13,18 +18,20 @@ namespace owl
 
 using SpdLogPtr = std::shared_ptr<spdlog::logger>;
 
-class BoardIconTree : public QQuickWidget
+class BoardIconTree : public QWidget
 {
 
 Q_OBJECT
 
 public:
-	BoardIconTree(QWidget* parent = 0);
-	virtual ~BoardIconTree() = default;
+    BoardIconTree(QWidget* parent = 0);
+    virtual ~BoardIconTree() = default;
 
 private:
-    owl::SpdLogPtr _logger;
+    QListView*              _listView;
+    QStandardItemModel*     _iconModel;
 
+    owl::SpdLogPtr          _logger;
 };
 
 }

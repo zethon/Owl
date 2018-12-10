@@ -158,7 +158,7 @@ QSqlDatabase BoardManager::initializeDatabase(const QString& filename)
     QFileInfo dbFileInfo(filename);
     if (!dbFileInfo.exists())
     {
-        _logger->debug("Creating database file '{}'", _databaseFilename);
+        _logger->info("Creating database file '{}'", _databaseFilename);
 
         QDir dbDir(dbFileInfo.absolutePath());
         if (!dbDir.exists())
@@ -197,6 +197,11 @@ QSqlDatabase BoardManager::initializeDatabase(const QString& filename)
         }
 
         db.close();
+    }
+    else
+    {
+        _logger->info("Opening database file '{}'", _databaseFilename);
+
     }
 
     return getDatabase(true);
