@@ -24,7 +24,7 @@ NewThreadDlg::NewThreadDlg(BoardItemPtr itemParent, NewItemType type, QWidget* p
     auto board = _board.lock();
     if (!board)
     {
-        OWL_THROW_EXCEPTION(OwlException("Board object is null"));
+        OWL_THROW_EXCEPTION(Exception("Board object is null"));
     }
 
      _parser = board->cloneParser();
@@ -89,7 +89,7 @@ NewThreadDlg::NewThreadDlg(BoardItemPtr itemParent, NewItemType type, QWidget* p
     // the parser will throw errors upon submitting the thread or post, so connect to that handler
     // so we can display those errors here in this dialog
     QObject::connect(_parser.get(), &ParserBase::errorNotification,
-        [this](const OwlException& ex)
+        [this](const Exception& ex)
         {
             _bSubmitted = false;
             unlockForm();
@@ -129,7 +129,7 @@ NewThreadDlg::NewThreadDlg(ForumPtr itemParent, QWidget *parent)
     const auto board = _board.lock();
     if (!board)
     {
-        OWL_THROW_EXCEPTION(OwlException("Board object is null"));
+        OWL_THROW_EXCEPTION(Exception("Board object is null"));
     }
 
     const QString strTitle = QString(tr("%1 | New thread in forum '%2'"))
@@ -167,7 +167,7 @@ NewThreadDlg::NewThreadDlg(ThreadPtr itemParent, QWidget *parent)
     const auto board = _board.lock();
     if (!board)
     {
-        OWL_THROW_EXCEPTION(OwlException("Board object is null"));
+        OWL_THROW_EXCEPTION(Exception("Board object is null"));
     }
 
     const QString strTitle

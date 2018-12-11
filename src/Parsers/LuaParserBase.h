@@ -26,13 +26,13 @@ using LuaParserExceptionPtr = std::shared_ptr<LuaParserException>;
 using MutexPtr = std::shared_ptr<std::mutex>;
 
 // TODO: see if we need to pass the lua_State
-class LuaParserException : public OwlException
+class LuaParserException : public Exception
 {
 public:
     virtual ~LuaParserException() = default;
 
 	LuaParserException(StringMap params, const QString& luaFile, const int luaLine)
-        : OwlException(params.getText("error-text", false)),
+        : Exception(params.getText("error-text", false)),
           _params(params),
           _luaFile{ luaFile },
           _luaLine{ luaLine }
@@ -57,7 +57,7 @@ public:
             ss << "Params: " << _params << '\n';
         }
 
-        return QString::fromStdString(ss.str()) + OwlException::details();
+        return QString::fromStdString(ss.str()) + Exception::details();
     }
 
 private: 

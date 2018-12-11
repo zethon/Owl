@@ -49,7 +49,7 @@ WebClient::WebClient()
     }
     else
     {
-        OWL_THROW_EXCEPTION(OwlException("Could not create CURL instance"));
+        OWL_THROW_EXCEPTION(Exception("Could not create CURL instance"));
     }
 }
 
@@ -371,7 +371,7 @@ void WebClient::initCurlSettings()
     curl_version_info_data *vinfo = curl_version_info(CURLVERSION_NOW);
     if (!(vinfo->features & CURL_VERSION_SSL))
     {
-        OWL_THROW_EXCEPTION(OwlException("CURL SSL support is required but not enabled"));
+        OWL_THROW_EXCEPTION(Exception("CURL SSL support is required but not enabled"));
     }
 
     // set up our writer

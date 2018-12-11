@@ -123,7 +123,7 @@ QString Forum::getForumTypeString() const
 		break;
 
 		default:
-            OWL_THROW_EXCEPTION(OwlException("Unknown ForumType"));
+            OWL_THROW_EXCEPTION(Exception("Unknown ForumType"));
 	}
 	 
 	return retStr;
@@ -196,7 +196,7 @@ BoardItemPtr BoardItem::addChild(BoardItemPtr child, bool bThrow /*= true*/)
 	{
 		if (bThrow)
 		{
-            OWL_THROW_EXCEPTION(OwlException("Cannot add NULL BoardItem as child"));
+            OWL_THROW_EXCEPTION(Exception("Cannot add NULL BoardItem as child"));
 		}
 		else
 		{
@@ -208,7 +208,7 @@ BoardItemPtr BoardItem::addChild(BoardItemPtr child, bool bThrow /*= true*/)
 	{
 		if (bThrow)
 		{
-            OWL_THROW_EXCEPTION(OwlException("BoardItem already exists as a child"));
+            OWL_THROW_EXCEPTION(Exception("BoardItem already exists as a child"));
 		}
 		else
 		{
@@ -230,7 +230,7 @@ void BoardItem::removeChild(BoardItemPtr child, bool bThrow)
 	{
 		if (bThrow)
 		{
-            OWL_THROW_EXCEPTION(OwlException("Cannot remove NULL BoardItem child"));
+            OWL_THROW_EXCEPTION(Exception("Cannot remove NULL BoardItem child"));
 		}
 		else
 		{
@@ -242,7 +242,7 @@ void BoardItem::removeChild(BoardItemPtr child, bool bThrow)
 	{
 		if (bThrow)
 		{
-            OWL_THROW_EXCEPTION(OwlException("Cannot remove BoardItem that does not exists as a child"));
+            OWL_THROW_EXCEPTION(Exception("Cannot remove BoardItem that does not exists as a child"));
 		}
 		else
 		{

@@ -11,12 +11,12 @@ namespace owl
 class StringMap;
 using StringMapPtr = std::shared_ptr<StringMap>;
 
-class StringMapException : public OwlException
+class StringMapException : public Exception
 {
 
 public:
     virtual ~StringMapException() = default;
-    using OwlException::OwlException;
+    using Exception::Exception;
 };
 
 class StringMap

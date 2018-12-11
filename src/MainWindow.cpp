@@ -130,7 +130,7 @@ void MainWindow::onLoaded()
         break;
             
         default:
-            OWL_THROW_EXCEPTION(OwlException("Unknown PostsPane position"));
+            OWL_THROW_EXCEPTION(Exception("Unknown PostsPane position"));
     }
 
     postsWebView->resetView();
@@ -275,7 +275,7 @@ int MainWindow::initBoard(const BoardPtr& b)
             boardToolbar->addAction(boardAction);
         }
     }
-    catch (const owl::OwlException& ex)
+    catch (const owl::Exception& ex)
     {
         iRet++;
         _logger->warn("Failed to create parser of type '{}' for board '{}': {}",
@@ -670,7 +670,7 @@ void MainWindow::connectBoard(BoardPtr board)
 
     QObject::connect(board.get(),
         &Board::onRequestError,
-        [this](const OwlException& ex)
+        [this](const Exception& ex)
         {
             this->_errorReportDlg = new ErrorReportDlg(ex, this);
             this->_errorReportDlg->show();
@@ -2285,7 +2285,7 @@ void BoardMenu::createMenu()
     auto board = _board.lock();
     if (!board)
     {
-        OWL_THROW_EXCEPTION(OwlException("Board object is null"));
+        OWL_THROW_EXCEPTION(Exception("Board object is null"));
     }
 
     if (board->getStatus() == Board::ONLINE)
@@ -2402,7 +2402,7 @@ void BoardMenu::createMenu()
                 QObject::connect(pDlg, SIGNAL(boardSavedEvent(const BoardPtr, const StringMap&)), this, SIGNAL(boardInfoSaved(const BoardPtr, const StringMap&)));
                 pDlg->open();
             }
-            catch (const owl::OwlException& owlex)
+            catch (const owl::Exception& owlex)
             {
                 std::stringstream str;
                 str << "There was an error opening the settings dialog: " << owlex.message().toStdString();

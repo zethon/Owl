@@ -119,11 +119,11 @@ void ParserBase::loginSlot()
             params = w->future().result().value<StringMap>();
             Q_EMIT loginCompleted(params);
 		}
-		catch (const owl::OwlException& owe)
+		catch (const owl::Exception& owe)
 		{
             params.setOrAdd("success", (bool)false);
             params.setOrAdd("error", owe.message());
-            _logger->warn("loginSlot() owl::OwlException: {}", owe.message().toStdString());
+            _logger->warn("loginSlot() error: {}", owe.message().toStdString());
             Q_EMIT errorNotification(owe);
 		}
 		catch (...)
@@ -132,7 +132,7 @@ void ParserBase::loginSlot()
             params.setOrAdd("success", (bool)false);
             params.setOrAdd("error", errorMessage);
             _logger->warn("loginSlot() error: {}", errorMessage.toStdString());
-            Q_EMIT errorNotification(OwlException(errorMessage));
+            Q_EMIT errorNotification(Exception(errorMessage));
         }
 	}
 	else
@@ -140,7 +140,7 @@ void ParserBase::loginSlot()
         _logger->error("loginSlot() could not cast sender() to QFutureWatcher<StringMap>*");
         params.setOrAdd("success", (bool)false);
         params.setOrAdd("error", "There was an unknown login error");
-        Q_EMIT errorNotification(OwlException("There was an unknown error."));
+        Q_EMIT errorNotification(Exception("There was an unknown error."));
 	}	
 }
 
@@ -185,7 +185,7 @@ void ParserBase::logoutSlot()
 
 			Q_EMIT logoutCompleted();
 		}
-		catch (const owl::OwlException& owe)
+		catch (const owl::Exception& owe)
 		{
             Q_EMIT errorNotification(owe);
 		}
@@ -193,7 +193,7 @@ void ParserBase::logoutSlot()
 	else
 	{
         _logger->error("logoutSlot() could not cast sender() to QFutureWatcher<StringMap>*");
-        Q_EMIT errorNotification(OwlException("There was an unknown error."));
+        Q_EMIT errorNotification(Exception("There was an unknown error."));
 	}	
 }
 
@@ -229,7 +229,7 @@ void ParserBase::boardInfoSlot()
 
 			Q_EMIT boardwareInfoCompleted(params);
 		}
-		catch (const owl::OwlException& owe)
+		catch (const owl::Exception& owe)
 		{
             Q_EMIT errorNotification(owe);
 			return;
@@ -238,7 +238,7 @@ void ParserBase::boardInfoSlot()
 	else
 	{
         _logger->error("boardInfoSlot() could not cast sender() to QFutureWatcher<StringMap>*");
-        Q_EMIT errorNotification(OwlException("There was an unknown error."));
+        Q_EMIT errorNotification(Exception("There was an unknown error."));
 	}
 }
 
@@ -281,19 +281,19 @@ void ParserBase::getForumListSlot()
 
 			Q_EMIT forumListCompleted(list);
 		}
-		catch (const owl::OwlException& owe)
+		catch (const owl::Exception& owe)
 		{
             Q_EMIT errorNotification(owe);
 		}
 		catch (...)
 		{
-            Q_EMIT errorNotification(OwlException("There was an unknown error."));
+            Q_EMIT errorNotification(Exception("There was an unknown error."));
 		}
 	}
 	else
 	{
         _logger->error("getForumListSlot() could not cast sender() to QFutureWatcher<QVariant>*");
-        Q_EMIT errorNotification(OwlException("There was an unknown error."));
+        Q_EMIT errorNotification(Exception("There was an unknown error."));
 	}	
 }
 
@@ -336,19 +336,19 @@ void ParserBase::getUnreadForumsSlot()
 
 			Q_EMIT getUnreadForumsCompleted(list);
 		}
-		catch (const owl::OwlException& owe)
+		catch (const owl::Exception& owe)
 		{
             Q_EMIT errorNotification(owe);
 		}
 		catch (...)
 		{
-            Q_EMIT errorNotification(OwlException("There was an unknown error."));
+            Q_EMIT errorNotification(Exception("There was an unknown error."));
 		}
 	}
 	else
 	{
         _logger->error("getUnreadForumsSlot() could not cast sender() to QFutureWatcher<QVariant>*");
-        Q_EMIT errorNotification(OwlException("There was an unknown error."));
+        Q_EMIT errorNotification(Exception("There was an unknown error."));
 	}	
 }
     
@@ -398,21 +398,21 @@ void ParserBase::getThreadListSlot()
 
 			Q_EMIT getThreadsCompleted(forum);
 		}
-		catch (const owl::OwlException& owe)
+		catch (const owl::Exception& owe)
 		{
             Q_EMIT errorNotification(owe);
 			return;
 		}
 		catch (...)
 		{
-            Q_EMIT errorNotification(OwlException("There was an unknown error."));
+            Q_EMIT errorNotification(Exception("There was an unknown error."));
 			return;
 		}
 	}
 	else
 	{
         _logger->error("getThreadListSlot() could not cast sender() to QFutureWatcher<QVariant>*");
-        Q_EMIT errorNotification(OwlException("There was an unknown error."));
+        Q_EMIT errorNotification(Exception("There was an unknown error."));
 	}	
 }
 
@@ -440,13 +440,13 @@ void ParserBase::getPostsAsync(ThreadPtr t, PostListOptions listOption, int webO
 
             Q_EMIT getPostsCompleted(thread);
         }
-        catch (const owl::OwlException& owe)
+        catch (const owl::Exception& owe)
         {
             Q_EMIT errorNotification(owe);
         }
         catch (...)
         {
-            Q_EMIT errorNotification(OwlException("There was an unknown error."));
+            Q_EMIT errorNotification(Exception("There was an unknown error."));
         }
     });
 
@@ -487,19 +487,19 @@ void ParserBase::markForumReadSlot()
 
 			Q_EMIT markForumReadCompleted(forumPtr);
 		}
-		catch (const owl::OwlException& owe)
+		catch (const owl::Exception& owe)
 		{
             Q_EMIT errorNotification(owe);
 		}
 		catch (...)
 		{
-            Q_EMIT errorNotification(OwlException("There was an unknown error."));
+            Q_EMIT errorNotification(Exception("There was an unknown error."));
 		}
 	}
 	else
 	{
         _logger->error("markForumReadSlot() could not cast sender() to QFutureWatcher<QVariant>*");
-        Q_EMIT errorNotification(OwlException("There was an unknown error."));
+        Q_EMIT errorNotification(Exception("There was an unknown error."));
 	}	
 }
 
@@ -521,13 +521,13 @@ void ParserBase::submitNewThreadAsync(ThreadPtr threadInfo)
 
                 Q_EMIT submitNewThreadCompleted(thread);
             }
-            catch (const owl::OwlException& owe)
+            catch (const owl::Exception& owe)
             {
                 Q_EMIT errorNotification(owe);
             }
             catch (...)
             {
-                Q_EMIT errorNotification(OwlException("There was an unknown error."));
+                Q_EMIT errorNotification(Exception("There was an unknown error."));
             }
         });
 
@@ -558,13 +558,13 @@ void ParserBase::submitNewPostAsync(PostPtr postInfo)
 
 				Q_EMIT submitNewPostCompleted(post);
 			}
-			catch (const owl::OwlException& owe)
+			catch (const owl::Exception& owe)
 			{
                 Q_EMIT errorNotification(owe);
 			}
 			catch (...)
 			{
-                Q_EMIT errorNotification(OwlException("There was an unknown error."));
+                Q_EMIT errorNotification(Exception("There was an unknown error."));
 			}
 		});
 
@@ -780,7 +780,7 @@ void ParserBase::getEncryptionSettingsSlot()
 
 			Q_EMIT getEncryptionSettingsCompleted(params);
 		}
-		catch (const owl::OwlException& owe)
+		catch (const owl::Exception& owe)
 		{
             Q_EMIT errorNotification(owe);
 		}
@@ -788,7 +788,7 @@ void ParserBase::getEncryptionSettingsSlot()
 	else
 	{
         _logger->error("getEncryptionSettingsSlot() could not cast sender() to QFutureWatcher<StringMap>*");
-        Q_EMIT errorNotification(OwlException("There was an unknown error."));
+        Q_EMIT errorNotification(Exception("There was an unknown error."));
 	}	
 }
 

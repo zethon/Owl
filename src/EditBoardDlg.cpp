@@ -201,7 +201,7 @@ void EditBoardDlg::renderPluginSettings()
         encryptionKey->setText(bo->getText(Board::Options::ENCKEY));
         encryptionSeed->setText(bo->getText(Board::Options::ENCSEED));
     }
-    catch (const owl::OwlException&)
+    catch (const owl::Exception&)
     {
         bo->add(Board::Options::USE_ENCRYPTION, (bool)false);
         bo->add(Board::Options::ENCSEED, (QString)"");

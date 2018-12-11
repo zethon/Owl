@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
         window.show();
         retval = app.exec();
     }
-    catch (const OwlException& ex)
+    catch (const Exception& ex)
     {
         owl::rootLogger()->critical("There was an unrecoverable application error: {}", ex.message().toStdString());
 

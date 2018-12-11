@@ -331,7 +331,7 @@ QVariant LuaParserBase::doLogin(const LoginInfo& info)
 			.arg(lua_tostring(L, -1));
         _logger->error(strMsg.toStdString());
 
-        OWL_THROW_EXCEPTION(OwlException(strMsg));
+        OWL_THROW_EXCEPTION(Exception(strMsg));
 	}
 
 	StringMap params = tableToParams(2);
@@ -755,7 +755,7 @@ QVariant LuaParserBase::doSubmitNewThread(ThreadPtr threadInfo)
 			.arg(lua_tostring(L, -1));
         _logger->error(strMsg.toStdString());
 
-        OWL_THROW_EXCEPTION(OwlException(strMsg));
+        OWL_THROW_EXCEPTION(Exception(strMsg));
 	}
 
 	if (lua_isstring(L, -1))
@@ -803,7 +803,7 @@ QVariant LuaParserBase::doSubmitNewPost(PostPtr postInfo)
 			.arg(lua_tostring(L, -1));
         _logger->error(strMsg.toStdString());
 
-        OWL_THROW_EXCEPTION(OwlException(strMsg));
+        OWL_THROW_EXCEPTION(Exception(strMsg));
 	}
 
 	PostPtr retPost;

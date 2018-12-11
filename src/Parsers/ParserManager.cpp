@@ -34,7 +34,7 @@ void ParserManager::init(bool bLoadLuaParsers, QString luaParserFolder)
 {
 	if (_isInitialized)
 	{
-		OWL_THROW_EXCEPTION(owl::OwlException("ParserManager has already been initialized."));
+		OWL_THROW_EXCEPTION(owl::Exception("ParserManager has already been initialized."));
 	}
 
     _nativeParsers.insert(TAPATALK_NAME, ParserInfo(TAPATALK_NAME, TAPATALK_PRETTYNAME, Tapatalk4x::staticMetaObject));
@@ -75,7 +75,7 @@ owl::ParserBasePtr ParserManager::createParser(const QString& name, const QStrin
 		QString error = QString("CreateParser failed. Unknown parser type '%1'").arg(name);
         _logger->warn(error.toStdString());
 
-        OWL_THROW_EXCEPTION(OwlException(error));
+        OWL_THROW_EXCEPTION(Exception(error));
 	}
 
 	return ret;

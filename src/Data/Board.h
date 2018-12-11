@@ -166,7 +166,7 @@ Q_SIGNALS:
 	void onNewThread(BoardPtr, ThreadPtr);
 	void onNewPost(BoardPtr, PostPtr);
     void onMarkedForumRead(BoardPtr, ForumPtr);
-    void onRequestError(const OwlException&);
+    void onRequestError(const Exception&);
 
 public Q_SLOTS:
     void newThreadEvent(ThreadPtr thread);

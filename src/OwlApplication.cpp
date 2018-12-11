@@ -176,7 +176,7 @@ OwlApplication::~OwlApplication()
             _db.close();
         }
     }
-    catch (const OwlException& ex)
+    catch (const Exception& ex)
     {
         logger->error("Error destructing application object: {}", ex.message().toStdString());
     }
@@ -198,7 +198,7 @@ void OwlApplication::init()
     const auto retval = initSettings(_jsonConfig,_settingsFile, &_settingsLock);
     if (!retval.first)
     {
-        OWL_THROW_EXCEPTION(OwlException(retval.second));
+        OWL_THROW_EXCEPTION(Exception(retval.second));
     }
 
     // initialize the logger and write the "Starting Owl..." message to the log
@@ -209,7 +209,7 @@ void OwlApplication::init()
     if (!_db.isValid() || !_db.isOpen())
     {
         const QString msg = QString("Could not initialize database at %1").arg(_dbFileName);
-        OWL_THROW_EXCEPTION(owl::OwlException(msg));
+        OWL_THROW_EXCEPTION(owl::Exception(msg));
     }
 
     // load the native and Lua parsers

@@ -41,7 +41,7 @@ QSqlDatabase BoardManager::getDatabase(bool doOpen) const
         if (_databaseFilename.empty())
         {
             _logger->error("Could not get database instance because no database filename as been specified");
-            OWL_THROW_EXCEPTION(OwlException("No database filename has been specified"));
+            OWL_THROW_EXCEPTION(Exception("No database filename has been specified"));
         }
 
         _logger->trace("Creating database connection for thread {}", thread_address.toStdString());
@@ -52,7 +52,7 @@ QSqlDatabase BoardManager::getDatabase(bool doOpen) const
         if (doOpen && !db.open())
         {
             const std::string msg = fmt::format("Could not open database file '{}'", _databaseFilename);
-            OWL_THROW_EXCEPTION(OwlException(QString::fromStdString(msg)));
+            OWL_THROW_EXCEPTION(Exception(QString::fromStdString(msg)));
         }
     }
 
@@ -191,7 +191,7 @@ QSqlDatabase BoardManager::initializeDatabase(const QString& filename)
                     db.close();
                     QFile{ QString::fromStdString(_databaseFilename) }.remove();
 
-                    OWL_THROW_EXCEPTION(owl::OwlException(msg));
+                    OWL_THROW_EXCEPTION(owl::Exception(msg));
                 }
             }
         }
@@ -460,7 +460,7 @@ bool BoardManager::createBoard(BoardPtr board)
         _logger->error("createBoard() failed because '{}'", lastError);
 
         const QString qError = QString::fromStdString(fmt::format("Database error: {}", lastError));
-        OWL_THROW_EXCEPTION(OwlException(qError));
+        OWL_THROW_EXCEPTION(Exception(qError));
 	}
 
 	if (bRet)

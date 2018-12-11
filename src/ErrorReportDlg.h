@@ -25,8 +25,8 @@ public:
 
     virtual ~ErrorReportDlg() = default;
 
-    ErrorReportDlg(const OwlException& ex, QString strTitle);
-    ErrorReportDlg(const OwlException& ex, QWidget* parent);
+    ErrorReportDlg(const Exception& ex, QString strTitle);
+    ErrorReportDlg(const Exception& ex, QWidget* parent);
 
 protected Q_SLOTS:
 	void onOKClicked();
@@ -34,7 +34,7 @@ protected Q_SLOTS:
 
 private:
     ErrorReportDlg(
-        const OwlException& ex,
+        const Exception& ex,
         QString errorTitle,
         QString errorMessage,
         ErrorActionType actionType,
@@ -43,8 +43,8 @@ private:
 //    void displayException(LuaParserException* lex);
 //	void displayException(WebException* ex);
 
-    void init(const OwlException& ex);
-    void appendDetails(const OwlException& ex);
+    void init(const Exception& ex);
+    void appendDetails(const Exception& ex);
 
 	QString				_errorTitle;
 	QString				_errorDetailsHtml;

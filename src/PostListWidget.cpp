@@ -70,7 +70,7 @@ void PostListWebView::showPosts(const ThreadPtr thread)
     BoardPtr board = thread->getBoard().lock();
     if (!board)
     {
-        OWL_THROW_EXCEPTION(OwlException("Board object is null"));
+        OWL_THROW_EXCEPTION(Exception("Board object is null"));
     }
 
     _currentThread = thread;

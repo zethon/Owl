@@ -4,15 +4,15 @@
 namespace owl
 {
 
-ErrorReportDlg::ErrorReportDlg(const OwlException& ex, QWidget* parent)
+ErrorReportDlg::ErrorReportDlg(const Exception& ex, QWidget* parent)
     : ErrorReportDlg(ex, QString(), QString(), ErrorActionType::OK, parent)
 {}
 
-ErrorReportDlg::ErrorReportDlg(const OwlException& ex, QString strTitle)
+ErrorReportDlg::ErrorReportDlg(const Exception& ex, QString strTitle)
     : ErrorReportDlg(ex, strTitle, QString(), ErrorActionType::OK, nullptr)
 {}
 
-ErrorReportDlg::ErrorReportDlg(const OwlException& ex,
+ErrorReportDlg::ErrorReportDlg(const Exception& ex,
         QString errorTitle, 
         QString errorMessage,
         ErrorActionType actionType,
@@ -32,7 +32,7 @@ void ErrorReportDlg::onOKClicked()
     this->close();
 }
 
-void ErrorReportDlg::init(const OwlException& ex)
+void ErrorReportDlg::init(const Exception& ex)
 {
 	// set up the ui objects in the dialog
 	setupUi(this);
@@ -70,7 +70,7 @@ void ErrorReportDlg::init(const OwlException& ex)
 	errorTitle->setText(_errorTitle);
 }
 
-void ErrorReportDlg::appendDetails(const OwlException& ex)
+void ErrorReportDlg::appendDetails(const Exception& ex)
 {
     const QString header = QString(R"(<big><b>%1</b></big>)").arg(ex.message());
     _errorDetailsHtml.append(header);

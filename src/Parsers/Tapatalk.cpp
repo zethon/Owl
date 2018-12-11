@@ -106,7 +106,7 @@ QVariant Tapatalk4x::doLogin(const LoginInfo& info)
         XRVariant response2(data);
         if (!response2.canConvert(QVariant::Map))
         {
-            OWL_THROW_EXCEPTION(OwlException("Cannot convert 'login' response to QVariant::Map"));
+            OWL_THROW_EXCEPTION(Exception("Cannot convert 'login' response to QVariant::Map"));
         }
 
         auto loginMap = response2.toMap();
@@ -160,7 +160,7 @@ QVariant Tapatalk4x::doGetBoardwareInfo()
     XRVariant response(data);
     if (!response.canConvert(QVariant::Map))
 	{
-        OWL_THROW_EXCEPTION(OwlException("Cannot convert 'get_config' response to QVariant::Map"));
+        OWL_THROW_EXCEPTION(Exception("Cannot convert 'get_config' response to QVariant::Map"));
 	}
 
 	auto infoMap = response.toMap();
@@ -298,7 +298,7 @@ QVariant Tapatalk4x::doThreadList(ForumPtr forumInfo, int)
 
 	if (!responseData.canConvert(QVariant::Map))
 	{
-        OWL_THROW_EXCEPTION(OwlException("Cannot convert 'get_topic' response to QVariant::Map"));
+        OWL_THROW_EXCEPTION(Exception("Cannot convert 'get_topic' response to QVariant::Map"));
 	}
 
 	auto responseMap = responseData.toMap();
@@ -343,7 +343,7 @@ QVariant Tapatalk4x::doThreadList(ForumPtr forumInfo, int)
 
 	if (!responseData2.canConvert(QVariant::Map))
 	{
-        OWL_THROW_EXCEPTION(OwlException("Cannot convert 'get_topic' response to QVariant::Map"));
+        OWL_THROW_EXCEPTION(Exception("Cannot convert 'get_topic' response to QVariant::Map"));
 	}
 
 	auto responseMap2 = responseData2.toMap();
@@ -407,7 +407,7 @@ QVariant Tapatalk4x::doPostList(ThreadPtr threadInfo, int)
 
 	if (!responseData.canConvert(QVariant::Map))
 	{
-        OWL_THROW_EXCEPTION(OwlException("Cannot convert 'get_thread_by_unread' response to QVariant::Map"));
+        OWL_THROW_EXCEPTION(Exception("Cannot convert 'get_thread_by_unread' response to QVariant::Map"));
 	}
 
 	// convert the response map
@@ -505,7 +505,7 @@ QVariant Tapatalk4x::doPostList1(ThreadPtr threadInfo, int)
 
 	if (!responseData.canConvert(QVariant::Map))
 	{
-        OWL_THROW_EXCEPTION(OwlException("Cannot convert 'get_thread' response to QVariant::Map"));
+        OWL_THROW_EXCEPTION(Exception("Cannot convert 'get_thread' response to QVariant::Map"));
 	}
 
 	auto responseMap = responseData.toMap();
@@ -552,7 +552,7 @@ QVariant Tapatalk4x::doGetPostList(ThreadPtr t, PostListOptions listOption, int 
 	}
 	else if (listOption == PostListOptions::LAST_POST)
 	{
-		OWL_THROW_EXCEPTION(OwlException("Not implemented"));
+		OWL_THROW_EXCEPTION(Exception("Not implemented"));
 	}
 
 	return QVariant::fromValue(t);
@@ -580,7 +580,7 @@ QVariant Tapatalk4x::doSubmitNewThread(ThreadPtr threadInfo)
 
 	if (!response.canConvert(QVariant::Map))
 	{
-        OWL_THROW_EXCEPTION(OwlException("Cannot convert 'new_topic' response to QVariant::Map"));
+        OWL_THROW_EXCEPTION(Exception("Cannot convert 'new_topic' response to QVariant::Map"));
 	}
 
 	ThreadPtr ret;
@@ -635,7 +635,7 @@ QVariant Tapatalk4x::doSubmitNewPost(PostPtr postInfo)
 
 	if (!response.canConvert(QVariant::Map))
 	{
-        OWL_THROW_EXCEPTION(OwlException("Cannot convert 'reply_post' response to QVariant::Map"));
+        OWL_THROW_EXCEPTION(Exception("Cannot convert 'reply_post' response to QVariant::Map"));
 	}
 
 	PostPtr retPost;
@@ -655,12 +655,12 @@ QVariant Tapatalk4x::doSubmitNewPost(PostPtr postInfo)
 		{
             const auto errorText = responseMap["result_text"].toString();
             _logger->error("Tapatalk response had a blank or false result with error: '{}'", errorText.toStdString());
-            OWL_THROW_EXCEPTION(OwlException(errorText));
+            OWL_THROW_EXCEPTION(Exception(errorText));
 		}
 		else
 		{
             _logger->error("Tapatalk response had a blank or false result with no error text");
-            OWL_THROW_EXCEPTION(OwlException(tr("There was an unkonwn error submitting the post.")));
+            OWL_THROW_EXCEPTION(Exception(tr("There was an unkonwn error submitting the post.")));
 		}
 	}
 
@@ -689,7 +689,7 @@ QVariant Tapatalk4x::doMarkForumRead(ForumPtr forumInfo)
 
 	if (!response.canConvert(QVariant::Map))
 	{
-        OWL_THROW_EXCEPTION(OwlException("Cannot parse response for 'doMarkForumRead'"));
+        OWL_THROW_EXCEPTION(Exception("Cannot parse response for 'doMarkForumRead'"));
 	}
 
 	auto map = response.toMap();
@@ -702,7 +702,7 @@ QVariant Tapatalk4x::doMarkForumRead(ForumPtr forumInfo)
 			strError += QString(": %1").arg(map["result_text"].toString());
 		}
 
-        OWL_THROW_EXCEPTION(OwlException(strError));
+        OWL_THROW_EXCEPTION(Exception(strError));
 	}
 
 	return QVariant::fromValue(forumInfo);
@@ -724,7 +724,7 @@ QVariant Tapatalk4x::doGetUnreadForums()
 
 	if (!response.canConvert(QVariant::Map))
 	{
-        OWL_THROW_EXCEPTION(OwlException("Cannot convert response for 'get_unread_topic' to QVariant::Map"));
+        OWL_THROW_EXCEPTION(Exception("Cannot convert response for 'get_unread_topic' to QVariant::Map"));
 	}	
 
 	auto map = response.toMap();
@@ -732,7 +732,7 @@ QVariant Tapatalk4x::doGetUnreadForums()
 	{
 		if (!map["topics"].canConvert(QVariant::List))
 		{
-            OWL_THROW_EXCEPTION(OwlException("Cannot convert response for 'get_unread_topic.topics' to QVariant::List"));
+            OWL_THROW_EXCEPTION(Exception("Cannot convert response for 'get_unread_topic.topics' to QVariant::List"));
 		}
 
 		auto topicList = map["topics"].toList();
@@ -740,7 +740,7 @@ QVariant Tapatalk4x::doGetUnreadForums()
 		{
 			if (!topic.canConvert(QVariant::Map))
 			{
-                OWL_THROW_EXCEPTION(OwlException("Cannot convert response for 'get_unread_topic.topics.topic' to QVariant::Map"));
+                OWL_THROW_EXCEPTION(Exception("Cannot convert response for 'get_unread_topic.topics.topic' to QVariant::Map"));
 			}
 
 			auto topicMap = topic.toMap();
@@ -849,7 +849,7 @@ QString Tapatalk4x::getRequestXml(const QString& methodName, ParamList params)
 {
 	if (methodName.isEmpty())
 	{
-        OWL_THROW_EXCEPTION(OwlException("Invalid arugment, methodName cannot be empty"));
+        OWL_THROW_EXCEPTION(Exception("Invalid arugment, methodName cannot be empty"));
 	}
 
 	QString retXml;
@@ -910,7 +910,7 @@ QString Tapatalk4x::getRequestXml(const QString& methodName, ParamList params)
 			if (typeStr.isEmpty())
 			{
 				QString strError = QString("Unknown Tapatalk param type: '%1'").arg(param.type);
-                OWL_THROW_EXCEPTION(OwlException(strError));
+                OWL_THROW_EXCEPTION(Exception(strError));
 			}
 
 			writer.writeTextElement(typeStr, strValue);
@@ -1110,7 +1110,7 @@ void Tapatalk4x::loadConfig()
 
 		if (!response.canConvert(QVariant::Map))
 		{
-            OWL_THROW_EXCEPTION(OwlException("Cannot convert 'get_config' response to QVariant::Map"));
+            OWL_THROW_EXCEPTION(Exception("Cannot convert 'get_config' response to QVariant::Map"));
 		}
 
 		auto map = response.toMap();

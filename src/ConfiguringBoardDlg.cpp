@@ -436,7 +436,7 @@ owl::StringMap ConfiguringBoardDlg::createBoard(const QString& parserName, const
 
                 resultParams.add("success", true);
             }
-            catch (const OwlException& ex)
+            catch (const Exception& ex)
             {
                 resultParams.add("success", false);
                 resultParams.add("msg", ex.message());
@@ -657,7 +657,7 @@ void ConfiguringBoardDlg::onConfigurationError()
 		// in QtConcurrentRun
 		future.waitForFinished();
 	}
-    catch (const OwlException& ex)
+    catch (const Exception& ex)
 	{
 		StringMap results;
 		results.add("success", (bool)false); 
