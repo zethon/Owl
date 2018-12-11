@@ -678,7 +678,7 @@ QToolButton:hover
   <widget class="QDockWidget" name="boardsViewDockWidget">
    <property name="minimumSize">
     <size>
-     <width>250</width>
+     <width>8</width>
      <height>208</height>
     </size>
    </property>
@@ -819,9 +819,6 @@ background-color:green;
        <property name="showDropIndicator" stdset="0">
         <bool>false</bool>
        </property>
-       <attribute name="headerVisible">
-        <bool>false</bool>
-       </attribute>
       </widget>
      </item>
     </layout>

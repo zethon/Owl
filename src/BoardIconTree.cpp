@@ -11,11 +11,28 @@
 #include "Data/BoardManager.h"
 #include "BoardIconTree.h"
 
-#define ICONWIDTH       64
-#define ICONHEIGHT      64
+#define ICONWIDTH       256
+#define ICONHEIGHT      256
 
 namespace owl
 {
+
+static const char* itemStyleSheet = R"(
+QListView
+{
+    background: #444444;
+}
+
+QListView::item::selected
+{
+    background: #00FF00;
+}
+
+QListView::item::hover
+{
+    background: #FF00FF;
+}
+)";
 
 QIcon bufferToIcon(const char* buf)
 {
@@ -23,11 +40,11 @@ QIcon bufferToIcon(const char* buf)
     QImage image = QImage::fromData(QByteArray::fromBase64(buffer));
 
     // calculate the scaling factor based on wanting a 32x32 image
-    qreal iXScale = (qreal)ICONWIDTH / (qreal)image.width();
-    qreal iYScale = (qreal)ICONHEIGHT / (qreal)image.height();
+    qreal iXScale = static_cast<qreal>(ICONWIDTH) / static_cast<qreal>(image.width());
+    qreal iYScale = static_cast<qreal>(ICONHEIGHT) / static_cast<qreal>(image.height());
 
     // only scale the image if it's not the right size
-    if (iXScale != 1 || iYScale != 1)
+    if (iXScale > 1 || iXScale < 1 || iYScale > 1 || iYScale < 1)
     {
         QTransform transform;
         transform.scale(iXScale, iYScale);
@@ -38,7 +55,8 @@ QIcon bufferToIcon(const char* buf)
 }
 
 BoardIconTree::BoardIconTree(QWidget* parent /* = 0*/)
-    : _logger { owl::initializeLogger("BoardIconTree") }
+    : QWidget(parent),
+      _logger { owl::initializeLogger("BoardIconTree") }
 {
     _iconModel = new QStandardItemModel;
     _iconModel->setColumnCount(1);
@@ -56,7 +74,6 @@ BoardIconTree::BoardIconTree(QWidget* parent /* = 0*/)
         item->setTextAlignment(Qt::AlignCenter);
 
         _iconModel->insertRow(idx++, item);
-
     }
 
     _listView = new QListView(this);
@@ -66,6 +83,10 @@ BoardIconTree::BoardIconTree(QWidget* parent /* = 0*/)
     _listView->setUniformItemSizes(true);
     _listView->setWrapping(false);
     _listView->setAttribute(Qt::WA_MacShowFocusRect, false);
+    _listView->setMovement(QListView::Movement::Static);
+    _listView->setStyleSheet(QString::fromLatin1(itemStyleSheet));
+    _listView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    _listView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     _listView->setModel(_iconModel);
 
