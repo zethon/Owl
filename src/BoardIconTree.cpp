@@ -21,16 +21,23 @@ static const char* itemStyleSheet = R"(
 QListView
 {
     background: #444444;
+    border-style: none;
 }
 
 QListView::item::selected
 {
-    background: #00FF00;
+    border-color: #93C0A4;
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 5px;
 }
 
 QListView::item::hover
 {
-    background: #FF00FF;
+    border-color: #808080;
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 5px;
 }
 )";
 
@@ -54,6 +61,29 @@ QIcon bufferToIcon(const char* buf)
     return QIcon { QPixmap::fromImage(image) };
 }
 
+QIcon overlayIcons(const QIcon& baseImage, const QIcon& overlaidImg)
+{
+    return baseImage;
+}
+
+//********************************
+//* BoardIconViewDelegate
+//********************************
+
+void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    QStyledItemDelegate::paint(painter, option, index);
+}
+
+QSize BoardIconViewDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    return QStyledItemDelegate::sizeHint(option, index);
+}
+
+//********************************
+//* BoardIconTree
+//********************************
+
 BoardIconTree::BoardIconTree(QWidget* parent /* = 0*/)
     : QWidget(parent),
       _logger { owl::initializeLogger("BoardIconTree") }
@@ -73,6 +103,12 @@ BoardIconTree::BoardIconTree(QWidget* parent /* = 0*/)
         item->setToolTip(board->getName());
         item->setTextAlignment(Qt::AlignCenter);
 
+        QPixmap pixmap;
+        if (!pixmap.load(":/icons/error_32.png"))
+        {
+//            OWL_THROW_EXCEPTION(owl::Ow)
+        }
+
         _iconModel->insertRow(idx++, item);
     }
 
@@ -88,14 +124,22 @@ BoardIconTree::BoardIconTree(QWidget* parent /* = 0*/)
     _listView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     _listView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
+    _listView->setItemDelegate(new BoardIconViewDelegate);
     _listView->setModel(_iconModel);
 
     QVBoxLayout* layout = new QVBoxLayout;
 
     layout->addWidget(_listView);
 
+//    QPushButton* pb = new QPushButton(this);
+//    pb->setText("CLICK");
+//    QObject::connect(pb, &QPushButton::clicked,
+//        [this]()
+//        {
+
+//        });
+
     setLayout(layout);
 }
-
 
 } // namespace
