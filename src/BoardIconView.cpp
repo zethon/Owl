@@ -122,7 +122,7 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
     _iconModel = new QStandardItemModel;
     _iconModel->setColumnCount(1);
 
-    std::size_t idx = 0;
+    std::int32_t idx = 0;
     const auto boardlist = owl::BoardManager::instance()->getBoardList();
     for (const auto& board : boardlist)
     {
