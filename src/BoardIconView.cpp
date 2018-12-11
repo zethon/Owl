@@ -5,14 +5,16 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QDebug>
+#include <QPainter>
+#include <QPixmap>
 
 #include  <Utils/OwlLogger.h>
 
 #include "Data/BoardManager.h"
-#include "BoardIconTree.h"
+#include "BoardIconView.h"
 
-#define ICONWIDTH       256
-#define ICONHEIGHT      256
+#define ICONWIDTH       128
+#define ICONHEIGHT      128
 
 namespace owl
 {
@@ -61,9 +63,38 @@ QIcon bufferToIcon(const char* buf)
     return QIcon { QPixmap::fromImage(image) };
 }
 
-QIcon overlayIcons(const QIcon& baseImage, const QIcon& overlaidImg)
+QImage overlayImages(const QImage& baseImage, const QImage& overlaidImg)
 {
-    return baseImage;
+    // scale our final image to the larger icon size
+    QImage finalImage { baseImage };
+    qreal iXScale = static_cast<qreal>(ICONWIDTH) / static_cast<qreal>(finalImage.width());
+    qreal iYScale = static_cast<qreal>(ICONHEIGHT) / static_cast<qreal>(finalImage.height());
+    if (iXScale > 1 || iXScale < 1 || iYScale > 1 || iYScale < 1)
+    {
+        QTransform transform;
+        transform.scale(iXScale, iYScale);
+        finalImage = finalImage.transformed(transform, Qt::SmoothTransformation);
+    }
+
+//    // scale the image to be put on top
+    QImage scaledOverlayImg { overlaidImg };
+    iXScale = static_cast<qreal>(56) / static_cast<qreal>(scaledOverlayImg.width());
+    iYScale = static_cast<qreal>(56) / static_cast<qreal>(scaledOverlayImg.height());
+    if (iXScale > 1 || iXScale < 1 || iYScale > 1 || iYScale < 1)
+    {
+        QTransform transform;
+        transform.scale(iXScale, iYScale);
+        scaledOverlayImg = scaledOverlayImg.transformed(transform, Qt::SmoothTransformation);
+    }
+
+    qDebug() << "baseImageSize: " << finalImage.size().height() << "," << finalImage.size().width();
+    qDebug() << "overlaySize: " << scaledOverlayImg.size().height() << "," << scaledOverlayImg.size().width();
+
+    QPainter p(&finalImage);
+    p.setCompositionMode(QPainter::CompositionMode_Source);
+    p.drawImage(finalImage.width() - scaledOverlayImg.width() ,0,scaledOverlayImg);
+
+    return finalImage;
 }
 
 //********************************
@@ -81,12 +112,12 @@ QSize BoardIconViewDelegate::sizeHint(const QStyleOptionViewItem &option, const 
 }
 
 //********************************
-//* BoardIconTree
+//* BoardIconView
 //********************************
 
-BoardIconTree::BoardIconTree(QWidget* parent /* = 0*/)
+BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
     : QWidget(parent),
-      _logger { owl::initializeLogger("BoardIconTree") }
+      _logger { owl::initializeLogger("BoardIconView") }
 {
     _iconModel = new QStandardItemModel;
     _iconModel->setColumnCount(1);
@@ -98,16 +129,32 @@ BoardIconTree::BoardIconTree(QWidget* parent /* = 0*/)
         _logger->trace("Adding {} ({}) at index {}",
             board->getName().toStdString(), board->getUsername().toStdString(), idx);
 
-        const QIcon icon = bufferToIcon(board->getFavIcon().toLatin1());
-        QStandardItem* item = new QStandardItem(icon, QString{});
+        QByteArray buffer(board->getFavIcon().toLatin1());
+        const QImage originalImage = QImage::fromData(QByteArray::fromBase64(buffer));
+        const QImage overlayImage { ":/icons/error_32.png" };
+
+        QImage resultImg = overlayImages(originalImage, overlayImage);
+        const QIcon finalIcon { QPixmap::fromImage(resultImg) };
+
+
+//        QIcon icon = bufferToIcon(board->getFavIcon().toLatin1());
+
+//        const QIcon originalIcon { bufferToIcon(board->getFavIcon().toLatin1()) };
+//        const QIcon topIcon { QIcon{ QPixmap(":/icons/error_32.png") } };
+//        const QIcon finalIcon = overlayIcons(originalIcon, finalIcon);
+
+        QStandardItem* item = new QStandardItem(finalIcon, QString{});
         item->setToolTip(board->getName());
         item->setTextAlignment(Qt::AlignCenter);
 
-        QPixmap pixmap;
-        if (!pixmap.load(":/icons/error_32.png"))
-        {
-//            OWL_THROW_EXCEPTION(owl::Ow)
-        }
+//        QPixmap pixmap;
+//        if (!pixmap.load(":/icons/error_32.png"))
+//        {
+//            qDebug() << "OH SHIT!";
+//        }
+
+//        QPainter painter(&icon);
+//        p.setCompositionMode(QPainter::CompositionMode_Source);
 
         _iconModel->insertRow(idx++, item);
     }

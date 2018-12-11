@@ -26,14 +26,14 @@ public:
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 };
 
-class BoardIconTree : public QWidget
+class BoardIconView : public QWidget
 {
 
 Q_OBJECT
 
 public:
-    BoardIconTree(QWidget* parent = nullptr);
-    virtual ~BoardIconTree() = default;
+    BoardIconView(QWidget* parent = nullptr);
+    virtual ~BoardIconView() = default;
 
 private:
     QListView*              _listView;

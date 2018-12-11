@@ -678,7 +678,7 @@ QToolButton:hover
   <widget class="QDockWidget" name="boardsViewDockWidget">
    <property name="minimumSize">
     <size>
-     <width>84</width>
+     <width>48</width>
      <height>208</height>
     </size>
    </property>
@@ -720,6 +720,46 @@ QToolButton:hover
      <property name="topMargin">
       <number>1</number>
      </property>
+     <item>
+      <widget class="owl::BoardIconView" name="servicesTree2" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>60</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>512</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Helvetica</family>
+         <pointsize>11</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QTreeView
+{
+background-color:green;
+}</string>
+       </property>
+       <property name="showDropIndicator" stdset="0">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="owl::BoardTreeView" name="servicesTree">
        <property name="sizePolicy">
@@ -791,46 +831,6 @@ QToolButton:hover
        <attribute name="headerVisible">
         <bool>false</bool>
        </attribute>
-      </widget>
-     </item>
-     <item>
-      <widget class="owl::BoardIconTree" name="servicesTree2">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>60</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>512</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <family>Helvetica</family>
-         <pointsize>11</pointsize>
-         <weight>50</weight>
-         <italic>false</italic>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QTreeView
-{
-background-color:green;
-}</string>
-       </property>
-       <property name="showDropIndicator" stdset="0">
-        <bool>false</bool>
-       </property>
       </widget>
      </item>
     </layout>
@@ -1647,9 +1647,9 @@ QToolButton:hover
    <header>PostListWidget.h</header>
   </customwidget>
   <customwidget>
-   <class>owl::BoardIconTree</class>
-   <extends>QQuickWidget</extends>
-   <header>BoardIconTree.h</header>
+   <class>owl::BoardIconView</class>
+   <extends>QWidget</extends>
+   <header>BoardIconView.h</header>
   </customwidget>
  </customwidgets>
  <resources>
