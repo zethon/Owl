@@ -13,8 +13,11 @@
 #include "Data/BoardManager.h"
 #include "BoardIconView.h"
 
-#define ICONWIDTH       128
-#define ICONHEIGHT      128
+#define ICONSCALEWIDTH       128
+#define ICONSCALEHEIGHT      128
+
+#define LISTICONWIDTH         36
+#define LISTICONHEGHT         36
 
 namespace owl
 {
@@ -26,21 +29,21 @@ QListView
     border-style: none;
 }
 
-QListView::item::selected
+/*QListView::item::selected
 {
     border-color: #93C0A4;
     border-style: outset;
     border-width: 2px;
     border-radius: 5px;
-}
+}*/
 
-QListView::item::hover
+/*QListView::item::hover
 {
     border-color: #808080;
     border-style: outset;
     border-width: 2px;
     border-radius: 5px;
-}
+}*/
 )";
 
 QIcon bufferToIcon(const char* buf)
@@ -49,8 +52,8 @@ QIcon bufferToIcon(const char* buf)
     QImage image = QImage::fromData(QByteArray::fromBase64(buffer));
 
     // calculate the scaling factor based on wanting a 32x32 image
-    qreal iXScale = static_cast<qreal>(ICONWIDTH) / static_cast<qreal>(image.width());
-    qreal iYScale = static_cast<qreal>(ICONHEIGHT) / static_cast<qreal>(image.height());
+    qreal iXScale = static_cast<qreal>(ICONSCALEWIDTH) / static_cast<qreal>(image.width());
+    qreal iYScale = static_cast<qreal>(ICONSCALEHEIGHT) / static_cast<qreal>(image.height());
 
     // only scale the image if it's not the right size
     if (iXScale > 1 || iXScale < 1 || iYScale > 1 || iYScale < 1)
@@ -67,8 +70,8 @@ QImage overlayImages(const QImage& baseImage, const QImage& overlaidImg)
 {
     // scale our final image to the larger icon size
     QImage finalImage { baseImage };
-    qreal iXScale = static_cast<qreal>(ICONWIDTH) / static_cast<qreal>(finalImage.width());
-    qreal iYScale = static_cast<qreal>(ICONHEIGHT) / static_cast<qreal>(finalImage.height());
+    qreal iXScale = static_cast<qreal>(ICONSCALEWIDTH) / static_cast<qreal>(finalImage.width());
+    qreal iYScale = static_cast<qreal>(ICONSCALEHEIGHT) / static_cast<qreal>(finalImage.height());
     if (iXScale > 1 || iXScale < 1 || iYScale > 1 || iYScale < 1)
     {
         QTransform transform;
@@ -76,7 +79,7 @@ QImage overlayImages(const QImage& baseImage, const QImage& overlaidImg)
         finalImage = finalImage.transformed(transform, Qt::SmoothTransformation);
     }
 
-//    // scale the image to be put on top
+    // scale the image to be put on top
     QImage scaledOverlayImg { overlaidImg };
     iXScale = static_cast<qreal>(56) / static_cast<qreal>(scaledOverlayImg.width());
     iYScale = static_cast<qreal>(56) / static_cast<qreal>(scaledOverlayImg.height());
@@ -86,9 +89,6 @@ QImage overlayImages(const QImage& baseImage, const QImage& overlaidImg)
         transform.scale(iXScale, iYScale);
         scaledOverlayImg = scaledOverlayImg.transformed(transform, Qt::SmoothTransformation);
     }
-
-    qDebug() << "baseImageSize: " << finalImage.size().height() << "," << finalImage.size().width();
-    qDebug() << "overlaySize: " << scaledOverlayImg.size().height() << "," << scaledOverlayImg.size().width();
 
     QPainter p(&finalImage);
     p.setCompositionMode(QPainter::CompositionMode_Source);
@@ -103,12 +103,64 @@ QImage overlayImages(const QImage& baseImage, const QImage& overlaidImg)
 
 void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    QStyledItemDelegate::paint(painter, option, index);
+    QVariant decrole = index.data(Qt::DecorationRole);
+    if (decrole.type() != QVariant::Icon)
+    {
+        QStyledItemDelegate::paint(painter, option, index);
+        return;
+    }
+
+    const QIcon boardIcon { decrole.value<QIcon>() };
+    const QString boardText { index.data(Qt::DisplayRole).toString() };
+
+    qDebug() << "boardIcon  : " << boardIcon;
+    qDebug() << "boardText  : " << boardText;
+    qDebug() << "option.rect: " << option.rect;
+
+    painter->save();
+
+    QPixmap pixmap { boardIcon.pixmap(ICONSCALEWIDTH,ICONSCALEHEIGHT) };
+
+    [[maybe_unused]] QRect drawRect { option.rect };
+    painter->fillRect(drawRect, QColor(255,0,0));
+
+
+//    QVariant var = index.data(Qt::DecorationRole);
+//    QIcon icon = var.value<QIcon>();
+//    qDebug() << var;
+
+//    painter->save();
+
+//    QRect rect { option.rect };
+//    rect.moveBottom(rect.bottom() - 10);
+////    rect.moveRight(-10);
+//    painter->drawPixmap(rect,icon.pixmap(ICONSCALEWIDTH,ICONSCALEHEIGHT));
+
+
+//    auto border = option.rect;
+//    border.moveBottom(-10);
+
+//////    painter->save();
+//    painter->drawRect(border);
+
+//////    QImage image = index.data().value<QImage>();
+////    QPixmap pm = option.icon.pixmap(40,40);
+////    QImage image = pm.toImage();
+////    painter->drawImage(0,0,image);
+////    painter->restore();
+//////
+
+////    option.Middle
+
+    painter->restore();
+//    QStyledItemDelegate::paint(painter, option, index);
 }
 
 QSize BoardIconViewDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    return QStyledItemDelegate::sizeHint(option, index);
+    // padding between the icons
+    return QStyledItemDelegate::sizeHint(option, index)
+        + QSize{0, 10};
 }
 
 //********************************
@@ -134,8 +186,7 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
         const QImage overlayImage { ":/icons/error_32.png" };
 
         QImage resultImg = overlayImages(originalImage, overlayImage);
-        const QIcon finalIcon { QPixmap::fromImage(resultImg) };
-
+        QIcon finalIcon { QPixmap::fromImage(resultImg) };
 
 //        QIcon icon = bufferToIcon(board->getFavIcon().toLatin1());
 
@@ -143,7 +194,7 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
 //        const QIcon topIcon { QIcon{ QPixmap(":/icons/error_32.png") } };
 //        const QIcon finalIcon = overlayIcons(originalIcon, finalIcon);
 
-        QStandardItem* item = new QStandardItem(finalIcon, QString{});
+        QStandardItem* item = new QStandardItem(finalIcon, board->getName());
         item->setToolTip(board->getName());
         item->setTextAlignment(Qt::AlignCenter);
 
@@ -170,11 +221,14 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
     _listView->setStyleSheet(QString::fromLatin1(itemStyleSheet));
     _listView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     _listView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    _listView->setIconSize(QSize(LISTICONWIDTH,LISTICONHEGHT));
 
     _listView->setItemDelegate(new BoardIconViewDelegate);
     _listView->setModel(_iconModel);
 
     QVBoxLayout* layout = new QVBoxLayout;
+    layout->setSpacing(0);
+    layout->setMargin(0);
 
     layout->addWidget(_listView);
 
