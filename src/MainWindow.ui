@@ -678,7 +678,7 @@ QToolButton:hover
   <widget class="QDockWidget" name="boardsViewDockWidget">
    <property name="minimumSize">
     <size>
-     <width>48</width>
+     <width>16</width>
      <height>208</height>
     </size>
    </property>
@@ -730,7 +730,7 @@ QToolButton:hover
        </property>
        <property name="minimumSize">
         <size>
-         <width>60</width>
+         <width>16</width>
          <height>0</height>
         </size>
        </property>
@@ -770,7 +770,7 @@ background-color:green;
        </property>
        <property name="minimumSize">
         <size>
-         <width>60</width>
+         <width>16</width>
          <height>0</height>
         </size>
        </property>
