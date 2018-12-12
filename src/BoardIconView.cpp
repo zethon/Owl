@@ -113,26 +113,15 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
         QStyledItemDelegate::paint(painter, option, index);
         return;
     }
-\
+
     const QIcon boardIcon { decrole.value<QIcon>() };
-    const QString boardText { index.data(Qt::DisplayRole).toString() };
-
-
-    qDebug() << "boardIcon       : " << boardIcon;
-    qDebug() << "boardText       : " << boardText;
-    qDebug() << "option.rect     : " << option.rect;
-    qDebug() << "option.x        : " << option.rect.x();
-    qDebug() << "option.y        : " << option.rect.y();
-    qDebug() << "option.height   : " << option.rect.height();
-    qDebug() << "option.width    : " << option.rect.width();
-
-    if (option.state & QStyle::State_MouseOver) qDebug() << "MOUSE OVER";
-    if (option.state & QStyle::State_Selected) qDebug() << "SELECTED";
 
     painter->save();
 
+    // this is our entire area to work with
     QRect iconCellRect { option.rect };
 
+    // draw the board's icon
     QPixmap pixmap { boardIcon.pixmap(ICONDISPLAYWIDTH, ICONDISPLAYHEIGHT) };
     QRect iconRect = pixmap.rect();
     const std::int32_t hCenterAdjust = (option.rect.width() / 2) - (ICONDISPLAYWIDTH / 2);
@@ -144,89 +133,33 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 
     if (option.state & QStyle::State_Selected)
     {
-        // draw icon container border
-        painter->setPen(QColor("red"));
+        auto padding = (iconCellRect.height() - iconRect.height()) / 2;
+        padding += 4;
 
-        iconCellRect.adjust(0,1,-1,-10);
-        painter->drawRect(iconCellRect);
+        QRect selectRect { iconCellRect };
+        selectRect.moveRight(selectRect.left() + 1);
+        selectRect.adjust(0, padding, 0, -padding);
 
-//        painter->draw
+        QPen pen(QBrush(QColor("#A0A0A0")), 6);
+        painter->setPen(pen);
+        painter->setRenderHint(QPainter::Antialiasing, true);
+        painter->drawRoundRect(selectRect);
     }
-    else if (option.state & QStyle::State_MouseOver)
+
+    if (option.state & QStyle::State_MouseOver)
     {
-        // draw icon container border
         QPen pen(QBrush(QColor("lightgrey")), 3);
         painter->setPen(pen);
         painter->setRenderHint(QPainter::Antialiasing, true);
         painter->drawRoundRect(iconRect);
     }
 
-//    iconRect.adjust(17, 17, 0, 0);
-
-//    iconRect.setTopLeft(QPoint(option.rect.x(), option.rect.y()));
-//    auto rightSide = option.rect.x() + pixmap.rect().width();
-//    auto bottomSide = option.rect.y() + pixmap.rect().height();
-//    iconRect.setBottomRight(QPoint(rightSide, bottomSide));
-
-//    QRect iconRect = pixmap.rect();
-////    iconRect.adjust(15,15,-15,-15);
-//    iconRect.moveTop(option.rect.top());
-//    iconRect.adjust(0,0,0,-10);
-
-//    qDebug() << "iconRect: " << iconRect;
-
-//    painter->setPen(QColor("red"));
-//    painter->fillRect(iconRect, QColor("red"));
-
-//    QRect drawRect = pixmap.rect();
-
-//    QRect drawRect { option.rect };
-
-//    auto width = (drawRect.width() / 2) - ()
-
-//    drawRect.adjust(10,10,-10,-10);
-
-//    painter->fillRect(drawRect, QColor(255,0,0));
-//    painter->setPen(QColor("yellow"));
-//    painter->drawRect(drawRect);
-
-
-//    QVariant var = index.data(Qt::DecorationRole);
-//    QIcon icon = var.value<QIcon>();
-//    qDebug() << var;
-
-//    painter->save();
-
-//    QRect rect { option.rect };
-//    rect.moveBottom(rect.bottom() - 10);
-////    rect.moveRight(-10);
-//    painter->drawPixmap(rect,icon.pixmap(ICONSCALEWIDTH,ICONSCALEHEIGHT));
-
-
-//    auto border = option.rect;
-//    border.moveBottom(-10);
-
-//////    painter->save();
-//    painter->drawRect(border);
-
-//////    QImage image = index.data().value<QImage>();
-////    QPixmap pm = option.icon.pixmap(40,40);
-////    QImage image = pm.toImage();
-////    painter->drawImage(0,0,image);
-////    painter->restore();
-//////
-
-////    option.Middle
-
     painter->restore();
-//    QStyledItemDelegate::paint(painter, option, index);
 }
 
 QSize BoardIconViewDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    // padding between the icons
     return QStyledItemDelegate::sizeHint(option, index);
-//        + QSize{0, 10};
 }
 
 //********************************
