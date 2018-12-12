@@ -34,7 +34,6 @@ QListView
 {
     background: #181F26;
     border-style: none;
-        padding-left: 0px;
 }
 
 QListView::item::selected
@@ -194,6 +193,7 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
         const QImage overlayImage { ":/icons/error_32.png" };
 
         QImage resultImg = overlayImages(originalImage, QImage{});
+        if (idx % 2) resultImg = resultImg.convertToFormat(QImage::Format_Grayscale8);
         QIcon finalIcon { QPixmap::fromImage(resultImg) };
 
         QStandardItem* item = new QStandardItem(finalIcon, QString{});
