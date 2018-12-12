@@ -16,8 +16,11 @@
 #define ICONSCALEWIDTH       128
 #define ICONSCALEHEIGHT      128
 
-#define LISTICONWIDTH         96
-#define LISTICONHEGHT         96
+#define LISTICONWIDTH         70
+#define LISTICONHEIGHT        70
+
+#define ICONDISPLAYWIDTH      38
+#define ICONDISPLAYHEIGHT     38
 
 namespace owl
 {
@@ -25,7 +28,7 @@ namespace owl
 static const char* itemStyleSheet = R"(
 QListView
 {
-    background: #444444;
+    background: #181F26;
     border-style: none;
         padding-left: 0px;
 }
@@ -110,20 +113,82 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
         QStyledItemDelegate::paint(painter, option, index);
         return;
     }
-
+\
     const QIcon boardIcon { decrole.value<QIcon>() };
     const QString boardText { index.data(Qt::DisplayRole).toString() };
 
-    qDebug() << "boardIcon  : " << boardIcon;
-    qDebug() << "boardText  : " << boardText;
-    qDebug() << "option.rect: " << option.rect;
+
+    qDebug() << "boardIcon       : " << boardIcon;
+    qDebug() << "boardText       : " << boardText;
+    qDebug() << "option.rect     : " << option.rect;
+    qDebug() << "option.x        : " << option.rect.x();
+    qDebug() << "option.y        : " << option.rect.y();
+    qDebug() << "option.height   : " << option.rect.height();
+    qDebug() << "option.width    : " << option.rect.width();
+
+    if (option.state & QStyle::State_MouseOver) qDebug() << "MOUSE OVER";
+    if (option.state & QStyle::State_Selected) qDebug() << "SELECTED";
 
     painter->save();
 
-    QPixmap pixmap { boardIcon.pixmap(ICONSCALEWIDTH,ICONSCALEHEIGHT) };
+    QRect iconCellRect { option.rect };
 
-    [[maybe_unused]] QRect drawRect { option.rect };
-    painter->fillRect(drawRect, QColor(255,0,0));
+    QPixmap pixmap { boardIcon.pixmap(ICONDISPLAYWIDTH, ICONDISPLAYHEIGHT) };
+    QRect iconRect = pixmap.rect();
+    const std::int32_t hCenterAdjust = (option.rect.width() / 2) - (ICONDISPLAYWIDTH / 2);
+    const std::int32_t vCenterAdjust = (option.rect.height() / 2) - (ICONDISPLAYHEIGHT / 2);
+
+    iconRect.moveLeft(iconCellRect.left() + hCenterAdjust);
+    iconRect.moveTop(iconCellRect.top() + vCenterAdjust);
+    painter->drawPixmap(iconRect, pixmap);
+
+    if (option.state & QStyle::State_Selected)
+    {
+        // draw icon container border
+        painter->setPen(QColor("red"));
+
+        iconCellRect.adjust(0,1,-1,-10);
+        painter->drawRect(iconCellRect);
+
+//        painter->draw
+    }
+    else if (option.state & QStyle::State_MouseOver)
+    {
+        // draw icon container border
+        QPen pen(QBrush(QColor("lightgrey")), 3);
+        painter->setPen(pen);
+        painter->setRenderHint(QPainter::Antialiasing, true);
+        painter->drawRoundRect(iconRect);
+    }
+
+//    iconRect.adjust(17, 17, 0, 0);
+
+//    iconRect.setTopLeft(QPoint(option.rect.x(), option.rect.y()));
+//    auto rightSide = option.rect.x() + pixmap.rect().width();
+//    auto bottomSide = option.rect.y() + pixmap.rect().height();
+//    iconRect.setBottomRight(QPoint(rightSide, bottomSide));
+
+//    QRect iconRect = pixmap.rect();
+////    iconRect.adjust(15,15,-15,-15);
+//    iconRect.moveTop(option.rect.top());
+//    iconRect.adjust(0,0,0,-10);
+
+//    qDebug() << "iconRect: " << iconRect;
+
+//    painter->setPen(QColor("red"));
+//    painter->fillRect(iconRect, QColor("red"));
+
+//    QRect drawRect = pixmap.rect();
+
+//    QRect drawRect { option.rect };
+
+//    auto width = (drawRect.width() / 2) - ()
+
+//    drawRect.adjust(10,10,-10,-10);
+
+//    painter->fillRect(drawRect, QColor(255,0,0));
+//    painter->setPen(QColor("yellow"));
+//    painter->drawRect(drawRect);
 
 
 //    QVariant var = index.data(Qt::DecorationRole);
@@ -160,8 +225,8 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 QSize BoardIconViewDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     // padding between the icons
-    return QStyledItemDelegate::sizeHint(option, index)
-        + QSize{0, 10};
+    return QStyledItemDelegate::sizeHint(option, index);
+//        + QSize{0, 10};
 }
 
 //********************************
@@ -189,24 +254,9 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
         QImage resultImg = overlayImages(originalImage, overlayImage);
         QIcon finalIcon { QPixmap::fromImage(resultImg) };
 
-//        QIcon icon = bufferToIcon(board->getFavIcon().toLatin1());
-
-//        const QIcon originalIcon { bufferToIcon(board->getFavIcon().toLatin1()) };
-//        const QIcon topIcon { QIcon{ QPixmap(":/icons/error_32.png") } };
-//        const QIcon finalIcon = overlayIcons(originalIcon, finalIcon);
-
         QStandardItem* item = new QStandardItem(finalIcon, QString{});
         item->setToolTip(board->getName());
         item->setTextAlignment(Qt::AlignCenter);
-
-//        QPixmap pixmap;
-//        if (!pixmap.load(":/icons/error_32.png"))
-//        {
-//            qDebug() << "OH SHIT!";
-//        }
-
-//        QPainter painter(&icon);
-//        p.setCompositionMode(QPainter::CompositionMode_Source);
 
         _iconModel->insertRow(idx++, item);
     }
@@ -222,14 +272,19 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
     _listView->setStyleSheet(QString::fromLatin1(itemStyleSheet));
     _listView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     _listView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    _listView->setIconSize(QSize(LISTICONWIDTH,LISTICONHEGHT));
+
+    const std::int32_t width = LISTICONWIDTH;
+    const std::int32_t height = LISTICONHEIGHT;
+    _listView->setIconSize(QSize(width, height));
+
+//    _listView->setIconSize(QSize(LISTICONWIDTH,LISTICONHEIGHT));
 
     _listView->setItemDelegate(new BoardIconViewDelegate);
     _listView->setModel(_iconModel);
 
 
     QVBoxLayout* layout = new QVBoxLayout;
-    layout->setSpacing(0);
+    layout->setSpacing(100);
     layout->setMargin(0);
 
     layout->addWidget(_listView);
@@ -243,6 +298,8 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
 //        });
 
     setLayout(layout);
+
+    qDebug() << "SIZE: " << _listView->iconSize();
 }
 
 } // namespace
