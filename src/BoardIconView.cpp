@@ -17,7 +17,7 @@
 #define ICONSCALEHEIGHT      128
 
 #define LISTICONWIDTH         70
-#define LISTICONHEIGHT        70
+#define LISTICONHEIGHT        64
 
 #define ICONDISPLAYWIDTH      38
 #define ICONDISPLAYHEIGHT     38
@@ -25,6 +25,10 @@
 namespace owl
 {
 
+// TODO: The "hover" and "select" styles don't really work
+// right in `QStyledItemDelegate::paint()` unless the properties
+// are defined here, even though they're ignored. Investigate
+// this more to find out why
 static const char* itemStyleSheet = R"(
 QListView
 {
@@ -83,20 +87,23 @@ QImage overlayImages(const QImage& baseImage, const QImage& overlaidImg)
         finalImage = finalImage.transformed(transform, Qt::SmoothTransformation);
     }
 
-    // scale the image to be put on top
-    QImage scaledOverlayImg { overlaidImg };
-    iXScale = static_cast<qreal>(56) / static_cast<qreal>(scaledOverlayImg.width());
-    iYScale = static_cast<qreal>(56) / static_cast<qreal>(scaledOverlayImg.height());
-    if (iXScale > 1 || iXScale < 1 || iYScale > 1 || iYScale < 1)
+    if (!overlaidImg.isNull())
     {
-        QTransform transform;
-        transform.scale(iXScale, iYScale);
-        scaledOverlayImg = scaledOverlayImg.transformed(transform, Qt::SmoothTransformation);
-    }
+        // scale the image to be put on top
+        QImage scaledOverlayImg { overlaidImg };
+        iXScale = static_cast<qreal>(56) / static_cast<qreal>(scaledOverlayImg.width());
+        iYScale = static_cast<qreal>(56) / static_cast<qreal>(scaledOverlayImg.height());
+        if (iXScale > 1 || iXScale < 1 || iYScale > 1 || iYScale < 1)
+        {
+            QTransform transform;
+            transform.scale(iXScale, iYScale);
+            scaledOverlayImg = scaledOverlayImg.transformed(transform, Qt::SmoothTransformation);
+        }
 
-    QPainter p(&finalImage);
-    p.setCompositionMode(QPainter::CompositionMode_Source);
-    p.drawImage(finalImage.width() - scaledOverlayImg.width() ,0,scaledOverlayImg);
+        QPainter p(&finalImage);
+        p.setCompositionMode(QPainter::CompositionMode_Source);
+        p.drawImage(finalImage.width() - scaledOverlayImg.width() ,0,scaledOverlayImg);
+    }
 
     return finalImage;
 }
@@ -120,6 +127,8 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 
     // this is our entire area to work with
     QRect iconCellRect { option.rect };
+    iconCellRect.setWidth(LISTICONWIDTH);
+    iconCellRect.setHeight(LISTICONHEIGHT);
 
     // draw the board's icon
     QPixmap pixmap { boardIcon.pixmap(ICONDISPLAYWIDTH, ICONDISPLAYHEIGHT) };
@@ -184,7 +193,7 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
         const QImage originalImage = QImage::fromData(QByteArray::fromBase64(buffer));
         const QImage overlayImage { ":/icons/error_32.png" };
 
-        QImage resultImg = overlayImages(originalImage, overlayImage);
+        QImage resultImg = overlayImages(originalImage, QImage{});
         QIcon finalIcon { QPixmap::fromImage(resultImg) };
 
         QStandardItem* item = new QStandardItem(finalIcon, QString{});
@@ -212,12 +221,13 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
 
 //    _listView->setIconSize(QSize(LISTICONWIDTH,LISTICONHEIGHT));
 
+
     _listView->setItemDelegate(new BoardIconViewDelegate);
     _listView->setModel(_iconModel);
 
 
     QVBoxLayout* layout = new QVBoxLayout;
-    layout->setSpacing(100);
+    layout->setSpacing(0);
     layout->setMargin(0);
 
     layout->addWidget(_listView);
