@@ -74,7 +74,7 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
     
     loadBoards();
     servicesTree->setModel(_svcModel);
-    servicesTree->setVisible(false);
+//    servicesTree->setVisible(false);
 
     QTimer::singleShot(0, this, SLOT(onLoaded()));
 }

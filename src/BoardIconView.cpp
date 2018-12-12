@@ -120,24 +120,42 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
         return;
     }
 
-    const QIcon boardIcon { decrole.value<QIcon>() };
-
     painter->save();
 
-    // this is our entire area to work with
+    // get the board data
+    std::shared_ptr<Board> boardData;
+    if (QVariant boardVar = index.data(BOARDPTR_ROLE);
+        boardVar.canConvert<BoardWeakPtr>())
+    {
+        auto weakPtr = boardVar.value<BoardWeakPtr>();
+        boardData = weakPtr.lock();
+    }
+
+    // get a pixmap of the board's stored icon
+    const QIcon boardIcon { decrole.value<QIcon>() };
+    QPixmap pixmap { boardIcon.pixmap(ICONDISPLAYWIDTH, ICONDISPLAYHEIGHT) };
+
+    // this is our entire drawing area to work with
     QRect iconCellRect { option.rect };
     iconCellRect.setWidth(LISTICONWIDTH);
     iconCellRect.setHeight(LISTICONHEIGHT);
 
-    // draw the board's icon
-    QPixmap pixmap { boardIcon.pixmap(ICONDISPLAYWIDTH, ICONDISPLAYHEIGHT) };
+    // this it the `QRect` in which we will draw the board's icon
     QRect iconRect = pixmap.rect();
     const std::int32_t hCenterAdjust = (option.rect.width() / 2) - (ICONDISPLAYWIDTH / 2);
     const std::int32_t vCenterAdjust = (option.rect.height() / 2) - (ICONDISPLAYHEIGHT / 2);
-
     iconRect.moveLeft(iconCellRect.left() + hCenterAdjust);
     iconRect.moveTop(iconCellRect.top() + vCenterAdjust);
-    painter->drawPixmap(iconRect, pixmap);
+
+    if (boardData && boardData->getStatus() == owl::Board::OFFLINE)
+    {
+        QImage boardImg = pixmap.toImage().convertToFormat(QImage::Format_Grayscale8);
+        painter->drawImage(iconRect, boardImg);
+    }
+    else
+    {
+        painter->drawPixmap(iconRect, pixmap);
+    }
 
     if (option.state & QStyle::State_Selected)
     {
@@ -193,12 +211,14 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
         const QImage overlayImage { ":/icons/error_32.png" };
 
         QImage resultImg = overlayImages(originalImage, QImage{});
-        if (idx % 2) resultImg = resultImg.convertToFormat(QImage::Format_Grayscale8);
         QIcon finalIcon { QPixmap::fromImage(resultImg) };
 
         QStandardItem* item = new QStandardItem(finalIcon, QString{});
         item->setToolTip(board->getName());
         item->setTextAlignment(Qt::AlignCenter);
+
+        QVariant dataVar = QVariant::fromValue(std::weak_ptr<owl::Board>(board));
+        item->setData(dataVar, BOARDPTR_ROLE);
 
         _iconModel->insertRow(idx++, item);
     }
@@ -214,17 +234,14 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
     _listView->setStyleSheet(QString::fromLatin1(itemStyleSheet));
     _listView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     _listView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    _listView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     const std::int32_t width = LISTICONWIDTH;
     const std::int32_t height = LISTICONHEIGHT;
     _listView->setIconSize(QSize(width, height));
 
-//    _listView->setIconSize(QSize(LISTICONWIDTH,LISTICONHEIGHT));
-
-
     _listView->setItemDelegate(new BoardIconViewDelegate);
     _listView->setModel(_iconModel);
-
 
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setSpacing(0);
@@ -232,17 +249,7 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
 
     layout->addWidget(_listView);
 
-//    QPushButton* pb = new QPushButton(this);
-//    pb->setText("CLICK");
-//    QObject::connect(pb, &QPushButton::clicked,
-//        [this]()
-//        {
-
-//        });
-
     setLayout(layout);
-
-    qDebug() << "SIZE: " << _listView->iconSize();
 }
 
 } // namespace

@@ -5,6 +5,8 @@
 #include <QStyledItemDelegate>
 #include <QWidget>
 
+#define BOARDPTR_ROLE       Qt::UserRole+1
+
 class QListView;
 class QStandardItemModel;
 class QVBoxLayout;
