@@ -16,8 +16,8 @@
 #define ICONSCALEWIDTH       128
 #define ICONSCALEHEIGHT      128
 
-#define LISTICONWIDTH         36
-#define LISTICONHEGHT         36
+#define LISTICONWIDTH         96
+#define LISTICONHEGHT         96
 
 namespace owl
 {
@@ -27,23 +27,24 @@ QListView
 {
     background: #444444;
     border-style: none;
+        padding-left: 0px;
 }
 
-/*QListView::item::selected
+QListView::item::selected
 {
     border-color: #93C0A4;
     border-style: outset;
     border-width: 2px;
     border-radius: 5px;
-}*/
+}
 
-/*QListView::item::hover
+QListView::item::hover
 {
-    border-color: #808080;
+    border-color: #606060;
     border-style: outset;
-    border-width: 2px;
+    border-width: 3px;
     border-radius: 5px;
-}*/
+}
 )";
 
 QIcon bufferToIcon(const char* buf)
@@ -194,7 +195,7 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
 //        const QIcon topIcon { QIcon{ QPixmap(":/icons/error_32.png") } };
 //        const QIcon finalIcon = overlayIcons(originalIcon, finalIcon);
 
-        QStandardItem* item = new QStandardItem(finalIcon, board->getName());
+        QStandardItem* item = new QStandardItem(finalIcon, QString{});
         item->setToolTip(board->getName());
         item->setTextAlignment(Qt::AlignCenter);
 
@@ -225,6 +226,7 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
 
     _listView->setItemDelegate(new BoardIconViewDelegate);
     _listView->setModel(_iconModel);
+
 
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setSpacing(0);

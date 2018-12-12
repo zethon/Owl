@@ -678,7 +678,7 @@ QToolButton:hover
   <widget class="QDockWidget" name="boardsViewDockWidget">
    <property name="minimumSize">
     <size>
-     <width>16</width>
+     <width>40</width>
      <height>208</height>
     </size>
    </property>
@@ -717,8 +717,17 @@ QToolButton:hover
      <property name="spacing">
       <number>0</number>
      </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
      <property name="topMargin">
-      <number>1</number>
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
      </property>
      <item>
       <widget class="owl::BoardIconView" name="servicesTree2" native="true">
