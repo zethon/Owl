@@ -1825,6 +1825,22 @@ void MainWindow::createLinkMessages()
 
 void MainWindow::createBoardPanel()
 {
+    // NEW
+#ifdef Q_OS_MACX
+    servicesTree2->setAttribute(Qt::WA_MacShowFocusRect, 0);
+#endif
+
+    QObject::connect(servicesTree2, &BoardIconView::onCurrentBoardChanged,
+        [this](owl::BoardWeakPtr boardWeakPtr)
+        {
+            auto boardPtr = boardWeakPtr.lock();
+            if (!boardPtr) OWL_THROW_EXCEPTION(owl::Exception("Invalid board"));
+
+            this->threadListWidget2->loadBoard(boardPtr);
+        });
+
+
+    // OLD
 #ifdef Q_OS_MACX
     servicesTree->setAttribute(Qt::WA_MacShowFocusRect, 0);
     servicesTree2->setAttribute(Qt::WA_MacShowFocusRect, 0);

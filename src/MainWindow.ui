@@ -618,6 +618,25 @@ QToolButton:hover
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="owl::ForumView" name="threadListWidget2">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="acceptDrops">
+         <bool>false</bool>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QWidget
+{
+	background: red;
+}</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
    </layout>
@@ -678,7 +697,7 @@ QToolButton:hover
   <widget class="QDockWidget" name="boardsViewDockWidget">
    <property name="minimumSize">
     <size>
-     <width>70</width>
+     <width>76</width>
      <height>208</height>
     </size>
    </property>
@@ -1660,6 +1679,13 @@ QToolButton:hover
    <extends>QWidget</extends>
    <header>BoardIconView.h</header>
   </customwidget>
+
+  <customwidget>
+   <class>owl::ForumView</class>
+   <extends>QWidget</extends>
+   <header>ForumView.h</header>
+  </customwidget>
+
  </customwidgets>
  <resources>
   <include location="res/Owl.qrc"/>

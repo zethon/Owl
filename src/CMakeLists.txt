@@ -19,6 +19,7 @@ SET (SOURCE_FILES
     EditBoardDlg.cpp
     ErrorReportDlg.cpp
     FocusEventLineEdit.cpp
+    ForumView.cpp
     main.cpp
     MainWindow.cpp
     NewThreadDlg.cpp
@@ -42,6 +43,7 @@ SET (MOC_HEADERS
     EditBoardDlg.h
     ErrorReportDlg.h
     FocusEventLineEdit.h
+    ForumView.h
     MainWindow.h
     NewThreadDlg.h
     OwlApplication.h

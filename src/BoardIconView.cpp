@@ -12,6 +12,7 @@
 #include  <Utils/OwlLogger.h>
 
 #include "Data/BoardManager.h"
+#include "Utils/Exception.h"
 #include "BoardIconView.h"
 
 #define ICONSCALEWIDTH       128
@@ -190,6 +191,17 @@ QSize BoardIconViewDelegate::sizeHint(const QStyleOptionViewItem &option, const 
 }
 
 //********************************
+//* BoardIconListView
+//********************************
+
+void BoardIconListView::currentChanged(const QModelIndex& current, const QModelIndex& previous)
+{
+    // do we need to call the base method?
+    QListView::currentChanged(current, previous);
+    Q_EMIT onIndexChanged(current);
+}
+
+//********************************
 //* BoardIconView
 //********************************
 
@@ -224,7 +236,20 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
         _iconModel->insertRow(idx++, item);
     }
 
-    _listView = new QListView(this);
+    initListView();
+
+    QVBoxLayout* layout = new QVBoxLayout;
+    layout->setSpacing(0);
+    layout->setMargin(0);
+
+    layout->addWidget(_listView);
+
+    setLayout(layout);
+}
+
+void BoardIconView::initListView()
+{
+    _listView = new BoardIconListView(this);
     _listView->setViewMode(QListView::IconMode);
     _listView->setFlow(QListView::TopToBottom);
     _listView->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
@@ -238,9 +263,6 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
     _listView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     _listView->setContextMenuPolicy(Qt::CustomContextMenu);
 
-    QObject::connect(_listView, &QWidget::customContextMenuRequested,
-        [this](const QPoint &pos) { this->doContextMenu(pos); });
-
     const std::int32_t width = LISTICONWIDTH;
     const std::int32_t height = LISTICONHEIGHT;
     _listView->setIconSize(QSize(width, height));
@@ -248,13 +270,18 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
     _listView->setItemDelegate(new BoardIconViewDelegate);
     _listView->setModel(_iconModel);
 
-    QVBoxLayout* layout = new QVBoxLayout;
-    layout->setSpacing(0);
-    layout->setMargin(0);
+    QObject::connect(_listView, &QWidget::customContextMenuRequested,
+        [this](const QPoint &pos) { this->doContextMenu(pos); });
 
-    layout->addWidget(_listView);
-
-    setLayout(layout);
+    QObject::connect(_listView, &BoardIconListView::onIndexChanged,
+        [this](const QModelIndex& index)
+        {
+            QVariant boardVar = index.data(BOARDPTR_ROLE);
+            if (!boardVar.isNull() && boardVar.isValid())
+            {
+                Q_EMIT onCurrentBoardChanged(boardVar.value<BoardWeakPtr>());
+            }
+        });
 }
 
 void BoardIconView::doContextMenu(const QPoint &pos)
