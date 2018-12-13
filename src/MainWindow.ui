@@ -619,7 +619,7 @@ QToolButton:hover
        </widget>
       </item>
       <item>
-       <widget class="owl::ForumView" name="threadListWidget2">
+       <widget class="owl::ForumView" name="threadListWidget2" native="true">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
           <horstretch>0</horstretch>
@@ -632,7 +632,7 @@ QToolButton:hover
         <property name="styleSheet">
          <string notr="true">QWidget
 {
-	background: red;
+	background: yellow;
 }</string>
         </property>
        </widget>
@@ -778,10 +778,7 @@ QToolButton:hover
         </font>
        </property>
        <property name="styleSheet">
-        <string notr="true">QTreeView
-{
-background-color:green;
-}</string>
+        <string notr="true"/>
        </property>
        <property name="showDropIndicator" stdset="0">
         <bool>false</bool>
@@ -1679,13 +1676,11 @@ QToolButton:hover
    <extends>QWidget</extends>
    <header>BoardIconView.h</header>
   </customwidget>
-
   <customwidget>
    <class>owl::ForumView</class>
    <extends>QWidget</extends>
    <header>ForumView.h</header>
   </customwidget>
-
  </customwidgets>
  <resources>
   <include location="res/Owl.qrc"/>

@@ -3,6 +3,9 @@
 #include <memory>
 #include <QWidget>
 
+class QLabel;
+class QTreeView;
+
 namespace spdlog
 {
     class logger;
@@ -28,6 +31,8 @@ public:
     void loadBoard(const owl::BoardPtr);
 
 private:
+    QLabel*                 _tempLabel;
+    QTreeView*              _treeView;
 
     owl::SpdLogPtr          _logger;
 };
