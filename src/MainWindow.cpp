@@ -1839,6 +1839,42 @@ void MainWindow::createBoardPanel()
             this->threadListWidget2->loadBoard(boardPtr);
         });
 
+    QObject::connect(servicesTree2, &BoardIconView::onEditBoard,
+        [this](owl::BoardWeakPtr boardWeakPtr)
+        {
+            auto boardPtr = boardWeakPtr.lock();
+            if (!boardPtr) OWL_THROW_EXCEPTION(owl::Exception("Invalid board"));
+
+            EditBoardDlg* dlg = new EditBoardDlg(boardPtr, this);
+
+            QObject::connect(dlg, &QDialog::finished, [dlg](int) { dlg->deleteLater(); });
+            QObject::connect(dlg, &EditBoardDlg::boardSavedEvent,
+                [this](const BoardPtr b, const StringMap& oldvalues)
+            {
+                _logger->trace("onBoardInfoSaved({}:{})",
+                    b->getDBId(), b->getName().toStdString());
+
+                auto doc = b->getBoardItemDocument();
+                doc->setOrAddVar("%BOARDNAME%", b->getName());
+                doc->setOrAddVar("%BOARDUSERNAME%", b->getUsername());
+                doc->reloadHtml();
+
+                // search the toolbar (top of the client) and update the text
+                for (QAction* a : boardToolbar->actions())
+                {
+                    if (b == a->data().value<BoardWeakPtr>().lock())
+                    {
+                        a->setText(b->getName());
+                        a->setIconText(owl::getAbbreviatedName(b->getName()));
+                        QString toolTip = QString("%1@%2").arg(b->getUsername()).arg(b->getName());
+                        a->setToolTip(toolTip);
+                        break;
+                    }
+                }
+            });
+
+            dlg->open();
+        });
 
     // OLD
 #ifdef Q_OS_MACX
