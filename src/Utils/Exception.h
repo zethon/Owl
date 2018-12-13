@@ -33,21 +33,21 @@ void ThrowException(const E & ex, const char * function, const char* filename, i
 
 #define OWL_THROW_EXCEPTION(x)  ThrowException((x), BOOST_CURRENT_FUNCTION, __FILE__, __LINE__);
 
-class OwlException :
+class Exception :
         public boost::exception,
         public QException
 {
 public:
 
-    virtual ~OwlException() noexcept = default;
+    virtual ~Exception() noexcept = default;
 
-	OwlException() = default;
+    Exception() = default;
 
-    OwlException(const QString& msg)
+    Exception(const QString& msg)
         : _message(msg)
     {}
 
-	OwlException(const OwlException& other)
+    Exception(const Exception& other)
         : boost::exception(other),
           QException(other),
           _message(other._message)
@@ -128,16 +128,16 @@ private:
     QString     _message;
 };
 
-class NotImplementedException final : public OwlException
+class NotImplementedException final : public Exception
 {
 
 public:
     virtual ~NotImplementedException() = default;
 
-    using OwlException::OwlException;
+    using Exception::Exception;
 };
 
-class WebException : public OwlException
+class WebException : public Exception
 {
     
 public:
@@ -145,7 +145,7 @@ public:
     virtual ~WebException() = default;
 
     WebException(const QString& msg, const QString& lastUrl = QString(), int statusCode = -1)
-        : OwlException(msg),
+        : Exception(msg),
           _lastUrl(lastUrl), 
           _statusCode(statusCode)
     {}
@@ -167,7 +167,7 @@ public:
             ss << "Status Code: " << _statusCode << '\n';
         }
 
-        return QString::fromStdString(ss.str()) + OwlException::details();
+        return QString::fromStdString(ss.str()) + Exception::details();
     }
     
 private:
@@ -175,14 +175,14 @@ private:
     std::int32_t    _statusCode;
 };
 
-class LuaException : public OwlException
+class LuaException : public Exception
 {
 
 public:
     virtual ~LuaException() = default;
 
     LuaException(const QString& msg)
-        : OwlException(msg)
+        : Exception(msg)
     {
         // nothing to do
     }
@@ -195,4 +195,4 @@ private:
 
 } // namespace
 
-Q_DECLARE_METATYPE(owl::OwlException)
+Q_DECLARE_METATYPE(owl::Exception)

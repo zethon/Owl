@@ -105,8 +105,8 @@ void Board::setParser(ParserBasePtr parser)
 		QObject::connect(_parser.get(), SIGNAL(markForumReadCompleted(ForumPtr)),
 			this, SLOT(markForumReadEvent(ForumPtr)), Qt::DirectConnection);
 
-        QObject::connect(_parser.get(), SIGNAL(errorNotification(const OwlException&)),
-            this, SIGNAL(onRequestError(const OwlException&)), Qt::DirectConnection);
+        QObject::connect(_parser.get(), SIGNAL(errorNotification(const Exception&)),
+            this, SIGNAL(onRequestError(const Exception&)), Qt::DirectConnection);
 	}
 }
 
@@ -422,7 +422,7 @@ void Board::crawlRoot(bool bThrow /*= true*/)
 					dupList.push_back(forum->getId());
 				}
 			}
-			catch (const owl::OwlException& e)
+			catch (const owl::Exception& e)
 			{
 				if (bThrow)
 				{
@@ -436,7 +436,7 @@ void Board::crawlRoot(bool bThrow /*= true*/)
 		}
 
 	}
-	catch (const owl::OwlException& e)
+	catch (const owl::Exception& e)
 	{
 		_root.reset();
         _logger->error("Parsing exception while crawling '{}': {}",
@@ -481,7 +481,7 @@ ForumPtr Board::getRootStructure(bool bThrow /* = true */)
 					dupList.push_back(forum->getId());
 				}
 			}
-			catch (const owl::OwlException& e)
+			catch (const owl::Exception& e)
 			{
 				if (bThrow)
 				{
@@ -495,7 +495,7 @@ ForumPtr Board::getRootStructure(bool bThrow /* = true */)
 		}
         
 	}
-	catch (const owl::OwlException& e)
+	catch (const owl::Exception& e)
 	{
         _logger->error("Parsing exception while crawling '{}': {}",
             _url.toStdString(), e.message().toStdString());
@@ -519,7 +519,7 @@ void Board::updateUnread()
 		ForumList list = _parser->getUnreadForums();
         Q_EMIT onGetUnreadForums(shared_from_this(), list);
 	}
-	catch (const owl::OwlException& e)
+	catch (const owl::Exception& e)
 	{
         _logger->error("Exception '{}'", e.message().toStdString());
 	}

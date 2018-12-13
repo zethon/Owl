@@ -497,7 +497,7 @@ QVariant Xenforo::doGetPostList(ThreadPtr threadInfo, ParserBase::PostListOption
         }
         else if (listOption == PostListOptions::LAST_POST)
         {
-            OWL_THROW_EXCEPTION(OwlException("LAST_POST not implemented in XenForo parser"));
+            OWL_THROW_EXCEPTION(Exception("LAST_POST not implemented in XenForo parser"));
         }
     }
 
@@ -749,7 +749,7 @@ ForumList Xenforo::getRootForumPrivate()
     QSgml parseDoc;
     if (!parseDoc.parse(data))
     {
-        OWL_THROW_EXCEPTION(OwlException("bad parsing"));
+        OWL_THROW_EXCEPTION(Exception("bad parsing"));
     }
 
     const auto tags = parseDoc.getElementsByName("li", "class", QRegExp{"level_1"});
@@ -827,7 +827,7 @@ ForumList Xenforo::getForumsPrivate(const QString &id)
     QSgml parseDoc;
     if (!parseDoc.parse(data))
     {
-        OWL_THROW_EXCEPTION(OwlException("Could not parse response"));
+        OWL_THROW_EXCEPTION(Exception("Could not parse response"));
     }
 
     if (id.indexOf('#') != -1)
@@ -1023,7 +1023,7 @@ Forum::ForumType getForumType(const QString &strClass)
     else
     {
         const QString error = QString("Xenforo Parser: Unknown node class '%1'").arg(strClass);
-        OWL_THROW_EXCEPTION(OwlException(error));
+        OWL_THROW_EXCEPTION(Exception(error));
     }
 
     return retval;

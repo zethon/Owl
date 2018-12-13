@@ -117,7 +117,7 @@ QStandardItem* BoardsModel::addBoardItem(const BoardPtr& b, bool bThrowOnFail)
         {
             if (bThrowOnFail)
             {
-                OWL_THROW_EXCEPTION(OwlException(
+                OWL_THROW_EXCEPTION(Exception(
                     QString("Board '%1' with username '%2' already exists in model")
                         .arg(b->getName())
                         .arg(b->getUsername()))
@@ -161,7 +161,7 @@ QStandardItem* BoardsModel::addBoardItem(const BoardPtr& b, bool bThrowOnFail)
             lastItem->setSizeHint(QSize(lastItem->sizeHint().width(), 1));
             appendRow(lastItem);
         }
-        catch (const owl::OwlException& ex)
+        catch (const owl::Exception& ex)
         {   
             owl::rootLogger() ->error("Failed to create parser of type '{}' for board '{}': {}",
                 b->getProtocolName().toStdString(), b->getName().toStdString(), ex.message().toStdString());
@@ -232,7 +232,7 @@ void BoardsModel::addForums(BoardPtr board, ForumPtr forum)
         }
         else
         {
-            OWL_THROW_EXCEPTION(OwlException("Cannot find parent item."));
+            OWL_THROW_EXCEPTION(Exception("Cannot find parent item."));
         }
     }
 
@@ -298,7 +298,7 @@ QStandardItem* BoardsModel::updateForumItem(BoardPtr b, ForumPtr forum)
         }
         else
         {
-            OWL_THROW_EXCEPTION(OwlException("Cannot find parent item."));
+            OWL_THROW_EXCEPTION(Exception("Cannot find parent item."));
         }
     }
 
@@ -373,7 +373,7 @@ QStandardItem* BoardsModel::getBoardItem(BoardPtr board, bool bThrowOnFail /*= t
     }
     else if (bThrowOnFail)
     {
-        OWL_THROW_EXCEPTION(OwlException("Board's QStandardItem not found."));
+        OWL_THROW_EXCEPTION(Exception("Board's QStandardItem not found."));
     }
 
     return ret;

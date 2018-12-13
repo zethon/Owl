@@ -129,7 +129,7 @@ const QString sanitizeUrl(const QString& urlStr)
 	}
 	else
 	{
-        OWL_THROW_EXCEPTION(OwlException(QString("Invalid Url")));
+        OWL_THROW_EXCEPTION(Exception(QString("Invalid Url")));
 	}
 
 	if (retUrl.at(retUrl.length() - 1) == '/')

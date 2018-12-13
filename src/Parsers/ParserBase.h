@@ -48,7 +48,7 @@ public:
     {
         if (!other)
         {
-            OWL_THROW_EXCEPTION(OwlException("Cannot clone ParserBase"));
+            OWL_THROW_EXCEPTION(Exception("Cannot clone ParserBase"));
         }
 
         other->_name = _name;
@@ -164,7 +164,7 @@ Q_SIGNALS:
 	void submitNewPostCompleted(PostPtr post);
     void markForumReadCompleted(ForumPtr forum);
     void getEncryptionSettingsCompleted(StringMap settings);
-    void errorNotification(const OwlException& ex);
+    void errorNotification(const Exception& ex);
 
 private Q_SLOTS:
 	void loginSlot();

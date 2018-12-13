@@ -105,17 +105,17 @@ private:
     std::shared_ptr<spdlog::logger>     _logger;
 };
 
-class BoardManagerException : public OwlException
+class BoardManagerException : public Exception
 {
 public:
     BoardManagerException(const QString& msg, const QString& query)
-        : OwlException(msg),
+        : Exception(msg),
 		  _query(query)
 	{
 	}
 
     BoardManagerException(const QString& msg)
-        : OwlException(msg)
+        : Exception(msg)
 	{
 	}
 

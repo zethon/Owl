@@ -144,14 +144,14 @@ public:
 		}
         else if (b == nullptr)
 		{
-            OWL_THROW_EXCEPTION(OwlException("Cannot upcast board item, object is null"));
+            OWL_THROW_EXCEPTION(Exception("Cannot upcast board item, object is null"));
 		}
 
         NewTypePtrT t =  std::dynamic_pointer_cast<typename NewTypePtrT::element_type, BoardItem>(b);
 
         if (t == nullptr && throwOnFail)
 		{
-            OWL_THROW_EXCEPTION(OwlException("Cannot upcast board item, object is not the correct type"));
+            OWL_THROW_EXCEPTION(Exception("Cannot upcast board item, object is not the correct type"));
 		}
 
 		return t;
