@@ -81,8 +81,6 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
 
 void MainWindow::onLoaded()
 {
-    
-
     createBoardPanel();
     createThreadPanel();
     createPostPanel();
@@ -1828,11 +1826,11 @@ void MainWindow::createLinkMessages()
 void MainWindow::createBoardPanel()
 {
 #ifdef Q_OS_MACX
-    servicesTree->setAttribute(Qt::WA_MacShowFocusRect,0);
+    servicesTree->setAttribute(Qt::WA_MacShowFocusRect, 0);
+    servicesTree2->setAttribute(Qt::WA_MacShowFocusRect, 0);
 #endif
     
     servicesTree->collapseAll();
-
     servicesTree->setSelectionBehavior(QTreeView::SelectRows);
     servicesTree->setSortingEnabled(false);
     servicesTree->resizeColumnToContents(0);

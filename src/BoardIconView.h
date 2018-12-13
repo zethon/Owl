@@ -5,6 +5,8 @@
 #include <QStyledItemDelegate>
 #include <QWidget>
 
+#include "Data/Board.h"
+
 #define BOARDPTR_ROLE       Qt::UserRole+1
 
 class QListView;
@@ -37,10 +39,19 @@ public:
     BoardIconView(QWidget* parent = nullptr);
     virtual ~BoardIconView() = default;
 
+Q_SIGNALS:
+    void onConnectBoard(owl::BoardWeakPtr);
+    void onMarkBoardRead(owl::BoardWeakPtr);
+    void onEditBoard(owl::BoardWeakPtr);
+    void onCopyBoardAddress(owl::BoardWeakPtr);
+    void onOpenBoardInBrowser(owl::BoardWeakPtr);
+    void onDeleteBoard(owl::BoardWeakPtr);
+
 private:
+    void doContextMenu(const QPoint &pos);
+
     QListView*              _listView;
     QStandardItemModel*     _iconModel;
-
     owl::SpdLogPtr          _logger;
 };
 

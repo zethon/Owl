@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QPainter>
 #include <QPixmap>
+#include <QMenu>
 
 #include  <Utils/OwlLogger.h>
 
@@ -235,6 +236,10 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
     _listView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     _listView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     _listView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    _listView->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    QObject::connect(_listView, &QWidget::customContextMenuRequested,
+        [this](const QPoint &pos) { this->doContextMenu(pos); });
 
     const std::int32_t width = LISTICONWIDTH;
     const std::int32_t height = LISTICONHEIGHT;
@@ -250,6 +255,100 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
     layout->addWidget(_listView);
 
     setLayout(layout);
+}
+
+void BoardIconView::doContextMenu(const QPoint &pos)
+{
+    const auto index = _listView->indexAt(pos);
+    if (QVariant boardVar = index.data(BOARDPTR_ROLE);
+        boardVar.canConvert<BoardWeakPtr>())
+    {
+        BoardPtr boardPtr = boardVar.value<BoardWeakPtr>().lock();
+        QMenu* menu = new QMenu(this);
+
+        if (boardPtr->getStatus() == Board::OFFLINE)
+        {
+            QAction* action = menu->addAction(tr("Connect"));
+            action->setToolTip(tr("Connect"));
+            QObject::connect(action, &QAction::triggered,
+                [this, boardVar]()
+                {
+                    onConnectBoard(boardVar.value<BoardWeakPtr>());
+                });
+
+            menu->addSeparator();
+        }
+
+        if (boardPtr->getStatus() == Board::ONLINE)
+        {
+            QAction* action = menu->addAction(QIcon(":/icons/markforumread.png"), tr("Mark All Forums Read"));
+            action->setToolTip(tr("Mark All Forums Read"));
+#ifdef Q_OS_MACX
+            action->setIconVisibleInMenu(false);
+#endif
+
+            connect(action, &QAction::triggered,
+                [this, boardVar]()
+                {
+                    onMarkBoardRead(boardVar.value<BoardWeakPtr>());
+                });
+        }
+
+        menu->addSeparator();
+
+        {
+            QAction* action = menu->addAction(tr("Copy Board Address"));
+            action->setToolTip(tr("Copy Board Address"));
+            connect(action, &QAction::triggered,
+                [this, boardVar]()
+                {
+                    onCopyBoardAddress(boardVar.value<BoardWeakPtr>());
+                });
+        }
+
+        {
+            QAction* action = menu->addAction(QIcon(":/icons/link.png"), tr("Open in Browser"));
+            action->setToolTip(tr("Open in Browser"));
+#ifdef Q_OS_MACX
+            action->setIconVisibleInMenu(false);
+#endif
+
+            connect(action, &QAction::triggered,
+                [this, boardVar]()
+                {
+                    onOpenBoardInBrowser(boardVar.value<BoardWeakPtr>());
+                });
+        }
+
+        menu->addSeparator();
+
+        {
+            QAction* action = menu->addAction(QIcon(":/icons/settings.png"), tr("Settings"));
+#ifdef Q_OS_MACX
+            action->setIconVisibleInMenu(false);
+#endif
+
+            QObject::connect(action, &QAction::triggered,
+                [this, boardVar]()
+                {
+                    onEditBoard(boardVar.value<BoardWeakPtr>());
+                });
+        }
+
+        {
+            QAction* action = menu->addAction(QIcon(":/icons/delete.png"), tr("Delete"));
+            QObject::connect(action, &QAction::triggered,
+                [this, boardVar]()
+                {
+                    onDeleteBoard(boardVar.value<BoardWeakPtr>());
+                });
+        }
+
+//        menu->popup(this->mapToGlobal(pos));
+        menu->exec(this->mapToGlobal(pos));
+    }
+//    this->ind
+
 }
 
 } // namespace
