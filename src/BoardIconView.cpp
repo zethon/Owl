@@ -220,13 +220,10 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
             board->getName().toStdString(), board->getUsername().toStdString(), idx);
 
         QByteArray buffer(board->getFavIcon().toLatin1());
-        const QImage originalImage = QImage::fromData(QByteArray::fromBase64(buffer));
-        const QImage overlayImage { ":/icons/error_32.png" };
+        const QImage image = QImage::fromData(QByteArray::fromBase64(buffer));
+        const QIcon icon { QPixmap::fromImage(image) };
 
-        QImage resultImg = overlayImages(originalImage, QImage{});
-        QIcon finalIcon { QPixmap::fromImage(resultImg) };
-
-        QStandardItem* item = new QStandardItem(finalIcon, QString{});
+        QStandardItem* item = new QStandardItem(icon, QString{});
         item->setToolTip(board->getName());
         item->setTextAlignment(Qt::AlignCenter);
 
@@ -235,6 +232,8 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
 
         _iconModel->insertRow(idx++, item);
     }
+
+
 
     initListView();
 
