@@ -22,7 +22,7 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
 
     _treeView = new QTreeView(this);
 
-    _tempLabel = new QLabel("THIS IS A LABEL", this);
+    _tempLabel = new QLabel(this);
 
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setSpacing(0);

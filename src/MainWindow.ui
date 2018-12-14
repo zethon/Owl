@@ -19,11 +19,23 @@
   <property name="windowTitle">
    <string>Owl</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QMainWindow::separator
+{
+    width: 0px;
+}</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <property name="minimumSize">
     <size>
-     <width>250</width>
+     <width>220</width>
      <height>0</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>220</width>
+     <height>16777215</height>
     </size>
    </property>
    <layout class="QGridLayout" name="gridLayout">
@@ -613,6 +625,12 @@ QToolButton:hover
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>50</height>
+         </size>
+        </property>
         <property name="acceptDrops">
          <bool>false</bool>
         </property>
@@ -632,7 +650,12 @@ QToolButton:hover
         <property name="styleSheet">
          <string notr="true">QWidget
 {
-	background: yellow;
+	background: #594157;
+}
+
+QLabel
+{
+	color: &quot;lightgrey&quot;;
 }</string>
         </property>
        </widget>
@@ -697,13 +720,13 @@ QToolButton:hover
   <widget class="QDockWidget" name="boardsViewDockWidget">
    <property name="minimumSize">
     <size>
-     <width>76</width>
+     <width>70</width>
      <height>208</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>256</width>
+     <width>70</width>
      <height>524287</height>
     </size>
    </property>
@@ -720,7 +743,7 @@ QToolButton:hover
     <set>QDockWidget::NoDockWidgetFeatures</set>
    </property>
    <property name="allowedAreas">
-    <set>Qt::LeftDockWidgetArea</set>
+    <set>Qt::NoDockWidgetArea</set>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
