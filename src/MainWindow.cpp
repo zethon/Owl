@@ -73,6 +73,7 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
     boardsViewDockWidget->setTitleBarWidget(new QWidget(boardsViewDockWidget));
     
     loadBoards();
+
     servicesTree->setModel(_svcModel);
 //    servicesTree->setVisible(false);
 
@@ -1072,6 +1073,19 @@ void MainWindow::createDebugMenu()
     }
 
     debugMenu->addSeparator();
+
+    {
+        QAction* action = debugMenu->addAction("&Toggle Old Thread List Widgets");
+        QObject::connect(action, &QAction::triggered,
+            [this]()
+            {
+                currentForumFrame->setVisible(!currentForumFrame->isVisible());
+                threadNavFrame->setVisible(!threadNavFrame->isVisible());
+                threadListWidget->setVisible(!threadListWidget->isVisible());
+                line->setVisible(!line->isVisible());
+                line_3->setVisible(!line_3->isVisible());
+            });
+    }
 }
 
 void MainWindow::createMenus()
@@ -1442,7 +1456,7 @@ void MainWindow::createMenus()
         }
     }
 
-#ifdef _DEBUG
+#ifndef RELEASE
     // Debug Menu
     createDebugMenu();
 #endif

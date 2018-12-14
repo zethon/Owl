@@ -77,5 +77,6 @@
         <file>images/preferences/parsers.png</file>
         <file>images/preferences/advanced.png</file>
         <file>images/owl_64.png</file>
+        <file>icons/add-board-512.png</file>
     </qresource>
 </RCC>

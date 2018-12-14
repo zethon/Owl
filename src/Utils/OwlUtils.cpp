@@ -1,3 +1,5 @@
+#include <QDesktopServices>
+
 #include "Exception.h"
 
 #ifdef Q_OS_LINUX
@@ -28,7 +30,8 @@ void openFolder(const QString& pathIn)
     scriptArgs << QLatin1String("-e") << QLatin1String("tell application \"Finder\" to activate");
     QProcess::execute("/usr/bin/osascript", scriptArgs);
 #else
-    throw NotImplementedException("owl::openFolder() on Linux not yet supported");
+    QFileInfo info { pathIn };
+    QDesktopServices::openUrl(QUrl::fromLocalFile(info.isDir() ? pathIn : info.path()));
 #endif
 }
 

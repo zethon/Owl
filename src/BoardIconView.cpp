@@ -113,6 +113,7 @@ QImage overlayImages(const QImage& baseImage, const QImage& overlaidImg)
 
         QPainter p(&finalImage);
         p.setCompositionMode(QPainter::CompositionMode_Source);
+        p.setRenderHint(QPainter::Antialiasing, true);
         p.drawImage(finalImage.width() - scaledOverlayImg.width() ,0,scaledOverlayImg);
     }
 
@@ -161,37 +162,51 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
     iconRect.moveLeft(iconCellRect.left() + hCenterAdjust);
     iconRect.moveTop(iconCellRect.top() + vCenterAdjust);
 
-    if (boardData && boardData->getStatus() == owl::BoardStatus::ONLINE)
+    if (boardData)
     {
-        painter->drawPixmap(iconRect, pixmap);
-    }
-    else if (boardData && boardData->getStatus() == owl::BoardStatus::OFFLINE)
-    {
-        QImage boardImg = pixmap.toImage().convertToFormat(QImage::Format_Grayscale8);
-        painter->drawImage(iconRect, boardImg);
+        switch (boardData->getStatus())
+        {
+            case BoardStatus::ONLINE:
+            {
+                painter->drawPixmap(iconRect, pixmap);
+                break;
+            }
+            case BoardStatus::OFFLINE:
+            {
+                QImage boardImg = pixmap.toImage().convertToFormat(QImage::Format_Grayscale8);
+                painter->drawImage(iconRect, boardImg);
+                break;
+            }
+            case BoardStatus::ERROR:
+            {
+                QImage boardImg = pixmap.toImage().convertToFormat(QImage::Format_Grayscale8);
+                static const QImage errorImage { ":/icons/error_32.png" };
+
+                boardImg = overlayImages(boardImg, errorImage);
+                painter->drawImage(iconRect, boardImg);
+                break;
+            }
+        }
+
+        if (option.state & QStyle::State_Selected)
+        {
+            auto padding = (iconCellRect.height() - iconRect.height()) / 2;
+            padding += 4;
+
+            QRect selectRect { iconCellRect };
+            selectRect.moveRight(selectRect.left() + 1);
+            selectRect.adjust(0, padding, 0, -padding);
+
+            QPen pen(QBrush(QColor("#A0A0A0")), 6);
+            painter->setPen(pen);
+            painter->setRenderHint(QPainter::Antialiasing, true);
+            painter->drawRoundRect(selectRect);
+        }
     }
     else
     {
-        QImage boardImg = pixmap.toImage().convertToFormat(QImage::Format_Grayscale8);
-        static const QImage errorImage { ":/icons/error_32.png" };
-
-        boardImg = overlayImages(boardImg, errorImage);
-        painter->drawImage(iconRect, boardImg);
-    }
-
-    if (option.state & QStyle::State_Selected)
-    {
-        auto padding = (iconCellRect.height() - iconRect.height()) / 2;
-        padding += 4;
-
-        QRect selectRect { iconCellRect };
-        selectRect.moveRight(selectRect.left() + 1);
-        selectRect.adjust(0, padding, 0, -padding);
-
-        QPen pen(QBrush(QColor("#A0A0A0")), 6);
-        painter->setPen(pen);
-        painter->setRenderHint(QPainter::Antialiasing, true);
-        painter->drawRoundRect(selectRect);
+        // this should be the "+" button icon
+        painter->drawPixmap(iconRect, pixmap);
     }
 
     if (option.state & QStyle::State_MouseOver)
@@ -254,6 +269,10 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
 
         _iconModel->insertRow(idx++, item);
     }
+
+    QStandardItem* item = new QStandardItem;
+    item->setIcon(QIcon("://icons/add-board-512.png"));
+    _iconModel->insertRow(idx++, item);
 
     initListView();
 
