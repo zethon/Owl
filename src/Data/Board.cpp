@@ -20,7 +20,7 @@ Board::Board(const QString& url)
     : _url(url),
     _bEnabled(true),
     _bAutoLogin(false),
-    _status(Board::OFFLINE),
+    _status(BoardStatus::OFFLINE),
     _options(StringMapPtr(new StringMap())),
     _logger(owl::initializeLogger("Board"))
 {}
@@ -153,7 +153,7 @@ void Board::loginEvent(StringMap params)
 {
 	if (params.getBool("success"))
 	{
-		_status = Board::ONLINE;
+        _status = BoardStatus::ONLINE;
 	}
 
 	Q_EMIT onLogin(shared_from_this(), params);

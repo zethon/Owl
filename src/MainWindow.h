@@ -367,7 +367,7 @@ private:
     void createMenu();
 
     BoardWeakPtr			_board;
-    Board::BoardStatus      _lastStatus = Board::OFFLINE;
+    BoardStatus      _lastStatus = BoardStatus::OFFLINE;
 };
 
 } //namespace owl

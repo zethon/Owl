@@ -22,6 +22,13 @@ class BoardItemDoc;
 typedef std::shared_ptr<BoardItemDoc> BoardItemDocPtr;
 typedef QHash<QString, ForumPtr> ForumHash;
 
+enum class BoardStatus
+{
+    ERROR,
+    OFFLINE,
+    ONLINE,
+};
+
 class Board :
     public QObject,
 	public std::enable_shared_from_this<Board>
@@ -41,8 +48,6 @@ public:
 			static const char* const ENCSEED;
 			static const char* const ENCKEY;
 	};
-
-	typedef enum { OFFLINE, ONLINE } BoardStatus;
 
 	Board();
     Board(const QString& url);

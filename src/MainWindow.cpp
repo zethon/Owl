@@ -246,7 +246,7 @@ int MainWindow::initBoard(const BoardPtr& b)
 
             BoardMenu* boardMenu = new BoardMenu(BoardWeakPtr(b), this);
             QObject::connect(boardMenu, &BoardMenu::boardInfoSaved,
-                [this](BoardPtr b, StringMap oldvalues)
+                [this](BoardPtr b, StringMap)
                 {
                     _logger->trace("onBoardInfoSaved({}:{})",
                         b->getDBId(), b->getName().toStdString());
@@ -277,6 +277,9 @@ int MainWindow::initBoard(const BoardPtr& b)
     catch (const owl::Exception& ex)
     {
         iRet++;
+
+        b->setStatus(BoardStatus::ERROR);
+
         _logger->warn("Failed to create parser of type '{}' for board '{}': {}",
             b->getProtocolName().toStdString(), b->getName().toStdString(), ex.message().toStdString());
     }
@@ -382,7 +385,7 @@ void MainWindow::onBoardToolbarItemClicked(QAction* action)
         return;
     }
 
-    if (board->getStatus() == Board::OFFLINE)
+    if (board->getStatus() == BoardStatus::OFFLINE)
     {
         board->login();
     }
@@ -960,7 +963,7 @@ void MainWindow::onSvcTreeClicked(const QModelIndex& selected)
 
             if (board)
             {
-                if (board->getStatus() == Board::ONLINE &&
+                if (board->getStatus() == BoardStatus::ONLINE &&
                     forum->getForumType() != Forum::LINK)
                 {
                     startThreadLoading();
@@ -971,7 +974,7 @@ void MainWindow::onSvcTreeClicked(const QModelIndex& selected)
                     board->setLastForumId(forum->getId().toInt());
                 }
 
-                if (board->getStatus() == Board::OFFLINE)
+                if (board->getStatus() == BoardStatus::OFFLINE)
                 {
                     _logger->trace("{} offline", board->getName().toStdString());
                 }
@@ -988,7 +991,7 @@ void MainWindow::onTreeDoubleClicked(const QModelIndex& idx)
     {
         BoardPtr board = item->data().value<BoardWeakPtr>().lock();
 
-        if (board->getStatus() != Board::ONLINE)
+        if (board->getStatus() != BoardStatus::ONLINE)
         {
             board->login();
             
@@ -1005,7 +1008,7 @@ void MainWindow::onTreeDoubleClicked(const QModelIndex& idx)
 
         auto board = f->getBoard().lock();
 
-        if (board && board->getStatus() != Board::ONLINE)
+        if (board && board->getStatus() != BoardStatus::ONLINE)
         {
             board->login();
         }
@@ -2339,7 +2342,7 @@ void BoardMenu::createMenu()
         OWL_THROW_EXCEPTION(Exception("Board object is null"));
     }
 
-    if (board->getStatus() == Board::ONLINE)
+    if (board->getStatus() == BoardStatus::ONLINE)
     {
         QAction* refresh = addAction(QIcon(":/icons/refresh.png"), tr("Refresh"));
         refresh->setToolTip(tr("Refresh"));
@@ -2415,7 +2418,7 @@ void BoardMenu::createMenu()
 
     addSeparator();
 
-    if (board->getStatus() == Board::ONLINE)
+    if (board->getStatus() == BoardStatus::ONLINE)
     {
         QAction* action = addAction(QIcon(":/icons/markforumread.png"), tr("Mark All Forums Read"));
         action->setToolTip(tr("Mark All Forums Read"));

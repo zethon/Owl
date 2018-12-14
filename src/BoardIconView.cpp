@@ -75,12 +75,11 @@ QIcon bufferToIcon(const char* buf)
     return QIcon { QPixmap::fromImage(image) };
 }
 
-QImage overlayImages(const QImage& baseImage, const QImage& overlaidImg)
+QImage resizeImage(const QImage& original, const QSize& size)
 {
-    // scale our final image to the larger icon size
-    QImage finalImage { baseImage };
-    qreal iXScale = static_cast<qreal>(ICONSCALEWIDTH) / static_cast<qreal>(finalImage.width());
-    qreal iYScale = static_cast<qreal>(ICONSCALEHEIGHT) / static_cast<qreal>(finalImage.height());
+    QImage finalImage { original };
+    qreal iXScale = static_cast<qreal>(size.width()) / static_cast<qreal>(finalImage.width());
+    qreal iYScale = static_cast<qreal>(size.height()) / static_cast<qreal>(finalImage.height());
     if (iXScale > 1 || iXScale < 1 || iYScale > 1 || iYScale < 1)
     {
         QTransform transform;
@@ -88,12 +87,23 @@ QImage overlayImages(const QImage& baseImage, const QImage& overlaidImg)
         finalImage = finalImage.transformed(transform, Qt::SmoothTransformation);
     }
 
+    return finalImage;
+}
+
+QImage overlayImages(const QImage& baseImage, const QImage& overlaidImg)
+{
+    // scale our final image to the larger icon size
+    QImage finalImage = resizeImage(baseImage, QSize(ICONSCALEWIDTH, ICONSCALEHEIGHT));
+
     if (!overlaidImg.isNull())
     {
+        constexpr std::double_t widhtScaleFactor = ICONSCALEWIDTH * 0.4375;
+        constexpr std::double_t heightScaleFactor = ICONSCALEHEIGHT * 0.4375;
+
         // scale the image to be put on top
         QImage scaledOverlayImg { overlaidImg };
-        iXScale = static_cast<qreal>(56) / static_cast<qreal>(scaledOverlayImg.width());
-        iYScale = static_cast<qreal>(56) / static_cast<qreal>(scaledOverlayImg.height());
+        auto iXScale = static_cast<qreal>(widhtScaleFactor) / static_cast<qreal>(scaledOverlayImg.width());
+        auto iYScale = static_cast<qreal>(heightScaleFactor) / static_cast<qreal>(scaledOverlayImg.height());
         if (iXScale > 1 || iXScale < 1 || iYScale > 1 || iYScale < 1)
         {
             QTransform transform;
@@ -108,6 +118,8 @@ QImage overlayImages(const QImage& baseImage, const QImage& overlaidImg)
 
     return finalImage;
 }
+
+
 
 //********************************
 //* BoardIconViewDelegate
@@ -149,14 +161,22 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
     iconRect.moveLeft(iconCellRect.left() + hCenterAdjust);
     iconRect.moveTop(iconCellRect.top() + vCenterAdjust);
 
-    if (boardData && boardData->getStatus() == owl::Board::OFFLINE)
+    if (boardData && boardData->getStatus() == owl::BoardStatus::ONLINE)
+    {
+        painter->drawPixmap(iconRect, pixmap);
+    }
+    else if (boardData && boardData->getStatus() == owl::BoardStatus::OFFLINE)
     {
         QImage boardImg = pixmap.toImage().convertToFormat(QImage::Format_Grayscale8);
         painter->drawImage(iconRect, boardImg);
     }
     else
     {
-        painter->drawPixmap(iconRect, pixmap);
+        QImage boardImg = pixmap.toImage().convertToFormat(QImage::Format_Grayscale8);
+        static const QImage errorImage { ":/icons/error_32.png" };
+
+        boardImg = overlayImages(boardImg, errorImage);
+        painter->drawImage(iconRect, boardImg);
     }
 
     if (option.state & QStyle::State_Selected)
@@ -220,8 +240,10 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
             board->getName().toStdString(), board->getUsername().toStdString(), idx);
 
         QByteArray buffer(board->getFavIcon().toLatin1());
-        const QImage image = QImage::fromData(QByteArray::fromBase64(buffer));
-        const QIcon icon { QPixmap::fromImage(image) };
+
+        QImage image = QImage::fromData(QByteArray::fromBase64(buffer));
+        image = resizeImage(image, QSize(ICONSCALEWIDTH, ICONSCALEHEIGHT));
+        QIcon icon { QPixmap::fromImage(image) };
 
         QStandardItem* item = new QStandardItem(icon, QString{});
         item->setToolTip(board->getName());
@@ -232,8 +254,6 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
 
         _iconModel->insertRow(idx++, item);
     }
-
-
 
     initListView();
 
@@ -292,7 +312,7 @@ void BoardIconView::doContextMenu(const QPoint &pos)
         BoardPtr boardPtr = boardVar.value<BoardWeakPtr>().lock();
         QMenu* menu = new QMenu(this);
 
-        if (boardPtr->getStatus() == Board::OFFLINE)
+        if (boardPtr->getStatus() == BoardStatus::OFFLINE)
         {
             QAction* action = menu->addAction(tr("Connect"));
             action->setToolTip(tr("Connect"));
@@ -305,7 +325,7 @@ void BoardIconView::doContextMenu(const QPoint &pos)
             menu->addSeparator();
         }
 
-        if (boardPtr->getStatus() == Board::ONLINE)
+        if (boardPtr->getStatus() == BoardStatus::ONLINE)
         {
             QAction* action = menu->addAction(QIcon(":/icons/markforumread.png"), tr("Mark All Forums Read"));
             action->setToolTip(tr("Mark All Forums Read"));
