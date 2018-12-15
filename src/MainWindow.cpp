@@ -1847,7 +1847,7 @@ void MainWindow::createBoardPanel()
     servicesTree2->setAttribute(Qt::WA_MacShowFocusRect, 0);
 #endif
 
-    QObject::connect(servicesTree2, &BoardIconView::onCurrentBoardChanged,
+    QObject::connect(servicesTree2, &BoardIconView::onBoardClicked,
         [this](owl::BoardWeakPtr boardWeakPtr)
         {
             auto boardPtr = boardWeakPtr.lock();
@@ -1891,6 +1891,14 @@ void MainWindow::createBoardPanel()
             });
 
             dlg->open();
+        });
+
+    QObject::connect(servicesTree2, &BoardIconView::onAddNewBoard,
+        [this]()
+        {
+            QuickAddDlg* addDlg = new QuickAddDlg(this);
+            QObject::connect(addDlg, &QDialog::finished, [addDlg](int) { addDlg->deleteLater(); });
+            addDlg->open();
         });
 
     // OLD

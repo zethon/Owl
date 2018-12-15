@@ -8,7 +8,8 @@
 
 #include "Data/Board.h"
 
-#define BOARDPTR_ROLE       Qt::UserRole+1
+#define ICONTYPE_ROLE       Qt::UserRole+1
+#define BOARDPTR_ROLE       Qt::UserRole+2
 
 class QStandardItemModel;
 class QVBoxLayout;
@@ -22,6 +23,18 @@ namespace owl
 {
 
 using SpdLogPtr = std::shared_ptr<spdlog::logger>;
+
+enum class IconType
+{
+    ADDICON, BOARDICON
+};
+
+}
+
+Q_DECLARE_METATYPE(owl::IconType);
+
+namespace owl
+{
 
 class BoardIconViewDelegate : public QStyledItemDelegate
 {
@@ -45,7 +58,6 @@ protected:
     void currentChanged(const QModelIndex&, const QModelIndex&) override;
 };
 
-
 class BoardIconView : public QWidget
 {
 
@@ -56,7 +68,9 @@ public:
     virtual ~BoardIconView() = default;
 
 Q_SIGNALS:
-    void onCurrentBoardChanged(owl::BoardWeakPtr);
+    void onAddNewBoard();
+    void onBoardClicked(owl::BoardWeakPtr);
+    void onBoardDoubleClicked(owl::BoardWeakPtr);
     void onConnectBoard(owl::BoardWeakPtr);
     void onMarkBoardRead(owl::BoardWeakPtr);
     void onEditBoard(owl::BoardWeakPtr);
@@ -66,7 +80,6 @@ Q_SIGNALS:
 
 private:
     void doContextMenu(const QPoint &pos);
-
     void initListView();
 
     BoardIconListView*      _listView;
