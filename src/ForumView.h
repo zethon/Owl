@@ -16,8 +16,10 @@ namespace owl
 
 class Board;
 using BoardPtr = std::shared_ptr<Board>;
+using BoardWeakPtr = std::weak_ptr<Board>;
 
 using SpdLogPtr = std::shared_ptr<spdlog::logger>;
+
 
 class ForumView : public QWidget
 {
@@ -28,12 +30,12 @@ public:
     virtual ~ForumView() = default;
     ForumView(QWidget* parent = nullptr);
 
-    void loadBoard(const owl::BoardPtr);
+     void doBoardClicked(const owl::BoardWeakPtr);
 
 private:
     QLabel*                 _tempLabel;
     QTreeView*              _treeView;
-
+    owl::BoardWeakPtr       _currentBoard;
     owl::SpdLogPtr          _logger;
 };
 

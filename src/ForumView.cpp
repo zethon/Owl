@@ -21,6 +21,7 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
 {
 
     _treeView = new QTreeView(this);
+    _treeView->setAttribute(Qt::WA_MacShowFocusRect, false);
 
     _tempLabel = new QLabel(this);
 
@@ -34,11 +35,36 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     setLayout(layout);
 }
 
-void ForumView::loadBoard(const owl::BoardPtr board)
+void ForumView::doBoardClicked(const owl::BoardWeakPtr boardWeakPtr)
 {
+    // The user clicked on a board, so we have to:
+    // * if we are not connected, attempt to connect
+    // * if the forum-tree needs to be refershed, refresh it
+    // * if the forum-tree is not displayed, display it
+
+    owl::BoardPtr currentBoard = _currentBoard.lock();
+
+    {
+        owl::BoardPtr board = boardWeakPtr.lock();
+        if (board && currentBoard)
+        {
+            if (board != currentBoard)
+            {
+                _currentBoard = boardWeakPtr;
+            }
+        }
+        else if (!currentBoard && board)
+        {
+            _currentBoard = boardWeakPtr;
+            currentBoard = board;
+        }
+    }
+
+    Q_ASSERT(currentBoard);
+
     std::stringstream ss;
-    ss << board->getName().toStdString()
-       << ":" << board->getUsername().toStdString();
+    ss << currentBoard->getName().toStdString()
+       << ":" << currentBoard->getUsername().toStdString();
 
     _tempLabel->setText(QString::fromStdString(ss.str()));
 }

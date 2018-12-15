@@ -1076,6 +1076,7 @@ void MainWindow::createDebugMenu()
 
     {
         QAction* action = debugMenu->addAction("&Toggle Old Thread List Widgets");
+        action->setShortcut(QKeySequence("Ctrl+Shift+1"));
         QObject::connect(action, &QAction::triggered,
             [this]()
             {
@@ -1848,13 +1849,7 @@ void MainWindow::createBoardPanel()
 #endif
 
     QObject::connect(servicesTree2, &BoardIconView::onBoardClicked,
-        [this](owl::BoardWeakPtr boardWeakPtr)
-        {
-            auto boardPtr = boardWeakPtr.lock();
-            if (!boardPtr) OWL_THROW_EXCEPTION(owl::Exception("Invalid board"));
-
-            this->threadListWidget2->loadBoard(boardPtr);
-        });
+        [this](owl::BoardWeakPtr bwp) { threadListWidget2->doBoardClicked(bwp); });
 
     QObject::connect(servicesTree2, &BoardIconView::onEditBoard,
         [this](owl::BoardWeakPtr boardWeakPtr)
@@ -1866,7 +1861,7 @@ void MainWindow::createBoardPanel()
 
             QObject::connect(dlg, &QDialog::finished, [dlg](int) { dlg->deleteLater(); });
             QObject::connect(dlg, &EditBoardDlg::boardSavedEvent,
-                [this](const BoardPtr b, const StringMap& oldvalues)
+                [this](const BoardPtr b, const StringMap&)
             {
                 _logger->trace("onBoardInfoSaved({}:{})",
                     b->getDBId(), b->getName().toStdString());
