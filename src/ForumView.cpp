@@ -5,8 +5,9 @@
 #include  <Utils/OwlLogger.h>
 
 #include "Data/Board.h"
-#include "ForumView.h"
+#include "Data/ForumTreeModel.h"
 
+#include "ForumView.h"
 
 namespace owl
 {
@@ -22,6 +23,7 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
 
     _treeView = new QTreeView(this);
     _treeView->setAttribute(Qt::WA_MacShowFocusRect, false);
+
 
     _tempLabel = new QLabel(this);
 
@@ -61,6 +63,8 @@ void ForumView::doBoardClicked(const owl::BoardWeakPtr boardWeakPtr)
     }
 
     Q_ASSERT(currentBoard);
+
+    currentBoard->getRootStructure(false);
 
     std::stringstream ss;
     ss << currentBoard->getName().toStdString()

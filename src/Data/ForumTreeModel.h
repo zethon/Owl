@@ -22,7 +22,7 @@ public:
     explicit ForumTreeItem(ForumPtr data, ForumPtr parent = nullptr);
     ~ForumTreeItem() = default;
 
-    ItemList getChildren() { return _children; }
+    ItemList& getChildren() { return _children; }
 
 private:
     ItemList                _children;

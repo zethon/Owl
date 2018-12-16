@@ -35,6 +35,7 @@ public:
 private:
     QLabel*                 _tempLabel;
     QTreeView*              _treeView;
+
     owl::BoardWeakPtr       _currentBoard;
     owl::SpdLogPtr          _logger;
 };
