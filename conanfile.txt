@@ -23,7 +23,7 @@ lua/5.2.3@owl/stable
 libtidy/5.6@owl/stable
 
 [options]
-spdlog:fmt_external=True
+# spdlog:fmt_external=True
 boost:shared=False
 boost:without_test=False
 boost:without_filesystem=False
