@@ -12,12 +12,6 @@
 namespace owl
 {
 
-ForumTreeModel modelFromRoot(ForumPtr root)
-{
-    ForumTreeModel model;
-    return model;
-}
-
 //********************************
 //* ForumView
 //********************************
@@ -71,6 +65,11 @@ void ForumView::doBoardClicked(const owl::BoardWeakPtr boardWeakPtr)
     Q_ASSERT(currentBoard);
 
     ForumPtr root = currentBoard->getRootStructure(false);
+    ForumTreeModel* model = new ForumTreeModel{ root };
+
+    auto oldModel = _treeView->model();
+    _treeView->setModel(model);
+    if (oldModel) oldModel->deleteLater();
 
     std::stringstream ss;
     ss << currentBoard->getName().toStdString()

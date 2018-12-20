@@ -12,77 +12,47 @@ namespace owl
 using ForumPtr = std::shared_ptr<owl::Forum>;
 using ForumWeakPtr = std::weak_ptr<owl::Forum>;
 
-class ForumTreeItem
-{
-public:
-    using ItemPtr = std::shared_ptr<ForumTreeItem>;
-    using ItemUniquePtr = std::unique_ptr<ForumTreeItem>;
-    using ItemList = std::vector<ItemUniquePtr>;
-
-    explicit ForumTreeItem(ForumPtr data, ForumPtr parent = nullptr);
-    ~ForumTreeItem() = default;
-
-    ItemList& getChildren() { return _children; }
-
-private:
-    ItemList                _children;
-    ForumTreeItem*          _parent;
-
+//class ForumTreeItem
+//{
 //public:
-//    explicit TreeItem(const QList<QVariant> &data, TreeItem *parentItem = 0);
-//    ~TreeItem();
+//    using ItemPtr = std::shared_ptr<ForumTreeItem>;
+//    using ItemList = std::vector<ItemPtr>;
 
-//    void appendChild(TreeItem *child);
+//    explicit ForumTreeItem(ForumPtr data, ForumPtr parent = nullptr);
+//    ~ForumTreeItem() = default;
 
-//    TreeItem *child(int row);
-//    int childCount() const;
-//    int columnCount() const;
-//    QVariant data(int column) const;
-//    int row() const;
-//    TreeItem *parentItem();
+//    std::size_t childCount() const { return _children.size(); }
+//    ItemPtr child(std::size_t idx);
+
+//    ForumPtr forum() { return _forumPtr; }
+
 
 //private:
-//    QList<TreeItem*> m_childItems;
-//    QList<QVariant> m_itemData;
-//    TreeItem *m_parentItem;
-};
+//    ForumPtr                _forumPtr;
+
+//    ItemList                _children;
+//    ForumTreeItem*          _parent;
+//};
 
 class ForumTreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 
 public:
-    explicit ForumTreeModel(const QString &data, QObject *parent = 0);
+    explicit ForumTreeModel(const ForumPtr root, QObject *parent = nullptr);
     ~ForumTreeModel() = default;
 
 private:
-    std::shared_ptr<owl::Forum>     _rootForum;
-//    QVariant data(const QModelIndex &index, int role) const override;
-//    Qt::ItemFlags flags(const QModelIndex &index) const override;
-//    QVariant headerData(int section, Qt::Orientation orientation,
-//                        int role = Qt::DisplayRole) const override;
-//    QModelIndex index(int row, int column,
-//                      const QModelIndex &parent = QModelIndex()) const override;
-//    QModelIndex parent(const QModelIndex &index) const override;
-//    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-//    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
-//private:
-//    void setupModelData(const QStringList &lines, TreeItem *parent);
+    // Inherited via `QAbstractItemModel`
+    QModelIndex index(int row, int column, const QModelIndex & parent = QModelIndex()) const override;
+    QModelIndex parent(const QModelIndex & child) const override;
+    int rowCount(const QModelIndex & parent = QModelIndex()) const override;
+    int columnCount(const QModelIndex & parent = QModelIndex()) const override;
+    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
 
-
-// Inherited via QAbstractItemModel
-    virtual Q_INVOKABLE QModelIndex index(int row, int column, const QModelIndex & parent = QModelIndex()) const override;
-
-    virtual Q_INVOKABLE QModelIndex parent(const QModelIndex & child) const override;
-
-    virtual Q_INVOKABLE int rowCount(const QModelIndex & parent = QModelIndex()) const override;
-
-    virtual Q_INVOKABLE int columnCount(const QModelIndex & parent = QModelIndex()) const override;
-
-    virtual Q_INVOKABLE QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
-
-    //    TreeItem *rootItem;
+//    ForumTreeItem::ItemPtr root;
+    owl::ForumPtr   _root;
 };
 
 } // namespace

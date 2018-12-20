@@ -3,29 +3,108 @@
 namespace owl
 {
 
-Q_INVOKABLE QModelIndex ForumTreeModel::index(int row, int column, const QModelIndex & parent) const
+//ForumTreeItem::ItemPtr ForumTreeItem::child(std::size_t idx)
+//{
+//    if (idx >= _children.size())
+//    {
+//        return ForumTreeItem::ItemPtr{};
+//    }
+
+//    return _children.at(idx);
+//}
+
+
+ForumTreeModel::ForumTreeModel(const ForumPtr root, QObject *parent)
+    : QAbstractItemModel(parent),
+      _root(root)
+{}
+
+QModelIndex ForumTreeModel::index(int row, int column, const QModelIndex & parent) const
+{
+    if (!hasIndex(row, column, parent))
+    {
+        return QModelIndex();
+    }
+
+    owl::Forum* parentItem;
+    if (parent.isValid())
+    {
+        parentItem = static_cast<owl::Forum*>(parent.internalPointer());
+    }
+    else
+    {
+        parentItem = _root.get();
+    }
+
+    QModelIndex retval;
+
+    auto& children = parentItem->getForums();
+    if (row < children.size())
+    {
+        retval = createIndex(row, column, children.at(row).get());
+    }
+
+    return retval;
+}
+
+QModelIndex ForumTreeModel::parent(const QModelIndex & child) const
 {
     return Q_INVOKABLE QModelIndex();
 }
 
-Q_INVOKABLE QModelIndex ForumTreeModel::parent(const QModelIndex & child) const
+int ForumTreeModel::rowCount(const QModelIndex & parent) const
 {
-    return Q_INVOKABLE QModelIndex();
+    if (parent.column() > 0) return 0;
+
+    int count = 0;
+
+    owl::ForumPtr forum;
+
+    if (parent.isValid())
+    {
+        count = static_cast<owl::Forum*>(parent.internalPointer())->getChildren().size();
+    }
+    else
+    {
+        count = _root->getChildren().size();
+    }
+
+    return count;
 }
 
-Q_INVOKABLE int ForumTreeModel::rowCount(const QModelIndex & parent) const
+int ForumTreeModel::columnCount(const QModelIndex&  parent) const
 {
-    return Q_INVOKABLE int();
+    Q_UNUSED(parent);
+    return 3;
 }
 
-Q_INVOKABLE int ForumTreeModel::columnCount(const QModelIndex & parent) const
+QVariant ForumTreeModel::data(const QModelIndex & index, int role) const
 {
-    return Q_INVOKABLE int();
-}
+    if (!index.isValid()) return QVariant{};
 
-Q_INVOKABLE QVariant ForumTreeModel::data(const QModelIndex & index, int role) const
-{
-    return Q_INVOKABLE QVariant();
+    if (role != Qt::DisplayRole) return QVariant{};
+
+    owl::Forum* item = static_cast<owl::Forum*>(index.internalPointer());
+
+    QVariant data;
+
+    switch (index.column())
+    {
+        // icone
+        case 0:
+            data = QVariant{"ICON"};
+        break;
+
+        case 1:
+            data = QVariant::fromValue(item->getName());
+        break;
+
+        case 2:
+            data = QVariant{"Other"};
+        break;
+    }
+
+    return data;
 }
 
 } // namespace

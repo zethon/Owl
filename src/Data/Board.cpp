@@ -454,6 +454,8 @@ ForumPtr Board::getRootStructure(bool bThrow /* = true */)
     ForumIdList dupList;
     ForumPtr root = Forum::createRootForum();
 
+    if (!_parser) return root;
+
 	try
 	{
 		ForumList list = _parser->getForumList(root->getId());
