@@ -24,7 +24,7 @@ typedef QHash<QString, ForumPtr> ForumHash;
 
 enum class BoardStatus
 {
-    ERROR,
+    ERR,
     OFFLINE,
     ONLINE,
 };

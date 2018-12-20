@@ -20,7 +20,6 @@ using BoardWeakPtr = std::weak_ptr<Board>;
 
 using SpdLogPtr = std::shared_ptr<spdlog::logger>;
 
-
 class ForumView : public QWidget
 {
 

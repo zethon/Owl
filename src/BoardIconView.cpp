@@ -171,7 +171,7 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
                 painter->drawImage(iconRect, boardImg);
                 break;
             }
-            case BoardStatus::ERROR:
+            case BoardStatus::ERR:
             {
                 QImage boardImg = pixmap.toImage().convertToFormat(QImage::Format_Grayscale8);
                 static const QImage errorImage { ":/icons/error_32.png" };
