@@ -815,7 +815,7 @@ QToolButton:hover
        <property name="maximumSize">
         <size>
          <width>512</width>
-         <height>16777215</height>
+         <height>293</height>
         </size>
        </property>
        <property name="font">
@@ -912,6 +912,22 @@ QToolButton:hover
        <property name="topMargin">
         <number>1</number>
        </property>
+       <item>
+        <widget class="owl::ContentView" name="contentView" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="acceptDrops">
+          <bool>false</bool>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QFrame" name="currentThreadFrame">
          <property name="sizePolicy">
@@ -1485,7 +1501,7 @@ QToolButton:hover
          <property name="maximumSize">
           <size>
            <width>16777215</width>
-           <height>16777215</height>
+           <height>200</height>
           </size>
          </property>
          <property name="mouseTracking">
@@ -1693,6 +1709,11 @@ QToolButton:hover
    <class>owl::ForumView</class>
    <extends>QWidget</extends>
    <header>ForumView.h</header>
+  </customwidget>
+  <customwidget>
+   <class>owl::ContentView</class>
+   <extends>QWidget</extends>
+   <header>ContentView.h</header>
   </customwidget>
  </customwidgets>
  <resources>

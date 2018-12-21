@@ -16,6 +16,7 @@ SET (SOURCE_FILES
     BoardUpdateWorker.cpp
     ClickableLabel.cpp
     ConfiguringBoardDlg.cpp
+    ContentView.cpp
     EditBoardDlg.cpp
     ErrorReportDlg.cpp
     FocusEventLineEdit.cpp
@@ -40,6 +41,7 @@ SET (MOC_HEADERS
     BoardUpdateWorker.h
     ClickableLabel.h
     ConfiguringBoardDlg.h
+    ContentView.h
     EditBoardDlg.h
     ErrorReportDlg.h
     FocusEventLineEdit.h
