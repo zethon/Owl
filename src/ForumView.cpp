@@ -55,13 +55,11 @@ void ForumView::doBoardClicked(const owl::BoardWeakPtr boardWeakPtr)
             if (*board != *currentBoard)
             {
                 _currentBoard = boardWeakPtr;
-                currentBoard = board;
             }
         }
         else if (!currentBoard && board)
         {
             _currentBoard = boardWeakPtr;
-            currentBoard = board;
         }
     }
 
