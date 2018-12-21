@@ -189,7 +189,7 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 
             QRect selectRect { iconCellRect };
             selectRect.moveRight(selectRect.left() + 1);
-            selectRect.adjust(0, padding, 0, -padding);
+            selectRect.adjust(0, padding + 5, 0, -padding);
 
             QPen pen(QBrush(QColor("#A0A0A0")), 6);
             painter->setPen(pen);
@@ -209,7 +209,7 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 
     if (option.state & QStyle::State_MouseOver)
     {
-        QPen pen(QBrush(QColor("lightgrey")), 3);
+        QPen pen(QBrush(QColor("#A0A0A0")), 4);
         painter->setPen(pen);
         painter->setRenderHint(QPainter::Antialiasing, true);
         painter->drawRoundRect(iconRect);
