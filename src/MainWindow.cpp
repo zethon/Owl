@@ -1075,16 +1075,24 @@ void MainWindow::createDebugMenu()
     debugMenu->addSeparator();
 
     {
-        QAction* action = debugMenu->addAction("&Toggle Old Thread List Widgets");
+        QAction* action = debugMenu->addAction("&Toggle Old View");
         action->setShortcut(QKeySequence("Ctrl+Shift+1"));
         QObject::connect(action, &QAction::triggered,
             [this]()
             {
+                servicesTree->setVisible(!servicesTree->isVisible());
+
                 currentForumFrame->setVisible(!currentForumFrame->isVisible());
                 threadNavFrame->setVisible(!threadNavFrame->isVisible());
                 threadListWidget->setVisible(!threadListWidget->isVisible());
                 line->setVisible(!line->isVisible());
                 line_3->setVisible(!line_3->isVisible());
+
+                currentThreadFrame->setVisible(!currentThreadFrame->isVisible());
+                postsWebView->setVisible(!postsWebView->isVisible());
+                postNavFrame->setVisible(!postNavFrame->isVisible());
+                line_2->setVisible(!line_2->isVisible());
+                line_4->setVisible(!line_4->isVisible());
             });
     }
 }
