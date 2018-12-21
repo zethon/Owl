@@ -54,6 +54,18 @@ public:
 
     virtual ~Board() = default;
 
+    bool operator==(const Board& other)
+    {
+        return this->_serviceUrl == other._serviceUrl
+            && this->_username == other._username
+            && this->_protocolName == other._protocolName;
+    }
+
+    bool operator!=(const Board& other)
+    {
+        return !(*this == other);
+    }
+
     // METHODS
 	void login();
 

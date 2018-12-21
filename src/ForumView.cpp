@@ -44,15 +44,18 @@ void ForumView::doBoardClicked(const owl::BoardWeakPtr boardWeakPtr)
     // * if the forum-tree needs to be refershed, refresh it
     // * if the forum-tree is not displayed, display it
 
-    owl::BoardPtr currentBoard = _currentBoard.lock();
-
+    // We want to lock the pointer to the current board and the one
+    // we were just passed in and test for equality
     {
+        owl::BoardPtr currentBoard = _currentBoard.lock();
         owl::BoardPtr board = boardWeakPtr.lock();
+
         if (board && currentBoard)
         {
-            if (board != currentBoard)
+            if (*board != *currentBoard)
             {
                 _currentBoard = boardWeakPtr;
+                currentBoard = board;
             }
         }
         else if (!currentBoard && board)
@@ -62,6 +65,7 @@ void ForumView::doBoardClicked(const owl::BoardWeakPtr boardWeakPtr)
         }
     }
 
+    owl::BoardPtr currentBoard = _currentBoard.lock();
     Q_ASSERT(currentBoard);
 
     ForumPtr root = currentBoard->getRootStructure(false);
