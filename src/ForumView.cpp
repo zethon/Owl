@@ -9,6 +9,20 @@
 
 #include "ForumView.h"
 
+#if defined(Q_WS_WIN32)
+    #define BOARDNAMEFONT       21
+    #define USERNAMEFONT        21
+    #define TREEFONTSIZE        21
+#elif defined(Q_WS_MACX)
+    #define BOARDNAMEFONT       21
+    #define USERNAMEFONT        21
+    #define TREEFONTSIZE        21
+#else
+    #define BOARDNAMEFONT       16
+    #define USERNAMEFONT        12
+    #define TREEFONTSIZE        12
+#endif
+
 namespace owl
 {
 
@@ -30,11 +44,11 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     _treeView->setAttribute(Qt::WA_MacShowFocusRect, false);
     _treeView->setHeaderHidden(true);
     _treeView->setItemsExpandable(false);
-    _treeView->setFont(QFont(_treeView->font().family(), 16));
+    _treeView->setFont(QFont(_treeView->font().family(), TREEFONTSIZE));
 
     _boardLabel = new QLabel(this);
     QFont font;
-    font.setPointSize(21);
+    font.setPointSize(BOARDNAMEFONT);
     font.setBold(true);
     font.setWeight(75);
     _boardLabel->setFont(font);
@@ -43,7 +57,7 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     QHBoxLayout* userLayout = new QHBoxLayout(parent);
     _userLabel = new QLabel(this);
     _userLabel->setMaximumHeight(64);
-    font.setPointSize(14);
+    font.setPointSize(USERNAMEFONT);
     font.setBold(false);
     _userLabel->setFont(font);
     _userLabel->setStyleSheet("QLabel { color : lightgray; }");
