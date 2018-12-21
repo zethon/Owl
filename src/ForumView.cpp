@@ -27,6 +27,25 @@ namespace owl
 {
 
 //********************************
+//* ForumViewDelegate
+//********************************
+
+void ForumViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    painter->save();
+    painter->setPen(QPen(QColor(Qt::red)));
+    painter->drawRect(option.rect);
+    painter->restore();
+
+    QStyledItemDelegate::paint(painter, option, index);
+}
+
+QSize ForumViewDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    return QStyledItemDelegate::sizeHint(option, index);
+}
+
+//********************************
 //* ForumView
 //********************************
 
@@ -45,6 +64,7 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     _treeView->setHeaderHidden(true);
     _treeView->setItemsExpandable(false);
     _treeView->setFont(QFont(_treeView->font().family(), TREEFONTSIZE));
+    _treeView->setItemDelegate(new ForumViewDelegate(this));
 
     _boardLabel = new QLabel(this);
     QFont font;

@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <QWidget>
+#include  <QStyledItemDelegate>
 
 class QLabel;
 class QTreeView;
@@ -19,6 +20,16 @@ using BoardPtr = std::shared_ptr<Board>;
 using BoardWeakPtr = std::weak_ptr<Board>;
 
 using SpdLogPtr = std::shared_ptr<spdlog::logger>;
+
+class ForumViewDelegate : public QStyledItemDelegate
+{
+public:
+    using QStyledItemDelegate::QStyledItemDelegate;
+    ~ForumViewDelegate() = default;
+
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
+};
 
 class ForumView : public QWidget
 {
