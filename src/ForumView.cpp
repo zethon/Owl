@@ -20,18 +20,46 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     : QWidget(parent),
       _logger { owl::initializeLogger("ForumView") }
 {
+    // down below we set the `layout` margin to 5, which means that the
+    // parent's color gets drawn in that margin area, so we have to set
+    // the parent's color to match
+    parent->setStyleSheet("QWidget { background-color: #594157; }");
+    setStyleSheet("QWidget { background-color: #594157; border: none; }");
 
     _treeView = new QTreeView(this);
     _treeView->setAttribute(Qt::WA_MacShowFocusRect, false);
+    _treeView->setHeaderHidden(true);
+    _treeView->setItemsExpandable(false);
 
+    _boardLabel = new QLabel(this);
+    QFont font;
+    font.setPointSize(21);
+    font.setBold(true);
+    font.setWeight(75);
+    _boardLabel->setFont(font);
+    _boardLabel->setStyleSheet("QLabel { color : white; }");
 
-    _tempLabel = new QLabel(this);
+    QHBoxLayout* userLayout = new QHBoxLayout(parent);
+    _userLabel = new QLabel(this);
+    _userLabel->setMaximumHeight(64);
+    font.setPointSize(16);
+    font.setBold(false);
+    _userLabel->setFont(font);
+    _userLabel->setStyleSheet("QLabel { color : lightgray; }");
 
-    QVBoxLayout* layout = new QVBoxLayout;
-    layout->setSpacing(0);
-    layout->setMargin(0);
+    _userImgLabel = new QLabel(this);
+    _userImgLabel->setMaximumHeight(64);
+    _userImgLabel->setMaximumWidth(16);
 
-    layout->addWidget(_tempLabel);
+    userLayout->addWidget(_userImgLabel);
+    userLayout->addWidget(_userLabel);
+
+    QVBoxLayout* layout = new QVBoxLayout(this);
+    layout->setSpacing(5);
+    layout->setMargin(5);
+
+    layout->addWidget(_boardLabel);
+    layout->addLayout(userLayout);
     layout->addWidget(_treeView);
 
     setLayout(layout);
@@ -71,13 +99,24 @@ void ForumView::doBoardClicked(const owl::BoardWeakPtr boardWeakPtr)
 
     auto oldModel = _treeView->model();
     _treeView->setModel(model);
+    _treeView->expandAll();
+
+    _boardLabel->setText(currentBoard->getName());
+    _userLabel->setText(currentBoard->getUsername());
+    switch (currentBoard->getStatus())
+    {
+        case BoardStatus::ONLINE:
+            _userImgLabel->setPixmap(QPixmap(":/icons/online.png"));
+        break;
+        case BoardStatus::OFFLINE:
+            _userImgLabel->setPixmap(QPixmap(":/icons/offline.png"));
+        break;
+        case BoardStatus::ERR:
+            _userImgLabel->setPixmap(QPixmap(":/icons/error.png"));
+        break;
+    }
+
     if (oldModel) oldModel->deleteLater();
-
-    std::stringstream ss;
-    ss << currentBoard->getName().toStdString()
-       << ":" << currentBoard->getUsername().toStdString();
-
-    _tempLabel->setText(QString::fromStdString(ss.str()));
 }
 
 } // namespace

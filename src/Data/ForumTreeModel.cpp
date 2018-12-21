@@ -3,17 +3,6 @@
 namespace owl
 {
 
-//ForumTreeItem::ItemPtr ForumTreeItem::child(std::size_t idx)
-//{
-//    if (idx >= _children.size())
-//    {
-//        return ForumTreeItem::ItemPtr{};
-//    }
-
-//    return _children.at(idx);
-//}
-
-
 ForumTreeModel::ForumTreeModel(const ForumPtr root, QObject *parent)
     : QAbstractItemModel(parent),
       _root(root)
@@ -47,9 +36,17 @@ QModelIndex ForumTreeModel::index(int row, int column, const QModelIndex & paren
     return retval;
 }
 
-QModelIndex ForumTreeModel::parent(const QModelIndex & child) const
+QModelIndex ForumTreeModel::parent(const QModelIndex & index) const
 {
-    return Q_INVOKABLE QModelIndex();
+    if (!index.isValid()) return QModelIndex();
+
+    owl::Forum* childItem = static_cast<owl::Forum*>(index.internalPointer());
+    owl::Forum* parentItem = static_cast<owl::Forum*>(childItem->getParent().get());
+
+    if (parentItem == _root.get()) return QModelIndex();
+
+    const int idx = static_cast<int>(parentItem->indexOf());
+    return createIndex(idx, 0, parentItem);
 }
 
 int ForumTreeModel::rowCount(const QModelIndex & parent) const

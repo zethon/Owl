@@ -75,11 +75,7 @@
 {
 	background: #594157;
 }
-
-QLabel
-{
-	color: &quot;lightgrey&quot;;
-}</string>
+</string>
         </property>
        </widget>
       </item>

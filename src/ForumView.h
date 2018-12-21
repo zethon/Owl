@@ -32,7 +32,9 @@ public:
      void doBoardClicked(const owl::BoardWeakPtr);
 
 private:
-    QLabel*                 _tempLabel;
+    QLabel*                 _boardLabel;
+    QLabel*                 _userLabel;
+    QLabel*                 _userImgLabel;
     QTreeView*              _treeView;
 
     owl::BoardWeakPtr       _currentBoard;
