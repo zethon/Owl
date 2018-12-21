@@ -56,9 +56,7 @@ public:
 
     bool operator==(const Board& other)
     {
-        return this->_serviceUrl == other._serviceUrl
-            && this->_username == other._username
-            && this->_protocolName == other._protocolName;
+        return hash() == other.hash();
     }
 
     bool operator!=(const Board& other)
@@ -172,6 +170,8 @@ public:
 
     ParserBasePtr cloneParser() const { return getParser()->clone(); }
 
+    std::size_t hash() const;
+
 Q_SIGNALS:
 	void onBoardwareInfo(BoardPtr, StringMap);
 	void onLogin(BoardPtr, StringMap);
@@ -276,6 +276,19 @@ typedef QList<owl::BoardPtr> BoardList;
 QString getAbbreviatedName(const QString& name);
 
 } // namespace owl
+
+namespace std
+{
+
+template <>
+struct hash<owl::Board>
+{
+    typedef std::size_t             result_type;
+    typedef const owl::Board & argument_type;
+    std::size_t operator()(const owl::Board &) const;
+};
+
+} // namespace std
 
 Q_DECLARE_METATYPE(owl::BoardPtr)
 Q_DECLARE_METATYPE(owl::BoardWeakPtr)

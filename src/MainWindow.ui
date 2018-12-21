@@ -648,7 +648,7 @@ QToolButton:hover
         <property name="maximumSize">
          <size>
           <width>16777215</width>
-          <height>50</height>
+          <height>200</height>
          </size>
         </property>
         <property name="acceptDrops">

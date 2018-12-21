@@ -30,6 +30,7 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     _treeView->setAttribute(Qt::WA_MacShowFocusRect, false);
     _treeView->setHeaderHidden(true);
     _treeView->setItemsExpandable(false);
+    _treeView->setFont(QFont(_treeView->font().family(), 16));
 
     _boardLabel = new QLabel(this);
     QFont font;
@@ -42,7 +43,7 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     QHBoxLayout* userLayout = new QHBoxLayout(parent);
     _userLabel = new QLabel(this);
     _userLabel->setMaximumHeight(64);
-    font.setPointSize(16);
+    font.setPointSize(14);
     font.setBold(false);
     _userLabel->setFont(font);
     _userLabel->setStyleSheet("QLabel { color : lightgray; }");
@@ -60,6 +61,7 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
 
     layout->addWidget(_boardLabel);
     layout->addLayout(userLayout);
+    layout->addItem(new QSpacerItem(0,15));
     layout->addWidget(_treeView);
 
     setLayout(layout);

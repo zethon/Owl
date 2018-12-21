@@ -1,6 +1,9 @@
 // Owl - www.owlclient.com
 // Copyright (c) 2012-2018, Adalid Claure <aclaure@gmail.com>
 
+#include <QDataStream>
+#include <boost/functional/hash.hpp>
+
 #include <Utils/Settings.h>
 #include <Utils/OwlLogger.h>
 
@@ -15,7 +18,6 @@ const char* const Board::Options::USE_ENCRYPTION		= "encryption.enabled";;
 const char* const Board::Options::ENCSEED				= "encryption.seed";;
 const char* const Board::Options::ENCKEY				= "encryption.key";
 
-    
 Board::Board(const QString& url)
     : _url(url),
     _bEnabled(true),
@@ -624,7 +626,16 @@ StringMap Board::getBoardData()
     
     return params;
 }
-    
+
+std::size_t Board::hash() const
+{
+    std::size_t seed = 0;
+    boost::hash_combine(seed, _name.toStdString());
+    boost::hash_combine(seed, _url.toStdString());
+    boost::hash_combine(seed, _protocolName.toStdString());
+    return seed;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // BoardItemDoc
 ///////////////////////////////////////////////////////////////////////////////
@@ -776,3 +787,7 @@ void BoardItemDoc::setOrAddVar(const QString& k, const QString& v)
 
 } // namespace owl
 
+std::size_t std::hash<owl::Board>::operator()(const owl::Board& board) const
+{
+    return board.hash();
+}

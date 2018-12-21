@@ -1,3 +1,5 @@
+#include <QAbstractItemModel>
+
 #include "ForumTreeModel.h"
 
 namespace owl
@@ -72,33 +74,42 @@ int ForumTreeModel::rowCount(const QModelIndex & parent) const
 int ForumTreeModel::columnCount(const QModelIndex&  parent) const
 {
     Q_UNUSED(parent);
-    return 3;
+    return 1;
 }
 
 QVariant ForumTreeModel::data(const QModelIndex & index, int role) const
 {
     if (!index.isValid()) return QVariant{};
 
-    if (role != Qt::DisplayRole) return QVariant{};
-
-    owl::Forum* item = static_cast<owl::Forum*>(index.internalPointer());
-
     QVariant data;
 
-    switch (index.column())
+    if (role == Qt::DisplayRole)
     {
-        // icone
-        case 0:
-            data = QVariant{"ICON"};
-        break;
+        owl::Forum* item = static_cast<owl::Forum*>(index.internalPointer());
 
-        case 1:
-            data = QVariant::fromValue(item->getName());
-        break;
+        switch (index.column())
+        {
+            // icone
+//            case 0:
+//            {
+////                QIcon icon { ":/icons/owl_128.png" };
 
-        case 2:
-            data = QVariant{"Other"};
-        break;
+////                data = QVariant{icon.pixmap(QSize(16,16))};
+//            }
+            break;
+
+            case 0:
+                data = QVariant::fromValue(item->getName());
+            break;
+
+//            case 1:
+//                data = QVariant{"Other"};
+//            break;
+        }
+    }
+    else if (role == Qt::ForegroundRole)
+    {
+        data = QColor(Qt::lightGray);
     }
 
     return data;
