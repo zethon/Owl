@@ -16,7 +16,8 @@ LogoView::LogoView(QWidget *parent)
     : QWidget(parent)
 {
     _bgImg = new QLabel(this);
-    _bgImg->setPixmap(QPixmap(":/images/owl-bg1.png"));
+    _bgImg->setPixmap(QPixmap(":/images/owl-bg2.png"));
+    _bgImg->setAlignment(Qt::AlignCenter);
 
     QGridLayout* layout = new QGridLayout(this);
     layout->addWidget(_bgImg, 0, 0);
@@ -31,6 +32,8 @@ ContentView::ContentView(QWidget* parent /* = 0*/)
     : QWidget(parent),
       _logger { owl::initializeLogger("ContentView") }
 {
+    parent->setStyleSheet("QWidget { background-color: white; }");
+
     _logoView = new LogoView(this);
 
     QGridLayout* layout = new QGridLayout(this);
