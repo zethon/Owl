@@ -16,6 +16,17 @@ namespace owl
 
 using SpdLogPtr = std::shared_ptr<spdlog::logger>;
 
+class LogoView : public QWidget
+{
+public:
+    ~LogoView() = default;
+    explicit LogoView(QWidget* parent = nullptr);
+
+private:
+    QLabel*  _bgImg;
+
+};
+
 class ContentView : public QWidget
 {
 
@@ -26,6 +37,7 @@ public:
     ContentView(QWidget* parent = nullptr);
 
 private:
+    LogoView*               _logoView;
     owl::SpdLogPtr          _logger;
 };
 
