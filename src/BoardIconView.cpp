@@ -38,21 +38,8 @@ QListView
     border-style: none;
 }
 
-QListView::item::selected
-{
-    border-color: #93C0A4;
-    border-style: outset;
-    border-width: 2px;
-    border-radius: 5px;
-}
-
-QListView::item::hover
-{
-    border-color: #606060;
-    border-style: outset;
-    border-width: 3px;
-    border-radius: 5px;
-}
+QListView::item::selected{}
+QListView::item::hover{}
 )";
 
 QIcon bufferToIcon(const char* buf)
