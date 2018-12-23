@@ -74,7 +74,7 @@ int ForumTreeModel::rowCount(const QModelIndex & parent) const
 int ForumTreeModel::columnCount(const QModelIndex&  parent) const
 {
     Q_UNUSED(parent);
-    return 1;
+    return 2;
 }
 
 QVariant ForumTreeModel::data(const QModelIndex & index, int role) const
@@ -90,15 +90,14 @@ QVariant ForumTreeModel::data(const QModelIndex & index, int role) const
         switch (index.column())
         {
             // icone
-//            case 0:
-//            {
-////                QIcon icon { ":/icons/owl_128.png" };
-
-////                data = QVariant{icon.pixmap(QSize(16,16))};
-//            }
+            case 0:
+            {
+                QIcon icon { ":/icons/owl_128.png" };
+                data = QVariant{icon.pixmap(QSize(16,16))};
+            }
             break;
 
-            case 0:
+            case 1:
                 data = QVariant::fromValue(item->getName());
             break;
 

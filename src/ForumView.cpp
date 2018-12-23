@@ -13,10 +13,10 @@
     #define BOARDNAMEFONT       21
     #define USERNAMEFONT        21
     #define TREEFONTSIZE        21
-#elif defined(Q_WS_MACX)
-    #define BOARDNAMEFONT       21
-    #define USERNAMEFONT        21
-    #define TREEFONTSIZE        21
+#elif defined(Q_OS_MAC)
+    #define BOARDNAMEFONT       18
+    #define USERNAMEFONT        14
+    #define TREEFONTSIZE        16
 #else
     #define BOARDNAMEFONT       16
     #define USERNAMEFONT        12
@@ -62,7 +62,10 @@ void ForumViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     {
         painter->save();
         painter->setPen(QPen(QColor(Qt::red)));
-        painter->drawRect(option.rect);
+
+        QRect rect { option.rect };
+        rect.adjust(1, 1, -1, -1);
+        painter->drawRect(rect);
         painter->restore();
     }
     else
@@ -73,7 +76,10 @@ void ForumViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
 QSize ForumViewDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    return QStyledItemDelegate::sizeHint(option, index);
+//    return QStyledItemDelegate::sizeHint(option, index);
+    QSize retsize { option.rect.size() };
+    retsize.setHeight(30);
+    return retsize;
 }
 
 //********************************
