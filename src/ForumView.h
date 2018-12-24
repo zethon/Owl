@@ -1,12 +1,12 @@
 #pragma once
 
 #include <memory>
+
 #include <QWidget>
-#include  <QStyledItemDelegate>
+#include <QStyledItemDelegate>
+#include <QListView>
 
 class QLabel;
-class QTreeView;
-class QListView;
 
 namespace spdlog
 {
@@ -32,6 +32,16 @@ public:
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 };
 
+class ForumListControl : public QListView
+{
+public:
+    using QListView::QListView;
+
+protected:
+    void enterEvent(QEvent *event) override;
+    void leaveEvent(QEvent *event) override;
+};
+
 class ForumView : public QWidget
 {
 
@@ -48,8 +58,7 @@ private:
     QLabel*                 _userLabel;
     QLabel*                 _userImgLabel;
 
-//    QTreeView*              _treeView;
-    QListView*              _listView;
+    ForumListControl*       _listView;
 
     owl::BoardWeakPtr       _currentBoard;
     owl::SpdLogPtr          _logger;

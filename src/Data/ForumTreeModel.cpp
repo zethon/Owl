@@ -66,11 +66,11 @@ QVariant ForumTreeModel::data(const QModelIndex & index, int role) const
     if (role == Qt::DisplayRole)
     {
         owl::Forum* item = static_cast<owl::Forum*>(index.internalPointer());
-        QString pre; 
-        for (auto x = 0; x < item->getLevel(); ++x)
-        {
-            pre += ".";
-        }
+        QString pre { item->getForumTypeString().mid(0,1) + ": " };
+//        for (auto x = 0; x < item->getLevel(); ++x)
+//        {
+//            pre += "-";
+//        }
         return pre + item->getName();
     }
     else if (role == Qt::ForegroundRole)

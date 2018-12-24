@@ -1,8 +1,6 @@
 #include <QVBoxLayout>
 #include <QLabel>
-
-#include <QTreeView>
-#include <QListView>
+#include <QScrollBar>
 
 #include  <Utils/OwlLogger.h>
 
@@ -36,6 +34,31 @@ QListView::item::selected{}
 QListView::item::hover{}
 )";
 
+static const char* strListViewScrollStyle = R"(
+QScrollBar:vertical {
+    border: 0px;
+    background: transparent;
+    width: 8px;
+    margin: 0px 0px 0px 0px;
+}
+QScrollBar::handle:vertical
+{
+    background: darkgrey;
+}
+QScrollBar::add-line:vertical
+{
+    height: 0px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+QScrollBar::sub-line:vertical
+{
+    height: 0 px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+)";
+
 namespace owl
 {
 
@@ -46,38 +69,33 @@ namespace owl
 void ForumViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     QStyledItemDelegate::paint(painter, option, index);
-
-//    if(option.state & QStyle::State_Selected)
-//    {
-////        painter->save();
-////        painter->setPen(QPen(QColor(Qt::white)));
-////        painter->drawRect(option.rect);
-////        painter->restore();
-//    }
-//
-//    if (option.state & QStyle::State_MouseOver)
-//    {
-//        painter->save();
-//        painter->setPen(QPen(QColor(Qt::red)));
-//
-//        QRect rect { option.rect };
-//        rect.adjust(1, 1, -1, -1);
-//        painter->drawRect(rect);
-//        painter->restore();
-//    }
-//    else
-//    {
-////        QStyledItemDelegate::paint(painter, option, index);
-//    }
 }
 
 QSize ForumViewDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-//    return QStyledItemDelegate::sizeHint(option, index);
+    Q_UNUSED(index);
+
     QSize retsize { option.rect.size() };
     retsize.setHeight(30);
     return retsize;
 }
+
+//********************************
+//* ForumView
+//********************************
+
+void ForumListControl::enterEvent(QEvent *event)
+{
+    QListView::enterEvent(event);
+    this->verticalScrollBar()->setVisible(true);
+}
+
+void ForumListControl::leaveEvent(QEvent *event)
+{
+    QListView::leaveEvent(event);
+    this->verticalScrollBar()->setVisible(false);
+}
+
 
 //********************************
 //* ForumView
@@ -93,20 +111,14 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     parent->setStyleSheet("QWidget { background-color: #594157; }");
     setStyleSheet("QWidget { background-color: #594157; border: none; }");
 
-//    _treeView = new QTreeView(this);
-//    _treeView->setAttribute(Qt::WA_MacShowFocusRect, false);
-//    _treeView->setHeaderHidden(true);
-//    _treeView->setItemsExpandable(false);
-//    _treeView->setFont(QFont(_treeView->font().family(), TREEFONTSIZE));
-//    _treeView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-//    _treeView->setItemDelegate(new ForumViewDelegate);
-//    _treeView->setStyleSheet(strTreeStyleSheet);
-
-    _listView = new QListView(this);
+    _listView = new ForumListControl(this);
     _listView->setStyleSheet(strListStyleSheet);
     _listView->setAttribute(Qt::WA_MacShowFocusRect, false);
     _listView->setFont(QFont(_listView->font().family(), TREEFONTSIZE));
-    _listView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    _listView->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    _listView->verticalScrollBar()->setStyleSheet(strListViewScrollStyle);
+    _listView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
     _listView->setItemDelegate(new ForumViewDelegate);
 
     _boardLabel = new QLabel(this);
