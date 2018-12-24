@@ -31,7 +31,10 @@ QListView
 }
 
 QListView::item::selected{}
-QListView::item::hover{}
+QListView::item::hover
+{
+    background: darkgrey;
+}
 )";
 
 static const char* strListViewScrollStyle = R"(
@@ -73,10 +76,19 @@ void ForumViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
 QSize ForumViewDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    Q_UNUSED(index);
-
     QSize retsize { option.rect.size() };
     retsize.setHeight(30);
+
+//    if (index.model()->hasIndex(index.row() + 1, index.column()))
+//    {
+//        auto nextIdx = index.model()->index(index.row() + 1, index.column());
+//        owl::Forum* item = static_cast<owl::Forum*>(nextIdx.internalPointer());
+//        if (item->getForumType() == owl::Forum::ForumType::CATEGORY)
+//        {
+//            retsize.setHeight(100);
+//        }
+//    }
+
     return retsize;
 }
 

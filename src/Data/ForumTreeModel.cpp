@@ -63,15 +63,26 @@ QVariant ForumTreeModel::data(const QModelIndex & index, int role) const
 {
     if (!index.isValid()) return QVariant{};
 
+    if (role == Qt::DecorationRole)
+    {
+        owl::Forum* item = static_cast<owl::Forum*>(index.internalPointer());
+        if (item->getForumType() == owl::Forum::ForumType::FORUM)
+        {
+            return QIcon(":/icons/forum.png");
+        }
+        else if (item->getForumType() == owl::Forum::ForumType::CATEGORY)
+        {
+            return QIcon(":/icons/category.png");
+        }
+        else if (item->getForumType() == owl::Forum::ForumType::LINK)
+        {
+            return QIcon(":/icons/link.png");
+        }
+    }
     if (role == Qt::DisplayRole)
     {
         owl::Forum* item = static_cast<owl::Forum*>(index.internalPointer());
-        QString pre { item->getForumTypeString().mid(0,1) + ": " };
-//        for (auto x = 0; x < item->getLevel(); ++x)
-//        {
-//            pre += "-";
-//        }
-        return pre + item->getName();
+        return item->getName();
     }
     else if (role == Qt::ForegroundRole)
     {
@@ -82,6 +93,10 @@ QVariant ForumTreeModel::data(const QModelIndex & index, int role) const
         owl::Forum* item = static_cast<owl::Forum*>(index.internalPointer());
         return item->getName();
     }
+//    else if (role == Qt::TextAlignmentRole)
+//    {
+//        return static_cast<int>(Qt::AlignLeft | Qt::AlignTop);
+//    }
 
     return QVariant{};
 }
