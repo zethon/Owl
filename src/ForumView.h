@@ -6,6 +6,7 @@
 
 class QLabel;
 class QTreeView;
+class QListView;
 
 namespace spdlog
 {
@@ -46,7 +47,9 @@ private:
     QLabel*                 _boardLabel;
     QLabel*                 _userLabel;
     QLabel*                 _userImgLabel;
-    QTreeView*              _treeView;
+
+//    QTreeView*              _treeView;
+    QListView*              _listView;
 
     owl::BoardWeakPtr       _currentBoard;
     owl::SpdLogPtr          _logger;

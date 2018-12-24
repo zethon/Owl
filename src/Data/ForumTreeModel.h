@@ -29,7 +29,8 @@ private:
     int columnCount(const QModelIndex & parent = QModelIndex()) const override;
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
 
-    owl::ForumPtr   _root;
+//    owl::ForumPtr   _root;
+    std::vector<ForumPtr>   _nodes;
 };
 
 } // namespace
