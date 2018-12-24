@@ -18,11 +18,11 @@
 #define ICONSCALEWIDTH       128
 #define ICONSCALEHEIGHT      128
 
-#define LISTICONWIDTH         70
-#define LISTICONHEIGHT        64
-
 #define ICONDISPLAYWIDTH      38
 #define ICONDISPLAYHEIGHT     38
+
+#define LISTICONWIDTH         70
+#define LISTICONHEIGHT        64
 
 namespace owl
 {

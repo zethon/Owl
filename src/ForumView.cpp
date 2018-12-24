@@ -11,10 +11,10 @@
 
 #include "ForumView.h"
 
-#if defined(Q_WS_WIN32)
-    #define BOARDNAMEFONT       21
-    #define USERNAMEFONT        21
-    #define TREEFONTSIZE        21
+#if defined(Q_OS_WIN)
+    #define BOARDNAMEFONT       12
+    #define USERNAMEFONT        10
+    #define TREEFONTSIZE        10
 #elif defined(Q_OS_MAC)
     #define BOARDNAMEFONT       18
     #define USERNAMEFONT        14
@@ -24,23 +24,6 @@
     #define USERNAMEFONT        12
     #define TREEFONTSIZE        12
 #endif
-
-//static const char* strTreeStyleSheet = R"(
-//QTreeView
-//{
-//    show-decoration-selected: 1;
-//    background: #594157;
-//    border-style: none;
-//}
-
-//QTreeView::item::selected
-//{
-//    background-color: #red;
-//}
-
-//QTreeView::item::hover{}
-//)";
-
 
 static const char* strListStyleSheet = R"(
 QListView
@@ -64,28 +47,28 @@ void ForumViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 {
     QStyledItemDelegate::paint(painter, option, index);
 
-    if(option.state & QStyle::State_Selected)
-    {
+//    if(option.state & QStyle::State_Selected)
+//    {
+////        painter->save();
+////        painter->setPen(QPen(QColor(Qt::white)));
+////        painter->drawRect(option.rect);
+////        painter->restore();
+//    }
+//
+//    if (option.state & QStyle::State_MouseOver)
+//    {
 //        painter->save();
-//        painter->setPen(QPen(QColor(Qt::white)));
-//        painter->drawRect(option.rect);
+//        painter->setPen(QPen(QColor(Qt::red)));
+//
+//        QRect rect { option.rect };
+//        rect.adjust(1, 1, -1, -1);
+//        painter->drawRect(rect);
 //        painter->restore();
-    }
-
-    if (option.state & QStyle::State_MouseOver)
-    {
-        painter->save();
-        painter->setPen(QPen(QColor(Qt::red)));
-
-        QRect rect { option.rect };
-        rect.adjust(1, 1, -1, -1);
-        painter->drawRect(rect);
-        painter->restore();
-    }
-    else
-    {
-//        QStyledItemDelegate::paint(painter, option, index);
-    }
+//    }
+//    else
+//    {
+////        QStyledItemDelegate::paint(painter, option, index);
+//    }
 }
 
 QSize ForumViewDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -122,11 +105,9 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     _listView = new QListView(this);
     _listView->setStyleSheet(strListStyleSheet);
     _listView->setAttribute(Qt::WA_MacShowFocusRect, false);
-//    _listView->setHeaderHidden(true);
-//    _listView->setItemsExpandable(false);
     _listView->setFont(QFont(_listView->font().family(), TREEFONTSIZE));
     _listView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-//    _listView->setItemDelegate(new ForumViewDelegate);
+    _listView->setItemDelegate(new ForumViewDelegate);
 
     _boardLabel = new QLabel(this);
     QFont font;

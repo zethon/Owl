@@ -7,29 +7,24 @@
 namespace owl
 {
 
+void crawlForums(ForumPtr forum, std::vector<ForumPtr>& nodes)
+{
+    auto& children = forum->getChildren();
+    for (auto& child : children)
+    {
+        auto childForum = std::dynamic_pointer_cast<owl::Forum>(child);
+        if (childForum)
+        {
+            nodes.push_back(childForum);
+            crawlForums(childForum, nodes);
+        }
+    }
+}
+
 ForumTreeModel::ForumTreeModel(const ForumPtr root, QObject *parent)
     : QAbstractItemModel(parent)
 {
-    std::queue<owl::ForumPtr> nodes;
-
-    nodes.push(root);
-
-    while(not nodes.empty())
-    {
-        auto nodePtr = nodes.front();
-        nodes.pop();
-
-        if (!nodePtr->IsRoot()) _nodes.push_back(nodePtr);
-
-        if (auto& children = nodePtr->getChildren(); children.size() > 0)
-        {
-            for (auto& child : children)
-            {
-                auto childForum = std::dynamic_pointer_cast<owl::Forum>(child);
-                if (childForum) nodes.push(childForum);
-            }
-        }
-    }
+    crawlForums(root, _nodes);
 }
 
 QModelIndex ForumTreeModel::index(int row, int column, const QModelIndex & parent) const
@@ -68,42 +63,27 @@ QVariant ForumTreeModel::data(const QModelIndex & index, int role) const
 {
     if (!index.isValid()) return QVariant{};
 
-    QVariant data;
-
     if (role == Qt::DisplayRole)
     {
         owl::Forum* item = static_cast<owl::Forum*>(index.internalPointer());
-
-
-//        switch (index.column())
-//        {
-////            // icone
-////            case 0:
-////            {
-////                QIcon icon { ":/icons/owl_128.png" };
-////                data = QVariant{icon.pixmap(QSize(16,16))};
-////            }
-////            break;
-
-//            case 0:
-                data = QVariant::fromValue(item->getName());
-//            break;
-
-////            case 1:
-//                data = QVariant{"Other"};
-////            break;
-//        }
+        QString pre; 
+        for (auto x = 0; x < item->getLevel(); ++x)
+        {
+            pre += ".";
+        }
+        return pre + item->getName();
     }
     else if (role == Qt::ForegroundRole)
     {
-        data = QColor(Qt::lightGray);
+       return QColor(Qt::lightGray);
     }
-    else if (role == Qt::DecorationRole)
+    else if (role == Qt::ToolTipRole)
     {
-//        qDebug() << "DECOR ROLE";
+        owl::Forum* item = static_cast<owl::Forum*>(index.internalPointer());
+        return item->getName();
     }
 
-    return data;
+    return QVariant{};
 }
 
 } // namespace

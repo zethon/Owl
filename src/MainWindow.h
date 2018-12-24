@@ -300,19 +300,18 @@ private:
     int initBoard(const BoardPtr& b);
     void openPreferences();
 
-    QMenu* _boardToolBarCtxMenu;
+    QMenu* _boardToolBarCtxMenu = nullptr;
 
     LinkMessageMap _linkMessageMap;
-    QSqlDatabase _db;
 
-    QuickAddDlg*            _quickAddDlg;
-    ErrorReportDlg*         _errorReportDlg;				// only one error at a time?
+    QuickAddDlg*            _quickAddDlg = nullptr;
+    ErrorReportDlg*         _errorReportDlg = nullptr;				// only one error at a time?
     QList<NewThreadDlg*>    _newThreadDialogs;
 
-    QAction* _loginButton;
+    QAction* _loginButton = nullptr;
 
     // last item selected on board/service view
-    QStandardItem* _svcTreeLastItem;
+    QStandardItem* _svcTreeLastItem = nullptr;
 
     BoardPtr _toolBarSelectedBoard;
 
@@ -324,7 +323,7 @@ private:
 
 
     MenuActions     _actions;
-    QWidget*        _postPaneTitleBar;
+    QWidget*        _postPaneTitleBar = nullptr;
     bool            _bDoneLoading = false;
     bool			_bInitialized = false;
 
@@ -335,8 +334,8 @@ private:
     bool            _statusBarVisibile = true;
     uint            _postsPanePosition = PANERIGHT;
 
-    BoardsModel*    _svcModel;
-    SplashScreen*   _splash;
+    BoardsModel*    _svcModel = nullptr;
+    SplashScreen*   _splash = nullptr;
     ImageOverlay    _imageOverlay;
 
     std::shared_ptr<spdlog::logger>  _logger;

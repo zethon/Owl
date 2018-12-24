@@ -21,6 +21,17 @@
 #include <QtMac>
 #endif
 
+#ifdef Q_OS_WIN
+    #define BOARDICONWIDGETWIDTH         70
+    #define CENTRALWIDGETWIDTH          275
+#elif defined(Q_OS_MAC)
+    #define BOARDICONWIDGETWIDTH         70    
+    #define CENTRALWIDGETWIDTH          250
+#else
+    #define BOARDICONWIDGETWIDTH         70
+    #define CENTRALWIDGETWIDTH          250
+#endif
+
 namespace owl
 {
 
@@ -50,6 +61,11 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
     setupUi(this);
     setDockNestingEnabled(true);
 //    setUnifiedTitleAndToolBarOnMac(true);
+
+    this->boardsViewDockWidget->setMaximumWidth(BOARDICONWIDGETWIDTH);
+    this->boardsViewDockWidget->setMinimumWidth(BOARDICONWIDGETWIDTH);
+    this->centralWidget()->setMaximumWidth(CENTRALWIDGETWIDTH);
+    this->centralWidget()->setMinimumWidth(CENTRALWIDGETWIDTH);
 
     // TODO: move this to the OwlApplication class
     readSettings();
