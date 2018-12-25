@@ -41,7 +41,7 @@ static const char* strListViewScrollStyle = R"(
 QScrollBar:vertical {
     border: 0px;
     background: transparent;
-    width: 8px;
+    width: 6px;
     margin: 0px 0px 0px 0px;
 }
 QScrollBar::handle:vertical
@@ -71,7 +71,35 @@ namespace owl
 
 void ForumViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    QStyledItemDelegate::paint(painter, option, index);
+    QStyleOptionViewItem styledOption{option};
+
+    owl::Forum* item = static_cast<owl::Forum*>(index.internalPointer());
+    if (item->getForumType() == owl::Forum::ForumType::CATEGORY)
+    {
+        painter->save();
+
+        if (option.state & QStyle::State_MouseOver)
+        {
+            painter->setPen(QPen(Qt::white));
+        }
+        else
+        {
+            painter->setPen(QPen(Qt::lightGray));
+        }
+
+        QRect textRect { option.rect };
+        textRect.adjust(0, 1, 0, -7);
+
+        QFontMetrics metrics(option.font);
+        QString elidedText = metrics.elidedText(item->getName(), Qt::ElideRight, textRect.width());
+
+        painter->drawText(textRect, Qt::AlignBottom, elidedText);
+        painter->restore();
+    }
+    else
+    {
+        QStyledItemDelegate::paint(painter, styledOption, index);
+    }
 }
 
 QSize ForumViewDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -79,15 +107,17 @@ QSize ForumViewDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
     QSize retsize { option.rect.size() };
     retsize.setHeight(30);
 
-//    if (index.model()->hasIndex(index.row() + 1, index.column()))
-//    {
-//        auto nextIdx = index.model()->index(index.row() + 1, index.column());
-//        owl::Forum* item = static_cast<owl::Forum*>(nextIdx.internalPointer());
-//        if (item->getForumType() == owl::Forum::ForumType::CATEGORY)
-//        {
-//            retsize.setHeight(100);
-//        }
-//    }
+    owl::Forum* item = static_cast<owl::Forum*>(index.internalPointer());
+    if (item->getForumType() == owl::Forum::ForumType::CATEGORY
+            && index.model()->hasIndex(index.row() - 1, index.column()))
+    {
+        auto prevIdx = index.model()->index(index.row() - 1, index.column());
+        owl::Forum* previtem = static_cast<owl::Forum*>(prevIdx.internalPointer());
+        if (previtem->getForumType() == owl::Forum::ForumType::FORUM)
+        {
+            retsize.setHeight(45);
+        }
+    }
 
     return retsize;
 }
