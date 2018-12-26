@@ -1096,19 +1096,21 @@ void MainWindow::createDebugMenu()
         QObject::connect(action, &QAction::triggered,
             [this]()
             {
-                servicesTree->setVisible(!servicesTree->isVisible());
+                bool toggle = !currentForumFrame->isVisible();
 
-                currentForumFrame->setVisible(!currentForumFrame->isVisible());
-                threadNavFrame->setVisible(!threadNavFrame->isVisible());
-                threadListWidget->setVisible(!threadListWidget->isVisible());
-                line->setVisible(!line->isVisible());
-                line_3->setVisible(!line_3->isVisible());
+                servicesTree->setVisible(toggle);
 
-                currentThreadFrame->setVisible(!currentThreadFrame->isVisible());
-                postsWebView->setVisible(!postsWebView->isVisible());
-                postNavFrame->setVisible(!postNavFrame->isVisible());
-                line_2->setVisible(!line_2->isVisible());
-                line_4->setVisible(!line_4->isVisible());
+                currentForumFrame->setVisible(toggle);
+                threadNavFrame->setVisible(toggle);
+                threadListWidget->setVisible(toggle);
+                line->setVisible(toggle);
+                line_3->setVisible(toggle);
+
+                currentThreadFrame->setVisible(toggle);
+                postsWebView->setVisible(toggle);
+                postNavFrame->setVisible(toggle);
+                line_2->setVisible(toggle);
+                line_4->setVisible(toggle);
             });
     }
 }

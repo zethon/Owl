@@ -78,22 +78,22 @@ QVariant ForumTreeModel::data(const QModelIndex & index, int role) const
 {
     if (!index.isValid()) return QVariant{};
 
-    if (role == Qt::DecorationRole)
-    {
-        const QSize iconSize(12,12);
-        owl::Forum* item = static_cast<owl::Forum*>(index.internalPointer());
+    //if (role == Qt::DecorationRole)
+    //{
+    //    const QSize iconSize(12,12);
+    //    owl::Forum* item = static_cast<owl::Forum*>(index.internalPointer());
 
-        if (item->getForumType() == owl::Forum::ForumType::FORUM)
-        {
-            QImage image(":/icons/forum.png");
-            return resizeImage1(image, iconSize);
-        }
-        else if (item->getForumType() == owl::Forum::ForumType::LINK)
-        {
-            QImage image(":/icons/link.png");
-            return resizeImage1(image, iconSize);
-        }
-    }
+    //    if (item->getForumType() == owl::Forum::ForumType::FORUM)
+    //    {
+    //        QImage image(":/icons/forum.png");
+    //        return resizeImage1(image, iconSize);
+    //    }
+    //    else if (item->getForumType() == owl::Forum::ForumType::LINK)
+    //    {
+    //        QImage image(":/icons/link.png");
+    //        return resizeImage1(image, iconSize);
+    //    }
+    //}
     if (role == Qt::DisplayRole)
     {
         owl::Forum* item = static_cast<owl::Forum*>(index.internalPointer());

@@ -13,6 +13,8 @@
 
 #include "Data/BoardManager.h"
 #include "Utils/Exception.h"
+
+#include "DefaultStyle.h"
 #include "BoardIconView.h"
 
 #define ICONSCALEWIDTH       128
@@ -178,7 +180,7 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
             selectRect.moveRight(selectRect.left() + 1);
             selectRect.adjust(0, padding + 5, 0, -padding);
 
-            QPen pen(QBrush(QColor("#A0A0A0")), 6);
+            QPen pen(QBrush(QColor(DEFAULT_SELECTED)), 6);
             painter->setPen(pen);
             painter->setRenderHint(QPainter::Antialiasing, true);
             painter->drawRoundRect(selectRect);
@@ -196,7 +198,7 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 
     if (option.state & QStyle::State_MouseOver)
     {
-        QPen pen(QBrush(QColor("#A0A0A0")), 4);
+        QPen pen(QBrush(QColor(DEFAULT_HOVER)), 4);
         painter->setPen(pen);
         painter->setRenderHint(QPainter::Antialiasing, true);
         painter->drawRoundRect(iconRect);

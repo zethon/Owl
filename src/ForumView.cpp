@@ -30,18 +30,22 @@ QListView
     border-style: none;
 }
 
-QListView::item::selected{}
+QListView::item::selected
+{
+    background: #587B7F;
+}
+
 QListView::item::hover
 {
-    background: darkgrey;
+    background: #222222;
 }
 )";
 
 static const char* strListViewScrollStyle = R"(
 QScrollBar:vertical {
     border: 0px;
-    background: transparent;
-    width: 6px;
+    background: #594157;
+    width: 5px;
     margin: 0px 0px 0px 0px;
 }
 QScrollBar::handle:vertical
@@ -84,21 +88,67 @@ void ForumViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         }
         else
         {
-            painter->setPen(QPen(Qt::lightGray));
+            painter->setPen(QColor("#f2f2f2"));
         }
 
         QRect textRect { option.rect };
-        textRect.adjust(0, 1, 0, -7);
+        textRect.adjust(5, 1, 0, -7);
 
-        QFontMetrics metrics(option.font);
+        QFont font{ option.font };
+        font.setBold(true);
+        QFontMetrics metrics(font);
         QString elidedText = metrics.elidedText(item->getName(), Qt::ElideRight, textRect.width());
 
+        painter->setFont(font);
         painter->drawText(textRect, Qt::AlignBottom, elidedText);
         painter->restore();
     }
     else
     {
-        QStyledItemDelegate::paint(painter, styledOption, index);
+        painter->save();
+
+        // draw the background first
+        QColor bgColor("#594157");
+        if (option.state & QStyle::State_Selected)
+        {
+            bgColor = QColor("#587B7F");
+        }
+        else if (option.state & QStyle::State_MouseOver)
+        {
+            bgColor = QColor("#8DAB7F");
+        }
+        painter->fillRect(option.rect, bgColor);
+
+        QImage image;
+        owl::Forum* item = static_cast<owl::Forum*>(index.internalPointer());
+
+        if (item->getForumType() == owl::Forum::ForumType::FORUM)
+        {
+            image = QImage(":/icons/forum.png");
+        }
+        else if (item->getForumType() == owl::Forum::ForumType::LINK)
+        {
+            image = QImage(":/icons/link.png");
+        }
+
+        // center the image vertically
+        int yAdjust = static_cast<int>((option.rect.height() - image.size().height()) / 2);
+
+        // draw the image centered
+        QRect workingRect{ option.rect };
+        workingRect.adjust(5, yAdjust, 0, 0);
+        painter->drawImage(QPoint(workingRect.x(), workingRect.y()), image);
+
+        // now adjust for the text
+        workingRect = option.rect;
+        QFontMetrics metrics(option.font);
+        yAdjust = static_cast<int>((option.rect.height() - metrics.height()) / 2);
+        workingRect.adjust(25, yAdjust, -1, 0);
+        QString elidedText = metrics.elidedText(item->getName(), Qt::ElideRight, workingRect.width());
+        painter->setPen(QColor("#f2f2f2"));
+        painter->drawText(workingRect, elidedText);
+
+        painter->restore();
     }
 }
 
@@ -115,7 +165,7 @@ QSize ForumViewDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
         owl::Forum* previtem = static_cast<owl::Forum*>(prevIdx.internalPointer());
         if (previtem->getForumType() == owl::Forum::ForumType::FORUM)
         {
-            retsize.setHeight(45);
+            retsize.setHeight(50);
         }
     }
 
@@ -188,7 +238,7 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setSpacing(5);
-    layout->setMargin(5);
+    layout->setMargin(0);
 
     layout->addWidget(_boardLabel);
     layout->addLayout(userLayout);
@@ -238,7 +288,11 @@ void ForumView::doBoardClicked(const owl::BoardWeakPtr boardWeakPtr)
 //    _treeView->setModel(model);
 //    _treeView->expandAll();
 
-    _boardLabel->setText(currentBoard->getName());
+
+    QFontMetrics metrics(_boardLabel->font());
+    QString elidedText = metrics.elidedText(currentBoard->getName(), Qt::ElideRight, _boardLabel->rect().width());
+    _boardLabel->setText(elidedText);
+
     _userLabel->setText(currentBoard->getUsername());
     switch (currentBoard->getStatus())
     {
