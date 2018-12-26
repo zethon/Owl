@@ -3,6 +3,7 @@
 
 #include  <Utils/OwlLogger.h>
 
+#include "Data/Board.h"
 #include "ThreadListWidget.h"
 #include "PostListWidget.h"
 
@@ -31,6 +32,22 @@ LogoView::LogoView(QWidget *parent)
 //* ContentView
 //********************************
 
+void ContentView::initThreadList()
+{
+    _threadListWidget = new ThreadListWidget(this);
+
+    QObject::connect(_threadListWidget, &owl::ThreadListWidget::threadLoading,
+        []()
+        {
+            qDebug() << "POSTS ARE BEING LOADED!";
+        });
+}
+
+void ContentView::initPostList()
+{
+    _postListWidget = new PostListWebView(this);
+}
+
 ContentView::ContentView(QWidget* parent /* = 0*/)
     : QStackedWidget(parent),
       _logger { owl::initializeLogger("ContentView") }
@@ -39,10 +56,11 @@ ContentView::ContentView(QWidget* parent /* = 0*/)
 
     _logoView = new LogoView(this);
 
-    _threadListWidget = new ThreadListWidget(this);
+    // initializes `_threadListWidget`
+    initThreadList();
 
-    _postListWidget = new PostListWebView(this);
-
+    // initializes `_postListWidget`
+    initPostList();
 
     this->addWidget(_logoView);
     this->addWidget(_threadListWidget);
@@ -61,13 +79,24 @@ void ContentView::doShowListOfThreads(ForumPtr forum)
     auto& threadList = forum->getThreads();
     _threadListWidget->setThreadList(threadList);
 
-    qDebug() << "THREADS: " << threadList.size();
+    owl::BoardWeakPtr boardWeak = forum->getBoard();
+    if (auto board = boardWeak.lock(); board)
+    {
+        QObject::connect(board.get(), &owl::Board::onGetPosts,
+            [this](BoardPtr, ThreadPtr thread)
+            {
+                this->doShowListOfPosts(thread);
+            });
+    }
 
     this->setCurrentIndex(1);
 }
 
 void ContentView::doShowListOfPosts(ThreadPtr thread)
 {
+    _postListWidget->clear();
+    _postListWidget->showPosts(thread);
+    _postListWidget->scroll(0,0);
     this->setCurrentIndex(2);
 }
 

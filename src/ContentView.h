@@ -50,6 +50,9 @@ public:
     void doShowListOfPosts(ThreadPtr);
 
 private:
+    void initThreadList();
+    void initPostList();
+
     LogoView*               _logoView;
     ThreadListWidget*       _threadListWidget;
     PostListWebView*        _postListWidget;
