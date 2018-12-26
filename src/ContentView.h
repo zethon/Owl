@@ -4,7 +4,7 @@
 #include <QStackedWidget>
 
 class QLabel;
-class QTreeView;
+class QToolButton;
 
 namespace spdlog
 {
@@ -36,6 +36,26 @@ private:
 
 };
 
+class PostViewContainer : public QWidget
+{
+
+Q_OBJECT
+
+public:
+    ~PostViewContainer() = default;
+    PostViewContainer(QWidget* parent = nullptr);
+
+    void showPosts(ThreadPtr thread);
+
+Q_SIGNALS:
+    void onBackButtonPressed();
+
+private:
+    QLabel*                 _threadTitle;
+    QToolButton*            _backButton;
+    PostListWebView*        _postListWidget;
+};
+
 class ContentView : public QStackedWidget
 {
 
@@ -47,7 +67,6 @@ public:
 
     void doShowLogo();
     void doShowListOfThreads(ForumPtr);
-    void doShowListOfPosts(ThreadPtr);
 
 private:
     void initThreadList();
@@ -55,7 +74,7 @@ private:
 
     LogoView*               _logoView;
     ThreadListWidget*       _threadListWidget;
-    PostListWebView*        _postListWidget;
+    PostViewContainer*      _postListContainer;
 
     owl::SpdLogPtr          _logger;
 };
