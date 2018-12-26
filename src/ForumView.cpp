@@ -18,8 +18,8 @@
     #define USERNAMEFONT        14
     #define TREEFONTSIZE        16
 #else
-    #define BOARDNAMEFONT       16
-    #define USERNAMEFONT        12
+    #define BOARDNAMEFONT       14
+    #define USERNAMEFONT        11
     #define TREEFONTSIZE        12
 #endif
 
@@ -115,7 +115,7 @@ void ForumViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         }
         else if (option.state & QStyle::State_MouseOver)
         {
-            bgColor = QColor("#8DAB7F");
+            bgColor = QColor("#25383C");
         }
         painter->fillRect(option.rect, bgColor);
 
@@ -193,6 +193,30 @@ void ForumListControl::leaveEvent(QEvent *event)
 //* ForumView
 //********************************
 
+void ForumView::initListView()
+{
+    _listView = new ForumListControl(this);
+    _listView->setStyleSheet(strListStyleSheet);
+    _listView->setAttribute(Qt::WA_MacShowFocusRect, false);
+    _listView->setFont(QFont(_listView->font().family(), TREEFONTSIZE));
+    _listView->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    _listView->verticalScrollBar()->setStyleSheet(strListViewScrollStyle);
+    _listView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    _listView->setItemDelegate(new ForumViewDelegate);
+
+    QObject::connect(_listView, &QAbstractItemView::clicked,
+        [this](const QModelIndex& index)
+        {
+            owl::Forum* forum = static_cast<owl::Forum*>(index.internalPointer());
+            if (forum->getForumType() == owl::Forum::ForumType::FORUM)
+            {
+                owl::ForumPtr forumPtr = index.data(SHAREDPTR_ROLE).value<owl::ForumPtr>();
+                Q_ASSERT(forumPtr);
+                Q_EMIT onForumClicked(forumPtr);
+            }
+        });
+}
+
 ForumView::ForumView(QWidget* parent /* = 0*/)
     : QWidget(parent),
       _logger { owl::initializeLogger("ForumView") }
@@ -203,15 +227,7 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     parent->setStyleSheet("QWidget { background-color: #594157; }");
     setStyleSheet("QWidget { background-color: #594157; border: none; }");
 
-    _listView = new ForumListControl(this);
-    _listView->setStyleSheet(strListStyleSheet);
-    _listView->setAttribute(Qt::WA_MacShowFocusRect, false);
-    _listView->setFont(QFont(_listView->font().family(), TREEFONTSIZE));
-    _listView->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    _listView->verticalScrollBar()->setStyleSheet(strListViewScrollStyle);
-    _listView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-    _listView->setItemDelegate(new ForumViewDelegate);
+    initListView();
 
     _boardLabel = new QLabel(this);
     QFont font;
@@ -244,7 +260,6 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     layout->addLayout(userLayout);
     layout->addItem(new QSpacerItem(0,15));
     layout->addWidget(_listView);
-//    layout->addWidget(_treeView);
 
     setLayout(layout);
 }
@@ -283,11 +298,6 @@ void ForumView::doBoardClicked(const owl::BoardWeakPtr boardWeakPtr)
 
     auto oldModel = _listView->model();
     _listView->setModel(model);
-
-//    auto oldModel = _treeView->model();
-//    _treeView->setModel(model);
-//    _treeView->expandAll();
-
 
     QFontMetrics metrics(_boardLabel->font());
     QString elidedText = metrics.elidedText(currentBoard->getName(), Qt::ElideRight, _boardLabel->rect().width());

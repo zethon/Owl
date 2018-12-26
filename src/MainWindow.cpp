@@ -1957,6 +1957,12 @@ void MainWindow::createBoardPanel()
     
 void MainWindow::createThreadPanel()
 {
+    QObject::connect(threadListWidget2, &ForumView::onForumClicked,
+        [](owl::ForumPtr forum)
+        {
+            qDebug() << "SELECTED FORUM: " << forum->getName();
+        });
+
     // the "New Thread" button is disabled on startup
     newThreadBtn->setEnabled(false);
 

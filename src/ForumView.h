@@ -20,6 +20,9 @@ class Board;
 using BoardPtr = std::shared_ptr<Board>;
 using BoardWeakPtr = std::weak_ptr<Board>;
 
+class Forum;
+using ForumPtr = std::shared_ptr<Forum>;
+
 using SpdLogPtr = std::shared_ptr<spdlog::logger>;
 
 class ForumViewDelegate : public QStyledItemDelegate
@@ -53,6 +56,9 @@ public:
 
      void doBoardClicked(const owl::BoardWeakPtr);
 
+Q_SIGNALS:
+     void onForumClicked(owl::ForumPtr);
+
 private:
     QLabel*                 _boardLabel;
     QLabel*                 _userLabel;
@@ -62,6 +68,7 @@ private:
 
     owl::BoardWeakPtr       _currentBoard;
     owl::SpdLogPtr          _logger;
+    void initListView();
 };
 
 }
