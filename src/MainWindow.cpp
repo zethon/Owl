@@ -557,6 +557,7 @@ void MainWindow::getThreadsHandler(BoardPtr b, ForumPtr forum)
     }
 
     updateSelectedForum(forum);
+    contentView->doShowListOfThreads(forum);
 }
 
 // SLOT: handles the SIGNAL from a Board object. Called when the board responds 
@@ -1875,7 +1876,11 @@ void MainWindow::createBoardPanel()
 #endif
 
     QObject::connect(servicesTree2, &BoardIconView::onBoardClicked,
-        [this](owl::BoardWeakPtr bwp) { threadListWidget2->doBoardClicked(bwp); });
+        [this](owl::BoardWeakPtr bwp)
+        {
+            contentView->doShowLogo();
+            threadListWidget2->doBoardClicked(bwp);
+        });
 
     QObject::connect(servicesTree2, &BoardIconView::onEditBoard,
         [this](owl::BoardWeakPtr boardWeakPtr)
@@ -1960,7 +1965,12 @@ void MainWindow::createThreadPanel()
     QObject::connect(threadListWidget2, &ForumView::onForumClicked,
         [](owl::ForumPtr forum)
         {
-            qDebug() << "SELECTED FORUM: " << forum->getName();
+            BoardPtr board = forum->getBoard().lock();
+            if (board && board->getStatus() == BoardStatus::ONLINE)
+            {
+                board->requestThreadList(forum);
+                board->setLastForumId(forum->getId().toInt());
+            }
         });
 
     // the "New Thread" button is disabled on startup

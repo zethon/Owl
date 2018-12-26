@@ -300,7 +300,7 @@ void BoardIconView::initListView()
     QObject::connect(_listView, &QWidget::customContextMenuRequested,
         [this](const QPoint &pos) { this->doContextMenu(pos); });
 
-    QObject::connect(_listView, &QAbstractItemView::clicked,
+    QObject::connect(_listView, &BoardIconListView::onIndexChanged,
         [this](const QModelIndex &index)
         {
             if (index.data(ICONTYPE_ROLE).value<IconType>() == IconType::BOARDICON)
