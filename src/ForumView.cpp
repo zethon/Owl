@@ -124,7 +124,8 @@ void ForumViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
         if (item->getForumType() == owl::Forum::ForumType::FORUM)
         {
-            image = QImage(":/icons/forum.png");
+            if (item->hasUnread()) image = QImage(":/icons/forum_new.png");
+            else image = QImage(":/icons/forum.png");
         }
         else if (item->getForumType() == owl::Forum::ForumType::LINK)
         {
@@ -139,13 +140,26 @@ void ForumViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         workingRect.adjust(5, yAdjust, 0, 0);
         painter->drawImage(QPoint(workingRect.x(), workingRect.y()), image);
 
+        // figure out which font we're gonna draw and then
+        //  adjust the rect accordingly
+        if (item->hasUnread())
+        {
+            QFont newfont { option.font };
+            newfont.setBold(true);
+            painter->setFont(newfont);
+            painter->setPen(QColor("white"));
+        }
+        else
+        {
+            painter->setPen(QColor("#f2f2f2"));
+        }
+
         // now adjust for the text
         workingRect = option.rect;
-        QFontMetrics metrics(option.font);
+        QFontMetrics metrics(painter->font());
         yAdjust = static_cast<int>((option.rect.height() - metrics.height()) / 2);
         workingRect.adjust(25, yAdjust, -1, 0);
         QString elidedText = metrics.elidedText(item->getName(), Qt::ElideRight, workingRect.width());
-        painter->setPen(QColor("#f2f2f2"));
         painter->drawText(workingRect, elidedText);
 
         painter->restore();

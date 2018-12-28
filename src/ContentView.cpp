@@ -31,8 +31,93 @@ LogoView::LogoView(QWidget *parent)
 }
 
 //********************************
+//* ThreadListContainer
+//********************************
+
+static const char* strPageNumberStyle = R"(
+QLabel
+{
+    color: red;
+}
+)";
+
+ThreadListContainer::ThreadListContainer(QWidget *parent)
+    : QWidget(parent)
+{
+    _threadListWidget = new ThreadListWidget(this);
+
+
+//    _backButton = new QToolButton(this);
+//    _backButton->setIcon(QIcon(":/icons/left-arrow.png"));
+//    _backButton->setMinimumWidth(32);
+//    _backButton->setMaximumWidth(32);
+//    _backButton->setStyleSheet(QString::fromLatin1(strBackButtonStyle));
+//    QObject::connect(_backButton, &QToolButton::clicked, [this]() { Q_EMIT onBackButtonPressed(); });
+
+    _forumNameLbl = new QLabel(this);
+    QFont threadFont { _forumNameLbl->font() };
+    threadFont.setPointSize(16);
+    threadFont.setBold(true);
+    _forumNameLbl->setFont(threadFont);
+    _forumNameLbl->setWordWrap(false);
+    _forumNameLbl->setMinimumHeight(32);
+    _forumNameLbl->setMaximumHeight(32);
+
+    _pageNumberLbl = new QLabel(this);
+    QFont pageNumberFont { _pageNumberLbl->font() };
+    pageNumberFont.setPointSize(10);
+    pageNumberFont.setBold(true);
+    pageNumberFont.setWeight(45);
+    _pageNumberLbl->setFont(pageNumberFont);
+    _pageNumberLbl->setMinimumHeight(14);
+    _pageNumberLbl->setMaximumHeight(14);
+    _pageNumberLbl->setStyleSheet(strPageNumberStyle);
+
+    QVBoxLayout* forumNameLayout = new QVBoxLayout(parent);
+    forumNameLayout->setMargin(0);
+    forumNameLayout->setSpacing(0);
+    forumNameLayout->addWidget(_forumNameLbl);
+    forumNameLayout->addWidget(_pageNumberLbl);
+
+    QHBoxLayout* topLayout = new QHBoxLayout(parent);
+    topLayout->addItem(new QSpacerItem(1+32,0));
+    topLayout->addLayout(forumNameLayout);
+    topLayout->addItem(new QSpacerItem(1,0));
+
+    // `hLine` separates the top pane from the bottom pane
+    QFrame* hLine = new QFrame(this);
+    hLine->setFrameShape(QFrame::HLine);
+    hLine->setFrameShadow(QFrame::Sunken);
+
+    QVBoxLayout* layout = new QVBoxLayout(this);
+    layout->setSpacing(0);
+    layout->setMargin(0);
+
+    layout->addItem(new QSpacerItem(0,5));
+    layout->addLayout(topLayout);
+    layout->addItem(new QSpacerItem(0,5));
+    layout->addWidget(hLine);
+    layout->addWidget(_threadListWidget);
+
+    setLayout(layout);
+}
+
+void ThreadListContainer::doShowThreads(ForumPtr forum)
+{
+    _threadListWidget->clearList();
+
+    auto& threadList = forum->getThreads();
+    _threadListWidget->setThreadList(threadList);
+
+    _forumNameLbl->setText(forum->getName());
+
+    auto pageText = QString(tr("Page %1 of %2")).arg(forum->getPageNumber()).arg(forum->getPageCount());
+    _pageNumberLbl->setText(pageText);
+}
+
+//********************************
 //* PostViewContainer
-//********************************"
+//********************************
 
 static const char* strBackButtonStyle = R"(
 QToolButton
@@ -65,7 +150,9 @@ owl::PostViewContainer::PostViewContainer::PostViewContainer(QWidget* parent)
     threadFont.setPointSize(16);
     threadFont.setBold(true);
     _threadTitle->setFont(threadFont);
-    _threadTitle->setWordWrap(true);
+    _threadTitle->setWordWrap(false);
+    _threadTitle->setMinimumHeight(32);
+    _threadTitle->setMaximumHeight(32);
 
     topLayout->addItem(new QSpacerItem(1,0));
     topLayout->addWidget(_backButton);
@@ -92,9 +179,9 @@ owl::PostViewContainer::PostViewContainer::PostViewContainer(QWidget* parent)
 
 void PostViewContainer::showPosts(ThreadPtr thread)
 {
-//    QFontMetrics metrics(_threadTitle->font());
-//    const QString elidedTitle = metrics.elidedText(thread->getTitle(), Qt::ElideRight, _threadTitle->width());
-    _threadTitle->setText(thread->getTitle());
+    QFontMetrics metrics(_threadTitle->font());
+    const QString elidedTitle = metrics.elidedText(thread->getTitle(), Qt::ElideRight, _threadTitle->width());
+    _threadTitle->setText(elidedTitle);
 
     _postListWidget->clear();
     _postListWidget->showPosts(thread);
@@ -105,28 +192,6 @@ void PostViewContainer::showPosts(ThreadPtr thread)
 //* ContentView
 //********************************
 
-void ContentView::initThreadList()
-{
-    _threadListWidget = new ThreadListWidget(this);
-
-    QObject::connect(_threadListWidget, &owl::ThreadListWidget::threadLoading,
-        []()
-        {
-            qDebug() << "POSTS ARE BEING LOADED!";
-        });
-}
-
-void ContentView::initPostList()
-{
-    _postListContainer = new PostViewContainer(this);
-
-    QObject::connect(_postListContainer, &PostViewContainer::onBackButtonPressed,
-        [this]()
-        {
-            this->setCurrentIndex(1);
-        });
-}
-
 ContentView::ContentView(QWidget* parent /* = 0*/)
     : QStackedWidget(parent),
       _logger { owl::initializeLogger("ContentView") }
@@ -135,14 +200,17 @@ ContentView::ContentView(QWidget* parent /* = 0*/)
 
     _logoView = new LogoView(this);
 
-    // initializes `_threadListWidget`
-    initThreadList();
+    _threadListContainer = new ThreadListContainer(this);
 
-    // initializes `_postListContainer`
-    initPostList();
+    _postListContainer = new PostViewContainer(this);
+    QObject::connect(_postListContainer, &PostViewContainer::onBackButtonPressed,
+        [this]()
+        {
+            this->setCurrentIndex(1);
+        });
 
     this->addWidget(_logoView);
-    this->addWidget(_threadListWidget);
+    this->addWidget(_threadListContainer);
     this->addWidget(_postListContainer);
 }
 
@@ -153,10 +221,7 @@ void ContentView::doShowLogo()
 
 void ContentView::doShowListOfThreads(ForumPtr forum)
 {
-    _threadListWidget->clearList();
-
-    auto& threadList = forum->getThreads();
-    _threadListWidget->setThreadList(threadList);
+    _threadListContainer->doShowThreads(forum);
 
     owl::BoardWeakPtr boardWeak = forum->getBoard();
     if (auto board = boardWeak.lock(); board)

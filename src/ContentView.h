@@ -36,6 +36,22 @@ private:
 
 };
 
+class ThreadListContainer : public QWidget
+{
+    Q_OBJECT
+
+public:
+    ~ThreadListContainer() = default;
+    ThreadListContainer(QWidget* parent = nullptr);
+
+    void doShowThreads(ForumPtr);
+
+private:
+    QLabel*                 _forumNameLbl;
+    QLabel*                 _pageNumberLbl;
+    ThreadListWidget*       _threadListWidget;
+};
+
 class PostViewContainer : public QWidget
 {
 
@@ -69,11 +85,9 @@ public:
     void doShowListOfThreads(ForumPtr);
 
 private:
-    void initThreadList();
-    void initPostList();
 
     LogoView*               _logoView;
-    ThreadListWidget*       _threadListWidget;
+    ThreadListContainer*    _threadListContainer;
     PostViewContainer*      _postListContainer;
 
     owl::SpdLogPtr          _logger;
