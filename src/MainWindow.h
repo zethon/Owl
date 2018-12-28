@@ -339,6 +339,7 @@ private:
     ImageOverlay    _imageOverlay;
 
     std::shared_ptr<spdlog::logger>  _logger;
+    void toggleOldControls(bool toggle);
 };
 
 class BoardMenu : public QMenu

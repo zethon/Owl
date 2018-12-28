@@ -62,6 +62,11 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
     setDockNestingEnabled(true);
 //    setUnifiedTitleAndToolBarOnMac(true);
 
+    toggleOldControls(false);
+
+    setWindowIcon(QIcon(":/icons/owl_256.png"));
+    setWindowTitle(QStringLiteral(APP_NAME));
+
     this->boardsViewDockWidget->setMaximumWidth(BOARDICONWIDGETWIDTH);
     this->boardsViewDockWidget->setMinimumWidth(BOARDICONWIDGETWIDTH);
     this->centralWidget()->setMaximumWidth(CENTRALWIDGETWIDTH);
@@ -73,12 +78,6 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
     // initialize the dictionaries
     SPELLCHECKER->init();
 
-#ifdef Q_OS_WIN32
-    this->setWindowIcon(QIcon(":/icons/owl_256.png"));
-#endif
-    
-    setWindowTitle(QStringLiteral(APP_NAME));
-    
     // TODO: the appToolbar has been made invisible for release 1.0 but maybe it will
     //		 come back for later versions
     //createToolbar();
@@ -88,16 +87,14 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
     postViewDockWidget->setTitleBarWidget(new QWidget(postViewDockWidget));
     boardsViewDockWidget->setTitleBarWidget(new QWidget(boardsViewDockWidget));
     
-    loadBoards();
-
-    servicesTree->setModel(_svcModel);
-//    servicesTree->setVisible(false);
-
     QTimer::singleShot(0, this, SLOT(onLoaded()));
 }
 
 void MainWindow::onLoaded()
 {
+    loadBoards();
+    servicesTree->setModel(_svcModel);
+
     createBoardPanel();
     createThreadPanel();
     createPostPanel();
@@ -1037,6 +1034,23 @@ void MainWindow::onTreeDoubleClicked(const QModelIndex& idx)
     }
 }
 
+void MainWindow::toggleOldControls(bool doshow)
+{
+    servicesTree->setVisible(doshow);
+
+    currentForumFrame->setVisible(doshow);
+    threadNavFrame->setVisible(doshow);
+    threadListWidget->setVisible(doshow);
+    line->setVisible(doshow);
+    line_3->setVisible(doshow);
+
+    currentThreadFrame->setVisible(doshow);
+    postsWebView->setVisible(doshow);
+    postNavFrame->setVisible(doshow);
+    line_2->setVisible(doshow);
+    line_4->setVisible(doshow);
+}
+
 void MainWindow::createDebugMenu()
 {
     QMenu* debugMenu = this->menuBar()->addMenu("&Debug");
@@ -1098,20 +1112,7 @@ void MainWindow::createDebugMenu()
             [this]()
             {
                 bool toggle = !currentForumFrame->isVisible();
-
-                servicesTree->setVisible(toggle);
-
-                currentForumFrame->setVisible(toggle);
-                threadNavFrame->setVisible(toggle);
-                threadListWidget->setVisible(toggle);
-                line->setVisible(toggle);
-                line_3->setVisible(toggle);
-
-                currentThreadFrame->setVisible(toggle);
-                postsWebView->setVisible(toggle);
-                postNavFrame->setVisible(toggle);
-                line_2->setVisible(toggle);
-                line_4->setVisible(toggle);
+                toggleOldControls(toggle);
             });
     }
 }
