@@ -30,6 +30,8 @@ private:
     QToolBar*       _toolBar;
     QAction*        _prevAction;
     QAction*        _nextAction;
+
+    QList<QAction*> _actionList;
 };
 
 } // namespace

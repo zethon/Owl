@@ -19,8 +19,8 @@ PaginationWidget::PaginationWidget(QWidget *parent)
     : QWidget(parent)
 {
     setStyleSheet(strPaginationWidgetStyle);
-    setMaximumHeight(128);
-    setMinimumHeight(128);
+    setMaximumHeight(64);
+    setMinimumHeight(64);
 
     _prevAction = new QAction(this);
     _prevAction->setText(tr("Prev"));
@@ -28,9 +28,15 @@ PaginationWidget::PaginationWidget(QWidget *parent)
     _nextAction = new QAction(this);
     _nextAction->setText(tr("Next"));
 
+    for (auto x = 0; x < 9; x++)
+    {
+        _actionList.push_back(new QAction(this));
+        _actionList.back()->setText(QString::number(x));
+    }
+
     _toolBar = new QToolBar(this);
     _toolBar->addAction(_prevAction);
-    _toolBar->addSeparator();
+    _toolBar->addActions(_actionList);
     _toolBar->addAction(_nextAction);
 
     QObject::connect(_toolBar, &QToolBar::actionTriggered,
