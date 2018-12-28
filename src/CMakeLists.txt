@@ -24,6 +24,7 @@ SET (SOURCE_FILES
     main.cpp
     MainWindow.cpp
     NewThreadDlg.cpp
+    PaginationWidget.cpp
     PostTextEditor.cpp
     PreferencesDlg.cpp
     OwlApplication.cpp
@@ -49,6 +50,7 @@ SET (MOC_HEADERS
     MainWindow.h
     NewThreadDlg.h
     OwlApplication.h
+    PaginationWidget.h
     PostListWidget.h
     PostTextEditor.h
     PreferencesDlg.h

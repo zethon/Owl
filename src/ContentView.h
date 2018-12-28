@@ -14,14 +14,20 @@ namespace spdlog
 namespace owl
 {
 
+class PaginationWidget;
 class ThreadListWidget;
 class PostListWebView;
 
+class Board;
+using BoardWeakPtr = std::weak_ptr<Board>;
+
 class Forum;
 using ForumPtr = std::shared_ptr<owl::Forum>;
+using ForumWeakPtr = std::weak_ptr<owl::Forum>;
 
 class Thread;
 using ThreadPtr = std::shared_ptr<owl::Thread>;
+using ThreadWeakPtr = std::weak_ptr<owl::Thread>;
 
 using SpdLogPtr = std::shared_ptr<spdlog::logger>;
 
@@ -49,7 +55,10 @@ public:
 private:
     QLabel*                 _forumNameLbl;
     QLabel*                 _pageNumberLbl;
+    PaginationWidget*       _paginationWidget;
     ThreadListWidget*       _threadListWidget;
+
+    owl::ForumWeakPtr      _currentForum;
 };
 
 class PostViewContainer : public QWidget
@@ -90,6 +99,7 @@ private:
     ThreadListContainer*    _threadListContainer;
     PostViewContainer*      _postListContainer;
 
+    owl::BoardWeakPtr       _boardWeak;
     owl::SpdLogPtr          _logger;
 };
 

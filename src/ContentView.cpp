@@ -7,6 +7,7 @@
 #include "Data/Board.h"
 #include "ThreadListWidget.h"
 #include "PostListWidget.h"
+#include "PaginationWidget.h"
 
 #include "ContentView.h"
 
@@ -37,7 +38,7 @@ LogoView::LogoView(QWidget *parent)
 static const char* strPageNumberStyle = R"(
 QLabel
 {
-    color: red;
+    color: #587B7F;
 }
 )";
 
@@ -73,14 +74,43 @@ ThreadListContainer::ThreadListContainer(QWidget *parent)
     _pageNumberLbl->setMaximumHeight(14);
     _pageNumberLbl->setStyleSheet(strPageNumberStyle);
 
+    // TODO: investigate the issue with constructing layouts like
+    // `new MyLayout(this)` vs `new MyLayout(parent)`, because it
+    // only seems to work right if we use `parent`
+    _paginationWidget = new owl::PaginationWidget(this);
+    QObject::connect(_paginationWidget, &PaginationWidget::doGotoPage,
+        [this](std::uint32_t page)
+        {
+            if (ForumPtr forum = _currentForum.lock(); forum)
+            {
+                if (BoardPtr board = forum->getBoard().lock(); board)
+                {
+                    forum->setPageNumber(page);
+                    board->requestThreadList(forum);
+                }
+                else
+                {
+                    // TODO: should do something here
+                    Q_ASSERT(0);
+                }
+            }
+            else
+            {
+                // TODO: should do something here
+                Q_ASSERT(0);
+            }
+        });
+
+
     QVBoxLayout* forumNameLayout = new QVBoxLayout(parent);
     forumNameLayout->setMargin(0);
     forumNameLayout->setSpacing(0);
     forumNameLayout->addWidget(_forumNameLbl);
     forumNameLayout->addWidget(_pageNumberLbl);
+    forumNameLayout->addWidget(_paginationWidget);
 
     QHBoxLayout* topLayout = new QHBoxLayout(parent);
-    topLayout->addItem(new QSpacerItem(1+32,0));
+    topLayout->addItem(new QSpacerItem(10,0));
     topLayout->addLayout(forumNameLayout);
     topLayout->addItem(new QSpacerItem(1,0));
 
@@ -113,6 +143,12 @@ void ThreadListContainer::doShowThreads(ForumPtr forum)
 
     auto pageText = QString(tr("Page %1 of %2")).arg(forum->getPageNumber()).arg(forum->getPageCount());
     _pageNumberLbl->setText(pageText);
+
+    std::uint32_t current = static_cast<std::uint32_t>(forum->getPageNumber());
+    std::uint32_t total = static_cast<std::uint32_t>(forum->getPageCount());
+    _paginationWidget->setPages(current, total);
+
+    _currentForum = forum;
 }
 
 //********************************
@@ -226,6 +262,7 @@ void ContentView::doShowListOfThreads(ForumPtr forum)
     owl::BoardWeakPtr boardWeak = forum->getBoard();
     if (auto board = boardWeak.lock(); board)
     {
+        _boardWeak = boardWeak;
         QObject::connect(board.get(), &owl::Board::onGetPosts,
             [this](BoardPtr, ThreadPtr thread)
             {
