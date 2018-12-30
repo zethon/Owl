@@ -24,6 +24,9 @@ Q_SIGNALS:
     void doGotoPage(std::uint32_t);
 
 private:
+    void setPrevButtons();
+    void setNextButtons();
+
     std::uint32_t   _currentPage;
     std::uint32_t   _totalPages;
 
