@@ -1,6 +1,9 @@
 #include <QToolBar>
 #include <QToolButton>
 #include <QHBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
 #include <QDebug>
 
 #include "PaginationWidget.h"
@@ -145,7 +148,45 @@ void PaginationWidget::setNextButtons()
         Q_ASSERT(_actionList.at(lastPageIdx-1)->isVisible());
         _actionList.at(lastPageIdx-1)->setText("?");
         _actionList.at(lastPageIdx-1)->setData(1);
+
+        QToolButton* button = new QToolButton(this);
+        button->setText("THIS");
+        button->setPopupMode(QToolButton::InstantPopup);
+        button->setDefaultAction(new GotoPageWidgetAction(this));
+
+        _toolBar->addWidget(button);
     }
 }
+
+GotoPageWidgetAction::GotoPageWidgetAction(QWidget *parent)
+    : QWidgetAction(parent)
+{}
+
+QWidget *GotoPageWidgetAction::createWidget(QWidget *parent)
+{
+    GotoPageWidget* widget = new GotoPageWidget(parent);
+    return widget;
+}
+
+GotoPageWidget::GotoPageWidget(QWidget *parent)
+    : QWidget(parent)
+{
+    QHBoxLayout*  layout = new QHBoxLayout(parent);
+
+    QLabel* label = new QLabel(this);
+    label->setText("Go to page");
+
+    QLineEdit* edit = new QLineEdit(this);
+
+    QPushButton* okBtn = new QPushButton(this);
+    okBtn->setText("GO");
+
+    layout->addWidget(label);
+    layout->addWidget(edit);
+    layout->addWidget(okBtn);
+
+    setLayout(layout);
+}
+
 
 } // namespace

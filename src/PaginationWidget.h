@@ -1,12 +1,35 @@
 #pragma once
 
 #include <QWidget>
+#include <QWidgetAction>
 
 class QToolBar;
 class QToolButton;
 
 namespace owl
 {
+
+class GotoPageWidget : public QWidget
+{
+    Q_OBJECT
+
+public:
+    ~GotoPageWidget() = default;
+    explicit GotoPageWidget(QWidget* parent);
+};
+
+// https://stackoverflow.com/questions/27014845/how-can-i-add-custom-widget-as-popup-menu-for-toolbutton
+class GotoPageWidgetAction : public QWidgetAction
+{
+    Q_OBJECT
+
+public:
+    ~GotoPageWidgetAction() = default;
+    explicit GotoPageWidgetAction(QWidget* parent);
+
+protected:
+    QWidget* createWidget(QWidget* parent);
+};
 
 class PaginationWidget : public QWidget
 {
