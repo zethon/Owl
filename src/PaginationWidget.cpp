@@ -47,9 +47,11 @@ PaginationWidget::PaginationWidget(QWidget *parent)
 
     _prevButton = new QToolButton(this);
     _prevButton->setDefaultAction(new QAction(tr("Prev"), this));
+    QObject::connect(_prevButton, &QToolButton::triggered, this, &PaginationWidget::onButtonClicked);
 
     _nextButton = new QToolButton(this);
     _nextButton->setDefaultAction(new QAction(tr("Next"), this));
+    QObject::connect(_nextButton, &QToolButton::triggered, this, &PaginationWidget::onButtonClicked);
 
     _toolBar = new QToolBar(this);
     _toolBar->setStyleSheet(strPaginationWidgetStyle);
@@ -57,21 +59,15 @@ PaginationWidget::PaginationWidget(QWidget *parent)
     _toolBar->addWidget(_prevButton);
     for (std::uint32_t x = 0; x < totalPageButtons; x++)
     {
-        _actionList.push_back(new QAction(this));
-        _actionList.back()->setText(QString::number(x));
-        _actionList.back()->setObjectName(QString::number(x));
-        _toolBar->addAction(_actionList.back());
-        _toolBar->widgetForAction(_actionList.back())->setObjectName(QString::number(x));
+        auto button = new QToolButton(this);
+        button->setObjectName(QString::number(x));
+        button->setDefaultAction(new QAction(QString::number(x), this));
+        QObject::connect(button, &QToolButton::triggered, this, &PaginationWidget::onButtonClicked);
+
+        _buttonList.push_back(button);
+        _toolBar->addWidget(button);
     }
     _toolBar->addWidget(_nextButton);
-
-    QObject::connect(_toolBar, &QToolBar::actionTriggered,
-        [this](QAction* action)
-        {
-            std::uint32_t page = static_cast<std::uint32_t>(action->data().toInt());
-            Q_EMIT doGotoPage(page);
-        });
-
 
     QHBoxLayout* buttonLayout = new QHBoxLayout(parent);
     buttonLayout->addWidget(_toolBar);
@@ -79,12 +75,18 @@ PaginationWidget::PaginationWidget(QWidget *parent)
     setLayout(buttonLayout);
 }
 
+void PaginationWidget::onButtonClicked(QAction* action)
+{
+    std::uint32_t page = static_cast<std::uint32_t>(action->data().toInt());
+    qDebug()  << "GOTO PAGE: " << page;
+    Q_EMIT doGotoPage(page);
+}
+
+
 void PaginationWidget::setPages(std::uint32_t current, std::uint32_t total)
 {
     _currentPage = current;
     _totalPages = total;
-
-//    _toolBar->clear();
 
     setPrevButtons();
     setNextButtons();
@@ -98,30 +100,36 @@ void PaginationWidget::setPrevButtons()
     std::int32_t currentLabel = static_cast<std::int32_t>(_currentPage);
     for (std::int32_t x = anchorIdx; x >= 0; x--, currentLabel--)
     {
-        _actionList.at(x)->setText(QString::number(currentLabel));
-        _actionList.at(x)->setData(currentLabel);
-        _actionList.at(x)->setVisible(currentLabel >= 1);
+        _buttonList.at(x)->defaultAction()->setText(QString::number(currentLabel));
+        _buttonList.at(x)->defaultAction()->setData(currentLabel);
+
+        // NOTE: The position of the button in the `_toolBar` is offset by 1 because
+        // of the `_prevButton`
+        _toolBar->actions().at(x+1)->setVisible(currentLabel >= 1);
     }
 
-    Q_ASSERT(_actionList.at(anchorIdx)->isVisible());
+    Q_ASSERT(_toolBar->actions().at(anchorIdx+1)->isVisible());
 
     // go through and hack the first two buttons so that the first
     // one always shows `1` and the second one becomes the goto
     // page dropdown
     if (_currentPage > anchorIdx+1)
     {
-        Q_ASSERT(_actionList.at(firstPageIdx)->isVisible());
-        _actionList.at(firstPageIdx)->setText("1");
-        _actionList.at(firstPageIdx)->setData(1);
+        // NOTE: the `+1` is because `lastPageIdx` refers to the index of the object in the
+        // `_buttonList` but we need to check visibility in the `_toolbar` which is offset
+        // by 1
+        Q_ASSERT(_toolBar->actions().at(firstPageIdx+1)->isVisible());
+        _buttonList.at(firstPageIdx)->defaultAction()->setText("1");
+        _buttonList.at(firstPageIdx)->defaultAction()->setData(1);
 
-        Q_ASSERT(_actionList.at(firstPageIdx+1)->isVisible());
-        _actionList.at(firstPageIdx+1)->setText("?");
-        _actionList.at(firstPageIdx+1)->setData(1);
+        Q_ASSERT(_toolBar->actions().at(firstPageIdx+2)->isVisible());
+        _buttonList.at(firstPageIdx+1)->defaultAction()->setText("?");
     }
 }
 
 void PaginationWidget::setNextButtons()
 {
+    Q_UNUSED(lastPageIdx);
     _nextButton->setVisible(_currentPage < _totalPages);
     _nextButton->defaultAction()->setData(_currentPage + 1);
 
@@ -129,32 +137,36 @@ void PaginationWidget::setNextButtons()
     for (std::int32_t x = anchorIdx + 1; x < static_cast<std::int32_t>(totalPageButtons)
          ; x++, currentLabel++)
     {
-        _actionList.at(x)->setText(QString::number(currentLabel));
-        _actionList.at(x)->setData(currentLabel);
-        _actionList.at(x)->setVisible(currentLabel <= static_cast<std::int32_t>(_totalPages));
+        _buttonList.at(x)->defaultAction()->setText(QString::number(currentLabel));
+        _buttonList.at(x)->defaultAction()->setData(currentLabel);
+
+        // NOTE: The position of the button in the `_toolBar` is offset by 1 because
+        // of the `_prevButton`
+        _toolBar->actions().at(x+1)->setVisible(currentLabel <= static_cast<std::int32_t>(_totalPages));
     }
 
-    Q_ASSERT(_actionList.at(anchorIdx)->isVisible());
+    Q_ASSERT(_toolBar->actions().at(anchorIdx+1)->isVisible());
 
     // go through and hack the last two buttons so that the last
     // one always shows the last page and the second to last
     // becomes the goto page dropdown
     if (_currentPage < (_totalPages - anchorIdx))
     {
-        Q_ASSERT(_actionList.at(lastPageIdx)->isVisible());
-        _actionList.at(lastPageIdx)->setText(QString::number(_totalPages));
-        _actionList.at(lastPageIdx)->setData(_totalPages);
+        // NOTE: the `+1` is because `lastPageIdx` refers to the index of the object in the
+        // `_buttonList` but we need to check visibility in the `_toolbar` which is offset
+        // by 1
+        Q_ASSERT(_toolBar->actions().at(lastPageIdx+1)->isVisible());
+        _buttonList.at(lastPageIdx)->defaultAction()->setText(QString::number(_totalPages));
+        _buttonList.at(lastPageIdx)->defaultAction()->setData(_totalPages);
 
-        Q_ASSERT(_actionList.at(lastPageIdx-1)->isVisible());
-        _actionList.at(lastPageIdx-1)->setText("?");
-        _actionList.at(lastPageIdx-1)->setData(1);
-//        _actionList.at(lastPageIdx-1)->setActionGroup()
+        Q_ASSERT(_toolBar->actions().at(lastPageIdx)->isVisible());
+        _buttonList.at(lastPageIdx-1)->setText("?");
 
-        QToolButton* button = new QToolButton(this);
-        button->setText("THIS");
-        button->addAction(new GotoPageWidgetAction(this));
-        button->setPopupMode(QToolButton::InstantPopup);
-        _toolBar->addWidget(button);
+//        QToolButton* button = new QToolButton(this);
+//        button->setText("THIS");
+//        button->addAction(new GotoPageWidgetAction(this));
+//        button->setPopupMode(QToolButton::InstantPopup);
+//        _toolBar->addWidget(button);
     }
 }
 

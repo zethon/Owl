@@ -46,6 +46,9 @@ public:
 Q_SIGNALS:
     void doGotoPage(std::uint32_t);
 
+private Q_SLOTS:
+    void onButtonClicked(QAction*);
+
 private:
     void setPrevButtons();
     void setNextButtons();
@@ -57,7 +60,7 @@ private:
     QToolButton*    _prevButton;
     QToolButton*    _nextButton;
 
-    QList<QAction*> _actionList;
+    QList<QToolButton*> _buttonList;
 };
 
 } // namespace
