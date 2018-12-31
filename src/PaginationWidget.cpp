@@ -91,7 +91,11 @@ void PaginationWidget::createPreviousButtons()
             else if (x == currentLabel + 1)
             {
                 newButton->setText("...");
-                newButton->addAction(new GotoPageWidgetAction(_totalPages, newButton));
+                auto widgetAction = new GotoPageWidgetAction(_totalPages, newButton);
+                QObject::connect(widgetAction, &GotoPageWidgetAction::gotoPage,
+                    [this](std::uint32_t pageNumber) { Q_EMIT doGotoPage(pageNumber); });
+
+                newButton->addAction(widgetAction);
                 newButton->setPopupMode(QToolButton::InstantPopup);
             }
         }
@@ -138,7 +142,11 @@ void PaginationWidget::createNextButtons()
             else if (x == totalPageButtons - 2)
             {
                 newButton->setText("...");
-                newButton->addAction(new GotoPageWidgetAction(_totalPages, newButton));
+                auto widgetAction = new GotoPageWidgetAction(_totalPages, newButton);
+                QObject::connect(widgetAction, &GotoPageWidgetAction::gotoPage,
+                    [this](std::uint32_t pageNumber) { Q_EMIT doGotoPage(pageNumber); });
+
+                newButton->addAction(widgetAction);
                 newButton->setPopupMode(QToolButton::InstantPopup);
             }
         }
@@ -203,6 +211,7 @@ GotoPageWidgetAction::GotoPageWidgetAction(uint32_t totalPages, QWidget *parent)
 QWidget *GotoPageWidgetAction::createWidget(QWidget *parent)
 {
     GotoPageWidget* widget = new GotoPageWidget(_totalPages, parent);
+    QObject::connect(widget, SIGNAL(gotoPage(std::uint32_t)), this, SIGNAL(gotoPage(std::uint32_t)));
     return widget;
 }
 
@@ -223,6 +232,12 @@ GotoPageWidget::GotoPageWidget(uint32_t totalPages, QWidget *parent)
 
     QPushButton* okBtn = new QPushButton(this);
     okBtn->setText("GO");
+    QObject::connect(okBtn, &QPushButton::clicked,
+        [edit,this]()
+        {
+            std::uint32_t pageNumber = static_cast<std::uint32_t>(edit->text().toInt());
+            Q_EMIT gotoPage(pageNumber);
+        });
 
     layout->addWidget(label);
     layout->addWidget(edit);

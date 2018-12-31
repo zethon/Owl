@@ -17,6 +17,9 @@ class GotoPageWidget : public QWidget
 public:
     ~GotoPageWidget() = default;
     explicit GotoPageWidget(std::uint32_t totalPages, QWidget* parent);
+
+Q_SIGNALS:
+    void gotoPage(std::uint32_t pageNumber);
 };
 
 // https://stackoverflow.com/questions/27014845/how-can-i-add-custom-widget-as-popup-menu-for-toolbutton
@@ -27,6 +30,9 @@ class GotoPageWidgetAction : public QWidgetAction
 public:
     ~GotoPageWidgetAction() = default;
     explicit GotoPageWidgetAction(std::uint32_t totalPages, QWidget* parent);
+
+Q_SIGNALS:
+    void gotoPage(std::uint32_t pageNumber);
 
 protected:
     QWidget* createWidget(QWidget* parent);
