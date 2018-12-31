@@ -11,26 +11,6 @@
 namespace owl
 {
 
-class MyToolButton : public QToolButton
-{
-public:
-    using QToolButton::QToolButton;
-    ~MyToolButton()
-    {
-        qDebug() << "MY TOOLBUTTON DESTROYETH!";
-    }
-};
-
-class MyAction : public QAction
-{
-public:
-    using QAction::QAction;
-    ~MyAction()
-    {
-        qDebug() << "MY ACTION DESTROYETH!";
-    }
-};
-
 // The total number of page buttons to be displayed, not counting the Previous
 // and Next buttons
 static const std::uint32_t totalPageButtons = 9;
@@ -65,7 +45,6 @@ PaginationWidget::PaginationWidget(QWidget *parent)
 void PaginationWidget::onButtonClicked(QAction* action)
 {
     std::uint32_t page = static_cast<std::uint32_t>(action->data().toInt());
-    qDebug()  << "GOTO PAGE: " << page;
     Q_EMIT doGotoPage(page);
 }
 
@@ -74,10 +53,10 @@ void PaginationWidget::createPreviousButtons()
 {
     if (_currentPage > 1)
     {
-        QToolButton* prevButton = new MyToolButton(this);
+        QToolButton* prevButton = new QToolButton(this);
         QObject::connect(prevButton, &QToolButton::triggered, this, &PaginationWidget::onButtonClicked);
 
-        prevButton->setDefaultAction(new MyAction(tr("Prev"), prevButton));
+        prevButton->setDefaultAction(new QAction(tr("Prev"), prevButton));
         prevButton->defaultAction()->setData(_currentPage - 1);
         _toolBar->addWidget(prevButton);
     }
@@ -85,7 +64,7 @@ void PaginationWidget::createPreviousButtons()
     std::uint32_t currentLabel = static_cast<std::uint32_t>(std::max(1, static_cast<std::int32_t>(_currentPage - anchorIdx)));
     for (std::uint32_t x = currentLabel; x < _currentPage; x++)
     {
-        QToolButton* newButton = new MyToolButton(_toolBar);
+        QToolButton* newButton = new QToolButton(_toolBar);
 
         if ((_currentPage > anchorIdx + 1)
             && ((x == currentLabel) || (x == currentLabel + 1)))
@@ -93,7 +72,7 @@ void PaginationWidget::createPreviousButtons()
             // the `1` button
             if (x == currentLabel)
             {
-                QAction* action = new MyAction(newButton);
+                QAction* action = new QAction(newButton);
                 action->setText("1");
                 action->setData(1);
 
@@ -108,7 +87,7 @@ void PaginationWidget::createPreviousButtons()
         }
         else
         {
-            QAction* action = new MyAction(newButton);
+            QAction* action = new QAction(newButton);
             action->setText(QString::number(x));
             action->setData(x);
 
@@ -131,7 +110,7 @@ void PaginationWidget::createNextButtons()
         {
             if (x > _totalPages) break;
 
-            QToolButton* newButton = new MyToolButton(_toolBar);
+            QToolButton* newButton = new QToolButton(_toolBar);
 
             if ((_totalPages - _currentPage > anchorIdx)
                 && ((x == totalPageButtons - 1) || (x == totalPageButtons - 2)))
@@ -139,7 +118,7 @@ void PaginationWidget::createNextButtons()
                 // the last button on the far right
                 if (x == totalPageButtons - 1)
                 {
-                    QAction* action = new MyAction(newButton);
+                    QAction* action = new QAction(newButton);
                     action->setText(QString::number(_totalPages));
                     action->setData(_totalPages);
 
@@ -154,7 +133,7 @@ void PaginationWidget::createNextButtons()
             }
             else
             {
-                QAction* action = new MyAction(newButton);
+                QAction* action = new QAction(newButton);
                 action->setText(QString::number(x));
                 action->setData(x);
 
@@ -169,10 +148,10 @@ void PaginationWidget::createNextButtons()
 
     if (_currentPage < _totalPages)
     {
-        QToolButton* nextButton = new MyToolButton(this);
+        QToolButton* nextButton = new QToolButton(this);
         QObject::connect(nextButton, &QToolButton::triggered, this, &PaginationWidget::onButtonClicked);
 
-        nextButton->setDefaultAction(new MyAction(tr("Next"), nextButton));
+        nextButton->setDefaultAction(new QAction(tr("Next"), nextButton));
         nextButton->defaultAction()->setData(_currentPage + 1);
         _toolBar->addWidget(nextButton);
     }
@@ -198,7 +177,7 @@ void PaginationWidget::setPages(std::uint32_t current, std::uint32_t total)
     createPreviousButtons();
 
     // add the anchor
-    QToolButton* anchorButton = new MyToolButton(_toolBar);
+    QToolButton* anchorButton = new QToolButton(_toolBar);
     anchorButton->setText(QString::number(_currentPage));
     anchorButton->setObjectName("currentPage");
     _toolBar->addWidget(anchorButton);
@@ -236,6 +215,5 @@ GotoPageWidget::GotoPageWidget(QWidget *parent)
 
     setLayout(layout);
 }
-
 
 } // namespace
