@@ -43,6 +43,7 @@ public:
     std::uint32_t total() const { return _totalPages; }
     void setPages(std::uint32_t current, std::uint32_t total);
 
+
 Q_SIGNALS:
     void doGotoPage(std::uint32_t);
 
@@ -52,6 +53,9 @@ private Q_SLOTS:
 private:
     void setPrevButtons();
     void setNextButtons();
+
+    void createPreviousButtons();
+    void createNextButtons();
 
     std::uint32_t   _currentPage;
     std::uint32_t   _totalPages;
