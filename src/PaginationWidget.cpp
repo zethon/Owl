@@ -4,6 +4,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QIntValidator>
 #include <QDebug>
 
 #include "PaginationWidget.h"
@@ -22,11 +23,20 @@ static const std::uint32_t anchorIdx = 4;
 static const char* strPaginationWidgetStyle = R"(
 QToolBar
 {
-    background: yellow;
+    background: transparent;
+}
+QToolButton
+{
+    color: darkgrey;
+    border: 1px solid darkgrey;
+}
+QToolButton::menu-indicator
+{
+    width:0px;
 }
 QToolButton#currentPage
 {
-    background: red;
+    color: black;
     text-decoration: underline;
 }
 )";
@@ -81,8 +91,8 @@ void PaginationWidget::createPreviousButtons()
             }
             else if (x == currentLabel + 1)
             {
-                newButton->setText("?");
-                newButton->addAction(new GotoPageWidgetAction(newButton));
+                newButton->setText("...");
+                newButton->addAction(new GotoPageWidgetAction(_totalPages, newButton));
                 newButton->setPopupMode(QToolButton::InstantPopup);
             }
         }
@@ -129,16 +139,16 @@ void PaginationWidget::createNextButtons()
                 }
                 else if (x == totalPageButtons - 2)
                 {
-                    newButton->setText("?");
-                    newButton->addAction(new GotoPageWidgetAction(newButton));
+                    newButton->setText("...");
+                    newButton->addAction(new GotoPageWidgetAction(_totalPages, newButton));
                     newButton->setPopupMode(QToolButton::InstantPopup);
                 }
             }
             else
             {
                 QAction* action = new QAction(newButton);
-                action->setText(QString::number(x));
-                action->setData(x);
+                action->setText(QString::number(currentLabel));
+                action->setData(currentLabel);
 
                 newButton->setDefaultAction(action);
                 QObject::connect(newButton, &QToolButton::triggered, this, &PaginationWidget::onButtonClicked);
@@ -188,17 +198,18 @@ void PaginationWidget::setPages(std::uint32_t current, std::uint32_t total)
     createNextButtons();
 }
 
-GotoPageWidgetAction::GotoPageWidgetAction(QWidget *parent)
-    : QWidgetAction(parent)
+GotoPageWidgetAction::GotoPageWidgetAction(uint32_t totalPages, QWidget *parent)
+    : QWidgetAction(parent),
+      _totalPages(totalPages)
 {}
 
 QWidget *GotoPageWidgetAction::createWidget(QWidget *parent)
 {
-    GotoPageWidget* widget = new GotoPageWidget(parent);
+    GotoPageWidget* widget = new GotoPageWidget(_totalPages, parent);
     return widget;
 }
 
-GotoPageWidget::GotoPageWidget(QWidget *parent)
+GotoPageWidget::GotoPageWidget(uint32_t totalPages, QWidget *parent)
     : QWidget(parent)
 {
     QHBoxLayout*  layout = new QHBoxLayout(parent);
@@ -207,6 +218,11 @@ GotoPageWidget::GotoPageWidget(QWidget *parent)
     label->setText("Go to page");
 
     QLineEdit* edit = new QLineEdit(this);
+
+    QIntValidator* validator = new QIntValidator(edit);
+    validator->setBottom(1);
+    validator->setTop(static_cast<int>(totalPages));
+    edit->setValidator(validator);
 
     QPushButton* okBtn = new QPushButton(this);
     okBtn->setText("GO");
