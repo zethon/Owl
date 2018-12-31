@@ -5,6 +5,7 @@
 
 class QToolBar;
 class QToolButton;
+class QHBoxLayout;
 
 namespace owl
 {
@@ -57,9 +58,8 @@ private:
     std::uint32_t   _currentPage;
     std::uint32_t   _totalPages;
 
-    QToolBar*       _toolBar;
-    QToolButton*    _prevButton;
-    QToolButton*    _nextButton;
+    QHBoxLayout*    _buttonLayout;
+    QToolBar*       _toolBar = nullptr;
 };
 
 } // namespace
