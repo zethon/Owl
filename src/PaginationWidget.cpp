@@ -45,18 +45,16 @@ PaginationWidget::PaginationWidget(QWidget *parent)
     setMaximumHeight(64);
     setMinimumHeight(64);
 
-    _prevAction = new QAction(this);
-    _prevAction->setText(tr("Prev"));
-    _prevAction->setObjectName("previous");
+    _prevButton = new QToolButton(this);
+    _prevButton->setDefaultAction(new QAction(tr("Prev"), this));
 
-    _nextAction = new QAction(this);
-    _nextAction->setText(tr("Next"));
-    _prevAction->setObjectName("next");
+    _nextButton = new QToolButton(this);
+    _nextButton->setDefaultAction(new QAction(tr("Next"), this));
 
     _toolBar = new QToolBar(this);
     _toolBar->setStyleSheet(strPaginationWidgetStyle);
 
-    _toolBar->addAction(_prevAction);
+    _toolBar->addWidget(_prevButton);
     for (std::uint32_t x = 0; x < totalPageButtons; x++)
     {
         _actionList.push_back(new QAction(this));
@@ -65,7 +63,7 @@ PaginationWidget::PaginationWidget(QWidget *parent)
         _toolBar->addAction(_actionList.back());
         _toolBar->widgetForAction(_actionList.back())->setObjectName(QString::number(x));
     }
-    _toolBar->addAction(_nextAction);
+    _toolBar->addWidget(_nextButton);
 
     QObject::connect(_toolBar, &QToolBar::actionTriggered,
         [this](QAction* action)
@@ -86,14 +84,16 @@ void PaginationWidget::setPages(std::uint32_t current, std::uint32_t total)
     _currentPage = current;
     _totalPages = total;
 
+//    _toolBar->clear();
+
     setPrevButtons();
     setNextButtons();
 }
 
 void PaginationWidget::setPrevButtons()
 {
-    _prevAction->setVisible(_currentPage > 1);
-    _prevAction->setData(_currentPage - 1);
+    _prevButton->setVisible(_currentPage > 1);
+    _prevButton->defaultAction()->setData(_currentPage - 1);
 
     std::int32_t currentLabel = static_cast<std::int32_t>(_currentPage);
     for (std::int32_t x = anchorIdx; x >= 0; x--, currentLabel--)
@@ -122,8 +122,8 @@ void PaginationWidget::setPrevButtons()
 
 void PaginationWidget::setNextButtons()
 {
-    _nextAction->setVisible(_currentPage < _totalPages);
-    _nextAction->setData(_currentPage + 1);
+    _nextButton->setVisible(_currentPage < _totalPages);
+    _nextButton->defaultAction()->setData(_currentPage + 1);
 
     std::int32_t currentLabel = static_cast<std::int32_t>(_currentPage + 1);
     for (std::int32_t x = anchorIdx + 1; x < static_cast<std::int32_t>(totalPageButtons)
@@ -148,12 +148,12 @@ void PaginationWidget::setNextButtons()
         Q_ASSERT(_actionList.at(lastPageIdx-1)->isVisible());
         _actionList.at(lastPageIdx-1)->setText("?");
         _actionList.at(lastPageIdx-1)->setData(1);
+//        _actionList.at(lastPageIdx-1)->setActionGroup()
 
         QToolButton* button = new QToolButton(this);
         button->setText("THIS");
+        button->addAction(new GotoPageWidgetAction(this));
         button->setPopupMode(QToolButton::InstantPopup);
-        button->setDefaultAction(new GotoPageWidgetAction(this));
-
         _toolBar->addWidget(button);
     }
 }

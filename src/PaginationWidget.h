@@ -54,8 +54,8 @@ private:
     std::uint32_t   _totalPages;
 
     QToolBar*       _toolBar;
-    QAction*        _prevAction;
-    QAction*        _nextAction;
+    QToolButton*    _prevButton;
+    QToolButton*    _nextButton;
 
     QList<QAction*> _actionList;
 };
