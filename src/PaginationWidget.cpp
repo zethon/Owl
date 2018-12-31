@@ -58,7 +58,6 @@ void PaginationWidget::onButtonClicked(QAction* action)
     Q_EMIT doGotoPage(page);
 }
 
-
 void PaginationWidget::createPreviousButtons()
 {
     if (_currentPage > 1)
@@ -116,46 +115,44 @@ void PaginationWidget::createPreviousButtons()
 void PaginationWidget::createNextButtons()
 {
     std::uint32_t currentLabel = _currentPage + 1;
-    if (currentLabel < _totalPages)
+
+    for (std::uint32_t x = anchorIdx + 1; x < totalPageButtons; x++, currentLabel++)
     {
-        for (std::uint32_t x = anchorIdx + 1; x < totalPageButtons; x++, currentLabel++)
+        if (currentLabel > _totalPages) break;
+
+        QToolButton* newButton = new QToolButton(_toolBar);
+
+        if ((_totalPages - _currentPage > anchorIdx)
+            && ((x == totalPageButtons - 1) || (x == totalPageButtons - 2)))
         {
-            if (x > _totalPages) break;
-
-            QToolButton* newButton = new QToolButton(_toolBar);
-
-            if ((_totalPages - _currentPage > anchorIdx)
-                && ((x == totalPageButtons - 1) || (x == totalPageButtons - 2)))
-            {
-                // the last button on the far right
-                if (x == totalPageButtons - 1)
-                {
-                    QAction* action = new QAction(newButton);
-                    action->setText(QString::number(_totalPages));
-                    action->setData(_totalPages);
-
-                    newButton->setDefaultAction(action);
-                    QObject::connect(newButton, &QToolButton::triggered, this, &PaginationWidget::onButtonClicked);
-                }
-                else if (x == totalPageButtons - 2)
-                {
-                    newButton->setText("...");
-                    newButton->addAction(new GotoPageWidgetAction(_totalPages, newButton));
-                    newButton->setPopupMode(QToolButton::InstantPopup);
-                }
-            }
-            else
+            // the last button on the far right
+            if (x == totalPageButtons - 1)
             {
                 QAction* action = new QAction(newButton);
-                action->setText(QString::number(currentLabel));
-                action->setData(currentLabel);
+                action->setText(QString::number(_totalPages));
+                action->setData(_totalPages);
 
                 newButton->setDefaultAction(action);
                 QObject::connect(newButton, &QToolButton::triggered, this, &PaginationWidget::onButtonClicked);
             }
-
-            _toolBar->addWidget(newButton);
+            else if (x == totalPageButtons - 2)
+            {
+                newButton->setText("...");
+                newButton->addAction(new GotoPageWidgetAction(_totalPages, newButton));
+                newButton->setPopupMode(QToolButton::InstantPopup);
+            }
         }
+        else
+        {
+            QAction* action = new QAction(newButton);
+            action->setText(QString::number(currentLabel));
+            action->setData(currentLabel);
+
+            newButton->setDefaultAction(action);
+            QObject::connect(newButton, &QToolButton::triggered, this, &PaginationWidget::onButtonClicked);
+        }
+
+        _toolBar->addWidget(newButton);
     }
 
     if (_currentPage < _totalPages)
