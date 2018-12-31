@@ -77,6 +77,7 @@ void PaginationWidget::createPreviousButtons()
                 action->setData(1);
 
                 newButton->setDefaultAction(action);
+                QObject::connect(newButton, &QToolButton::triggered, this, &PaginationWidget::onButtonClicked);
             }
             else if (x == currentLabel + 1)
             {
@@ -92,6 +93,7 @@ void PaginationWidget::createPreviousButtons()
             action->setData(x);
 
             newButton->setDefaultAction(action);
+            QObject::connect(newButton, &QToolButton::triggered, this, &PaginationWidget::onButtonClicked);
         }
 
         Q_ASSERT(newButton);
@@ -123,6 +125,7 @@ void PaginationWidget::createNextButtons()
                     action->setData(_totalPages);
 
                     newButton->setDefaultAction(action);
+                    QObject::connect(newButton, &QToolButton::triggered, this, &PaginationWidget::onButtonClicked);
                 }
                 else if (x == totalPageButtons - 2)
                 {
@@ -138,10 +141,9 @@ void PaginationWidget::createNextButtons()
                 action->setData(x);
 
                 newButton->setDefaultAction(action);
+                QObject::connect(newButton, &QToolButton::triggered, this, &PaginationWidget::onButtonClicked);
             }
 
-            Q_ASSERT(newButton);
-            QObject::connect(newButton, &QToolButton::triggered, this, &PaginationWidget::onButtonClicked);
             _toolBar->addWidget(newButton);
         }
     }
