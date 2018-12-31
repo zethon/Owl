@@ -51,9 +51,6 @@ private Q_SLOTS:
     void onButtonClicked(QAction*);
 
 private:
-    void setPrevButtons();
-    void setNextButtons();
-
     void createPreviousButtons();
     void createNextButtons();
 
@@ -63,8 +60,6 @@ private:
     QToolBar*       _toolBar;
     QToolButton*    _prevButton;
     QToolButton*    _nextButton;
-
-    QList<QToolButton*> _buttonList;
 };
 
 } // namespace
