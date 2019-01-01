@@ -54,7 +54,7 @@ public:
 
 private:
     QLabel*                 _forumNameLbl;
-    QLabel*                 _pageNumberLbl;
+//    QLabel*                 _pageNumberLbl;
     PaginationWidget*       _paginationWidget;
     ThreadListWidget*       _threadListWidget;
 

@@ -35,25 +35,17 @@ LogoView::LogoView(QWidget *parent)
 //* ThreadListContainer
 //********************************
 
-static const char* strPageNumberStyle = R"(
-QLabel
-{
-    color: #587B7F;
-}
-)";
+//static const char* strPageNumberStyle = R"(
+//QLabel
+//{
+//    color: #587B7F;
+//}
+//)";
 
 ThreadListContainer::ThreadListContainer(QWidget *parent)
     : QWidget(parent)
 {
     _threadListWidget = new ThreadListWidget(this);
-
-
-//    _backButton = new QToolButton(this);
-//    _backButton->setIcon(QIcon(":/icons/left-arrow.png"));
-//    _backButton->setMinimumWidth(32);
-//    _backButton->setMaximumWidth(32);
-//    _backButton->setStyleSheet(QString::fromLatin1(strBackButtonStyle));
-//    QObject::connect(_backButton, &QToolButton::clicked, [this]() { Q_EMIT onBackButtonPressed(); });
 
     _forumNameLbl = new QLabel(this);
     QFont threadFont { _forumNameLbl->font() };
@@ -63,21 +55,22 @@ ThreadListContainer::ThreadListContainer(QWidget *parent)
     _forumNameLbl->setWordWrap(false);
     _forumNameLbl->setMinimumHeight(32);
     _forumNameLbl->setMaximumHeight(32);
+//    _forumNameLbl->setStyleSheet("QLabel { border: 2px solid white; }");
 
-    _pageNumberLbl = new QLabel(this);
-    QFont pageNumberFont { _pageNumberLbl->font() };
-    pageNumberFont.setPointSize(10);
-    pageNumberFont.setBold(true);
-    pageNumberFont.setWeight(45);
-    _pageNumberLbl->setFont(pageNumberFont);
-    _pageNumberLbl->setMinimumHeight(14);
-    _pageNumberLbl->setMaximumHeight(14);
-    _pageNumberLbl->setStyleSheet(strPageNumberStyle);
+//    _pageNumberLbl = new QLabel(this);
+//    QFont pageNumberFont { _pageNumberLbl->font() };
+//    pageNumberFont.setPointSize(10);
+//    pageNumberFont.setBold(true);
+//    pageNumberFont.setWeight(45);
+//    _pageNumberLbl->setFont(pageNumberFont);
+//    _pageNumberLbl->setMinimumHeight(14);
+//    _pageNumberLbl->setMaximumHeight(14);
+//    _pageNumberLbl->setStyleSheet(strPageNumberStyle);
 
     // TODO: investigate the issue with constructing layouts like
     // `new MyLayout(this)` vs `new MyLayout(parent)`, because it
     // only seems to work right if we use `parent`
-    _paginationWidget = new owl::PaginationWidget(this);
+    _paginationWidget = new owl::PaginationWidget(parent);
     QObject::connect(_paginationWidget, &PaginationWidget::doGotoPage,
         [this](std::uint32_t page)
         {
@@ -106,7 +99,7 @@ ThreadListContainer::ThreadListContainer(QWidget *parent)
     forumNameLayout->setMargin(0);
     forumNameLayout->setSpacing(0);
     forumNameLayout->addWidget(_forumNameLbl);
-    forumNameLayout->addWidget(_pageNumberLbl);
+//    forumNameLayout->addWidget(_pageNumberLbl);
     forumNameLayout->addWidget(_paginationWidget);
 
     QHBoxLayout* topLayout = new QHBoxLayout(parent);
@@ -141,8 +134,8 @@ void ThreadListContainer::doShowThreads(ForumPtr forum)
 
     _forumNameLbl->setText(forum->getName());
 
-    auto pageText = QString(tr("Page %1 of %2")).arg(forum->getPageNumber()).arg(forum->getPageCount());
-    _pageNumberLbl->setText(pageText);
+//    auto pageText = QString(tr("Page %1 of %2")).arg(forum->getPageNumber()).arg(forum->getPageCount());
+//    _pageNumberLbl->setText(pageText);
 
     std::uint32_t current = static_cast<std::uint32_t>(forum->getPageNumber());
     std::uint32_t total = static_cast<std::uint32_t>(forum->getPageCount());

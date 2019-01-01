@@ -45,10 +45,12 @@ PaginationWidget::PaginationWidget(QWidget *parent)
     : QWidget(parent)
 {
     setStyleSheet(strPaginationWidgetStyle);
-    setMaximumHeight(64);
-    setMinimumHeight(64);
+    setMaximumHeight(32);
+    setMinimumHeight(32);
 
     _buttonLayout = new QHBoxLayout(parent);
+    _buttonLayout->setMargin(0);
+    _buttonLayout->setSpacing(0);
     setLayout(_buttonLayout);
 }
 
