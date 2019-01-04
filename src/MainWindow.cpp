@@ -64,7 +64,7 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
 
     toggleOldControls(false);
 
-    setWindowIcon(QIcon(":/icons/owl_256.png"));
+    setWindowIcon(QIcon(":/icons/logo_64.png"));
     setWindowTitle(QStringLiteral(APP_NAME));
 
     this->boardsViewDockWidget->setMaximumWidth(BOARDICONWIDGETWIDTH);

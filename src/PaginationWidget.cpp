@@ -24,11 +24,19 @@ static const char* strPaginationWidgetStyle = R"(
 QToolBar
 {
     background: transparent;
+    spacing: 5px;
 }
 QToolButton
 {
-    color: darkgrey;
-    border: 1px solid darkgrey;
+    font-size: 14px;
+    color: rgb(143,143,143);
+    border: 1px solid rgb(143,143,143);
+    border-radius: 5px;
+}
+QToolButton:hover
+{
+    color: rgb(30,144,255);
+    border: 1px solid rgb(143,143,143);
 }
 QToolButton::menu-indicator
 {
@@ -36,8 +44,11 @@ QToolButton::menu-indicator
 }
 QToolButton#currentPage
 {
-    color: black;
-    text-decoration: underline;
+    color: rgb(143,143,143);
+    background-color: rgb(231,245,229);
+}
+QToolButton#currentPage:hover
+{
 }
 )";
 
@@ -67,7 +78,7 @@ void PaginationWidget::createPreviousButtons()
         QToolButton* prevButton = new QToolButton(this);
         QObject::connect(prevButton, &QToolButton::triggered, this, &PaginationWidget::onButtonClicked);
 
-        prevButton->setDefaultAction(new QAction(tr("Prev"), prevButton));
+        prevButton->setDefaultAction(new QAction("\u2B05", prevButton));
         prevButton->defaultAction()->setData(_currentPage - 1);
         _toolBar->addWidget(prevButton);
     }
@@ -92,7 +103,7 @@ void PaginationWidget::createPreviousButtons()
             }
             else if (x == currentLabel + 1)
             {
-                newButton->setText("...");
+                newButton->setText("\u2026");
                 auto widgetAction = new GotoPageWidgetAction(_totalPages, newButton);
                 QObject::connect(widgetAction, &GotoPageWidgetAction::gotoPage,
                     [this](std::uint32_t pageNumber) { Q_EMIT doGotoPage(pageNumber); });
@@ -143,7 +154,7 @@ void PaginationWidget::createNextButtons()
             }
             else if (x == totalPageButtons - 2)
             {
-                newButton->setText("...");
+                newButton->setText("\u2026");
                 auto widgetAction = new GotoPageWidgetAction(_totalPages, newButton);
                 QObject::connect(widgetAction, &GotoPageWidgetAction::gotoPage,
                     [this](std::uint32_t pageNumber) { Q_EMIT doGotoPage(pageNumber); });
@@ -170,7 +181,7 @@ void PaginationWidget::createNextButtons()
         QToolButton* nextButton = new QToolButton(this);
         QObject::connect(nextButton, &QToolButton::triggered, this, &PaginationWidget::onButtonClicked);
 
-        nextButton->setDefaultAction(new QAction(tr("Next"), nextButton));
+        nextButton->setDefaultAction(new QAction("\u27A1", nextButton));
         nextButton->defaultAction()->setData(_currentPage + 1);
         _toolBar->addWidget(nextButton);
     }
