@@ -1,6 +1,7 @@
 #include <QLabel>
 #include <QGridLayout>
 #include <QToolButton>
+#include <QPushButton>
 
 #include  <Utils/OwlLogger.h>
 
@@ -42,6 +43,19 @@ LogoView::LogoView(QWidget *parent)
 //}
 //)";
 
+// ┌───────────────────────────────────────────────────────────────────────────────┐
+// │┌────────────────────────────────────────────┐ ┌──────────────────────────────┐│
+// ││                                            │ │                              ││
+// ││              Location Name                 │ │                              ││
+// ││                                            │ │                              ││
+// │└────────────────────────────────────────────┘ │        Other Buttons         ││
+// │┌────────────────────────────────────────────┐ │                              ││
+// ││                                            │ │                              ││
+// ││             Pagination Widget              │ │                              ││
+// ││                                            │ │                              ││
+// │└────────────────────────────────────────────┘ └──────────────────────────────┘│
+// └───────────────────────────────────────────────────────────────────────────────┘
+
 ThreadListContainer::ThreadListContainer(QWidget *parent)
     : QWidget(parent)
 {
@@ -55,17 +69,6 @@ ThreadListContainer::ThreadListContainer(QWidget *parent)
     _forumNameLbl->setWordWrap(false);
     _forumNameLbl->setMinimumHeight(32);
     _forumNameLbl->setMaximumHeight(32);
-//    _forumNameLbl->setStyleSheet("QLabel { border: 2px solid white; }");
-
-//    _pageNumberLbl = new QLabel(this);
-//    QFont pageNumberFont { _pageNumberLbl->font() };
-//    pageNumberFont.setPointSize(10);
-//    pageNumberFont.setBold(true);
-//    pageNumberFont.setWeight(45);
-//    _pageNumberLbl->setFont(pageNumberFont);
-//    _pageNumberLbl->setMinimumHeight(14);
-//    _pageNumberLbl->setMaximumHeight(14);
-//    _pageNumberLbl->setStyleSheet(strPageNumberStyle);
 
     // TODO: investigate the issue with constructing layouts like
     // `new MyLayout(this)` vs `new MyLayout(parent)`, because it
@@ -94,16 +97,27 @@ ThreadListContainer::ThreadListContainer(QWidget *parent)
             }
         });
 
-
     QVBoxLayout* forumNameLayout = new QVBoxLayout(parent);
     forumNameLayout->setMargin(0);
     forumNameLayout->setSpacing(0);
     forumNameLayout->addWidget(_forumNameLbl);
     forumNameLayout->addWidget(_paginationWidget);
 
+    auto stickyBtn = new QPushButton("Toggle Stickies", parent);
+    stickyBtn->setStyleSheet("QPushButton { border: 2px solid black; }");
+
+    auto newBtn = new QPushButton("New Thread", parent);
+    newBtn->setStyleSheet("QPushButton { border: 2px solid black; }");
+
+    QHBoxLayout* rightHandLayout = new QHBoxLayout(parent);
+    rightHandLayout->addWidget(stickyBtn);
+    rightHandLayout->addWidget(newBtn);
+
     QHBoxLayout* topLayout = new QHBoxLayout(parent);
     topLayout->addItem(new QSpacerItem(10,0));
     topLayout->addLayout(forumNameLayout);
+    topLayout->addSpacing(10);
+    topLayout->addLayout(rightHandLayout);
     topLayout->addItem(new QSpacerItem(1,0));
 
     // `hLine` separates the top pane from the bottom pane
