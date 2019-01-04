@@ -78,7 +78,7 @@ void PaginationWidget::createPreviousButtons()
         QToolButton* prevButton = new QToolButton(this);
         QObject::connect(prevButton, &QToolButton::triggered, this, &PaginationWidget::onButtonClicked);
 
-        prevButton->setDefaultAction(new QAction("\u2B05", prevButton));
+        prevButton->setDefaultAction(new QAction(u8"\u2B05", prevButton));
         prevButton->defaultAction()->setData(_currentPage - 1);
         _toolBar->addWidget(prevButton);
     }
@@ -103,7 +103,7 @@ void PaginationWidget::createPreviousButtons()
             }
             else if (x == currentLabel + 1)
             {
-                newButton->setText("\u2026");
+                newButton->setText(u8"\u2026");
                 auto widgetAction = new GotoPageWidgetAction(_totalPages, newButton);
                 QObject::connect(widgetAction, &GotoPageWidgetAction::gotoPage,
                     [this](std::uint32_t pageNumber) { Q_EMIT doGotoPage(pageNumber); });
@@ -154,7 +154,7 @@ void PaginationWidget::createNextButtons()
             }
             else if (x == totalPageButtons - 2)
             {
-                newButton->setText("\u2026");
+                newButton->setText(u8"\u2026");
                 auto widgetAction = new GotoPageWidgetAction(_totalPages, newButton);
                 QObject::connect(widgetAction, &GotoPageWidgetAction::gotoPage,
                     [this](std::uint32_t pageNumber) { Q_EMIT doGotoPage(pageNumber); });

@@ -78,7 +78,7 @@ ThreadListContainer::ThreadListContainer(QWidget *parent)
             {
                 if (BoardPtr board = forum->getBoard().lock(); board)
                 {
-                    forum->setPageNumber(page);
+                    forum->setPageNumber(static_cast<int>(page));
                     board->requestThreadList(forum);
                 }
                 else
@@ -99,7 +99,6 @@ ThreadListContainer::ThreadListContainer(QWidget *parent)
     forumNameLayout->setMargin(0);
     forumNameLayout->setSpacing(0);
     forumNameLayout->addWidget(_forumNameLbl);
-//    forumNameLayout->addWidget(_pageNumberLbl);
     forumNameLayout->addWidget(_paginationWidget);
 
     QHBoxLayout* topLayout = new QHBoxLayout(parent);
