@@ -57,7 +57,7 @@ private:
     PaginationWidget*       _paginationWidget;
     ThreadListWidget*       _threadListWidget;
 
-    owl::ForumWeakPtr      _currentForum;
+    owl::ForumWeakPtr       _currentForum;
 };
 
 class PostViewContainer : public QWidget
@@ -79,6 +79,8 @@ private:
     PaginationWidget*       _paginationWidget;
     QToolButton*            _backButton;
     PostListWebView*        _postListWidget;
+
+    owl::ThreadWeakPtr      _currentThread;
 };
 
 class ContentView : public QStackedWidget

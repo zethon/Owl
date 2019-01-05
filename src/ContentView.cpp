@@ -63,10 +63,7 @@ ThreadListContainer::ThreadListContainer(QWidget *parent)
     _forumNameLbl->setMinimumHeight(32);
     _forumNameLbl->setMaximumHeight(32);
 
-    // TODO: investigate the issue with constructing layouts like
-    // `new MyLayout(this)` vs `new MyLayout(parent)`, because it
-    // only seems to work right if we use `parent`
-    _paginationWidget = new owl::PaginationWidget(parent);
+    _paginationWidget = new owl::PaginationWidget(this);
     QObject::connect(_paginationWidget, &PaginationWidget::doGotoPage,
         [this](std::uint32_t page)
         {
@@ -90,23 +87,23 @@ ThreadListContainer::ThreadListContainer(QWidget *parent)
             }
         });
 
-    QVBoxLayout* forumNameLayout = new QVBoxLayout(parent);
+    QVBoxLayout* forumNameLayout = new QVBoxLayout();
     forumNameLayout->setMargin(0);
     forumNameLayout->setSpacing(0);
     forumNameLayout->addWidget(_forumNameLbl);
     forumNameLayout->addWidget(_paginationWidget);
 
-    auto stickyBtn = new QPushButton("Toggle Stickies", parent);
+    auto stickyBtn = new QPushButton("Toggle Stickies", this);
     stickyBtn->setStyleSheet("QPushButton { border: 2px solid black; }");
 
-    auto newBtn = new QPushButton("New Thread", parent);
+    auto newBtn = new QPushButton("New Thread", this);
     newBtn->setStyleSheet("QPushButton { border: 2px solid black; }");
 
-    QHBoxLayout* rightHandLayout = new QHBoxLayout(parent);
+    QHBoxLayout* rightHandLayout = new QHBoxLayout();
     rightHandLayout->addWidget(stickyBtn);
     rightHandLayout->addWidget(newBtn);
 
-    QHBoxLayout* topLayout = new QHBoxLayout(parent);
+    QHBoxLayout* topLayout = new QHBoxLayout();
     topLayout->addItem(new QSpacerItem(10,0));
     topLayout->addLayout(forumNameLayout);
     topLayout->addSpacing(10);
@@ -118,17 +115,17 @@ ThreadListContainer::ThreadListContainer(QWidget *parent)
     hLine->setFrameShape(QFrame::HLine);
     hLine->setFrameShadow(QFrame::Sunken);
 
-    QVBoxLayout* layout = new QVBoxLayout(this);
-    layout->setSpacing(0);
-    layout->setMargin(0);
+    QVBoxLayout* rootLayout = new QVBoxLayout();
+    rootLayout->setSpacing(0);
+    rootLayout->setMargin(0);
 
-    layout->addItem(new QSpacerItem(0,5));
-    layout->addLayout(topLayout);
-    layout->addItem(new QSpacerItem(0,5));
-    layout->addWidget(hLine);
-    layout->addWidget(_threadListWidget);
+    rootLayout->addItem(new QSpacerItem(0,5));
+    rootLayout->addLayout(topLayout);
+    rootLayout->addItem(new QSpacerItem(0,5));
+    rootLayout->addWidget(hLine);
+    rootLayout->addWidget(_threadListWidget);
 
-    setLayout(layout);
+    setLayout(rootLayout);
 }
 
 void ThreadListContainer::doShowThreads(ForumPtr forum)
@@ -139,9 +136,6 @@ void ThreadListContainer::doShowThreads(ForumPtr forum)
     _threadListWidget->setThreadList(threadList);
 
     _forumNameLbl->setText(forum->getName());
-
-//    auto pageText = QString(tr("Page %1 of %2")).arg(forum->getPageNumber()).arg(forum->getPageCount());
-//    _pageNumberLbl->setText(pageText);
 
     std::uint32_t current = static_cast<std::uint32_t>(forum->getPageNumber());
     std::uint32_t total = static_cast<std::uint32_t>(forum->getPageCount());
@@ -172,7 +166,6 @@ owl::PostViewContainer::PostViewContainer::PostViewContainer(QWidget* parent)
 {
     _postListWidget = new PostListWebView(this);
 
-
     _backButton = new QToolButton(this);
     _backButton->setIcon(QIcon(":/icons/left-arrow.png"));
     _backButton->setMinimumWidth(32);
@@ -190,25 +183,47 @@ owl::PostViewContainer::PostViewContainer::PostViewContainer(QWidget* parent)
     _threadTitle->setMaximumHeight(32);
 
     _paginationWidget = new owl::PaginationWidget(parent);
+    QObject::connect(_paginationWidget, &PaginationWidget::doGotoPage,
+        [this](std::uint32_t page)
+        {
+            if (auto thread = _currentThread.lock(); thread)
+            {
+                if (BoardPtr board = thread->getBoard().lock(); board)
+                {
+                    qDebug() << "Going to page: " << page;
+                    thread->setPageNumber(static_cast<int>(page));
+                    board->requestPostList(thread);
+                }
+                else
+                {
+                    // TODO: should do something here
+                    Q_ASSERT(0);
+                }
+            }
+            else
+            {
+                // TODO: should do something here
+                Q_ASSERT(0);
+            }
+        });
 
-    QVBoxLayout* topCenterLayout = new QVBoxLayout(parent);
+    QVBoxLayout* topCenterLayout = new QVBoxLayout();
     topCenterLayout->setMargin(0);
     topCenterLayout->setSpacing(0);
     topCenterLayout->addWidget(_threadTitle);
     topCenterLayout->addWidget(_paginationWidget);
 
-    auto newBtn = new QPushButton("New Post", parent);
+    auto newBtn = new QPushButton("New Post", this);
     newBtn->setStyleSheet("QPushButton { border: 2px solid black; }");
 
-    auto stickyBtn = new QPushButton("Expand/Collapse", parent);
+    auto stickyBtn = new QPushButton("Expand/Collapse", this);
     stickyBtn->setStyleSheet("QPushButton { border: 2px solid black; }");
 
-    QHBoxLayout* rightHandLayout = new QHBoxLayout(parent);
+    QHBoxLayout* rightHandLayout = new QHBoxLayout();
     rightHandLayout->addWidget(stickyBtn);
     rightHandLayout->addWidget(newBtn);
 
-
-    QHBoxLayout* topLayout = new QHBoxLayout(parent);
+    QHBoxLayout* topLayout = new QHBoxLayout();
     topLayout->addItem(new QSpacerItem(1,0));
     topLayout->addWidget(_backButton);
     topLayout->addItem(new QSpacerItem(10,0));
@@ -220,17 +235,17 @@ owl::PostViewContainer::PostViewContainer::PostViewContainer(QWidget* parent)
     hLine->setFrameShape(QFrame::HLine);
     hLine->setFrameShadow(QFrame::Sunken);
 
-    QVBoxLayout* layout = new QVBoxLayout(this);
-    layout->setSpacing(0);
-    layout->setMargin(0);
+    QVBoxLayout* rootLayout = new QVBoxLayout();
+    rootLayout->setSpacing(0);
+    rootLayout->setMargin(0);
 
-    layout->addItem(new QSpacerItem(0,13));
-    layout->addLayout(topLayout);
-    layout->addItem(new QSpacerItem(0,13));
-    layout->addWidget(hLine);
-    layout->addWidget(_postListWidget);
+    rootLayout->addItem(new QSpacerItem(0,13));
+    rootLayout->addLayout(topLayout);
+    rootLayout->addItem(new QSpacerItem(0,13));
+    rootLayout->addWidget(hLine);
+    rootLayout->addWidget(_postListWidget);
 
-    setLayout(layout);
+    setLayout(rootLayout);
 }
 
 void PostViewContainer::showPosts(ThreadPtr thread)
@@ -247,6 +262,7 @@ void PostViewContainer::showPosts(ThreadPtr thread)
     _postListWidget->showPosts(thread);
     _postListWidget->scroll(0,0);
 
+    _currentThread = thread;
 }
 
 //********************************

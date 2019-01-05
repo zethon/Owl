@@ -59,7 +59,7 @@ PaginationWidget::PaginationWidget(QWidget *parent)
     setMaximumHeight(32);
     setMinimumHeight(32);
 
-    _buttonLayout = new QHBoxLayout(parent);
+    _buttonLayout = new QHBoxLayout();
     _buttonLayout->setMargin(0);
     _buttonLayout->setSpacing(0);
     setLayout(_buttonLayout);
@@ -266,11 +266,11 @@ GotoPageWidget::GotoPageWidget(uint32_t totalPages, QWidget *parent)
 SimpleToolBar::SimpleToolBar(QWidget *parent)
     : QWidget(parent)
 {
-    _layout = new QHBoxLayout(parent);
+    _layout = new QHBoxLayout();
     _layout->setMargin(0);
     _layout->setSpacing(0);
 
-    this->setLayout(_layout);
+    setLayout(_layout);
 }
 
 void SimpleToolBar::addWidget(QWidget* widget)
