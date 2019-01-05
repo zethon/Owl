@@ -94,6 +94,7 @@ public:
 
     void doShowLogo();
     void doShowListOfThreads(ForumPtr);
+    void doShowListOfPosts(ThreadPtr thread);
 
 private:
 

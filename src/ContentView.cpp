@@ -148,6 +148,19 @@ void ThreadListContainer::doShowThreads(ForumPtr forum)
 //* PostViewContainer
 //********************************
 
+// ┌──────────────────────────────────────────────────────────────────────────────┐
+// │┌──────┐┌──────────────────────────────────────────────────┐┌────────────────┐│
+// ││      ││                                                  ││                ││
+// ││      ││                   Thread Title                   ││                ││
+// ││      ││                                                  ││                ││
+// ││  <-  │└──────────────────────────────────────────────────┘│ Other Buttons  ││
+// ││      │┌──────────────────────────────────────────────────┐│                ││
+// ││      ││                                                  ││                ││
+// ││      ││                Pagination Widget                 ││                ││
+// ││      ││                                                  ││                ││
+// │└──────┘└──────────────────────────────────────────────────┘└────────────────┘│
+// └──────────────────────────────────────────────────────────────────────────────┘
+
 static const char* strBackButtonStyle = R"(
 QToolButton
 {
@@ -190,9 +203,9 @@ owl::PostViewContainer::PostViewContainer::PostViewContainer(QWidget* parent)
             {
                 if (BoardPtr board = thread->getBoard().lock(); board)
                 {
-                    qDebug() << "Going to page: " << page;
                     thread->setPageNumber(static_cast<int>(page));
-                    board->requestPostList(thread);
+                    board->setCurrentThread(thread);
+                    board->requestPostList(thread, ParserEnums::REQUEST_DEFAULT, true);
                 }
                 else
                 {
@@ -305,14 +318,20 @@ void ContentView::doShowListOfThreads(ForumPtr forum)
     {
         _boardWeak = boardWeak;
         QObject::connect(board.get(), &owl::Board::onGetPosts,
-            [this](BoardPtr, ThreadPtr thread)
+            [this](BoardPtr board, ThreadPtr thread)
             {
-                _postListContainer->showPosts(thread);
-                setCurrentIndex(2);
+                Q_UNUSED(board);
+                this->doShowListOfPosts(thread);
             });
     }
 
     this->setCurrentIndex(1);
+}
+
+void ContentView::doShowListOfPosts(ThreadPtr thread)
+{
+    _postListContainer->showPosts(thread);
+    setCurrentIndex(2);
 }
 
 } // namespace
