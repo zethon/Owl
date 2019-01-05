@@ -36,13 +36,6 @@ LogoView::LogoView(QWidget *parent)
 //* ThreadListContainer
 //********************************
 
-//static const char* strPageNumberStyle = R"(
-//QLabel
-//{
-//    color: #587B7F;
-//}
-//)";
-
 // ┌───────────────────────────────────────────────────────────────────────────────┐
 // │┌────────────────────────────────────────────┐ ┌──────────────────────────────┐│
 // ││                                            │ │                              ││
@@ -179,7 +172,7 @@ owl::PostViewContainer::PostViewContainer::PostViewContainer(QWidget* parent)
 {
     _postListWidget = new PostListWebView(this);
 
-    QHBoxLayout* topLayout = new QHBoxLayout(parent);
+
     _backButton = new QToolButton(this);
     _backButton->setIcon(QIcon(":/icons/left-arrow.png"));
     _backButton->setMinimumWidth(32);
@@ -196,10 +189,31 @@ owl::PostViewContainer::PostViewContainer::PostViewContainer(QWidget* parent)
     _threadTitle->setMinimumHeight(32);
     _threadTitle->setMaximumHeight(32);
 
+    _paginationWidget = new owl::PaginationWidget(parent);
+
+    QVBoxLayout* topCenterLayout = new QVBoxLayout(parent);
+    topCenterLayout->setMargin(0);
+    topCenterLayout->setSpacing(0);
+    topCenterLayout->addWidget(_threadTitle);
+    topCenterLayout->addWidget(_paginationWidget);
+
+    auto newBtn = new QPushButton("New Post", parent);
+    newBtn->setStyleSheet("QPushButton { border: 2px solid black; }");
+
+    auto stickyBtn = new QPushButton("Expand/Collapse", parent);
+    stickyBtn->setStyleSheet("QPushButton { border: 2px solid black; }");
+
+    QHBoxLayout* rightHandLayout = new QHBoxLayout(parent);
+    rightHandLayout->addWidget(stickyBtn);
+    rightHandLayout->addWidget(newBtn);
+
+
+    QHBoxLayout* topLayout = new QHBoxLayout(parent);
     topLayout->addItem(new QSpacerItem(1,0));
     topLayout->addWidget(_backButton);
     topLayout->addItem(new QSpacerItem(10,0));
-    topLayout->addWidget(_threadTitle);
+    topLayout->addLayout(topCenterLayout);
+    topLayout->addLayout(rightHandLayout);
     topLayout->addItem(new QSpacerItem(1,0));
 
     QFrame* hLine = new QFrame(this);
@@ -225,9 +239,14 @@ void PostViewContainer::showPosts(ThreadPtr thread)
     const QString elidedTitle = metrics.elidedText(thread->getTitle(), Qt::ElideRight, _threadTitle->width());
     _threadTitle->setText(elidedTitle);
 
+    std::uint32_t current = static_cast<std::uint32_t>(thread->getPageNumber());
+    std::uint32_t total = static_cast<std::uint32_t>(thread->getPageCount());
+    _paginationWidget->setPages(current, total);
+
     _postListWidget->clear();
     _postListWidget->showPosts(thread);
     _postListWidget->scroll(0,0);
+
 }
 
 //********************************
