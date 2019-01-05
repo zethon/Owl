@@ -71,6 +71,35 @@ void PaginationWidget::onButtonClicked(QAction* action)
     Q_EMIT doGotoPage(page);
 }
 
+void PaginationWidget::setPages(std::uint32_t current, std::uint32_t total)
+{
+    Q_ASSERT(current > 0 && current <= total);
+
+    _currentPage = current;
+    _totalPages = total;
+
+    if (_toolBar)
+    {
+        _buttonLayout->removeWidget(_toolBar);
+        delete _toolBar;
+    }
+
+    _toolBar = new SimpleToolBar(this);
+    _toolBar->setStyleSheet(strPaginationWidgetStyle);
+    _buttonLayout->addWidget(_toolBar);
+
+    createPreviousButtons();
+
+    // add the anchor
+    QToolButton* anchorButton = new QToolButton(_toolBar);
+    anchorButton->setText(QString::number(_currentPage));
+    anchorButton->setObjectName("currentPage");
+    _toolBar->addWidget(anchorButton);
+
+    // add the buttons ot the right of the anchor (if there are any)
+    createNextButtons();
+}
+
 void PaginationWidget::createPreviousButtons()
 {
     if (_currentPage > 1)
@@ -104,12 +133,14 @@ void PaginationWidget::createPreviousButtons()
             else if (x == currentLabel + 1)
             {
                 newButton->setText(u8"\u2026");
+                newButton->setPopupMode(QToolButton::InstantPopup);
+                newButton->setObjectName(QStringLiteral("popup"));
+
                 auto widgetAction = new GotoPageWidgetAction(_totalPages, newButton);
                 QObject::connect(widgetAction, &GotoPageWidgetAction::gotoPage,
                     [this](std::uint32_t pageNumber) { Q_EMIT doGotoPage(pageNumber); });
 
                 newButton->addAction(widgetAction);
-                newButton->setPopupMode(QToolButton::InstantPopup);
             }
         }
         else
@@ -155,12 +186,14 @@ void PaginationWidget::createNextButtons()
             else if (x == totalPageButtons - 2)
             {
                 newButton->setText(u8"\u2026");
+                newButton->setPopupMode(QToolButton::InstantPopup);
+                newButton->setObjectName(QStringLiteral("popup"));
+
                 auto widgetAction = new GotoPageWidgetAction(_totalPages, newButton);
                 QObject::connect(widgetAction, &GotoPageWidgetAction::gotoPage,
                     [this](std::uint32_t pageNumber) { Q_EMIT doGotoPage(pageNumber); });
 
                 newButton->addAction(widgetAction);
-                newButton->setPopupMode(QToolButton::InstantPopup);
             }
         }
         else
@@ -185,35 +218,6 @@ void PaginationWidget::createNextButtons()
         nextButton->defaultAction()->setData(_currentPage + 1);
         _toolBar->addWidget(nextButton);
     }
-}
-
-void PaginationWidget::setPages(std::uint32_t current, std::uint32_t total)
-{
-    Q_ASSERT(current > 0 && current <= total);
-
-    _currentPage = current;
-    _totalPages = total;
-
-    if (_toolBar)
-    {
-        _buttonLayout->removeWidget(_toolBar);
-        delete _toolBar;
-    }
-
-    _toolBar = new QToolBar(this);
-    _toolBar->setStyleSheet(strPaginationWidgetStyle);
-    _buttonLayout->addWidget(_toolBar);
-
-    createPreviousButtons();
-
-    // add the anchor
-    QToolButton* anchorButton = new QToolButton(_toolBar);
-    anchorButton->setText(QString::number(_currentPage));
-    anchorButton->setObjectName("currentPage");
-    _toolBar->addWidget(anchorButton);
-
-    // add the buttons ot the right of the anchor (if there are any)
-    createNextButtons();
 }
 
 GotoPageWidgetAction::GotoPageWidgetAction(uint32_t totalPages, QWidget *parent)
@@ -257,6 +261,22 @@ GotoPageWidget::GotoPageWidget(uint32_t totalPages, QWidget *parent)
     layout->addWidget(okBtn);
 
     setLayout(layout);
+}
+
+SimpleToolBar::SimpleToolBar(QWidget *parent)
+    : QWidget(parent)
+{
+    _layout = new QHBoxLayout(parent);
+    _layout->setMargin(0);
+    _layout->setSpacing(0);
+
+    this->setLayout(_layout);
+}
+
+void SimpleToolBar::addWidget(QWidget* widget)
+{
+    widget->setParent(this);
+    _layout->addWidget(widget);
 }
 
 } // namespace

@@ -10,6 +10,18 @@ class QHBoxLayout;
 namespace owl
 {
 
+class SimpleToolBar : public QWidget
+{
+public:
+    ~SimpleToolBar() = default;
+    SimpleToolBar(QWidget* parent);
+
+    void addWidget(QWidget* widget);
+
+private:
+    QHBoxLayout*    _layout;
+};
+
 class GotoPageWidget : public QWidget
 {
     Q_OBJECT
@@ -68,7 +80,7 @@ private:
     std::uint32_t   _totalPages;
 
     QHBoxLayout*    _buttonLayout;
-    QToolBar*       _toolBar = nullptr;
+    SimpleToolBar*  _toolBar = nullptr;
 };
 
 } // namespace
