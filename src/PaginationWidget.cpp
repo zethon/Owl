@@ -9,6 +9,17 @@
 
 #include "PaginationWidget.h"
 
+#ifdef Q_OS_WIN
+    #define LEFTARROW   "<-"
+    #define RIGHTARROW  "->"
+    #define ELLIPSIS    "..."
+#else
+    #define LEFTARROW   u8"\u2B05"
+    #define RIGHTARROW  u8"\u27A1"
+    #define ELLIPSIS    u8"\u2026"
+#endif
+
+
 namespace owl
 {
 
@@ -107,7 +118,7 @@ void PaginationWidget::createPreviousButtons()
         QToolButton* prevButton = new QToolButton(this);
         QObject::connect(prevButton, &QToolButton::triggered, this, &PaginationWidget::onButtonClicked);
 
-        prevButton->setDefaultAction(new QAction(u8"\u2B05", prevButton));
+        prevButton->setDefaultAction(new QAction(LEFTARROW, prevButton));
         prevButton->defaultAction()->setData(_currentPage - 1);
         _toolBar->addWidget(prevButton);
     }
@@ -132,7 +143,7 @@ void PaginationWidget::createPreviousButtons()
             }
             else if (x == currentLabel + 1)
             {
-                newButton->setText(u8"\u2026");
+                newButton->setText(ELLIPSIS);
                 newButton->setPopupMode(QToolButton::InstantPopup);
                 newButton->setObjectName(QStringLiteral("popup"));
 
@@ -185,7 +196,7 @@ void PaginationWidget::createNextButtons()
             }
             else if (x == totalPageButtons - 2)
             {
-                newButton->setText(u8"\u2026");
+                newButton->setText(ELLIPSIS);
                 newButton->setPopupMode(QToolButton::InstantPopup);
                 newButton->setObjectName(QStringLiteral("popup"));
 
@@ -214,7 +225,7 @@ void PaginationWidget::createNextButtons()
         QToolButton* nextButton = new QToolButton(this);
         QObject::connect(nextButton, &QToolButton::triggered, this, &PaginationWidget::onButtonClicked);
 
-        nextButton->setDefaultAction(new QAction("\u27A1", nextButton));
+        nextButton->setDefaultAction(new QAction(RIGHTARROW, nextButton));
         nextButton->defaultAction()->setData(_currentPage + 1);
         _toolBar->addWidget(nextButton);
     }
