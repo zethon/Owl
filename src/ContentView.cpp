@@ -39,8 +39,14 @@ LogoView::LogoView(QWidget *parent)
 LoadingView::LoadingView(QWidget *parent)
     : QWidget(parent)
 {
+    QLabel* logolbl = new QLabel(this);
+    logolbl->setPixmap(QPixmap(":/images/owl_64.png"));
+    logolbl->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
+    logolbl->setMaximumHeight(64);
+
     QLabel* textlbl = new QLabel(this);
     textlbl->setAlignment(Qt::AlignBottom|Qt::AlignHCenter);
+    textlbl->setMaximumHeight(64);
 
     QFont font { textlbl->font() };
     font.setPointSize(32);
@@ -52,13 +58,21 @@ LoadingView::LoadingView(QWidget *parent)
     QLabel* movieLbl = new QLabel(this);
     movieLbl->setAlignment(Qt::AlignHCenter|Qt::AlignTop);
 
-    QMovie* working = new QMovie(":/icons/loading.gif", QByteArray(), this);
+    QMovie* working = new QMovie(":/icons/loading2.gif", QByteArray(), this);
+    working->setScaledSize(QSize(48,48));
+
     movieLbl->setMovie(working);
     working->start();
 
     QVBoxLayout* layout = new QVBoxLayout();
+
+    layout->addSpacerItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
+    layout->addWidget(logolbl);
+    layout->addSpacing(10);
     layout->addWidget(textlbl);
+    layout->addSpacing(10);
     layout->addWidget(movieLbl);
+    layout->addSpacerItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
 
     setLayout(layout);
 }
