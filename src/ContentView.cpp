@@ -39,10 +39,10 @@ LogoView::LogoView(QWidget *parent)
 LoadingView::LoadingView(QWidget *parent)
     : QWidget(parent)
 {
-    QLabel* logolbl = new QLabel(this);
-    logolbl->setPixmap(QPixmap(":/images/owl_64.png"));
-    logolbl->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
-    logolbl->setMaximumHeight(64);
+    _iconLbl = new QLabel(this);
+    _iconLbl->setPixmap(QPixmap(":/images/owl_32.png"));
+    _iconLbl->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
+    _iconLbl->setMaximumHeight(64);
 
     QLabel* textlbl = new QLabel(this);
     textlbl->setAlignment(Qt::AlignBottom|Qt::AlignHCenter);
@@ -67,7 +67,7 @@ LoadingView::LoadingView(QWidget *parent)
     QVBoxLayout* layout = new QVBoxLayout();
 
     layout->addSpacerItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
-    layout->addWidget(logolbl);
+    layout->addWidget(_iconLbl);
     layout->addSpacing(10);
     layout->addWidget(textlbl);
     layout->addSpacing(10);
@@ -75,6 +75,27 @@ LoadingView::LoadingView(QWidget *parent)
     layout->addSpacerItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
 
     setLayout(layout);
+}
+
+void LoadingView::setBoardInfo(BoardWeakPtr bwp)
+{
+    BoardPtr board = bwp.lock();
+    if (board)
+    {
+        QByteArray buffer(board->getFavIcon().toLatin1());
+        QImage image = QImage::fromData(QByteArray::fromBase64(buffer));
+
+        if (image.width() != 64 || image.height() != 64)
+        {
+            image = image.scaled(64, 64, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        }
+
+        _iconLbl->setPixmap(QPixmap::fromImage(image));
+    }
+    else
+    {
+        _iconLbl->setPixmap(QPixmap(":/images/owl_64.png"));
+    }
 }
 
 //********************************
@@ -350,10 +371,12 @@ ContentView::ContentView(QWidget* parent /* = 0*/)
             this->setCurrentIndex(THREADLIST_VIEW);
         });
 
+    _loadingView = new LoadingView(this);
+
     this->addWidget(_logoView);
     this->addWidget(_threadListContainer);
     this->addWidget(_postListContainer);
-    this->addWidget(new LoadingView(this));
+    this->addWidget(_loadingView);
 }
 
 void ContentView::doShowLogo()
@@ -361,8 +384,9 @@ void ContentView::doShowLogo()
     this->setCurrentIndex(LOGO_VIEW);
 }
 
-void ContentView::doShowLoading()
+void ContentView::doShowLoading(BoardWeakPtr board)
 {
+    this->_loadingView->setBoardInfo(board);
     this->setCurrentIndex(LOADING_VIEW);
 }
 

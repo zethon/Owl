@@ -52,6 +52,11 @@ class LoadingView : public QWidget
 public:
     ~LoadingView() = default;
     explicit LoadingView(QWidget* parent = nullptr);
+
+    void setBoardInfo(BoardWeakPtr board);
+
+private:
+    QLabel*     _iconLbl = nullptr;
 };
 
 class ThreadListContainer : public QWidget
@@ -109,7 +114,7 @@ public:
     ContentView(QWidget* parent = nullptr);
 
     void doShowLogo();
-    void doShowLoading();
+    void doShowLoading(BoardWeakPtr board);
 
     void doShowListOfThreads(ForumPtr);
     void doShowListOfPosts(ThreadPtr thread);
@@ -119,6 +124,7 @@ private:
     LogoView*               _logoView;
     ThreadListContainer*    _threadListContainer;
     PostViewContainer*      _postListContainer;
+    LoadingView*            _loadingView;
 
     owl::BoardWeakPtr       _boardWeak;
     owl::SpdLogPtr          _logger;

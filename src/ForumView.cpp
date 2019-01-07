@@ -332,6 +332,8 @@ void ForumView::doBoardClicked(const owl::BoardWeakPtr boardWeakPtr)
     }
 
     if (oldModel) oldModel->deleteLater();
+
+    Q_EMIT onForumListLoaded();
 }
 
 } // namespace

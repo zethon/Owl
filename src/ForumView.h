@@ -58,7 +58,7 @@ public:
 
 Q_SIGNALS:
      void onForumClicked(owl::ForumPtr);
-
+     void onForumListLoaded();
 
 private:
     QLabel*                 _boardLabel;

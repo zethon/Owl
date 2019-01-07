@@ -1879,7 +1879,7 @@ void MainWindow::createBoardPanel()
     QObject::connect(servicesTree2, &BoardIconView::onBoardClicked,
         [this](owl::BoardWeakPtr bwp)
         {
-            contentView->doShowLogo();
+            contentView->doShowLoading(bwp);
             threadListWidget2->doBoardClicked(bwp);
         });
 
@@ -1969,11 +1969,14 @@ void MainWindow::createThreadPanel()
             BoardPtr board = forum->getBoard().lock();
             if (board && board->getStatus() == BoardStatus::ONLINE)
             {
-                contentView->doShowLoading();
+                contentView->doShowLoading(board);
                 board->requestThreadList(forum);
                 board->setLastForumId(forum->getId().toInt());
             }
         });
+
+    QObject::connect(threadListWidget2, &ForumView::onForumListLoaded,
+        [this]() { contentView->doShowLogo(); });
 
     // the "New Thread" button is disabled on startup
     newThreadBtn->setEnabled(false);
