@@ -11,6 +11,11 @@ namespace spdlog
     class logger;
 }
 
+#define LOGO_VIEW           0
+#define THREADLIST_VIEW     1
+#define POSTLIST_VIEW       2
+#define LOADING_VIEW        3
+
 namespace owl
 {
 
@@ -42,6 +47,13 @@ private:
 
 };
 
+class LoadingView : public QWidget
+{
+public:
+    ~LoadingView() = default;
+    explicit LoadingView(QWidget* parent = nullptr);
+};
+
 class ThreadListContainer : public QWidget
 {
     Q_OBJECT
@@ -51,6 +63,9 @@ public:
     ThreadListContainer(QWidget* parent = nullptr);
 
     void doShowThreads(ForumPtr);
+
+Q_SIGNALS:
+    void onLoading();
 
 private:
     QLabel*                 _forumNameLbl;
@@ -73,6 +88,7 @@ public:
 
 Q_SIGNALS:
     void onBackButtonPressed();
+    void onLoading();
 
 private:
     QLabel*                 _threadTitle;
@@ -93,6 +109,8 @@ public:
     ContentView(QWidget* parent = nullptr);
 
     void doShowLogo();
+    void doShowLoading();
+
     void doShowListOfThreads(ForumPtr);
     void doShowListOfPosts(ThreadPtr thread);
 

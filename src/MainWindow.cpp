@@ -1964,11 +1964,12 @@ void MainWindow::createBoardPanel()
 void MainWindow::createThreadPanel()
 {
     QObject::connect(threadListWidget2, &ForumView::onForumClicked,
-        [](owl::ForumPtr forum)
+        [this](owl::ForumPtr forum)
         {
             BoardPtr board = forum->getBoard().lock();
             if (board && board->getStatus() == BoardStatus::ONLINE)
             {
+                contentView->doShowLoading();
                 board->requestThreadList(forum);
                 board->setLastForumId(forum->getId().toInt());
             }

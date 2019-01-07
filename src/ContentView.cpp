@@ -33,6 +33,37 @@ LogoView::LogoView(QWidget *parent)
 }
 
 //********************************
+//* LoadingView
+//********************************
+
+LoadingView::LoadingView(QWidget *parent)
+    : QWidget(parent)
+{
+    QLabel* textlbl = new QLabel(this);
+    textlbl->setAlignment(Qt::AlignBottom|Qt::AlignHCenter);
+
+    QFont font { textlbl->font() };
+    font.setPointSize(32);
+    font.setBold(true);
+
+    textlbl->setFont(font);
+    textlbl->setText(tr("Loading..."));
+
+    QLabel* movieLbl = new QLabel(this);
+    movieLbl->setAlignment(Qt::AlignHCenter|Qt::AlignTop);
+
+    QMovie* working = new QMovie(":/icons/loading.gif", QByteArray(), this);
+    movieLbl->setMovie(working);
+    working->start();
+
+    QVBoxLayout* layout = new QVBoxLayout();
+    layout->addWidget(textlbl);
+    layout->addWidget(movieLbl);
+
+    setLayout(layout);
+}
+
+//********************************
 //* ThreadListContainer
 //********************************
 
@@ -71,6 +102,7 @@ ThreadListContainer::ThreadListContainer(QWidget *parent)
             {
                 if (BoardPtr board = forum->getBoard().lock(); board)
                 {
+                    Q_EMIT onLoading();
                     forum->setPageNumber(static_cast<int>(page));
                     board->requestThreadList(forum);
                 }
@@ -203,6 +235,7 @@ owl::PostViewContainer::PostViewContainer::PostViewContainer(QWidget* parent)
             {
                 if (BoardPtr board = thread->getBoard().lock(); board)
                 {
+                    Q_EMIT onLoading();
                     thread->setPageNumber(static_cast<int>(page));
                     board->setCurrentThread(thread);
                     board->requestPostList(thread, ParserEnums::REQUEST_DEFAULT, true);
@@ -291,22 +324,32 @@ ContentView::ContentView(QWidget* parent /* = 0*/)
     _logoView = new LogoView(this);
 
     _threadListContainer = new ThreadListContainer(this);
+    QObject::connect(_threadListContainer, &ThreadListContainer::onLoading,
+        [this]() { this->setCurrentIndex(LOADING_VIEW); });
 
     _postListContainer = new PostViewContainer(this);
+    QObject::connect(_postListContainer, &PostViewContainer::onLoading,
+        [this]() { this->setCurrentIndex(LOADING_VIEW); });
     QObject::connect(_postListContainer, &PostViewContainer::onBackButtonPressed,
         [this]()
         {
-            this->setCurrentIndex(1);
+            this->setCurrentIndex(THREADLIST_VIEW);
         });
 
     this->addWidget(_logoView);
     this->addWidget(_threadListContainer);
     this->addWidget(_postListContainer);
+    this->addWidget(new LoadingView(this));
 }
 
 void ContentView::doShowLogo()
 {
-    this->setCurrentIndex(0);
+    this->setCurrentIndex(LOGO_VIEW);
+}
+
+void ContentView::doShowLoading()
+{
+    this->setCurrentIndex(LOADING_VIEW);
 }
 
 void ContentView::doShowListOfThreads(ForumPtr forum)
@@ -325,13 +368,13 @@ void ContentView::doShowListOfThreads(ForumPtr forum)
             });
     }
 
-    this->setCurrentIndex(1);
+    this->setCurrentIndex(THREADLIST_VIEW);
 }
 
 void ContentView::doShowListOfPosts(ThreadPtr thread)
 {
     _postListContainer->showPosts(thread);
-    setCurrentIndex(2);
+    setCurrentIndex(POSTLIST_VIEW);
 }
 
 } // namespace
