@@ -10,12 +10,8 @@
 #include "PaginationWidget.h"
 
 #ifdef Q_OS_WIN
-    #define LEFTARROW   "<-"
-    #define RIGHTARROW  "->"
     #define ELLIPSIS    "..."
 #else
-    #define LEFTARROW   u8"\u2B05"
-    #define RIGHTARROW  u8"\u27A1"
     #define ELLIPSIS    u8"\u2026"
 #endif
 
@@ -32,17 +28,12 @@ static const std::uint32_t anchorIdx = 4;
 
 
 static const char* strPaginationWidgetStyle = R"(
-QToolBar
-{
-    background: transparent;
-    spacing: 5px;
-}
 QToolButton
 {
     font-size: 14px;
     color: rgb(143,143,143);
     border: 1px solid rgb(143,143,143);
-    border-radius: 5px;
+    border-radius: 3px;
 }
 QToolButton:hover
 {
@@ -118,7 +109,7 @@ void PaginationWidget::createPreviousButtons()
         QToolButton* prevButton = new QToolButton(this);
         QObject::connect(prevButton, &QToolButton::triggered, this, &PaginationWidget::onButtonClicked);
 
-        prevButton->setDefaultAction(new QAction(LEFTARROW, prevButton));
+        prevButton->setDefaultAction(new QAction(tr("Prev"), prevButton));
         prevButton->defaultAction()->setData(_currentPage - 1);
         _toolBar->addWidget(prevButton);
     }
@@ -225,7 +216,7 @@ void PaginationWidget::createNextButtons()
         QToolButton* nextButton = new QToolButton(this);
         QObject::connect(nextButton, &QToolButton::triggered, this, &PaginationWidget::onButtonClicked);
 
-        nextButton->setDefaultAction(new QAction(RIGHTARROW, nextButton));
+        nextButton->setDefaultAction(new QAction(tr("Next"), nextButton));
         nextButton->defaultAction()->setData(_currentPage + 1);
         _toolBar->addWidget(nextButton);
     }
@@ -279,7 +270,8 @@ SimpleToolBar::SimpleToolBar(QWidget *parent)
 {
     _layout = new QHBoxLayout();
     _layout->setMargin(0);
-    _layout->setSpacing(0);
+    _layout->setSpacing(5);
+    _layout->setAlignment(Qt::AlignLeft);
 
     setLayout(_layout);
 }
