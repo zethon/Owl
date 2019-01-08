@@ -102,19 +102,6 @@ void LoadingView::setBoardInfo(BoardWeakPtr bwp)
 //* ThreadListContainer
 //********************************
 
-// ┌───────────────────────────────────────────────────────────────────────────────┐
-// │┌────────────────────────────────────────────┐ ┌──────────────────────────────┐│
-// ││                                            │ │                              ││
-// ││              Location Name                 │ │                              ││
-// ││                                            │ │                              ││
-// │└────────────────────────────────────────────┘ │        Other Buttons         ││
-// │┌────────────────────────────────────────────┐ │                              ││
-// ││                                            │ │                              ││
-// ││             Pagination Widget              │ │                              ││
-// ││                                            │ │                              ││
-// │└────────────────────────────────────────────┘ └──────────────────────────────┘│
-// └───────────────────────────────────────────────────────────────────────────────┘
-
 ThreadListContainer::ThreadListContainer(QWidget *parent)
     : QWidget(parent)
 {
@@ -160,13 +147,21 @@ ThreadListContainer::ThreadListContainer(QWidget *parent)
     forumNameLayout->addWidget(_forumNameLbl);
     forumNameLayout->addWidget(_paginationWidget);
 
-    auto stickyBtn = new QPushButton("Toggle Stickies", this);
-    stickyBtn->setStyleSheet("QPushButton { border: 2px solid black; }");
+    auto stickyBtn = new QPushButton(this);
+    stickyBtn->setStyleSheet("QPushButton { border: 0px; }");
+    stickyBtn->setIcon(QIcon(":/icons/sticky2.png"));
+    stickyBtn->setIconSize(QSize(21, 21));
+    stickyBtn->setCursor(Qt::CursorShape::PointingHandCursor);
 
-    auto newBtn = new QPushButton("New Thread", this);
-    newBtn->setStyleSheet("QPushButton { border: 2px solid black; }");
+    auto newBtn = new QPushButton(this);
+    newBtn->setStyleSheet("QPushButton { border: 0px; }");
+    newBtn->setIcon(QIcon(":/icons/newboard.png"));
+    newBtn->setIconSize(QSize(21, 21));
+    newBtn->setCursor(Qt::CursorShape::PointingHandCursor);
 
     QHBoxLayout* rightHandLayout = new QHBoxLayout();
+    rightHandLayout->setMargin(0);
+    rightHandLayout->setSpacing(0);
     rightHandLayout->addWidget(stickyBtn);
     rightHandLayout->addWidget(newBtn);
 
@@ -288,29 +283,29 @@ owl::PostViewContainer::PostViewContainer::PostViewContainer(QWidget* parent)
             }
         });
 
-    QVBoxLayout* topCenterLayout = new QVBoxLayout();
-    topCenterLayout->setMargin(0);
-    topCenterLayout->setSpacing(0);
-    topCenterLayout->addWidget(_threadTitle);
-    topCenterLayout->addWidget(_paginationWidget);
-
     auto newBtn = new QPushButton("New Post", this);
     newBtn->setStyleSheet("QPushButton { border: 2px solid black; }");
 
     auto stickyBtn = new QPushButton("Expand/Collapse", this);
     stickyBtn->setStyleSheet("QPushButton { border: 2px solid black; }");
 
+    QHBoxLayout* topRowLayout = new QHBoxLayout();
+    topRowLayout->setMargin(0);
+    topRowLayout->setSpacing(0);
+    topRowLayout->addWidget(_backButton);
+    topRowLayout->addWidget(_threadTitle);
+
+    QVBoxLayout* leftHandLayout = new QVBoxLayout();
+    leftHandLayout->addLayout(topRowLayout);
+    leftHandLayout->addWidget(_paginationWidget);
+
     QHBoxLayout* rightHandLayout = new QHBoxLayout();
     rightHandLayout->addWidget(stickyBtn);
     rightHandLayout->addWidget(newBtn);
 
     QHBoxLayout* topLayout = new QHBoxLayout();
-    topLayout->addItem(new QSpacerItem(1,0));
-    topLayout->addWidget(_backButton);
-    topLayout->addItem(new QSpacerItem(10,0));
-    topLayout->addLayout(topCenterLayout);
+    topLayout->addLayout(leftHandLayout);
     topLayout->addLayout(rightHandLayout);
-    topLayout->addItem(new QSpacerItem(1,0));
 
     QFrame* hLine = new QFrame(this);
     hLine->setFrameShape(QFrame::HLine);

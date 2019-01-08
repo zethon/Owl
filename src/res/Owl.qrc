@@ -80,5 +80,6 @@
         <file>icons/add-board-512.png</file>
         <file>images/owl-bg2.png</file>
         <file>icons/loading2.gif</file>
+        <file>icons/sticky2.png</file>
     </qresource>
 </RCC>

@@ -13,14 +13,20 @@
     #define BOARDNAMEFONT       12
     #define USERNAMEFONT        10
     #define TREEFONTSIZE        10
+    #define TREEITEMHEIGHT      30
+    #define TREECATHEIGHT       50
 #elif defined(Q_OS_MAC)
     #define BOARDNAMEFONT       18
-    #define USERNAMEFONT        14
-    #define TREEFONTSIZE        16
+    #define USERNAMEFONT        12
+    #define TREEFONTSIZE        14
+    #define TREEITEMHEIGHT      25
+    #define TREECATHEIGHT       45
 #else
     #define BOARDNAMEFONT       14
     #define USERNAMEFONT        11
     #define TREEFONTSIZE        12
+    #define TREEITEMHEIGHT      30
+    #define TREECATHEIGHT       50
 #endif
 
 static const char* strListStyleSheet = R"(
@@ -169,7 +175,7 @@ void ForumViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 QSize ForumViewDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     QSize retsize { option.rect.size() };
-    retsize.setHeight(30);
+    retsize.setHeight(TREEITEMHEIGHT);
 
     owl::Forum* item = static_cast<owl::Forum*>(index.internalPointer());
     if (item->getForumType() == owl::Forum::ForumType::CATEGORY
@@ -179,7 +185,7 @@ QSize ForumViewDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
         owl::Forum* previtem = static_cast<owl::Forum*>(prevIdx.internalPointer());
         if (previtem->getForumType() == owl::Forum::ForumType::FORUM)
         {
-            retsize.setHeight(50);
+            retsize.setHeight(TREECATHEIGHT);
         }
     }
 

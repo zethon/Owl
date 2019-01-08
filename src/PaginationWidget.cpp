@@ -26,11 +26,10 @@ static const std::uint32_t totalPageButtons = 9;
 // The postion of the current page when all `totalPageButtons` are displayed
 static const std::uint32_t anchorIdx = 4;
 
-
 static const char* strPaginationWidgetStyle = R"(
 QToolButton
 {
-    font-size: 14px;
+    font-size: 12px;
     color: rgb(143,143,143);
     border: 1px solid rgb(143,143,143);
     border-radius: 3px;
