@@ -102,6 +102,28 @@ void LoadingView::setBoardInfo(BoardWeakPtr bwp)
 //* ThreadListContainer
 //********************************
 
+QIcon getToolIcon(const QString& resource)
+{
+    QPixmap pix(QSize(32,32));
+    pix.fill(Qt::transparent);
+    QImage totalImage = pix.toImage();
+
+    QImage base { resource };
+    QTransform transform;
+    transform.scale(22, 22);
+    base = base.transformed(transform, Qt::SmoothTransformation);
+
+    QPainter p(&totalImage);
+    p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+//    p.setRenderHint(QPainter::Antialiasing, true);
+    p.drawImage(0, 0, base);
+
+    qDebug() << "totalImage: " << totalImage.size();
+    qDebug() << "base      : " << base.size();
+
+    return QIcon(QPixmap::fromImage(totalImage));
+}
+
 ThreadListContainer::ThreadListContainer(QWidget *parent)
     : QWidget(parent)
 {
@@ -148,16 +170,18 @@ ThreadListContainer::ThreadListContainer(QWidget *parent)
     forumNameLayout->addWidget(_paginationWidget);
 
     auto stickyBtn = new QPushButton(this);
-    stickyBtn->setStyleSheet("QPushButton { border: 0px; }");
-    stickyBtn->setIcon(QIcon(":/icons/sticky2.png"));
-    stickyBtn->setIconSize(QSize(21, 21));
+    stickyBtn->setStyleSheet("QPushButton { border: 0px; } QPushButton::hover { background-color: #eaeaea; border-radius: 8px; }");
+    stickyBtn->setIcon(getToolIcon(":/icons/sticky2.png"));
+    stickyBtn->setIconSize(QSize(32, 32));
     stickyBtn->setCursor(Qt::CursorShape::PointingHandCursor);
+    stickyBtn->setMaximumWidth(32);
 
     auto newBtn = new QPushButton(this);
-    newBtn->setStyleSheet("QPushButton { border: 0px; }");
-    newBtn->setIcon(QIcon(":/icons/newboard.png"));
-    newBtn->setIconSize(QSize(21, 21));
+    newBtn->setStyleSheet("QPushButton { border: 0px; } QPushButton::hover { background-color: #eaeaea; border-radius: 8px; }");
+    newBtn->setIcon(getToolIcon(":/icons/newboard.png"));
+    newBtn->setIconSize(QSize(32, 32));
     newBtn->setCursor(Qt::CursorShape::PointingHandCursor);
+    newBtn->setMaximumWidth(32);
 
     QHBoxLayout* rightHandLayout = new QHBoxLayout();
     rightHandLayout->setMargin(0);

@@ -110,6 +110,7 @@ void PaginationWidget::createPreviousButtons()
 
         prevButton->setDefaultAction(new QAction(tr("Prev"), prevButton));
         prevButton->defaultAction()->setData(_currentPage - 1);
+        prevButton->setCursor(Qt::CursorShape::PointingHandCursor);
         _toolBar->addWidget(prevButton);
     }
 
@@ -157,6 +158,7 @@ void PaginationWidget::createPreviousButtons()
         Q_ASSERT(newButton);
 
         QObject::connect(newButton, &QToolButton::triggered, this, &PaginationWidget::onButtonClicked);
+        newButton->setCursor(Qt::CursorShape::PointingHandCursor);
         _toolBar->addWidget(newButton);
     }
 }
@@ -207,6 +209,7 @@ void PaginationWidget::createNextButtons()
             QObject::connect(newButton, &QToolButton::triggered, this, &PaginationWidget::onButtonClicked);
         }
 
+        newButton->setCursor(Qt::CursorShape::PointingHandCursor);
         _toolBar->addWidget(newButton);
     }
 
@@ -217,6 +220,7 @@ void PaginationWidget::createNextButtons()
 
         nextButton->setDefaultAction(new QAction(tr("Next"), nextButton));
         nextButton->defaultAction()->setData(_currentPage + 1);
+        nextButton->setCursor(Qt::CursorShape::PointingHandCursor);
         _toolBar->addWidget(nextButton);
     }
 }
