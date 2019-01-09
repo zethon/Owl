@@ -41,6 +41,7 @@ QToolButton:hover
 }
 QToolButton::menu-indicator
 {
+    background-color: transparent;
     width:0px;
 }
 QToolButton#currentPage
@@ -136,7 +137,6 @@ void PaginationWidget::createPreviousButtons()
             {
                 newButton->setText(ELLIPSIS);
                 newButton->setPopupMode(QToolButton::InstantPopup);
-                newButton->setObjectName(QStringLiteral("popup"));
 
                 auto widgetAction = new GotoPageWidgetAction(_totalPages, newButton);
                 QObject::connect(widgetAction, &GotoPageWidgetAction::gotoPage,
@@ -190,7 +190,6 @@ void PaginationWidget::createNextButtons()
             {
                 newButton->setText(ELLIPSIS);
                 newButton->setPopupMode(QToolButton::InstantPopup);
-                newButton->setObjectName(QStringLiteral("popup"));
 
                 auto widgetAction = new GotoPageWidgetAction(_totalPages, newButton);
                 QObject::connect(widgetAction, &GotoPageWidgetAction::gotoPage,
