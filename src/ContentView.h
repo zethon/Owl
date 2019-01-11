@@ -75,6 +75,9 @@ Q_SIGNALS:
 private:
     QLabel*                 _forumNameLbl;
     PaginationWidget*       _paginationWidget;
+
+    QStackedWidget*         _container;
+    LoadingView*            _loadingView;
     ThreadListWidget*       _threadListWidget;
 
     owl::ForumWeakPtr       _currentForum;

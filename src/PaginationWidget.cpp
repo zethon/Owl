@@ -109,7 +109,7 @@ void PaginationWidget::createPreviousButtons()
         QToolButton* prevButton = new QToolButton(this);
         QObject::connect(prevButton, &QToolButton::triggered, this, &PaginationWidget::onButtonClicked);
 
-        prevButton->setDefaultAction(new QAction(tr("Prev"), prevButton));
+        prevButton->setDefaultAction(new QAction(tr("< Prev"), prevButton));
         prevButton->defaultAction()->setData(_currentPage - 1);
         prevButton->setCursor(Qt::CursorShape::PointingHandCursor);
         _toolBar->addWidget(prevButton);
@@ -217,7 +217,7 @@ void PaginationWidget::createNextButtons()
         QToolButton* nextButton = new QToolButton(this);
         QObject::connect(nextButton, &QToolButton::triggered, this, &PaginationWidget::onButtonClicked);
 
-        nextButton->setDefaultAction(new QAction(tr("Next"), nextButton));
+        nextButton->setDefaultAction(new QAction(tr("Next >"), nextButton));
         nextButton->defaultAction()->setData(_currentPage + 1);
         nextButton->setCursor(Qt::CursorShape::PointingHandCursor);
         _toolBar->addWidget(nextButton);

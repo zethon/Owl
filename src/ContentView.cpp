@@ -124,7 +124,9 @@ ThreadListContainer::ThreadListContainer(QWidget *parent)
             {
                 if (BoardPtr board = forum->getBoard().lock(); board)
                 {
-                    Q_EMIT onLoading();
+                    _loadingView->setBoardInfo(board);
+                    _container->setCurrentIndex(0);
+
                     forum->setPageNumber(static_cast<int>(page));
                     board->requestThreadList(forum);
                 }
@@ -181,6 +183,13 @@ ThreadListContainer::ThreadListContainer(QWidget *parent)
     hLine->setFrameShape(QFrame::HLine);
     hLine->setFrameShadow(QFrame::Sunken);
 
+    _loadingView = new LoadingView(this);
+
+    _container = new QStackedWidget(this);
+    _container->addWidget(_loadingView);
+    _container->addWidget(_threadListWidget);
+    _container->setCurrentIndex(1);
+
     QVBoxLayout* rootLayout = new QVBoxLayout();
     rootLayout->setSpacing(0);
     rootLayout->setMargin(0);
@@ -189,7 +198,7 @@ ThreadListContainer::ThreadListContainer(QWidget *parent)
     rootLayout->addLayout(topLayout);
     rootLayout->addItem(new QSpacerItem(0,5));
     rootLayout->addWidget(hLine);
-    rootLayout->addWidget(_threadListWidget);
+    rootLayout->addWidget(_container);
 
     setLayout(rootLayout);
 }
@@ -208,24 +217,12 @@ void ThreadListContainer::doShowThreads(ForumPtr forum)
     _paginationWidget->setPages(current, total);
 
     _currentForum = forum;
+    _container->setCurrentIndex(1);
 }
 
 //********************************
 //* PostViewContainer
 //********************************
-
-// ┌──────────────────────────────────────────────────────────────────────────────┐
-// │┌──────┐┌──────────────────────────────────────────────────┐┌────────────────┐│
-// ││      ││                                                  ││                ││
-// ││      ││                   Thread Title                   ││                ││
-// ││      ││                                                  ││                ││
-// ││  <-  │└──────────────────────────────────────────────────┘│ Other Buttons  ││
-// ││      │┌──────────────────────────────────────────────────┐│                ││
-// ││      ││                                                  ││                ││
-// ││      ││                Pagination Widget                 ││                ││
-// ││      ││                                                  ││                ││
-// │└──────┘└──────────────────────────────────────────────────┘└────────────────┘│
-// └──────────────────────────────────────────────────────────────────────────────┘
 
 static const char* strBackButtonStyle = R"(
 QToolButton
@@ -358,8 +355,6 @@ ContentView::ContentView(QWidget* parent /* = 0*/)
     _logoView = new LogoView(this);
 
     _threadListContainer = new ThreadListContainer(this);
-    QObject::connect(_threadListContainer, &ThreadListContainer::onLoading,
-        [this]() { this->setCurrentIndex(LOADING_VIEW); });
 
     _postListContainer = new PostViewContainer(this);
     QObject::connect(_postListContainer, &PostViewContainer::onLoading,
