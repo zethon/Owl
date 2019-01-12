@@ -44,16 +44,15 @@ LoadingView::LoadingView(QWidget *parent)
     _iconLbl->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
     _iconLbl->setMaximumHeight(64);
 
-    QLabel* textlbl = new QLabel(this);
-    textlbl->setAlignment(Qt::AlignBottom|Qt::AlignHCenter);
-    textlbl->setMaximumHeight(64);
+    _loadingLbl = new QLabel(this);
+    _loadingLbl->setAlignment(Qt::AlignBottom|Qt::AlignHCenter);
+    _loadingLbl->setMaximumHeight(64);
 
-    QFont font { textlbl->font() };
+    QFont font { _loadingLbl->font() };
     font.setPointSize(32);
-    font.setBold(true);
 
-    textlbl->setFont(font);
-    textlbl->setText(tr("Loading..."));
+    _loadingLbl->setFont(font);
+    _loadingLbl->setText(tr("Loading..."));
 
     QLabel* movieLbl = new QLabel(this);
     movieLbl->setAlignment(Qt::AlignHCenter|Qt::AlignTop);
@@ -69,7 +68,7 @@ LoadingView::LoadingView(QWidget *parent)
     layout->addSpacerItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
     layout->addWidget(_iconLbl);
     layout->addSpacing(10);
-    layout->addWidget(textlbl);
+    layout->addWidget(_loadingLbl);
     layout->addSpacing(10);
     layout->addWidget(movieLbl);
     layout->addSpacerItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
@@ -91,6 +90,22 @@ void LoadingView::setBoardInfo(BoardWeakPtr bwp)
         }
 
         _iconLbl->setPixmap(QPixmap::fromImage(image));
+
+        QString lblText;
+        if (auto thread = board->getCurrentThread(); thread)
+        {
+            lblText = QString(tr("Loading <b>%1</b>")).arg(thread->getTitle());
+        }
+        if (auto forum = board->getCurrentForum(); forum)
+        {
+            lblText = QString(tr("Loading <b>%1</b>.")).arg(forum->getName());
+        }
+        else
+        {
+            lblText = tr("Loading...");
+        }
+
+        _loadingLbl->setText(lblText);
     }
     else
     {

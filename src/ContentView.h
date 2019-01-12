@@ -56,6 +56,7 @@ public:
     void setBoardInfo(BoardWeakPtr board);
 
 private:
+    QLabel*     _loadingLbl = nullptr;
     QLabel*     _iconLbl = nullptr;
 };
 
