@@ -658,9 +658,10 @@ bool BoardManager::updateBoard(BoardPtr board)
 	}
 	else
 	{
-        _logger->error("updateBoard() failed: {}", query.lastError().text().toStdString());
+        const auto error = fmt::format("Cannot update board: {}", query.lastError().text().toStdString());
+        _logger->error(error);
         _logger->debug("executed query: {}", query.lastQuery().toStdString());
-        OWL_THROW_EXCEPTION(BoardManagerException(query.lastError().text(), query.lastQuery()));
+        OWL_THROW_EXCEPTION(Exception(QString::fromStdString(error)));
 	}
 
 	return bRet;

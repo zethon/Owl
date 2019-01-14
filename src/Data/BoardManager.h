@@ -105,28 +105,4 @@ private:
     std::shared_ptr<spdlog::logger>     _logger;
 };
 
-class BoardManagerException : public Exception
-{
-public:
-    BoardManagerException(const QString& msg, const QString& query)
-        : Exception(msg),
-		  _query(query)
-	{
-	}
-
-    BoardManagerException(const QString& msg)
-        : Exception(msg)
-	{
-	}
-
-	virtual ~BoardManagerException() throw()
-	{
-	}
-
-	const QString& query() const { return _query; }
-
-private:
-	QString _query;
-};
-
 } // namespace owl

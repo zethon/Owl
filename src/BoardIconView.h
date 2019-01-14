@@ -67,6 +67,8 @@ public:
     BoardIconView(QWidget* parent = nullptr);
     virtual ~BoardIconView() = default;
 
+    void loadBoards();
+
 Q_SIGNALS:
     void onAddNewBoard();
     void onBoardClicked(owl::BoardWeakPtr);
@@ -82,8 +84,8 @@ private:
     void doContextMenu(const QPoint &pos);
     void initListView();
 
-    BoardIconListView*      _listView;
-    QStandardItemModel*     _iconModel;
+    BoardIconListView*      _listView = nullptr;
+    QStandardItemModel*     _iconModel = nullptr;
     owl::SpdLogPtr          _logger;
 };
 

@@ -231,6 +231,26 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
     : QWidget(parent),
       _logger { owl::initializeLogger("BoardIconView") }
 {
+
+    loadBoards();
+    initListView();
+
+    QVBoxLayout* layout = new QVBoxLayout;
+    layout->setSpacing(0);
+    layout->setMargin(0);
+
+    layout->addWidget(_listView);
+
+    setLayout(layout);
+}
+
+void BoardIconView::loadBoards()
+{
+    if (_iconModel)
+    {
+        _iconModel->deleteLater();
+    }
+
     _iconModel = new QStandardItemModel;
     _iconModel->setColumnCount(1);
 
@@ -265,16 +285,6 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
     item->setData(tempVar, ICONTYPE_ROLE);
 
     _iconModel->insertRow(idx++, item);
-
-    initListView();
-
-    QVBoxLayout* layout = new QVBoxLayout;
-    layout->setSpacing(0);
-    layout->setMargin(0);
-
-    layout->addWidget(_listView);
-
-    setLayout(layout);
 }
 
 void BoardIconView::initListView()
@@ -421,7 +431,6 @@ void BoardIconView::doContextMenu(const QPoint &pos)
                 });
         }
 
-//        menu->popup(this->mapToGlobal(pos));
         menu->exec(this->mapToGlobal(pos));
     }
 }
