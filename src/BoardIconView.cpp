@@ -8,6 +8,7 @@
 #include <QPainter>
 #include <QPixmap>
 #include <QMenu>
+#include <QMessageBox>
 
 #include  <Utils/OwlLogger.h>
 
@@ -341,7 +342,7 @@ void BoardIconView::initListView()
                     Q_EMIT onBoardDoubleClicked(boardVar.value<BoardWeakPtr>());
                 }
             }
-        });
+    });
 }
 
 void BoardIconView::doContextMenu(const QPoint &pos)
@@ -427,11 +428,37 @@ void BoardIconView::doContextMenu(const QPoint &pos)
             QObject::connect(action, &QAction::triggered,
                 [this, boardVar]()
                 {
-                    onDeleteBoard(boardVar.value<BoardWeakPtr>());
+                    this->requestBoardDelete(boardVar.value<BoardWeakPtr>());
+
                 });
         }
 
         menu->exec(this->mapToGlobal(pos));
+    }
+}
+
+void BoardIconView::requestBoardDelete(BoardWeakPtr boardWeak)
+{
+    BoardPtr board = boardWeak.lock();
+    if (board)
+    {
+        const QString strMsg = QString(tr("Are you sure you want to delete the board \"%1\"?\n\n"
+            "This will permanently remove all data associated with this board.")).arg(board->getName());
+
+        QMessageBox messageBox(
+            QMessageBox::Question,
+            tr("Delete Message Board"),
+            strMsg,
+            QMessageBox::Yes | QMessageBox::No,
+            this,
+            Qt::Drawer);
+
+        messageBox.setWindowModality(Qt::WindowModal);
+
+        if (messageBox.exec() == QMessageBox::Yes)
+        {
+            onDeleteBoard(boardWeak);
+        }
     }
 }
 

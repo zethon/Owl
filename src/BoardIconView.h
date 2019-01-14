@@ -84,6 +84,8 @@ private:
     void doContextMenu(const QPoint &pos);
     void initListView();
 
+    void requestBoardDelete(BoardWeakPtr board);
+
     BoardIconListView*      _listView = nullptr;
     QStandardItemModel*     _iconModel = nullptr;
     owl::SpdLogPtr          _logger;
