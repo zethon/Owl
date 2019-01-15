@@ -1928,7 +1928,21 @@ void MainWindow::createBoardPanel()
             addDlg->open();
         });
 
-    // OLD
+    QObject::connect(servicesTree2, &BoardIconView::onDeleteBoard,
+        [this](owl::BoardWeakPtr bwp)
+        {
+            BoardPtr board = bwp.lock();
+            if (board)
+            {
+                QThreadEx* thread = _workerMap.value(board->getDBId());
+                Q_ASSERT(thread);
+//                QObject::connect(thread, &QThread::finished, worker, &QObject::deleteLater);
+            }
+        });
+
+
+// OLD CODE
+/**************************************************************************************************/
 #ifdef Q_OS_MACX
     servicesTree->setAttribute(Qt::WA_MacShowFocusRect, 0);
     servicesTree2->setAttribute(Qt::WA_MacShowFocusRect, 0);

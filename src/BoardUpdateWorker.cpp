@@ -62,8 +62,14 @@ void BoardUpdateWorker::doWork()
 
         try
         {
-            _logger->debug("doWork() for board '{}'", board->getName().toStdString());
+            const std::string boardName { board->getName().toStdString() };
+
+            _logger->debug("BoardUpdateWorker::doWork() for board '{}' started", boardName);
+
             board->updateUnread();
+
+            _logger->debug("BoardUpdateWorker::doWork() for board '{}' completed", boardName);
+
 //            checkStructureUpdate();
         }
         catch (const WebException& ex)
