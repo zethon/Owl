@@ -220,7 +220,7 @@ int MainWindow::initBoard(const BoardPtr& b)
             b->setParser(parser);
             connectBoard(b);
 
-            _workerMap.insert(b->getDBId(), new QThreadEx());
+            _workerMap.insert(b->hash(), new QThreadEx());
 
             QStandardItem* item = _svcModel->addBoardItem(b);           
             item->setSizeHint(QSize(item->sizeHint().width(), BoardsModel::ITEMHEIGHT));
@@ -471,9 +471,9 @@ void MainWindow::loginEvent(BoardPtr b, StringMap sp)
         doc->setOrAddVar("%BOARDSTATUSIMG%", ":/icons/online.png");
         doc->setOrAddVar("%BOARDSTATUSALT%", tr("Online"));
 
-        if (_workerMap.contains(b->getDBId()))
+        if (_workerMap.contains(b->hash()))
         {
-            QThreadEx* workerThread = _workerMap.value(b->getDBId());
+            QThreadEx* workerThread = _workerMap.value(b->hash());
 
             BoardUpdateWorker* pWorker = new BoardUpdateWorker(b);
             pWorker->moveToThread(workerThread);
@@ -1934,18 +1934,46 @@ void MainWindow::createBoardPanel()
             BoardPtr board = bwp.lock();
             if (board)
             {
-                QThreadEx* thread = _workerMap.value(board->getDBId());
+                QThreadEx* thread = _workerMap.value(board->hash());
                 Q_ASSERT(thread);
-//                QObject::connect(thread, &QThread::finished, worker, &QObject::deleteLater);
+                thread->exit();
+
+                // NOTE: More of Qt's lifetime management, this will, in fact, delete
+                // the `BoardUpdateWorker` and `QThreadEx` objects that are in the
+                // `_workerMap`
+                _workerMap.remove(board->hash());
+
+                // delete the board from the toolbar
+                auto actionList = boardToolbar->actions();
+                auto actionItem = std::find_if(actionList.begin(), actionList.end(),
+                    [board](QAction* action)
+                    {
+                        auto other = action->data().value<BoardWeakPtr>().lock();
+                        return board && other && board->hash() == other->hash();
+                    });
+
+                if (actionItem != actionList.end())
+                {
+                    boardToolbar->removeAction(*actionItem);
+
+                }
+
+                // remove from the database
+                BOARDMANAGER->deleteBoard(board);
+
+                // clear any resources
+                board.reset();
             }
         });
 
+#ifdef Q_OS_MACX
+    servicesTree2->setAttribute(Qt::WA_MacShowFocusRect, 0);
+#endif
 
 // OLD CODE
 /**************************************************************************************************/
 #ifdef Q_OS_MACX
     servicesTree->setAttribute(Qt::WA_MacShowFocusRect, 0);
-    servicesTree2->setAttribute(Qt::WA_MacShowFocusRect, 0);
 #endif
     
     servicesTree->collapseAll();
@@ -2178,10 +2206,10 @@ void MainWindow::onBoardDelete()
 void MainWindow::onBoardDelete(BoardPtr b)
 {
     // stop any pending requests
-    QThread* thread = _workerMap.value(b->getDBId());
+    QThread* thread = _workerMap.value(b->hash());
     thread->exit();
 
-    _workerMap.remove(b->getDBId());
+    _workerMap.remove(b->hash());
 
     // search the toolbar (top of the client) and
     // remove the board icon

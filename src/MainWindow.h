@@ -29,7 +29,7 @@ class ErrorReportDlg;
 class QuickAddDlg;
 
 // uint - DB Id
-typedef QHash<uint, QThreadEx*> WorkerMap;
+typedef QHash<std::size_t, QThreadEx*> WorkerMap;
 
 typedef QList<QPair<QString, QString> > UrlQueryItems;
 
