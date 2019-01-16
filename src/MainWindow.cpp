@@ -170,7 +170,7 @@ void MainWindow::loadBoards()
         const auto& list = BOARDMANAGER->getBoardList();
         for (const BoardPtr& b : list)
         {
-            if (initBoard(b) == 0 && b->isAutoLogin())
+            if (initBoard(b) && b->isAutoLogin())
             {
                 _logger->debug("Starting automatic login for board '{}' with user '{}'",
                     b->getName().toStdString(), b->getUsername().toStdString());
@@ -200,7 +200,7 @@ void MainWindow::loadBoards()
     });
 }
 
-int MainWindow::initBoard(const BoardPtr& b)
+bool MainWindow::initBoard(const BoardPtr& b)
 {
     const uint boardIconWidth = 32;
     const uint boardIconHeight = 32;
@@ -208,7 +208,7 @@ int MainWindow::initBoard(const BoardPtr& b)
     QString boardItemTemplate = owl::getResourceHtmlFile("boardItem.html");
     Q_ASSERT(!boardItemTemplate.isEmpty());
     
-    int iRet = 0;
+    bool ok = false;
 
     try
     {
@@ -286,19 +286,18 @@ int MainWindow::initBoard(const BoardPtr& b)
 
             boardAction->setMenu(boardMenu);
             boardToolbar->addAction(boardAction);
+            ok = true;
         }
     }
     catch (const owl::Exception& ex)
     {
-        iRet++;
-
         b->setStatus(BoardStatus::ERR);
 
         _logger->warn("Failed to create parser of type '{}' for board '{}': {}",
             b->getProtocolName().toStdString(), b->getName().toStdString(), ex.message().toStdString());
     }
 
-    return iRet;
+    return ok;
 }
 
 void MainWindow::openPreferences()
@@ -668,7 +667,7 @@ void MainWindow::onNewBoardAdded(BoardPtr b)
 {
     servicesTree->setHasBoards(true);
 
-    if (initBoard(b) == 0)
+    if (initBoard(b))
     {
         b->login();
     }
@@ -1891,7 +1890,6 @@ void MainWindow::createBoardPanel()
 
             EditBoardDlg* dlg = new EditBoardDlg(boardPtr, this);
 
-            QObject::connect(dlg, &QDialog::finished, [dlg](int) { dlg->deleteLater(); });
             QObject::connect(dlg, &EditBoardDlg::boardSavedEvent,
                 [this](const BoardPtr b, const StringMap&)
             {
@@ -1917,6 +1915,7 @@ void MainWindow::createBoardPanel()
                 }
             });
 
+            QObject::connect(dlg, &QDialog::finished, [dlg](int) { dlg->deleteLater(); });
             dlg->open();
         });
 
@@ -1924,6 +1923,17 @@ void MainWindow::createBoardPanel()
         [this]()
         {
             QuickAddDlg* addDlg = new QuickAddDlg(this);
+            connect(addDlg, SIGNAL(newBoardAddedEvent(BoardPtr)), this, SLOT(onNewBoardAdded(BoardPtr)));
+
+            connect(addDlg, &QuickAddDlg::newBoardAddedEvent,
+                [this](BoardPtr board)
+                {
+                    if (this->initBoard(board))
+                    {
+                        board->login();
+                    }
+                });
+
             QObject::connect(addDlg, &QDialog::finished, [addDlg](int) { addDlg->deleteLater(); });
             addDlg->open();
         });
@@ -1965,10 +1975,6 @@ void MainWindow::createBoardPanel()
                 board.reset();
             }
         });
-
-#ifdef Q_OS_MACX
-    servicesTree2->setAttribute(Qt::WA_MacShowFocusRect, 0);
-#endif
 
 // OLD CODE
 /**************************************************************************************************/

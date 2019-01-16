@@ -297,7 +297,7 @@ private:
     void navigateToThreadListPage(ForumPtr forum, int iPageNumber);
     void navigateToPostListPage(ThreadPtr thread, int iPageNumber);
 
-    int initBoard(const BoardPtr& b);
+    bool initBoard(const BoardPtr& b);
     void openPreferences();
 
     QMenu* _boardToolBarCtxMenu = nullptr;
