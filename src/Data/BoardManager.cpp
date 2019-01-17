@@ -820,7 +820,12 @@ BoardPtr BoardManager::boardByItem(QStandardItem* item) const
 		}
 	}
 
-	return board;
+    return board;
+}
+
+BoardPtr BoardManager::boardByIndex(std::size_t index) const
+{
+    return _boardList.at(static_cast<int>(index));
 }
 
 BoardManagerPtr BoardManager::_instance;

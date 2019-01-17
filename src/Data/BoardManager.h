@@ -66,6 +66,7 @@ public:
 	bool deleteBoard(BoardPtr board);
 
 	BoardPtr boardByItem(QStandardItem* item) const;
+    BoardPtr boardByIndex(std::size_t index) const;
     
     // FORUM - CRUD
     bool deleteForumVars(const QString& forumId) const;

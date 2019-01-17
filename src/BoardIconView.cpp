@@ -139,7 +139,6 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 
     if (index.data(ICONTYPE_ROLE).value<IconType>() == IconType::BOARDICON)
     {
-        // get the board data
         QVariant boardVar = index.data(BOARDPTR_ROLE);
         BoardPtr boardData = boardVar.value<BoardWeakPtr>().lock();
         Q_ASSERT(boardData);
@@ -225,6 +224,96 @@ void BoardIconListView::currentChanged(const QModelIndex& current, const QModelI
 }
 
 //********************************
+//* BoardIconModel
+//********************************
+
+BoardIconModel::BoardIconModel(QObject *parent)
+    : QAbstractItemModel(parent),
+      _boardManager(owl::BoardManager::instance())
+{}
+
+QModelIndex BoardIconModel::index(int row, int column, const QModelIndex& parent) const
+{
+    if (!hasIndex(row, column, parent)) return QModelIndex{};
+
+    Q_ASSERT(!parent.isValid());
+    Q_ASSERT(column == 0);
+
+
+    std::size_t trow = static_cast<std::size_t>(row);
+    if (trow < _boardManager->getBoardCount())
+    {
+        return createIndex(row, column, _boardManager->boardByIndex(trow).get());
+    }
+
+    return createIndex(row, column);
+}
+
+QModelIndex BoardIconModel::parent(const QModelIndex& index) const
+{
+    Q_UNUSED(index);
+    return QModelIndex();
+}
+
+int BoardIconModel::rowCount(const QModelIndex& parent) const
+{
+    if (parent.column() > 0) return 0;
+    return static_cast<int>(_boardManager->getBoardCount() + 1);
+}
+
+int BoardIconModel::columnCount(const QModelIndex& parent) const
+{
+    Q_UNUSED(parent);
+    return 1;
+}
+
+QVariant BoardIconModel::data(const QModelIndex& index, int role) const
+{
+    if (!index.isValid()) return QVariant{};
+
+    if (index.row() < static_cast<int>(_boardManager->getBoardCount()))
+    {
+        switch (role)
+        {
+            case Qt::DecorationRole:
+            {
+                owl::Board* board = static_cast<owl::Board*>(index.internalPointer());
+                Q_ASSERT(board);
+
+                QByteArray buffer(board->getFavIcon().toLatin1());
+
+                QImage image = QImage::fromData(QByteArray::fromBase64(buffer));
+                image = resizeImage(image, QSize(ICONSCALEWIDTH, ICONSCALEHEIGHT));
+                return QIcon { QPixmap::fromImage(image) };
+            }
+
+            case ICONTYPE_ROLE:
+                return QVariant::fromValue(IconType::BOARDICON);
+
+            case BOARDPTR_ROLE:
+            {
+                std::size_t trow = static_cast<std::size_t>(index.row());
+                std::weak_ptr<owl::Board> retval { _boardManager->boardByIndex(trow) };
+                return QVariant::fromValue(retval);
+            }
+        }
+    }
+    else
+    {
+        switch (role)
+        {
+            case Qt::DecorationRole:
+                return QVariant { QIcon("://icons/add-board-512.png") };
+
+            case ICONTYPE_ROLE:
+                return QVariant::fromValue(IconType::ADDICON);
+        }
+    }
+
+    return QVariant{};
+}
+
+//********************************
 //* BoardIconView
 //********************************
 
@@ -233,7 +322,7 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
       _logger { owl::initializeLogger("BoardIconView") }
 {
 
-    loadBoards();
+//    loadBoards();
     initListView();
 
     QVBoxLayout* layout = new QVBoxLayout;
@@ -245,48 +334,48 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
     setLayout(layout);
 }
 
-void BoardIconView::loadBoards()
-{
-    if (_iconModel)
-    {
-        _iconModel->deleteLater();
-    }
+//void BoardIconView::loadBoards()
+//{
+//    if (_iconModel)
+//    {
+//        _iconModel->deleteLater();
+//    }
 
-    _iconModel = new QStandardItemModel;
-    _iconModel->setColumnCount(1);
+//    _iconModel = new QStandardItemModel;
+//    _iconModel->setColumnCount(1);
 
-    std::int32_t idx = 0;
-    const auto boardlist = owl::BoardManager::instance()->getBoardList();
-    for (const auto& board : boardlist)
-    {
-        _logger->trace("Adding {} ({}) at index {}",
-            board->getName().toStdString(), board->getUsername().toStdString(), idx);
+//    std::int32_t idx = 0;
+//    const auto boardlist = owl::BoardManager::instance()->getBoardList();
+//    for (const auto& board : boardlist)
+//    {
+//        _logger->trace("Adding {} ({}) at index {}",
+//            board->getName().toStdString(), board->getUsername().toStdString(), idx);
 
-        QByteArray buffer(board->getFavIcon().toLatin1());
+//        QByteArray buffer(board->getFavIcon().toLatin1());
 
-        QImage image = QImage::fromData(QByteArray::fromBase64(buffer));
-        image = resizeImage(image, QSize(ICONSCALEWIDTH, ICONSCALEHEIGHT));
-        QIcon icon { QPixmap::fromImage(image) };
+//        QImage image = QImage::fromData(QByteArray::fromBase64(buffer));
+//        image = resizeImage(image, QSize(ICONSCALEWIDTH, ICONSCALEHEIGHT));
+//        QIcon icon { QPixmap::fromImage(image) };
 
-        QStandardItem* item = new QStandardItem(icon, QString{});
-        item->setToolTip(board->getName());
-        item->setTextAlignment(Qt::AlignCenter);
+//        QStandardItem* item = new QStandardItem(icon, QString{});
+//        item->setToolTip(board->getName());
+//        item->setTextAlignment(Qt::AlignCenter);
 
-        QVariant iconTypeVar = QVariant::fromValue(IconType::BOARDICON);
-        const QVariant dataVar = QVariant::fromValue(std::weak_ptr<owl::Board>(board));
-        item->setData(iconTypeVar, ICONTYPE_ROLE);
-        item->setData(dataVar, BOARDPTR_ROLE);
+//        QVariant iconTypeVar = QVariant::fromValue(IconType::BOARDICON);
+//        const QVariant dataVar = QVariant::fromValue(std::weak_ptr<owl::Board>(board));
+//        item->setData(iconTypeVar, ICONTYPE_ROLE);
+//        item->setData(dataVar, BOARDPTR_ROLE);
 
-        _iconModel->insertRow(idx++, item);
-    }
+//        _iconModel->insertRow(idx++, item);
+//    }
 
-    QStandardItem* item = new QStandardItem;
-    item->setIcon(QIcon("://icons/add-board-512.png"));
-    QVariant tempVar = QVariant::fromValue(IconType::ADDICON);
-    item->setData(tempVar, ICONTYPE_ROLE);
+//    QStandardItem* item = new QStandardItem;
+//    item->setIcon(QIcon("://icons/add-board-512.png"));
+//    QVariant tempVar = QVariant::fromValue(IconType::ADDICON);
+//    item->setData(tempVar, ICONTYPE_ROLE);
 
-    _iconModel->insertRow(idx++, item);
-}
+//    _iconModel->insertRow(idx++, item);
+//}
 
 void BoardIconView::initListView()
 {
@@ -306,7 +395,8 @@ void BoardIconView::initListView()
     _listView->setIconSize(QSize(LISTICONWIDTH, LISTICONHEIGHT));
 
     _listView->setItemDelegate(new BoardIconViewDelegate);
-    _listView->setModel(_iconModel);
+//    _listView->setModel(_iconModel);
+    _listView->setModel(new owl::BoardIconModel(this));
 
     QObject::connect(_listView, &QWidget::customContextMenuRequested,
         [this](const QPoint &pos) { this->doContextMenu(pos); });

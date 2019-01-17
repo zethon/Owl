@@ -7,6 +7,7 @@
 #include <QListView>
 
 #include "Data/Board.h"
+#include "Data/BoardManager.h"
 
 #define ICONTYPE_ROLE       Qt::UserRole+1
 #define BOARDPTR_ROLE       Qt::UserRole+2
@@ -58,6 +59,25 @@ protected:
     void currentChanged(const QModelIndex&, const QModelIndex&) override;
 };
 
+class BoardIconModel : public QAbstractItemModel
+{
+    Q_OBJECT
+
+public:
+    explicit BoardIconModel(QObject *parent = nullptr);
+    ~BoardIconModel() = default;
+
+private:
+    // Inherited via `QAbstractItemModel`
+    QModelIndex index(int row, int column, const QModelIndex & parent = QModelIndex()) const override;
+    QModelIndex parent(const QModelIndex & index) const override;
+    int rowCount(const QModelIndex & parent = QModelIndex()) const override;
+    int columnCount(const QModelIndex & parent = QModelIndex()) const override;
+    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
+
+    BoardManagerPtr     _boardManager;
+};
+
 class BoardIconView : public QWidget
 {
 
@@ -87,7 +107,7 @@ private:
     void requestBoardDelete(BoardWeakPtr board);
 
     BoardIconListView*      _listView = nullptr;
-    QStandardItemModel*     _iconModel = nullptr;
+//    QStandardItemModel*     _iconModel = nullptr;
     owl::SpdLogPtr          _logger;
 };
 
