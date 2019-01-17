@@ -107,7 +107,6 @@ private:
     void requestBoardDelete(BoardWeakPtr board);
 
     BoardIconListView*      _listView = nullptr;
-//    QStandardItemModel*     _iconModel = nullptr;
     owl::SpdLogPtr          _logger;
 };
 

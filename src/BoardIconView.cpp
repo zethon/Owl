@@ -321,8 +321,6 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
     : QWidget(parent),
       _logger { owl::initializeLogger("BoardIconView") }
 {
-
-//    loadBoards();
     initListView();
 
     QVBoxLayout* layout = new QVBoxLayout;
@@ -333,49 +331,6 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
 
     setLayout(layout);
 }
-
-//void BoardIconView::loadBoards()
-//{
-//    if (_iconModel)
-//    {
-//        _iconModel->deleteLater();
-//    }
-
-//    _iconModel = new QStandardItemModel;
-//    _iconModel->setColumnCount(1);
-
-//    std::int32_t idx = 0;
-//    const auto boardlist = owl::BoardManager::instance()->getBoardList();
-//    for (const auto& board : boardlist)
-//    {
-//        _logger->trace("Adding {} ({}) at index {}",
-//            board->getName().toStdString(), board->getUsername().toStdString(), idx);
-
-//        QByteArray buffer(board->getFavIcon().toLatin1());
-
-//        QImage image = QImage::fromData(QByteArray::fromBase64(buffer));
-//        image = resizeImage(image, QSize(ICONSCALEWIDTH, ICONSCALEHEIGHT));
-//        QIcon icon { QPixmap::fromImage(image) };
-
-//        QStandardItem* item = new QStandardItem(icon, QString{});
-//        item->setToolTip(board->getName());
-//        item->setTextAlignment(Qt::AlignCenter);
-
-//        QVariant iconTypeVar = QVariant::fromValue(IconType::BOARDICON);
-//        const QVariant dataVar = QVariant::fromValue(std::weak_ptr<owl::Board>(board));
-//        item->setData(iconTypeVar, ICONTYPE_ROLE);
-//        item->setData(dataVar, BOARDPTR_ROLE);
-
-//        _iconModel->insertRow(idx++, item);
-//    }
-
-//    QStandardItem* item = new QStandardItem;
-//    item->setIcon(QIcon("://icons/add-board-512.png"));
-//    QVariant tempVar = QVariant::fromValue(IconType::ADDICON);
-//    item->setData(tempVar, ICONTYPE_ROLE);
-
-//    _iconModel->insertRow(idx++, item);
-//}
 
 void BoardIconView::initListView()
 {
@@ -395,7 +350,6 @@ void BoardIconView::initListView()
     _listView->setIconSize(QSize(LISTICONWIDTH, LISTICONHEIGHT));
 
     _listView->setItemDelegate(new BoardIconViewDelegate);
-//    _listView->setModel(_iconModel);
     _listView->setModel(new owl::BoardIconModel(this));
 
     QObject::connect(_listView, &QWidget::customContextMenuRequested,
