@@ -271,7 +271,7 @@ private:
 };
 
 using BoardPtr = std::shared_ptr<Board>;
-typedef QList<owl::BoardPtr> BoardList;
+using BoardList = QList<owl::BoardPtr>;
 
 QString getAbbreviatedName(const QString& name);
 
