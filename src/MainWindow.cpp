@@ -665,12 +665,12 @@ void MainWindow::onNewBoard()
 
 void MainWindow::onNewBoardAdded(BoardPtr b)
 {
-    servicesTree->setHasBoards(true);
+//    servicesTree->setHasBoards(true);
 
-    if (initBoard(b))
-    {
-        b->login();
-    }
+//    if (initBoard(b))
+//    {
+//        b->login();
+//    }
 }
 
 void MainWindow::connectBoard(BoardPtr board)
@@ -1930,7 +1930,7 @@ void MainWindow::createBoardPanel()
                 {
                     if (this->initBoard(board))
                     {
-                        board->login();
+//                        board->login();
                     }
                 });
 

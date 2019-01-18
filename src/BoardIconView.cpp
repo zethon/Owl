@@ -228,7 +228,7 @@ void BoardIconListView::currentChanged(const QModelIndex& current, const QModelI
 //********************************
 
 BoardIconModel::BoardIconModel(QObject *parent)
-    : QAbstractItemModel(parent),
+    : QAbstractListModel(parent),
       _boardManager(owl::BoardManager::instance())
 {}
 
@@ -249,22 +249,10 @@ QModelIndex BoardIconModel::index(int row, int column, const QModelIndex& parent
     return createIndex(row, column);
 }
 
-QModelIndex BoardIconModel::parent(const QModelIndex& index) const
-{
-    Q_UNUSED(index);
-    return QModelIndex();
-}
-
 int BoardIconModel::rowCount(const QModelIndex& parent) const
 {
     if (parent.column() > 0) return 0;
     return static_cast<int>(_boardManager->getBoardCount() + 1);
-}
-
-int BoardIconModel::columnCount(const QModelIndex& parent) const
-{
-    Q_UNUSED(parent);
-    return 1;
 }
 
 QVariant BoardIconModel::data(const QModelIndex& index, int role) const
