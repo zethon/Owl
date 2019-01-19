@@ -71,6 +71,13 @@ public:
     // FORUM - CRUD
     bool deleteForumVars(const QString& forumId) const;
 
+Q_SIGNALS:
+    void onBeginAddBoard(int index);
+    void onEndAddBoard();
+    void onBeginRemoveBoard(int index);
+    void onEndRemoveBoard();
+
+
 private:
     BoardManager();
 

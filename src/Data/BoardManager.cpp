@@ -139,6 +139,7 @@ void BoardManager::loadBoards()
 			retrieveBoardForums(b);
 
 			_boardList.push_back(b);
+
             _logger->trace("Loaded '{}', last updated '{}'",
                 b->getName().toStdString(), b->getLastUpdate().toString().toStdString());
 		}
@@ -453,7 +454,12 @@ bool BoardManager::createBoard(BoardPtr board)
 		db.commit();
 		board->setDBId(query.lastInsertId().toInt());
 		
+        // TODO: we probably want to Q_EMIT the index of the new board in the
+        // sorted list, but for now this works
+        Q_EMIT onBeginAddBoard(_boardList.size());
 		_boardList.push_back(board);
+        Q_EMIT onEndAddBoard();
+
 		qSort(_boardList.begin(), _boardList.end(), &BoardManager::boardDisplayOrderLessThan);
 
 		bRet = true;
@@ -731,7 +737,9 @@ bool BoardManager::deleteBoard(BoardPtr board)
         auto iPos = _boardList.indexOf(board);
         if (iPos != -1)
         {
+            Q_EMIT onBeginRemoveBoard(iPos);
             _boardList.removeAt(iPos);
+            Q_EMIT onEndRemoveBoard();
         }
 
 		if (displayOrder <= static_cast<std::uint32_t>(_boardList.size()))

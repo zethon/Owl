@@ -1976,6 +1976,16 @@ void MainWindow::createBoardPanel()
             }
         });
 
+    QObject::connect(servicesTree2, &BoardIconView::onConnectBoard,
+        [this](owl::BoardWeakPtr bwp)
+        {
+            BoardPtr board = bwp.lock();
+            if (board)
+            {
+                _logger->info("Connecting board {}", board->getName().toStdString());
+                board->login();
+            }
+        });
 // OLD CODE
 /**************************************************************************************************/
 #ifdef Q_OS_MACX

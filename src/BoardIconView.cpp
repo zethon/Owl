@@ -230,7 +230,21 @@ void BoardIconListView::currentChanged(const QModelIndex& current, const QModelI
 BoardIconModel::BoardIconModel(QObject *parent)
     : QAbstractListModel(parent),
       _boardManager(owl::BoardManager::instance())
-{}
+{
+    owl::BoardManager* manager = owl::BoardManager::instance().get();
+
+    QObject::connect(manager, &BoardManager::onBeginAddBoard,
+        [this](int first) { beginInsertRows(QModelIndex{}, first, first); });
+
+    QObject::connect(manager, &BoardManager::onEndAddBoard,
+        [this]() { endInsertRows(); });
+
+    QObject::connect(manager, &BoardManager::onBeginRemoveBoard,
+        [this](int first) { beginRemoveRows(QModelIndex{}, first, first); });
+
+    QObject::connect(manager, &BoardManager::onEndRemoveBoard,
+        [this]() { endRemoveRows(); });
+}
 
 QModelIndex BoardIconModel::index(int row, int column, const QModelIndex& parent) const
 {
