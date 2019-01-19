@@ -44,21 +44,6 @@ public:
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 };
 
-class BoardIconListView : public QListView
-{
-
-Q_OBJECT
-
-public:
-    using QListView::QListView;
-
-Q_SIGNALS:
-    void onIndexChanged(const QModelIndex&);
-
-protected:
-    void currentChanged(const QModelIndex&, const QModelIndex&) override;
-};
-
 class BoardIconModel : public QAbstractListModel
 {
     Q_OBJECT
@@ -104,7 +89,8 @@ private:
 
     void requestBoardDelete(BoardWeakPtr board);
 
-    BoardIconListView*      _listView = nullptr;
+    owl::Board*             _rawBoardPtr = nullptr;
+    QListView*              _listView = nullptr;
     owl::SpdLogPtr          _logger;
 };
 

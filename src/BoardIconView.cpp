@@ -213,17 +213,6 @@ QSize BoardIconViewDelegate::sizeHint(const QStyleOptionViewItem &option, const 
 }
 
 //********************************
-//* BoardIconListView
-//********************************
-
-void BoardIconListView::currentChanged(const QModelIndex& current, const QModelIndex& previous)
-{
-    // do we need to call the base method?
-    QListView::currentChanged(current, previous);
-    Q_EMIT onIndexChanged(current);
-}
-
-//********************************
 //* BoardIconModel
 //********************************
 
@@ -336,7 +325,7 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
 
 void BoardIconView::initListView()
 {
-    _listView = new BoardIconListView(this);
+    _listView = new QListView(this);
     _listView->setViewMode(QListView::IconMode);
     _listView->setFlow(QListView::TopToBottom);
     _listView->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
@@ -357,16 +346,17 @@ void BoardIconView::initListView()
     QObject::connect(_listView, &QWidget::customContextMenuRequested,
         [this](const QPoint &pos) { this->doContextMenu(pos); });
 
-    QObject::connect(_listView, &BoardIconListView::onIndexChanged,
-        [this](const QModelIndex &index)
+    QObject::connect(_listView, &QAbstractItemView::clicked,
+        [this](const QModelIndex& index)
         {
             if (index.data(ICONTYPE_ROLE).value<IconType>() == IconType::BOARDICON)
             {
-                if (index.isValid())
+                QVariant boardVar = index.data(BOARDPTR_ROLE);
+                owl::BoardWeakPtr weakBoard = boardVar.value<BoardWeakPtr>();
+                if (auto board = weakBoard.lock(); board && board.get() != _rawBoardPtr)
                 {
-                    QVariant boardVar = index.data(BOARDPTR_ROLE);
-                    Q_ASSERT(!boardVar.isNull() && boardVar.isValid());
-                    Q_EMIT onBoardClicked(boardVar.value<BoardWeakPtr>());
+                    _rawBoardPtr = board.get();
+                    Q_EMIT onBoardClicked(weakBoard);
                 }
             }
             else
