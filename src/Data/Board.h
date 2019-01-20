@@ -172,6 +172,9 @@ public:
 
     std::size_t hash() const;
 
+    bool hasUnread() const noexcept { return _hasUnread; }
+    void setHasUnread(bool v) noexcept { _hasUnread = v; }
+
 Q_SIGNALS:
 	void onBoardwareInfo(BoardPtr, StringMap);
 	void onLogin(BoardPtr, StringMap);
@@ -217,6 +220,7 @@ private:
 
 	bool			_bEnabled;
 	bool			_bAutoLogin;
+    bool            _hasUnread = false;
 
 	QString			_iconBuffer;
     BoardItemDocPtr _boardItemDoc;
@@ -231,7 +235,7 @@ private:
 
 	ParserBasePtr	_parser;
 	BoardStatus		_status;
-	StringMapPtr _options;
+	StringMapPtr    _options;
 
 	QDateTime		_lastUpdate;
     int             _lastForumId = -1;

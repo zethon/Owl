@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <QStyledItemDelegate>
 #include <QListView>
+#include <QCache>
 
 class QLabel;
 
@@ -22,6 +23,8 @@ using BoardWeakPtr = std::weak_ptr<Board>;
 
 class Forum;
 using ForumPtr = std::shared_ptr<Forum>;
+
+class ForumTreeModel;
 
 using SpdLogPtr = std::shared_ptr<spdlog::logger>;
 
@@ -66,6 +69,9 @@ private:
     QLabel*                 _userImgLabel;
 
     ForumListControl*       _listView;
+
+    using CacheEntry = std::tuple<QTime, ForumTreeModel*>;
+    QCache<std::size_t, CacheEntry>   _rootCache;
 
     owl::BoardWeakPtr       _currentBoard;
     owl::SpdLogPtr          _logger;

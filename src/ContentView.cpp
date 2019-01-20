@@ -12,6 +12,14 @@
 
 #include "ContentView.h"
 
+#if defined(Q_OS_WIN)
+    #define LOADINGVIEWFONTSIZE       14
+#elif defined(Q_OS_MAC)
+    #define LOADINGVIEWFONTSIZE       32
+#else
+    #define LOADINGVIEWFONTSIZE       32
+#endif
+
 namespace owl
 {
 
@@ -49,7 +57,7 @@ LoadingView::LoadingView(QWidget *parent)
     _loadingLbl->setMaximumHeight(64);
 
     QFont font { _loadingLbl->font() };
-    font.setPointSize(32);
+    font.setPointSize(LOADINGVIEWFONTSIZE);
 
     _loadingLbl->setFont(font);
     _loadingLbl->setText(tr("Loading..."));

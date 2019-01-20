@@ -521,6 +521,7 @@ void Board::updateUnread()
 	{
 		updateForumHash();
 		ForumList list = _parser->getUnreadForums();
+        _hasUnread = list.size() > 0;
         Q_EMIT onGetUnreadForums(shared_from_this(), list);
 	}
 	catch (const owl::Exception& e)

@@ -151,7 +151,14 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
         {
             case BoardStatus::ONLINE:
             {
-                painter->drawPixmap(iconRect, pixmap);
+                QImage boardImg = pixmap.toImage();
+                if (boardData->hasUnread())
+                {
+                    static const QImage newImage{ ":/icons/online.png" };
+                    boardImg = overlayImages(boardImg, newImage);
+                }
+
+                painter->drawImage(iconRect, boardImg);
                 break;
             }
             case BoardStatus::OFFLINE:

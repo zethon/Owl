@@ -222,14 +222,14 @@ bool MainWindow::initBoard(const BoardPtr& b)
 
             _workerMap.insert(b->hash(), new QThreadEx());
 
-            QStandardItem* item = _svcModel->addBoardItem(b);           
-            item->setSizeHint(QSize(item->sizeHint().width(), BoardsModel::ITEMHEIGHT));
+            //QStandardItem* item = _svcModel->addBoardItem(b);           
+            //item->setSizeHint(QSize(item->sizeHint().width(), BoardsModel::ITEMHEIGHT));
 
-            // Used with GetModelItem()
-            b->setModelItem(item);
+            //// Used with GetModelItem()
+            //b->setModelItem(item);
 
-            BoardItemDocPtr bid(new BoardItemDoc(b, boardItemTemplate));
-            b->setBoardItemDocument(bid);
+            //BoardItemDocPtr bid(new BoardItemDoc(b, boardItemTemplate));
+            //b->setBoardItemDocument(bid);
 
             // add the board to the _boardToolBar
             QByteArray buffer(b->getFavIcon().toLatin1());
@@ -467,8 +467,8 @@ void MainWindow::loginEvent(BoardPtr b, StringMap sp)
     
     if (sp.getBool("success"))
     {
-        doc->setOrAddVar("%BOARDSTATUSIMG%", ":/icons/online.png");
-        doc->setOrAddVar("%BOARDSTATUSALT%", tr("Online"));
+        //doc->setOrAddVar("%BOARDSTATUSIMG%", ":/icons/online.png");
+        //doc->setOrAddVar("%BOARDSTATUSALT%", tr("Online"));
 
         if (_workerMap.contains(b->hash()))
         {
@@ -497,8 +497,8 @@ void MainWindow::loginEvent(BoardPtr b, StringMap sp)
     }
     else
     {
-        doc->setOrAddVar("%BOARDSTATUSIMG%", ":/icons/error.png");
-        doc->setOrAddVar("%BOARDSTATUSALT%", tr("Offline"));
+        //doc->setOrAddVar("%BOARDSTATUSIMG%", ":/icons/error.png");
+        //doc->setOrAddVar("%BOARDSTATUSALT%", tr("Offline"));
 
         msg = QString(tr("User %1 could not sign on to '%2'"))
             .arg(b->getUsername())
@@ -516,8 +516,8 @@ void MainWindow::loginEvent(BoardPtr b, StringMap sp)
         _logger->info(msg.toStdString());
     }
     
-    doc->reloadHtml();
-    servicesTree->update();
+    //doc->reloadHtml();
+    //servicesTree->update();
     QMainWindow::statusBar()->showMessage(msg, 5000);
 }
 
@@ -562,6 +562,9 @@ void MainWindow::getThreadsHandler(BoardPtr b, ForumPtr forum)
 // this function
 void MainWindow::getUnreadForumsEvent(BoardPtr board, ForumList list)
 {
+    servicesTree2->update();
+    return;
+
     bool bHasUnread = false;
 
     ForumHash tempHash;	
@@ -1896,10 +1899,10 @@ void MainWindow::createBoardPanel()
                 _logger->trace("onBoardInfoSaved({}:{})",
                     b->getDBId(), b->getName().toStdString());
 
-                auto doc = b->getBoardItemDocument();
-                doc->setOrAddVar("%BOARDNAME%", b->getName());
-                doc->setOrAddVar("%BOARDUSERNAME%", b->getUsername());
-                doc->reloadHtml();
+                //auto doc = b->getBoardItemDocument();
+                //doc->setOrAddVar("%BOARDNAME%", b->getName());
+                //doc->setOrAddVar("%BOARDUSERNAME%", b->getUsername());
+                //doc->reloadHtml();
 
                 // search the toolbar (top of the client) and update the text
                 for (QAction* a : boardToolbar->actions())

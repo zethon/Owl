@@ -313,10 +313,30 @@ void ForumView::doBoardClicked(const owl::BoardWeakPtr boardWeakPtr)
     owl::BoardPtr currentBoard = _currentBoard.lock();
     Q_ASSERT(currentBoard);
 
-    ForumPtr root = currentBoard->getRootStructure(false);
-    ForumTreeModel* model = new ForumTreeModel{ root };
+    ForumTreeModel* model{ nullptr };
+    if (_rootCache.contains(currentBoard->hash()))
+    {
+        auto [expiry, cacheModel] = *(_rootCache.object(currentBoard->hash()));
+        if (QTime::currentTime() < expiry)
+        {
+            model = cacheModel;
+        }
+    }
+    
+    if (!model)
+    {
+        _rootCache.remove(currentBoard->hash());
+        ForumPtr root = currentBoard->getRootStructure(false);
+        
+        model = new ForumTreeModel{ root };
 
-    auto oldModel = _listView->model();
+        QTime expiry{ QTime::currentTime() };
+        expiry = expiry.addSecs(60 * 10);
+        CacheEntry* entry = new CacheEntry(expiry, model);
+        _rootCache.insert(currentBoard->hash(), entry);
+    }
+
+    Q_ASSERT(model);
     _listView->setModel(model);
 
     QFontMetrics metrics(_boardLabel->font());
@@ -336,8 +356,6 @@ void ForumView::doBoardClicked(const owl::BoardWeakPtr boardWeakPtr)
             _userImgLabel->setPixmap(QPixmap(":/icons/error.png"));
         break;
     }
-
-    if (oldModel) oldModel->deleteLater();
 
     Q_EMIT onForumListLoaded();
 }
