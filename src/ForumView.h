@@ -6,6 +6,7 @@
 #include <QStyledItemDelegate>
 #include <QListView>
 #include <QCache>
+#include <QTime>
 
 class QLabel;
 
