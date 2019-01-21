@@ -154,7 +154,7 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
                 QImage boardImg = pixmap.toImage();
                 if (boardData->hasUnread())
                 {
-                    static const QImage newImage{ ":/icons/online.png" };
+                    static const QImage newImage{ ":/icons/new_post_indicator.png" };
                     boardImg = overlayImages(boardImg, newImage);
                 }
 

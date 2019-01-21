@@ -81,5 +81,6 @@
         <file>images/owl-bg2.png</file>
         <file>icons/loading2.gif</file>
         <file>icons/sticky2.png</file>
+        <file>icons/new_post_indicator.png</file>
     </qresource>
 </RCC>
