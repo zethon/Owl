@@ -32,8 +32,26 @@
     #define CENTRALWIDGETWIDTH          250
 #endif
 
+#if defined(Q_OS_MAC)
+extern "C" void setupTitleBar(WId winId);
+#endif
+
 namespace owl
 {
+
+void initializeTitleBar(owl::MainWindow* window)
+{
+#if defined(Q_OS_WIN)
+    window->setWindowIcon(QIcon(":/icons/logo_64.png"));
+    window->setWindowTitle(QStringLiteral(APP_NAME));
+#elif defined(Q_OS_MAC)
+    window->setWindowTitle(QString{});
+    setupTitleBar(window->winId());
+#else
+    window->setWindowIcon(QIcon(":/icons/logo_64.png"));
+    window->setWindowTitle(QStringLiteral(APP_NAME));
+#endif
+}
 
 //////////////////////////////////////////////////////////////////////////
 // SplashScreen
@@ -44,7 +62,7 @@ SplashScreen::SplashScreen(const QPixmap & pixmap)
 {
     QLabel* label = new QLabel(this);
     label->move(10, this->size().height() - 17);
-    label->setText("Build " OWL_VERSION);
+    label->setText("version " OWL_VERSION);
     label->show();
 }
 
@@ -60,12 +78,9 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
 {
     setupUi(this);
     setDockNestingEnabled(true);
-//    setUnifiedTitleAndToolBarOnMac(true);
 
+    initializeTitleBar(this);
     toggleOldControls(false);
-
-    setWindowIcon(QIcon(":/icons/logo_64.png"));
-    setWindowTitle(QStringLiteral(APP_NAME));
 
     this->boardsViewDockWidget->setMaximumWidth(BOARDICONWIDGETWIDTH);
     this->boardsViewDockWidget->setMinimumWidth(BOARDICONWIDGETWIDTH);

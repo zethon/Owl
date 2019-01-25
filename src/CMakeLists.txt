@@ -86,6 +86,9 @@ add_subdirectory(Utils)
 
 IF (APPLE)
     SET(RESOURCE_FILES "Resources/Owl.icns")
+    list(APPEND SOURCE_FILES
+        TitleBarSetupMac.mm
+    )
 ENDIF()
 
 if (WIN32)

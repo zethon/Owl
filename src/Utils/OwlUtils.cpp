@@ -101,6 +101,33 @@ const std::string getOSString()
     return strOS;
 }
 
+bool isWindowsHost()
+{
+#ifdef Q_OS_WIN32
+    return true;
+#else
+    return false;
+#endif
+}
+
+bool isMacHost()
+{
+#ifdef Q_OS_MACX
+    return true;
+#else
+    return false;
+#endif
+}
+
+bool isLinuxHost()
+{
+#ifdef Q_OS_LINUX
+    return true;
+#else
+    return false;
+#endif
+}
+
 const QString sanitizeUrl(const QString& urlStr)
 {
 	QString retUrl(urlStr);
