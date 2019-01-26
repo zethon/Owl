@@ -326,7 +326,7 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
     layout->setSpacing(0);
     layout->setMargin(0);
 
-    layout->addSpacing(5);
+    layout->addSpacing(20);
     layout->addWidget(_listView);
 
     setLayout(layout);
