@@ -319,12 +319,14 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
     : QWidget(parent),
       _logger { owl::initializeLogger("BoardIconView") }
 {
+    parent->setStyleSheet("QWidget { background-color: #181F26; }");
     initListView();
 
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setSpacing(0);
     layout->setMargin(0);
 
+    layout->addSpacing(5);
     layout->addWidget(_listView);
 
     setLayout(layout);
