@@ -273,15 +273,21 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     userLayout->addWidget(_userLabel);
 
     QVBoxLayout* layout = new QVBoxLayout();
-    layout->setSpacing(5);
+    layout->setSpacing(0);
     layout->setMargin(0);
-
+    layout->addSpacing(20);
     layout->addWidget(_boardLabel);
     layout->addLayout(userLayout);
     layout->addItem(new QSpacerItem(0,15));
     layout->addWidget(_listView);
 
-    setLayout(layout);
+    QHBoxLayout* rootLayout = new QHBoxLayout();
+    rootLayout->setSpacing(0);
+    rootLayout->setMargin(0);
+    rootLayout->addSpacing(2);
+    rootLayout->addLayout(layout);
+
+    setLayout(rootLayout);
 }
 
 void ForumView::doBoardClicked(const owl::BoardWeakPtr boardWeakPtr)
@@ -317,7 +323,7 @@ void ForumView::doBoardClicked(const owl::BoardWeakPtr boardWeakPtr)
     if (_rootCache.contains(currentBoard->hash()))
     {
         auto [expiry, cacheModel] = *(_rootCache.object(currentBoard->hash()));
-        if (QTime::currentTime() < expiry)
+        if (QDateTime::currentDateTime() < expiry)
         {
             model = cacheModel;
         }
@@ -330,7 +336,7 @@ void ForumView::doBoardClicked(const owl::BoardWeakPtr boardWeakPtr)
         
         model = new ForumTreeModel{ root };
 
-        QTime expiry{ QTime::currentTime() };
+        QDateTime expiry{ QDateTime::currentDateTime() };
         expiry = expiry.addSecs(60 * 10);
         CacheEntry* entry = new CacheEntry(expiry, model);
         _rootCache.insert(currentBoard->hash(), entry);

@@ -146,16 +146,45 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
         // get a pixmap of the board's stored icon
         const QIcon boardIcon { decrole.value<QIcon>() };
         QPixmap pixmap { boardIcon.pixmap(ICONDISPLAYWIDTH, ICONDISPLAYHEIGHT) };
+        QImage boardImg = pixmap.toImage();
+
+        // slightly darken image if it's not selected
+        if (!(option.state & QStyle::State_Selected))
+        {
+            QImage *tmpImage = &boardImg;
+            QPainter p(tmpImage);
+
+            QPoint p1, p2;
+            p2.setY(tmpImage->height());
+
+            QLinearGradient gradient(p1, p2);
+
+            gradient.setColorAt(0,QColor(0, 0, 0, 65));
+            gradient.setColorAt(1,QColor(0, 0, 0, 65));
+            p.fillRect(0,0, tmpImage->width(), tmpImage->height(), gradient);
+
+            p.end();
+        }
+
 
         switch (boardData->getStatus())
         {
             case BoardStatus::ONLINE:
             {
-                QImage boardImg = pixmap.toImage();
-                if (boardData->hasUnread())
+                if (boardData->hasUnread()
+                    && !((option.state & QStyle::State_Selected)))
                 {
-                    static const QImage newImage{ ":/icons/new_post_indicator.png" };
-                    boardImg = overlayImages(boardImg, newImage);
+                    QPoint circleCenter = iconCellRect.center();
+                    circleCenter.setX(5);
+
+                    QPainterPath path;
+                    path.addEllipse(circleCenter, 5, 5);
+
+                    QPen pen(QBrush(QColor(Qt::transparent)), 0);
+                    painter->setPen(pen);
+                    painter->setRenderHint(QPainter::Antialiasing, true);
+                    painter->fillPath(path, Qt::yellow);
+                    painter->drawPath(path);
                 }
 
                 painter->drawImage(iconRect, boardImg);
@@ -163,17 +192,14 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
             }
             case BoardStatus::OFFLINE:
             {
-                QImage boardImg = pixmap.toImage().convertToFormat(QImage::Format_Grayscale8);
-                painter->drawImage(iconRect, boardImg);
+                painter->drawImage(iconRect, boardImg.convertToFormat(QImage::Format_Grayscale8));
                 break;
             }
             case BoardStatus::ERR:
             {
-                QImage boardImg = pixmap.toImage().convertToFormat(QImage::Format_Grayscale8);
                 static const QImage errorImage { ":/icons/error_32.png" };
-
-                boardImg = overlayImages(boardImg, errorImage);
-                painter->drawImage(iconRect, boardImg);
+                QImage tempImage = overlayImages(boardImg.convertToFormat(QImage::Format_Grayscale8), errorImage);
+                painter->drawImage(iconRect, tempImage);
                 break;
             }
         }

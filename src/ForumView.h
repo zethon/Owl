@@ -65,17 +65,17 @@ Q_SIGNALS:
      void onForumListLoaded();
 
 private:
-    QLabel*                 _boardLabel;
-    QLabel*                 _userLabel;
-    QLabel*                 _userImgLabel;
+    QLabel*                             _boardLabel;
+    QLabel*                             _userLabel;
+    QLabel*                             _userImgLabel;
 
-    ForumListControl*       _listView;
+    ForumListControl*                   _listView;
 
-    using CacheEntry = std::tuple<QTime, ForumTreeModel*>;
-    QCache<std::size_t, CacheEntry>   _rootCache;
+    using CacheEntry = std::tuple<QDateTime, ForumTreeModel*>;
+    QCache<std::size_t, CacheEntry>     _rootCache;
 
-    owl::BoardWeakPtr       _currentBoard;
-    owl::SpdLogPtr          _logger;
+    owl::BoardWeakPtr                   _currentBoard;
+    owl::SpdLogPtr                      _logger;
     void initListView();
 };
 
