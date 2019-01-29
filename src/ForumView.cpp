@@ -32,7 +32,7 @@
 static const char* strListStyleSheet = R"(
 QListView
 {
-    background: #594157;
+    background: #303E4B;
     border-style: none;
 }
 
@@ -50,7 +50,7 @@ QListView::item::hover
 static const char* strListViewScrollStyle = R"(
 QScrollBar:vertical {
     border: 0px;
-    background: #594157;
+    background: #303E4B;
     width: 5px;
     margin: 0px 0px 0px 0px;
 }
@@ -114,7 +114,7 @@ void ForumViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         painter->save();
 
         // draw the background first
-        QColor bgColor("#594157");
+        QColor bgColor("#303E4B");
         if (option.state & QStyle::State_Selected)
         {
             bgColor = QColor("#587B7F");
@@ -244,8 +244,8 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     // down below we set the `layout` margin to 5, which means that the
     // parent's color gets drawn in that margin area, so we have to set
     // the parent's color to match
-    parent->setStyleSheet("QWidget { background-color: #594157; }");
-    setStyleSheet("QWidget { background-color: #594157; border: none; }");
+    parent->setStyleSheet("QWidget { background-color: #303E4B; }");
+    setStyleSheet("QWidget { background-color: #303E4B; border: none; }");
 
     initListView();
 

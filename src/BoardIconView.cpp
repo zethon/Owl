@@ -166,7 +166,6 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
             p.end();
         }
 
-
         switch (boardData->getStatus())
         {
             case BoardStatus::ONLINE:
@@ -183,7 +182,7 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
                     QPen pen(QBrush(QColor(Qt::transparent)), 0);
                     painter->setPen(pen);
                     painter->setRenderHint(QPainter::Antialiasing, true);
-                    painter->fillPath(path, Qt::yellow);
+                    painter->fillPath(path, QColor { DEFAULT_UNREAD_INDICATOR });
                     painter->drawPath(path);
                 }
 
@@ -192,7 +191,7 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
             }
             case BoardStatus::OFFLINE:
             {
-                painter->drawImage(iconRect, boardImg.convertToFormat(QImage::Format_Grayscale8));
+                painter->drawImage(iconRect, boardImg);
                 break;
             }
             case BoardStatus::ERR:
