@@ -33,7 +33,7 @@ CURLcode curlGlobalInit()
 }
 
 WebClient::WebClient()
-    : _logger(owl::initializeLogger("Xenforo"))
+    : _logger(owl::initializeLogger("WebClient"))
 {
     static CURLcode __global = curlGlobalInit();
     Q_UNUSED(__global)

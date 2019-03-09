@@ -385,7 +385,7 @@ owl::StringMap ConfiguringBoardDlg::createBoard(const QString& parserName, const
 		_newBoard->setPassword(_password);
 
         _newBoard->setAutoLogin(DEFAULT_AUTOLOGIN_ENABLED);
-		_newBoard->setStatus(Board::ONLINE);
+        _newBoard->setStatus(BoardStatus::ONLINE);
 
 		statusLbl->setText(tr("Login successful. Retrieving forum list..."));
         _logger->info("Crawling new board '{}' ({})",

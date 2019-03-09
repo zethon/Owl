@@ -6,3 +6,5 @@ bin-xcode
 binQt5.9.2
 wincmake.sh
 build
+.vscode/
+*.txt.user.4.8-pre1

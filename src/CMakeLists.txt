@@ -10,17 +10,21 @@ set(OWL_PARSERS_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/../parsers")
 SET (SOURCE_FILES
     AboutDlg.cpp
     AspectRatioPixmapLabel.cpp
+    BoardIconView.cpp
     BoardTreeView.cpp
     BoardsModel.cpp
     BoardUpdateWorker.cpp
     ClickableLabel.cpp
     ConfiguringBoardDlg.cpp
+    ContentView.cpp
     EditBoardDlg.cpp
     ErrorReportDlg.cpp
     FocusEventLineEdit.cpp
+    ForumView.cpp
     main.cpp
     MainWindow.cpp
     NewThreadDlg.cpp
+    PaginationWidget.cpp
     PostTextEditor.cpp
     PreferencesDlg.cpp
     OwlApplication.cpp
@@ -33,16 +37,20 @@ SET (MOC_HEADERS
     AboutDlg.h
     AspectRatioPixmapLabel.h
     BoardsModel.h
+    BoardIconView.h
     BoardTreeView.h
     BoardUpdateWorker.h
     ClickableLabel.h
     ConfiguringBoardDlg.h
+    ContentView.h
     EditBoardDlg.h
     ErrorReportDlg.h
     FocusEventLineEdit.h
+    ForumView.h
     MainWindow.h
     NewThreadDlg.h
     OwlApplication.h
+    PaginationWidget.h
     PostListWidget.h
     PostTextEditor.h
     PreferencesDlg.h
@@ -78,6 +86,9 @@ add_subdirectory(Utils)
 
 IF (APPLE)
     SET(RESOURCE_FILES "Resources/Owl.icns")
+    list(APPEND SOURCE_FILES
+        TitleBarSetupMac.mm
+    )
 ENDIF()
 
 if (WIN32)

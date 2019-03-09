@@ -56,8 +56,9 @@
         <file>images/quote-button-hover.png</file>
         <file>images/quote-button-normal.png</file>
         <file>icons/boardview-expand-button.png</file>
-        <file>qml/threadList.qml</file>
+        <file>qml/boardIconList.qml</file>
         <file>qml/postList.qml</file>
+        <file>qml/threadList.qml</file>
         <file>icons/pin.png</file>
         <file>icons/views.png</file>
         <file>icons/replies.png</file>
@@ -76,5 +77,10 @@
         <file>images/preferences/parsers.png</file>
         <file>images/preferences/advanced.png</file>
         <file>images/owl_64.png</file>
+        <file>icons/add-board-512.png</file>
+        <file>images/owl-bg2.png</file>
+        <file>icons/loading2.gif</file>
+        <file>icons/sticky2.png</file>
+        <file>icons/new_post_indicator.png</file>
     </qresource>
 </RCC>

@@ -4,11 +4,15 @@
 namespace owl
 {
 
+const std::string getOSString();
+bool isWindowsHost();
+bool isMacHost();
+bool isLinuxHost();
+
 void openFolder(const QString& pathIn);
 
 QString getResourceHtmlFile(const QString& file);
 
-const std::string getOSString();
 const QString sanitizeUrl(const QString& url);
 
 int randomInteger(int low, int high);

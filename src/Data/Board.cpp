@@ -1,6 +1,9 @@
 // Owl - www.owlclient.com
 // Copyright (c) 2012-2018, Adalid Claure <aclaure@gmail.com>
 
+#include <QDataStream>
+#include <boost/functional/hash.hpp>
+
 #include <Utils/Settings.h>
 #include <Utils/OwlLogger.h>
 
@@ -15,12 +18,11 @@ const char* const Board::Options::USE_ENCRYPTION		= "encryption.enabled";;
 const char* const Board::Options::ENCSEED				= "encryption.seed";;
 const char* const Board::Options::ENCKEY				= "encryption.key";
 
-    
 Board::Board(const QString& url)
     : _url(url),
     _bEnabled(true),
     _bAutoLogin(false),
-    _status(Board::OFFLINE),
+    _status(BoardStatus::OFFLINE),
     _options(StringMapPtr(new StringMap())),
     _logger(owl::initializeLogger("Board"))
 {}
@@ -153,7 +155,7 @@ void Board::loginEvent(StringMap params)
 {
 	if (params.getBool("success"))
 	{
-		_status = Board::ONLINE;
+        _status = BoardStatus::ONLINE;
 	}
 
 	Q_EMIT onLogin(shared_from_this(), params);
@@ -454,6 +456,8 @@ ForumPtr Board::getRootStructure(bool bThrow /* = true */)
     ForumIdList dupList;
     ForumPtr root = Forum::createRootForum();
 
+    if (!_parser) return root;
+
 	try
 	{
 		ForumList list = _parser->getForumList(root->getId());
@@ -517,6 +521,7 @@ void Board::updateUnread()
 	{
 		updateForumHash();
 		ForumList list = _parser->getUnreadForums();
+        _hasUnread = list.size() > 0;
         Q_EMIT onGetUnreadForums(shared_from_this(), list);
 	}
 	catch (const owl::Exception& e)
@@ -607,8 +612,7 @@ void Board::refreshOptions()
 }
     
 /**
- * Returns configuration data of a board that can change during runtime.
- * @returns a pointer to StringMap object containg relevant data
+ * @returns returns a copy of the Board's StringMap data
  */
 StringMap Board::getBoardData()
 {
@@ -623,7 +627,16 @@ StringMap Board::getBoardData()
     
     return params;
 }
-    
+
+std::size_t Board::hash() const
+{
+    std::size_t seed = 0;
+    boost::hash_combine(seed, _name.toStdString());
+    boost::hash_combine(seed, _url.toStdString());
+    boost::hash_combine(seed, _protocolName.toStdString());
+    return seed;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // BoardItemDoc
 ///////////////////////////////////////////////////////////////////////////////
@@ -775,3 +788,7 @@ void BoardItemDoc::setOrAddVar(const QString& k, const QString& v)
 
 } // namespace owl
 
+std::size_t std::hash<owl::Board>::operator()(const owl::Board& board) const
+{
+    return board.hash();
+}

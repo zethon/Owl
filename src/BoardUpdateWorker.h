@@ -13,6 +13,7 @@ namespace owl
 
 class Board;
 using BoardPtr = std::shared_ptr<Board>;
+using BoardWeakPtr = std::weak_ptr<Board>;
 
 class BoardUpdateWorker : public QObject
 {
@@ -24,7 +25,6 @@ public:
 
     virtual ~BoardUpdateWorker() = default;
     
-    //BoardPtr getBoard() { return _board; }
     void setIsDone(bool var) { _isDeleted = var; }
     
 Q_SIGNALS:
@@ -32,13 +32,13 @@ Q_SIGNALS:
 
 protected Q_SLOTS:
     void doWork();
-    void checkStructureUpdate();
+//    void checkStructureUpdate();
 
 private:
 
-	BoardPtr _board;
-	QMutex	 _mutex;
-    bool     _isDeleted = false;
+    BoardWeakPtr    _board;
+    QMutex          _mutex;
+    bool            _isDeleted = false;
 
     std::shared_ptr<spdlog::logger>  _logger;
 };

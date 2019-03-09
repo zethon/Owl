@@ -182,6 +182,18 @@ public:
 		return !(*this == other);
 	}
 
+    std::size_t indexOf() const
+    {
+        std::size_t idx = 0;
+
+        if (auto parent = _parent.lock(); parent)
+        {
+            idx = parent->_children.indexOf(std::const_pointer_cast<BoardItem>(shared_from_this()));
+        }
+
+        return idx;
+    }
+
 protected:
 	virtual void registerMeta();
 

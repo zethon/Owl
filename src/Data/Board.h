@@ -22,6 +22,13 @@ class BoardItemDoc;
 typedef std::shared_ptr<BoardItemDoc> BoardItemDocPtr;
 typedef QHash<QString, ForumPtr> ForumHash;
 
+enum class BoardStatus
+{
+    ERR,
+    OFFLINE,
+    ONLINE,
+};
+
 class Board :
     public QObject,
 	public std::enable_shared_from_this<Board>
@@ -42,12 +49,20 @@ public:
 			static const char* const ENCKEY;
 	};
 
-	typedef enum { OFFLINE, ONLINE } BoardStatus;
-
 	Board();
     Board(const QString& url);
 
     virtual ~Board() = default;
+
+    bool operator==(const Board& other)
+    {
+        return hash() == other.hash();
+    }
+
+    bool operator!=(const Board& other)
+    {
+        return !(*this == other);
+    }
 
     // METHODS
 	void login();
@@ -155,6 +170,11 @@ public:
 
     ParserBasePtr cloneParser() const { return getParser()->clone(); }
 
+    std::size_t hash() const;
+
+    bool hasUnread() const noexcept { return _hasUnread; }
+    void setHasUnread(bool v) noexcept { _hasUnread = v; }
+
 Q_SIGNALS:
 	void onBoardwareInfo(BoardPtr, StringMap);
 	void onLogin(BoardPtr, StringMap);
@@ -200,6 +220,7 @@ private:
 
 	bool			_bEnabled;
 	bool			_bAutoLogin;
+    bool            _hasUnread = false;
 
 	QString			_iconBuffer;
     BoardItemDocPtr _boardItemDoc;
@@ -214,7 +235,7 @@ private:
 
 	ParserBasePtr	_parser;
 	BoardStatus		_status;
-	StringMapPtr _options;
+	StringMapPtr    _options;
 
 	QDateTime		_lastUpdate;
     int             _lastForumId = -1;
@@ -254,11 +275,24 @@ private:
 };
 
 using BoardPtr = std::shared_ptr<Board>;
-typedef QList<owl::BoardPtr> BoardList;
+using BoardList = QList<owl::BoardPtr>;
 
 QString getAbbreviatedName(const QString& name);
 
 } // namespace owl
+
+namespace std
+{
+
+template <>
+struct hash<owl::Board>
+{
+    typedef std::size_t             result_type;
+    typedef const owl::Board & argument_type;
+    std::size_t operator()(const owl::Board &) const;
+};
+
+} // namespace std
 
 Q_DECLARE_METATYPE(owl::BoardPtr)
 Q_DECLARE_METATYPE(owl::BoardWeakPtr)

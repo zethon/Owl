@@ -1,3 +1,5 @@
+#include <QDesktopServices>
+
 #include "Exception.h"
 
 #ifdef Q_OS_LINUX
@@ -28,7 +30,8 @@ void openFolder(const QString& pathIn)
     scriptArgs << QLatin1String("-e") << QLatin1String("tell application \"Finder\" to activate");
     QProcess::execute("/usr/bin/osascript", scriptArgs);
 #else
-    throw NotImplementedException("owl::openFolder() on Linux not yet supported");
+    QFileInfo info { pathIn };
+    QDesktopServices::openUrl(QUrl::fromLocalFile(info.isDir() ? pathIn : info.path()));
 #endif
 }
 
@@ -96,6 +99,33 @@ const std::string getOSString()
 #endif
 
     return strOS;
+}
+
+bool isWindowsHost()
+{
+#ifdef Q_OS_WIN32
+    return true;
+#else
+    return false;
+#endif
+}
+
+bool isMacHost()
+{
+#ifdef Q_OS_MACX
+    return true;
+#else
+    return false;
+#endif
+}
+
+bool isLinuxHost()
+{
+#ifdef Q_OS_LINUX
+    return true;
+#else
+    return false;
+#endif
 }
 
 const QString sanitizeUrl(const QString& urlStr)

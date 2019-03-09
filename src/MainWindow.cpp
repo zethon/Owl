@@ -21,8 +21,37 @@
 #include <QtMac>
 #endif
 
+#ifdef Q_OS_WIN
+    #define BOARDICONWIDGETWIDTH         70
+    #define CENTRALWIDGETWIDTH          275
+#elif defined(Q_OS_MAC)
+    #define BOARDICONWIDGETWIDTH         70    
+    #define CENTRALWIDGETWIDTH          250
+#else
+    #define BOARDICONWIDGETWIDTH         70
+    #define CENTRALWIDGETWIDTH          250
+#endif
+
+#if defined(Q_OS_MAC)
+extern "C" void setupTitleBar(WId winId);
+#endif
+
 namespace owl
 {
+
+void initializeTitleBar(owl::MainWindow* window)
+{
+#if defined(Q_OS_WIN)
+    window->setWindowIcon(QIcon(":/icons/logo_64.png"));
+    window->setWindowTitle(QStringLiteral(APP_NAME));
+#elif defined(Q_OS_MAC)
+    window->setWindowTitle(QString{});
+    setupTitleBar(window->winId());
+#else
+    window->setWindowIcon(QIcon(":/icons/logo_64.png"));
+    window->setWindowTitle(QStringLiteral(APP_NAME));
+#endif
+}
 
 //////////////////////////////////////////////////////////////////////////
 // SplashScreen
@@ -33,7 +62,7 @@ SplashScreen::SplashScreen(const QPixmap & pixmap)
 {
     QLabel* label = new QLabel(this);
     label->move(10, this->size().height() - 17);
-    label->setText("Build " OWL_VERSION);
+    label->setText("version " OWL_VERSION);
     label->show();
 }
 
@@ -49,7 +78,14 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
 {
     setupUi(this);
     setDockNestingEnabled(true);
-//    setUnifiedTitleAndToolBarOnMac(true);
+
+    initializeTitleBar(this);
+    toggleOldControls(false);
+
+    this->boardsViewDockWidget->setMaximumWidth(BOARDICONWIDGETWIDTH);
+    this->boardsViewDockWidget->setMinimumWidth(BOARDICONWIDGETWIDTH);
+    this->centralWidget()->setMaximumWidth(CENTRALWIDGETWIDTH);
+    this->centralWidget()->setMinimumWidth(CENTRALWIDGETWIDTH);
 
     // TODO: move this to the OwlApplication class
     readSettings();
@@ -57,12 +93,6 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
     // initialize the dictionaries
     SPELLCHECKER->init();
 
-#ifdef Q_OS_WIN32
-    this->setWindowIcon(QIcon(":/icons/owl_256.png"));
-#endif
-    
-    setWindowTitle(QStringLiteral(APP_NAME));
-    
     // TODO: the appToolbar has been made invisible for release 1.0 but maybe it will
     //		 come back for later versions
     //createToolbar();
@@ -72,15 +102,13 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
     postViewDockWidget->setTitleBarWidget(new QWidget(postViewDockWidget));
     boardsViewDockWidget->setTitleBarWidget(new QWidget(boardsViewDockWidget));
     
-    loadBoards();
-    servicesTree->setModel(_svcModel);
-
     QTimer::singleShot(0, this, SLOT(onLoaded()));
 }
 
 void MainWindow::onLoaded()
 {
-    
+    loadBoards();
+    servicesTree->setModel(_svcModel);
 
     createBoardPanel();
     createThreadPanel();
@@ -157,7 +185,7 @@ void MainWindow::loadBoards()
         const auto& list = BOARDMANAGER->getBoardList();
         for (const BoardPtr& b : list)
         {
-            if (initBoard(b) == 0 && b->isAutoLogin())
+            if (initBoard(b) && b->isAutoLogin())
             {
                 _logger->debug("Starting automatic login for board '{}' with user '{}'",
                     b->getName().toStdString(), b->getUsername().toStdString());
@@ -187,7 +215,7 @@ void MainWindow::loadBoards()
     });
 }
 
-int MainWindow::initBoard(const BoardPtr& b)
+bool MainWindow::initBoard(const BoardPtr& b)
 {
     const uint boardIconWidth = 32;
     const uint boardIconHeight = 32;
@@ -195,7 +223,7 @@ int MainWindow::initBoard(const BoardPtr& b)
     QString boardItemTemplate = owl::getResourceHtmlFile("boardItem.html");
     Q_ASSERT(!boardItemTemplate.isEmpty());
     
-    int iRet = 0;
+    bool ok = false;
 
     try
     {
@@ -207,16 +235,16 @@ int MainWindow::initBoard(const BoardPtr& b)
             b->setParser(parser);
             connectBoard(b);
 
-            _workerMap.insert(b->getDBId(), new QThreadEx());
+            _workerMap.insert(b->hash(), new QThreadEx());
 
-            QStandardItem* item = _svcModel->addBoardItem(b);           
-            item->setSizeHint(QSize(item->sizeHint().width(), BoardsModel::ITEMHEIGHT));
+            //QStandardItem* item = _svcModel->addBoardItem(b);           
+            //item->setSizeHint(QSize(item->sizeHint().width(), BoardsModel::ITEMHEIGHT));
 
-            // Used with GetModelItem()
-            b->setModelItem(item);
+            //// Used with GetModelItem()
+            //b->setModelItem(item);
 
-            BoardItemDocPtr bid(new BoardItemDoc(b, boardItemTemplate));
-            b->setBoardItemDocument(bid);
+            //BoardItemDocPtr bid(new BoardItemDoc(b, boardItemTemplate));
+            //b->setBoardItemDocument(bid);
 
             // add the board to the _boardToolBar
             QByteArray buffer(b->getFavIcon().toLatin1());
@@ -247,7 +275,7 @@ int MainWindow::initBoard(const BoardPtr& b)
 
             BoardMenu* boardMenu = new BoardMenu(BoardWeakPtr(b), this);
             QObject::connect(boardMenu, &BoardMenu::boardInfoSaved,
-                [this](BoardPtr b, StringMap oldvalues)
+                [this](BoardPtr b, StringMap)
                 {
                     _logger->trace("onBoardInfoSaved({}:{})",
                         b->getDBId(), b->getName().toStdString());
@@ -273,16 +301,18 @@ int MainWindow::initBoard(const BoardPtr& b)
 
             boardAction->setMenu(boardMenu);
             boardToolbar->addAction(boardAction);
+            ok = true;
         }
     }
     catch (const owl::Exception& ex)
     {
-        iRet++;
+        b->setStatus(BoardStatus::ERR);
+
         _logger->warn("Failed to create parser of type '{}' for board '{}': {}",
             b->getProtocolName().toStdString(), b->getName().toStdString(), ex.message().toStdString());
     }
 
-    return iRet;
+    return ok;
 }
 
 void MainWindow::openPreferences()
@@ -383,7 +413,7 @@ void MainWindow::onBoardToolbarItemClicked(QAction* action)
         return;
     }
 
-    if (board->getStatus() == Board::OFFLINE)
+    if (board->getStatus() == BoardStatus::OFFLINE)
     {
         board->login();
     }
@@ -452,12 +482,12 @@ void MainWindow::loginEvent(BoardPtr b, StringMap sp)
     
     if (sp.getBool("success"))
     {
-        doc->setOrAddVar("%BOARDSTATUSIMG%", ":/icons/online.png");
-        doc->setOrAddVar("%BOARDSTATUSALT%", tr("Online"));
+        //doc->setOrAddVar("%BOARDSTATUSIMG%", ":/icons/online.png");
+        //doc->setOrAddVar("%BOARDSTATUSALT%", tr("Online"));
 
-        if (_workerMap.contains(b->getDBId()))
+        if (_workerMap.contains(b->hash()))
         {
-            QThreadEx* workerThread = _workerMap.value(b->getDBId());
+            QThreadEx* workerThread = _workerMap.value(b->hash());
 
             BoardUpdateWorker* pWorker = new BoardUpdateWorker(b);
             pWorker->moveToThread(workerThread);
@@ -482,8 +512,8 @@ void MainWindow::loginEvent(BoardPtr b, StringMap sp)
     }
     else
     {
-        doc->setOrAddVar("%BOARDSTATUSIMG%", ":/icons/error.png");
-        doc->setOrAddVar("%BOARDSTATUSALT%", tr("Offline"));
+        //doc->setOrAddVar("%BOARDSTATUSIMG%", ":/icons/error.png");
+        //doc->setOrAddVar("%BOARDSTATUSALT%", tr("Offline"));
 
         msg = QString(tr("User %1 could not sign on to '%2'"))
             .arg(b->getUsername())
@@ -501,8 +531,8 @@ void MainWindow::loginEvent(BoardPtr b, StringMap sp)
         _logger->info(msg.toStdString());
     }
     
-    doc->reloadHtml();
-    servicesTree->update();
+    //doc->reloadHtml();
+    //servicesTree->update();
     QMainWindow::statusBar()->showMessage(msg, 5000);
 }
 
@@ -538,6 +568,7 @@ void MainWindow::getThreadsHandler(BoardPtr b, ForumPtr forum)
     }
 
     updateSelectedForum(forum);
+    contentView->doShowListOfThreads(forum);
 }
 
 // SLOT: handles the SIGNAL from a Board object. Called when the board responds 
@@ -546,6 +577,9 @@ void MainWindow::getThreadsHandler(BoardPtr b, ForumPtr forum)
 // this function
 void MainWindow::getUnreadForumsEvent(BoardPtr board, ForumList list)
 {
+    servicesTree2->update();
+    return;
+
     bool bHasUnread = false;
 
     ForumHash tempHash;	
@@ -649,12 +683,12 @@ void MainWindow::onNewBoard()
 
 void MainWindow::onNewBoardAdded(BoardPtr b)
 {
-    servicesTree->setHasBoards(true);
+//    servicesTree->setHasBoards(true);
 
-    if (initBoard(b) == 0)
-    {
-        b->login();
-    }
+//    if (initBoard(b))
+//    {
+//        b->login();
+//    }
 }
 
 void MainWindow::connectBoard(BoardPtr board)
@@ -961,7 +995,7 @@ void MainWindow::onSvcTreeClicked(const QModelIndex& selected)
 
             if (board)
             {
-                if (board->getStatus() == Board::ONLINE &&
+                if (board->getStatus() == BoardStatus::ONLINE &&
                     forum->getForumType() != Forum::LINK)
                 {
                     startThreadLoading();
@@ -972,7 +1006,7 @@ void MainWindow::onSvcTreeClicked(const QModelIndex& selected)
                     board->setLastForumId(forum->getId().toInt());
                 }
 
-                if (board->getStatus() == Board::OFFLINE)
+                if (board->getStatus() == BoardStatus::OFFLINE)
                 {
                     _logger->trace("{} offline", board->getName().toStdString());
                 }
@@ -989,7 +1023,7 @@ void MainWindow::onTreeDoubleClicked(const QModelIndex& idx)
     {
         BoardPtr board = item->data().value<BoardWeakPtr>().lock();
 
-        if (board->getStatus() != Board::ONLINE)
+        if (board->getStatus() != BoardStatus::ONLINE)
         {
             board->login();
             
@@ -1006,7 +1040,7 @@ void MainWindow::onTreeDoubleClicked(const QModelIndex& idx)
 
         auto board = f->getBoard().lock();
 
-        if (board && board->getStatus() != Board::ONLINE)
+        if (board && board->getStatus() != BoardStatus::ONLINE)
         {
             board->login();
         }
@@ -1015,6 +1049,23 @@ void MainWindow::onTreeDoubleClicked(const QModelIndex& idx)
             QDesktopServices::openUrl(f->getVar("link", false));
         }
     }
+}
+
+void MainWindow::toggleOldControls(bool doshow)
+{
+    servicesTree->setVisible(doshow);
+
+    currentForumFrame->setVisible(doshow);
+    threadNavFrame->setVisible(doshow);
+    threadListWidget->setVisible(doshow);
+    line->setVisible(doshow);
+    line_3->setVisible(doshow);
+
+    currentThreadFrame->setVisible(doshow);
+    postsWebView->setVisible(doshow);
+    postNavFrame->setVisible(doshow);
+    line_2->setVisible(doshow);
+    line_4->setVisible(doshow);
 }
 
 void MainWindow::createDebugMenu()
@@ -1070,6 +1121,17 @@ void MainWindow::createDebugMenu()
     }
 
     debugMenu->addSeparator();
+
+    {
+        QAction* action = debugMenu->addAction("&Toggle Old View");
+        action->setShortcut(QKeySequence("Ctrl+Shift+1"));
+        QObject::connect(action, &QAction::triggered,
+            [this]()
+            {
+                bool toggle = !currentForumFrame->isVisible();
+                toggleOldControls(toggle);
+            });
+    }
 }
 
 void MainWindow::createMenus()
@@ -1440,7 +1502,7 @@ void MainWindow::createMenus()
         }
     }
 
-#ifdef _DEBUG
+#ifndef RELEASE
     // Debug Menu
     createDebugMenu();
 #endif
@@ -1826,12 +1888,129 @@ void MainWindow::createLinkMessages()
 
 void MainWindow::createBoardPanel()
 {
+    // NEW
 #ifdef Q_OS_MACX
-    servicesTree->setAttribute(Qt::WA_MacShowFocusRect,0);
+    servicesTree2->setAttribute(Qt::WA_MacShowFocusRect, 0);
+#endif
+
+    QObject::connect(servicesTree2, &BoardIconView::onBoardClicked,
+        [this](owl::BoardWeakPtr bwp)
+        {
+            contentView->doShowLoading(bwp);
+            threadListWidget2->doBoardClicked(bwp);
+        });
+
+    QObject::connect(servicesTree2, &BoardIconView::onEditBoard,
+        [this](owl::BoardWeakPtr boardWeakPtr)
+        {
+            auto boardPtr = boardWeakPtr.lock();
+            if (!boardPtr) OWL_THROW_EXCEPTION(owl::Exception("Invalid board"));
+
+            EditBoardDlg* dlg = new EditBoardDlg(boardPtr, this);
+
+            QObject::connect(dlg, &EditBoardDlg::boardSavedEvent,
+                [this](const BoardPtr b, const StringMap&)
+            {
+                _logger->trace("onBoardInfoSaved({}:{})",
+                    b->getDBId(), b->getName().toStdString());
+
+                //auto doc = b->getBoardItemDocument();
+                //doc->setOrAddVar("%BOARDNAME%", b->getName());
+                //doc->setOrAddVar("%BOARDUSERNAME%", b->getUsername());
+                //doc->reloadHtml();
+
+                // search the toolbar (top of the client) and update the text
+                for (QAction* a : boardToolbar->actions())
+                {
+                    if (b == a->data().value<BoardWeakPtr>().lock())
+                    {
+                        a->setText(b->getName());
+                        a->setIconText(owl::getAbbreviatedName(b->getName()));
+                        QString toolTip = QString("%1@%2").arg(b->getUsername()).arg(b->getName());
+                        a->setToolTip(toolTip);
+                        break;
+                    }
+                }
+            });
+
+            QObject::connect(dlg, &QDialog::finished, [dlg](int) { dlg->deleteLater(); });
+            dlg->open();
+        });
+
+    QObject::connect(servicesTree2, &BoardIconView::onAddNewBoard,
+        [this]()
+        {
+            QuickAddDlg* addDlg = new QuickAddDlg(this);
+            connect(addDlg, SIGNAL(newBoardAddedEvent(BoardPtr)), this, SLOT(onNewBoardAdded(BoardPtr)));
+
+            connect(addDlg, &QuickAddDlg::newBoardAddedEvent,
+                [this](BoardPtr board)
+                {
+                    if (this->initBoard(board))
+                    {
+//                        board->login();
+                    }
+                });
+
+            QObject::connect(addDlg, &QDialog::finished, [addDlg](int) { addDlg->deleteLater(); });
+            addDlg->open();
+        });
+
+    QObject::connect(servicesTree2, &BoardIconView::onDeleteBoard,
+        [this](owl::BoardWeakPtr bwp)
+        {
+            BoardPtr board = bwp.lock();
+            if (board)
+            {
+                QThreadEx* thread = _workerMap.value(board->hash());
+                Q_ASSERT(thread);
+                thread->exit();
+
+                // NOTE: More of Qt's lifetime management, this will, in fact, delete
+                // the `BoardUpdateWorker` and `QThreadEx` objects that are in the
+                // `_workerMap`
+                _workerMap.remove(board->hash());
+
+                // delete the board from the toolbar
+                auto actionList = boardToolbar->actions();
+                auto actionItem = std::find_if(actionList.begin(), actionList.end(),
+                    [board](QAction* action)
+                    {
+                        auto other = action->data().value<BoardWeakPtr>().lock();
+                        return board && other && board->hash() == other->hash();
+                    });
+
+                if (actionItem != actionList.end())
+                {
+                    boardToolbar->removeAction(*actionItem);
+
+                }
+
+                // remove from the database
+                BOARDMANAGER->deleteBoard(board);
+
+                // clear any resources
+                board.reset();
+            }
+        });
+
+    QObject::connect(servicesTree2, &BoardIconView::onConnectBoard,
+        [this](owl::BoardWeakPtr bwp)
+        {
+            BoardPtr board = bwp.lock();
+            if (board)
+            {
+                _logger->info("Connecting board {}", board->getName().toStdString());
+                board->login();
+            }
+        });
+// OLD CODE
+/**************************************************************************************************/
+#ifdef Q_OS_MACX
+    servicesTree->setAttribute(Qt::WA_MacShowFocusRect, 0);
 #endif
     
     servicesTree->collapseAll();
-
     servicesTree->setSelectionBehavior(QTreeView::SelectRows);
     servicesTree->setSortingEnabled(false);
     servicesTree->resizeColumnToContents(0);
@@ -1860,6 +2039,21 @@ void MainWindow::createBoardPanel()
     
 void MainWindow::createThreadPanel()
 {
+    QObject::connect(threadListWidget2, &ForumView::onForumClicked,
+        [this](owl::ForumPtr forum)
+        {
+            BoardPtr board = forum->getBoard().lock();
+            if (board && board->getStatus() == BoardStatus::ONLINE)
+            {
+                contentView->doShowLoading(board);
+                board->requestThreadList(forum);
+                board->setLastForumId(forum->getId().toInt());
+            }
+        });
+
+    QObject::connect(threadListWidget2, &ForumView::onForumListLoaded,
+        [this]() { contentView->doShowLogo(); });
+
     // the "New Thread" button is disabled on startup
     newThreadBtn->setEnabled(false);
 
@@ -2046,10 +2240,10 @@ void MainWindow::onBoardDelete()
 void MainWindow::onBoardDelete(BoardPtr b)
 {
     // stop any pending requests
-    QThread* thread = _workerMap.value(b->getDBId());
+    QThread* thread = _workerMap.value(b->hash());
     thread->exit();
 
-    _workerMap.remove(b->getDBId());
+    _workerMap.remove(b->hash());
 
     // search the toolbar (top of the client) and
     // remove the board icon
@@ -2288,7 +2482,7 @@ void BoardMenu::createMenu()
         OWL_THROW_EXCEPTION(Exception("Board object is null"));
     }
 
-    if (board->getStatus() == Board::ONLINE)
+    if (board->getStatus() == BoardStatus::ONLINE)
     {
         QAction* refresh = addAction(QIcon(":/icons/refresh.png"), tr("Refresh"));
         refresh->setToolTip(tr("Refresh"));
@@ -2364,7 +2558,7 @@ void BoardMenu::createMenu()
 
     addSeparator();
 
-    if (board->getStatus() == Board::ONLINE)
+    if (board->getStatus() == BoardStatus::ONLINE)
     {
         QAction* action = addAction(QIcon(":/icons/markforumread.png"), tr("Mark All Forums Read"));
         action->setToolTip(tr("Mark All Forums Read"));

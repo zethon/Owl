@@ -139,6 +139,7 @@ void BoardManager::loadBoards()
 			retrieveBoardForums(b);
 
 			_boardList.push_back(b);
+
             _logger->trace("Loaded '{}', last updated '{}'",
                 b->getName().toStdString(), b->getLastUpdate().toString().toStdString());
 		}
@@ -158,7 +159,7 @@ QSqlDatabase BoardManager::initializeDatabase(const QString& filename)
     QFileInfo dbFileInfo(filename);
     if (!dbFileInfo.exists())
     {
-        _logger->debug("Creating database file '{}'", _databaseFilename);
+        _logger->info("Creating database file '{}'", _databaseFilename);
 
         QDir dbDir(dbFileInfo.absolutePath());
         if (!dbDir.exists())
@@ -197,6 +198,11 @@ QSqlDatabase BoardManager::initializeDatabase(const QString& filename)
         }
 
         db.close();
+    }
+    else
+    {
+        _logger->info("Opening database file '{}'", _databaseFilename);
+
     }
 
     return getDatabase(true);
@@ -448,7 +454,12 @@ bool BoardManager::createBoard(BoardPtr board)
 		db.commit();
 		board->setDBId(query.lastInsertId().toInt());
 		
+        // TODO: we probably want to Q_EMIT the index of the new board in the
+        // sorted list, but for now this works
+        Q_EMIT onBeginAddBoard(_boardList.size());
 		_boardList.push_back(board);
+        Q_EMIT onEndAddBoard();
+
 		qSort(_boardList.begin(), _boardList.end(), &BoardManager::boardDisplayOrderLessThan);
 
 		bRet = true;
@@ -653,9 +664,10 @@ bool BoardManager::updateBoard(BoardPtr board)
 	}
 	else
 	{
-        _logger->error("updateBoard() failed: {}", query.lastError().text().toStdString());
+        const auto error = fmt::format("Cannot update board: {}", query.lastError().text().toStdString());
+        _logger->error(error);
         _logger->debug("executed query: {}", query.lastQuery().toStdString());
-        OWL_THROW_EXCEPTION(BoardManagerException(query.lastError().text(), query.lastQuery()));
+        OWL_THROW_EXCEPTION(Exception(QString::fromStdString(error)));
 	}
 
 	return bRet;
@@ -725,7 +737,9 @@ bool BoardManager::deleteBoard(BoardPtr board)
         auto iPos = _boardList.indexOf(board);
         if (iPos != -1)
         {
+            Q_EMIT onBeginRemoveBoard(iPos);
             _boardList.removeAt(iPos);
+            Q_EMIT onEndRemoveBoard();
         }
 
 		if (displayOrder <= static_cast<std::uint32_t>(_boardList.size()))
@@ -814,7 +828,12 @@ BoardPtr BoardManager::boardByItem(QStandardItem* item) const
 		}
 	}
 
-	return board;
+    return board;
+}
+
+BoardPtr BoardManager::boardByIndex(std::size_t index) const
+{
+    return _boardList.at(static_cast<int>(index));
 }
 
 BoardManagerPtr BoardManager::_instance;
