@@ -77,19 +77,19 @@ std::tuple<const char*, const char*> redirectData[]
     },
     std::tuple<const char*, const char*>
     {
-        "http://amb.la",
-        "https://amb.la/"
+        "http://juot.net",
+        "https://www.juot.net/forums/index.php"
     },
     std::tuple<const char*, const char*>
     {
         "http://lulzapps.com",
         "http://www.owlclient.com/"
     },
-    std::tuple<const char*, const char*>
-    {
-        "http://www.washingtonpost.com/wp-srv/projects/yrreview/year.htm",
-        "http://www.washingtonpost.com/wp-srv/projects/yrreview/year.htm?noredirect=on"
-    }
+//    std::tuple<const char*, const char*>
+//    {
+//        "http://www.washingtonpost.com/wp-srv/projects/yrreview/year.htm",
+//        "http://www.washingtonpost.com/wp-srv/projects/yrreview/year.htm?noredirect=on"
+//    }
 };
 
 BOOST_DATA_TEST_CASE(redirectTest, data::make(redirectData), url, expectedFinalUrl)
