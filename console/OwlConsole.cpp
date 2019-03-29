@@ -1,9 +1,10 @@
 #include <sys/ioctl.h>
 
 #include <QCoreApplication>
-#include <Parsers/BBCodeParser.h>
-#include <Parsers/ParserManager.h>
-#include <Utils/OwlUtils.h>
+#include "../src/Parsers/BBCodeParser.h"
+#include "../src/Parsers/ParserManager.h"
+#include "../src/Utils/OwlUtils.h"
+#include "../src/Utils/Moment.h"
 #include "Core.h"
 #include "rang.hpp"
 #include "OwlConsole.h"
@@ -27,6 +28,11 @@ void OUTPUTLN(const QString& text)
 void OUTPUTLN(const char* text)
 {
     OUTPUTLN(QString::fromLatin1(text));
+}
+
+void OUTPUTLN(const std::string& text)
+{
+    OUTPUTLN(QString::fromStdString(text));
 }
 
 void OUTPUTLN(const ConsoleOutput& output)
@@ -151,15 +157,7 @@ void ConsoleApp::doLogin(const QString& options)
     const auto posArgs = p.positionalArguments();
     if (posArgs.size() < 1 || posArgs.at(0).isEmpty())
     {
-        std::cout << "Usage: login {boardurl} [username] [password]" << std::endl;
-        std::cout << "Connect to a message board" << std::endl << std::endl;
-        std::cout << "boardurl - The url the message board" << std::endl;
-        std::cout << "username - (optional) Username to use for the connection. If left black, you will" << std::endl;
-        std::cout << "           be prompted." << std::endl;
-        std::cout << "password - (optional) Password for the username. If left blank then you will be" << std::endl;
-        std::cout << "           prompted." << std::endl;
-        std::cout << std::endl;
-        std::cout << "Example: login www.amb.la BarakObama passW0rD" << std::endl;
+        std::cout << p.helpText().toStdString() << std::endl;
         return;
     }
 
@@ -220,7 +218,7 @@ void ConsoleApp::doLogin(const QString& options)
                     parser.reset();
                 }
             }
-            catch (const owl::OwlException& ex)
+            catch (const owl::Exception& ex)
             {
                 qDebug() << "Parser " << name << " failed: " << ex.details();
                 parser.reset();
@@ -266,7 +264,7 @@ void ConsoleApp::doLogin(const QString& options)
                     break;
                 }
             }
-            catch (const owl::OwlException& ex)
+            catch (const owl::Exception& ex)
             {
                 qDebug() << "Parser " << name << " failed: " << ex.details();
                 parser.reset();
@@ -309,7 +307,7 @@ void ConsoleApp::doLogin(const QString& options)
                 ERROR("Could not sign into " + boardUrl);
             }
         }
-        catch (const owl::OwlException& ex)
+        catch (const owl::Exception& ex)
         {
             std::cerr << "Login failed: " << ex.details().toStdString() << std::endl;
         }
@@ -324,7 +322,7 @@ void ConsoleApp::doLogin(const QString& options)
     }
     else
     {
-        ERROR("Could not find a paser for board '" + boardUrl + "'");
+        ERROR("Could not find a parser for board '" + boardUrl + "'");
     }
 }
 
@@ -585,7 +583,7 @@ void ConsoleApp::listPosts(const uint pagenumber, const uint perpage, bool bShow
     thread->setPerPage(perpage);
 
     // allow 40 characters for other text with a min of 40
-    const auto textwidth = std::max((uint)_appOptions.getInt("wwidth") - 40, 40u);
+    const auto textwidth = std::max((uint)_appOptions.get<std::uint32_t>("width") - 40, 40u);
     PostList posts = _parser->getPosts(thread, ParserBase::PostListOptions::FIRST_POST);
     if (posts.size() > 0)
     {
@@ -1041,7 +1039,7 @@ void ConsoleApp::run()
             _terminal.run();
         }
     }
-    catch (const owl::OwlException& ex)
+    catch (const owl::Exception& ex)
     {
         std::cerr << "Owl exception: " << ex.details().toStdString() << std::endl;
     }

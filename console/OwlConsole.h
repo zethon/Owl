@@ -3,7 +3,7 @@
 #include <mutex>
 #include <stack>
 #include <QtCore>
-#include <Parsers/Forum.h>
+#include "../src/Parsers/Forum.h"
 #include "Terminal.h"
 
 namespace owl
