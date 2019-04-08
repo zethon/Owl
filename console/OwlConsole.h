@@ -69,11 +69,11 @@ public:
 
 class ConsoleOutput
 {
-    std::vector<const TextItem> _items;
+    std::vector<TextItem> _items;
 
 public:
-    using iterator = std::vector<const TextItem>::iterator;
-    using const_iterator = std::vector<const TextItem>::const_iterator;
+    using iterator = std::vector<TextItem>::iterator;
+    using const_iterator = std::vector<TextItem>::const_iterator;
 
     iterator begin()
     {
