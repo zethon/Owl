@@ -1,10 +1,14 @@
+#ifndef _WINDOWS
 #include <sys/ioctl.h>
+#endif
 
 #include <QCoreApplication>
+
 #include "../src/Parsers/BBCodeParser.h"
 #include "../src/Parsers/ParserManager.h"
 #include "../src/Utils/OwlUtils.h"
 #include "../src/Utils/Moment.h"
+
 #include "Core.h"
 #include "rang.hpp"
 #include "OwlConsole.h"
@@ -93,7 +97,7 @@ void ERROR(const QString& text)
     ERROR(text.toStdString());
 }
 
-void ConsoleApp::doHelp(const QString& cmdLn)
+void ConsoleApp::doHelp(const QString&)
 {
     OUTPUTLN("Owl Console Help");
     OUTPUTLN("");
@@ -326,7 +330,7 @@ void ConsoleApp::doLogin(const QString& options)
     }
 }
 
-void ConsoleApp::doParsers(const QString &cmdLn)
+void ConsoleApp::doParsers(const QString&)
 {
     std::cout << "Parsers folder:" << _luaFolder.toStdString() << std::endl << std::endl;
     for (const auto& p : ParserManager::instance()->getParsers())
@@ -474,7 +478,7 @@ void ConsoleApp::listThreads(const uint pagenumber, const uint perpage, bool bSh
         auto idx = 0u;
         owl::Moment moment;
 
-        for (const owl::ThreadPtr t : threads)
+        for (const owl::ThreadPtr& t : threads)
         {
             ++idx;
 
@@ -565,7 +569,7 @@ void ConsoleApp::doListPosts(const QString& options)
             temp = p.positionalArguments()[1].toUInt(&bOk);
             if (bOk) // hard perpage limit of 50
             {
-                perpage = std::min(temp, (uint)50);
+                perpage = std::min(temp, static_cast<uint>(50));
             }
         }
     }
@@ -593,7 +597,7 @@ void ConsoleApp::listPosts(const uint pagenumber, const uint perpage, bool bShow
         owl::Moment moment;
         auto idx = ((thread->getPageNumber()-1) * thread->getPerPage()) + 1;
 
-        for (const owl::PostPtr p : posts)
+        for (const owl::PostPtr& p : posts)
         {
             moment.setDateTime(p->getDateTime());
 
@@ -770,7 +774,8 @@ void ConsoleApp::initCommands()
         ConsoleCommand("login", "Login to a remote board", std::bind(&ConsoleApp::doLogin, this, std::placeholders::_1)),
         ConsoleCommand("parsers", "List parsers",std::bind(&ConsoleApp::doParsers, this, std::placeholders::_1)),
         ConsoleCommand("quit,exit,q", "", [this](const QString&) { _bDoneApp = true; }),
-        ConsoleCommand("clear,cls", "", [this](const QString&)
+        ConsoleCommand("clear,cls", "",
+            [](const QString&)
             {
                 OUTPUT("\033[2J\033[1;1H");
             }),
@@ -1076,7 +1081,7 @@ QString shortText(const QString& original, const uint maxwidth)
     QString retval = bbparser.toPlainText(original);
     retval = retval.replace(whitespace, QString());
 
-    if (retval.size() > (int)maxwidth)
+    if (retval.size() > static_cast<int>(maxwidth))
     {
         // TODO: would be nice if the '25' could be determined by the console's width
         retval = retval.left(maxwidth-3) + QStringLiteral("...");
@@ -1109,6 +1114,22 @@ QString printableDateTime(const QDateTime &dt, bool bShowTime)
     }
 
     return retval.toLower();
+}
+
+TextItem::TextItem(const QString &text)
+    : _text(text)
+{
+    // do nothing
+}
+
+TextItem::TextItem(const TextItem &other)
+{
+    _text = other._text;
+}
+
+QString TextItem::operator()() const
+{
+    return _text;
 }
 
 } // namespace

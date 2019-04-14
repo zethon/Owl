@@ -1075,15 +1075,16 @@ void MainWindow::createDebugMenu()
     {
         QAction* action = debugMenu->addAction("&Show Splash Screen");
 
-        QObject::connect(action, &QAction::triggered, [this]()
-        {
-            _splash->show();
-        });
+        QObject::connect(action, &QAction::triggered,
+            [this]()
+            {
+                _splash->show();
+            });
     }
 
     {
         QAction* action = debugMenu->addAction("&Show INI Settings Folder");
-        QObject::connect(action, &QAction::triggered, [this]()
+        QObject::connect(action, &QAction::triggered, []()
         {
             const QString writePath = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
             const QString iniFile = QDir(writePath).absoluteFilePath("owl.ini");
@@ -1094,7 +1095,7 @@ void MainWindow::createDebugMenu()
 
     {
         QAction* action = debugMenu->addAction("&Show Show Parsers Folder");
-        QObject::connect(action, &QAction::triggered, [this]()
+        QObject::connect(action, &QAction::triggered, []()
         {
             const auto parsersFolder = SettingsObject().read("parsers.path").toString();
             owl::openFolder(parsersFolder);
@@ -1106,18 +1107,19 @@ void MainWindow::createDebugMenu()
     // Display a dialog used to write posts, for quick testing
     {
         QAction* action = debugMenu->addAction("&Show PostTextEditor dialog");
-        QObject::connect(action, &QAction::triggered, [this]()
-        {
-            ParserBasePtr parser = PARSERMGR->createParser("tapatalk4x", "http://www.amb.la");
-            BoardPtr board = std::make_shared<Board>();
-            board->setParser(parser);
+        QObject::connect(action, &QAction::triggered,
+            []()
+            {
+                ParserBasePtr parser = PARSERMGR->createParser("tapatalk4x", "http://www.amb.la");
+                BoardPtr board = std::make_shared<Board>();
+                board->setParser(parser);
 
-            ForumPtr forum = std::make_shared<Forum>("TESTFORUM");
-            forum->setBoard(board);
+                ForumPtr forum = std::make_shared<Forum>("TESTFORUM");
+                forum->setBoard(board);
 
-            NewThreadDlg dlg(forum);
-            dlg.exec();
-        });
+                NewThreadDlg dlg(forum);
+                dlg.exec();
+            });
     }
 
     debugMenu->addSeparator();
@@ -1184,31 +1186,34 @@ void MainWindow::createMenus()
         
         auto undo = menu->addAction("Undo");
         undo->setShortcut(QKeySequence("Ctrl+Z"));
-        QObject::connect(undo, &QAction::triggered, [this]()
-         {
-             auto w = QApplication::activeWindow()->focusWidget();
-             
-             // try to cast to a QLineEdit
-             QLineEdit* le = qobject_cast<QLineEdit*>(w);
-             if (le)
-             {
-                 le->undo();
-             }
-             
-         });
+        QObject::connect(undo, &QAction::triggered,
+            [this]()
+            {
+                auto w = QApplication::activeWindow()->focusWidget();
+
+                // try to cast to a QLineEdit
+                QLineEdit* le = qobject_cast<QLineEdit*>(w);
+                if (le)
+                {
+                    _logger->trace("Undo on Item {}", le->objectName());
+                    le->undo();
+                }
+            });
         
         auto redo = menu->addAction("Redo");
         redo->setShortcut(QKeySequence("Shift+Ctrl+Z"));
-        QObject::connect(redo, &QAction::triggered, [this]()
-         {
-             auto w = QApplication::activeWindow()->focusWidget();
-             
-             // try to cast to a QLineEdit
-             QLineEdit* le = qobject_cast<QLineEdit*>(w);
-             if (le)
-             {
-                 le->redo();
-             }
+        QObject::connect(redo, &QAction::triggered,
+            [this]()
+            {
+                auto w = QApplication::activeWindow()->focusWidget();
+
+                // try to cast to a QLineEdit
+                QLineEdit* le = qobject_cast<QLineEdit*>(w);
+                if (le)
+                {
+                    _logger->trace("Redo on Item {}", le->objectName());
+                    le->redo();
+                }
          });
         
         menu->addSeparator();
