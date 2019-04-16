@@ -1195,7 +1195,7 @@ void MainWindow::createMenus()
                 QLineEdit* le = qobject_cast<QLineEdit*>(w);
                 if (le)
                 {
-                    _logger->trace("Undo on Item {}", le->objectName());
+                    _logger->trace("Undo on Item {}", le->objectName().toStdString());
                     le->undo();
                 }
             });
@@ -1211,7 +1211,7 @@ void MainWindow::createMenus()
                 QLineEdit* le = qobject_cast<QLineEdit*>(w);
                 if (le)
                 {
-                    _logger->trace("Redo on Item {}", le->objectName());
+                    _logger->trace("Redo on Item {}", le->objectName().toStdString());
                     le->redo();
                 }
          });
