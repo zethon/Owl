@@ -3,6 +3,7 @@
 #endif
 
 #include <QCoreApplication>
+#include <QSysInfo>
 
 #include "../src/Parsers/BBCodeParser.h"
 #include "../src/Parsers/ParserManager.h"
@@ -1064,13 +1065,12 @@ void ConsoleApp::doSysInfo(const QString &cmdLn)
 {
     Q_UNUSED(cmdLn);
 
-    const auto& os = getOSString();
     const QString consoleVer { OWLCONSOLE_VERSION };
     const QString buildDateTime { OWLCONSOLE_BUILDTIMESTAMP };
 
     OUTPUTLN("Owl Console version: " + consoleVer);
     OUTPUTLN("Build date: " + buildDateTime);
-    OUTPUTLN("Operating System: " + os);
+    OUTPUTLN("Operating System: " + QSysInfo::prettyProductName().toStdString());
 }
 
 QString shortText(const QString& original, const uint maxwidth)

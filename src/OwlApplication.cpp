@@ -2,6 +2,7 @@
 #include <QtSql>
 #include <QWebEngineSettings>
 #include <QtQml>
+#include <QSysInfo>
 #include <Parsers/ParserManager.h>
 #include <Utils/Settings.h>
 #include <Utils/OwlUtils.h>
@@ -318,7 +319,7 @@ void OwlApplication::initializeLogger()
         }
     }
 
-    logger->debug("Operating System: {}", owl::getOSString());
+    logger->debug("Operating System: {}", QSysInfo::prettyProductName().toStdString());
     logger->debug("Current working directory: {}", QDir::currentPath().toStdString());
     logger->info("Settings file '{}'", _settingsFile->filePath().toStdString());
 }

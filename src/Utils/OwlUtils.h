@@ -4,7 +4,6 @@
 namespace owl
 {
 
-const std::string getOSString();
 bool isWindowsHost();
 bool isMacHost();
 bool isLinuxHost();

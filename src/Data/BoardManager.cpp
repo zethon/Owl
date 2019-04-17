@@ -456,7 +456,7 @@ bool BoardManager::createBoard(BoardPtr board)
 		
         // TODO: we probably want to Q_EMIT the index of the new board in the
         // sorted list, but for now this works
-        Q_EMIT onBeginAddBoard(_boardList.size());
+        Q_EMIT onBeginAddBoard(static_cast<int>(_boardList.size()));
 		_boardList.push_back(board);
         Q_EMIT onEndAddBoard();
 
