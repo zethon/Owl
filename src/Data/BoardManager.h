@@ -49,7 +49,7 @@ public:
     void loadBoards();
     void reload();
 
-	size_t getBoardCount() const;
+    std::size_t getBoardCount() const;
     const BoardList& getBoardList() const { return _boardList; }
 
 	// CRUD

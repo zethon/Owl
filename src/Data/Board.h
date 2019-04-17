@@ -118,7 +118,7 @@ public:
     QString getUserAgent() const;
     
     void setLastForumId(int id) { getOptions()->setOrAdd("lastForumId", (int)id); }
-    const int getLastForumId() const { return getOptions()->get<std::uint32_t>("lastForumId"); }
+    int getLastForumId() const { return getOptions()->get<std::uint32_t>("lastForumId"); }
 
 	void setEnabled(bool bEnabled) { _bEnabled = bEnabled; }
 	bool isEnabled() const { return _bEnabled; }
@@ -202,7 +202,7 @@ private Q_SLOTS:
     void markForumReadEvent(ForumPtr);
 
 private:
-	void crawlSubForum(ForumPtr parent, ForumIdList* dupList = NULL, bool bThrow = true);
+    void crawlSubForum(ForumPtr parent, ForumIdList* dupList = nullptr, bool bThrow = true);
 	void doUpdateHash(ForumPtr parent);
 
 	uint			_boardId;
@@ -275,7 +275,7 @@ private:
 };
 
 using BoardPtr = std::shared_ptr<Board>;
-using BoardList = QList<owl::BoardPtr>;
+using BoardList = std::vector<owl::BoardPtr>;
 
 QString getAbbreviatedName(const QString& name);
 

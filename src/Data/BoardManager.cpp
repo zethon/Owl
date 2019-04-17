@@ -21,7 +21,7 @@ BoardManager::BoardManager()
 
 {}	
 
-size_t BoardManager::getBoardCount() const
+std::size_t BoardManager::getBoardCount() const
 {
 	return _boardList.size();
 }
@@ -734,11 +734,17 @@ bool BoardManager::deleteBoard(BoardPtr board)
         
         db.commit();
         
-        auto iPos = _boardList.indexOf(board);
-        if (iPos != -1)
+        auto boardIt = std::find_if(_boardList.begin(), _boardList.end(),
+            [&board](const owl::BoardPtr& other) -> bool
+            {
+                return board->hash() == other->hash();
+            });
+
+        if (boardIt != _boardList.end())
         {
-            Q_EMIT onBeginRemoveBoard(iPos);
-            _boardList.removeAt(iPos);
+            auto iPos = std::distance(_boardList.begin(), boardIt);
+            Q_EMIT onBeginRemoveBoard(static_cast<int>(iPos));
+            _boardList.erase(boardIt);
             Q_EMIT onEndRemoveBoard();
         }
 
