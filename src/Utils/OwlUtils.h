@@ -1,4 +1,5 @@
 #pragma once
+#include <limits>
 #include <QtCore>
 
 namespace owl
@@ -18,5 +19,11 @@ int randomInteger(int low, int high);
 
 QString previewText(const QString &original);
 QString previewText(const QString& original, uint maxLen);
+
+template <typename T>
+bool numericEquals(T x, T y)
+{
+    return fabs(x-y) < std::numeric_limits<T>::epsilon();
+}
 
 } // owl namespace

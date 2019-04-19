@@ -274,8 +274,8 @@ private:
     void createThreadPanel();
     void createPostPanel();
 
-    void readSettings();
-    void writeSettings();
+    void readWindowSettings();
+    void writeWindowSettings();
 
     void connectBoard(BoardPtr board);
 

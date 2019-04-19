@@ -25,7 +25,7 @@
     #define BOARDICONWIDGETWIDTH         70
     #define CENTRALWIDGETWIDTH          275
 #elif defined(Q_OS_MAC)
-    #define BOARDICONWIDGETWIDTH         70    
+    #define BOARDICONWIDGETWIDTH         70
     #define CENTRALWIDGETWIDTH          250
 #else
     #define BOARDICONWIDGETWIDTH         70
@@ -88,7 +88,7 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
     this->centralWidget()->setMinimumWidth(CENTRALWIDGETWIDTH);
 
     // TODO: move this to the OwlApplication class
-    readSettings();
+    readWindowSettings();
     
     // initialize the dictionaries
     SPELLCHECKER->init();
@@ -251,11 +251,11 @@ bool MainWindow::initBoard(const BoardPtr& b)
             QImage image = QImage::fromData(QByteArray::fromBase64(buffer));
 
             // calculate the scaling factor based on wanting a 32x32 image
-            qreal iXScale = (qreal)boardIconWidth / (qreal)image.width();
-            qreal iYScale = (qreal)boardIconHeight / (qreal)image.height();
+            qreal iXScale = static_cast<qreal>(boardIconWidth) / static_cast<qreal>(image.width());
+            qreal iYScale = static_cast<qreal>(boardIconHeight) / static_cast<qreal>(image.height());
 
             // only scale the image if it's not the right size
-            if (iXScale != 1 || iYScale != 1)
+            if (owl::numericEquals<double>(iXScale, qreal(1.0)) || owl::numericEquals<double>(iYScale, qreal(1.0)))
             {
                 QTransform transform;
                 transform.scale(iXScale, iYScale);
@@ -396,7 +396,7 @@ bool MainWindow::event(QEvent *event)
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     _logger->debug("Closing Owl window");
-    writeSettings();
+    writeWindowSettings();
     QMainWindow::closeEvent(event);
 }
 
@@ -421,7 +421,7 @@ void MainWindow::onBoardToolbarItemClicked(QAction* action)
     this->servicesTree->reset();
 
     QStandardItem* boardItem = _svcModel->getBoardItem(board, false);
-    if (boardItem != NULL && !servicesTree->isExpanded(boardItem->index()))
+    if (boardItem != nullptr && !servicesTree->isExpanded(boardItem->index()))
     {
         servicesTree->expandIt(boardItem->index());
         servicesTree->setCurrentIndex(boardItem->index());
@@ -556,7 +556,7 @@ void MainWindow::getPostsHandler(BoardPtr board, ThreadPtr thread)
     }
 }
 
-void MainWindow::getThreadsHandler(BoardPtr b, ForumPtr forum)
+void MainWindow::getThreadsHandler(BoardPtr /*b*/, ForumPtr forum)
 {
     QMutexLocker lock(&_updateMutex);
 
@@ -602,7 +602,7 @@ void MainWindow::getUnreadForumsEvent(BoardPtr board, ForumList list)
         ForumPtr treeForum = board->getForumHash().value(it.key());
         QStandardItem* item = treeForum->getModelItem();
 
-        if (item == NULL)
+        if (item == nullptr)
         {
             continue;
         }
@@ -681,7 +681,7 @@ void MainWindow::onNewBoard()
     }
 }
 
-void MainWindow::onNewBoardAdded(BoardPtr b)
+void MainWindow::onNewBoardAdded(BoardPtr /*b*/)
 {
 //    servicesTree->setHasBoards(true);
 
@@ -732,11 +732,11 @@ void MainWindow::markForumReadHandler(BoardPtr b, ForumPtr f)
     }
 }
 
-void MainWindow::newThreadHandler(BoardPtr b, ThreadPtr t)
+void MainWindow::newThreadHandler(BoardPtr b, ThreadPtr /*t*/)
 {
     ForumPtr forum = this->getCurrentForum();
 
-    if (forum != NULL)
+    if (forum != nullptr)
     {
         startThreadLoading();
         newThreadBtn->setEnabled(false);
@@ -859,10 +859,10 @@ QMenu* MainWindow::createForumMenu(ForumPtr forum)
 
 void MainWindow::updateSelectedForum(ForumPtr f)
 {
-    threadNavFrame->setEnabled(f != NULL);
+    threadNavFrame->setEnabled(f != nullptr);
     postsWebView->resetView();
 
-    if (f != NULL)
+    if (f != nullptr)
     {
         newThreadBtn->setEnabled(f->getForumType() == Forum::FORUM);
         threadPageNumEdit->setText(QString::number(f->getPageNumber()));
@@ -880,9 +880,9 @@ void MainWindow::updateSelectedForum(ForumPtr f)
 // updates the UI
 void MainWindow::updateSelectedThread(ThreadPtr t)
 {
-    postNavFrame->setEnabled(t != NULL);
+    postNavFrame->setEnabled(t != nullptr);
 
-    if (t != NULL)
+    if (t != nullptr)
     {
         newPostBtn->setEnabled(true);
 
@@ -929,7 +929,7 @@ void MainWindow::onLoginClicked()
     {
         QStandardItem* item = _svcModel->itemFromIndex(index);
         
-        if (item->parent() == NULL)
+        if (item->parent() == nullptr)
         {
             BoardPtr b = item->data().value<BoardWeakPtr>().lock();
             b->login();
@@ -1357,10 +1357,11 @@ void MainWindow::createMenus()
 
         {
             QAction* action = viewMenu->addAction("Show Board Toolbar");
-            QObject::connect(action, &QAction::triggered, [this,action]()
-            {
-                boardToolbar->setVisible(!boardToolbar->isVisible());
-            });
+            QObject::connect(action, &QAction::triggered,
+                [this]()
+                {
+                    boardToolbar->setVisible(!boardToolbar->isVisible());
+                });
 
             _actions.showBoardbar = action;
         }
@@ -1613,7 +1614,7 @@ void MainWindow::createSignals()
             if (board)
             {
                 NewThreadDlg* dlg = new NewThreadDlg(thread, this);
-                const auto strQuote = board->getPostQuote(thread->getPosts().at(index));
+                const auto strQuote = board->getPostQuote(thread->getPosts().at(static_cast<int>(index)));
                 dlg->setQuoteText(strQuote);
                 dlg->setModal(false);
                 dlg->show();
@@ -1763,7 +1764,7 @@ void MainWindow::threadPageNumberEnterPressed()
 {
     ForumPtr forum = getCurrentForum();
 
-    if (forum != NULL && forum->getPageNumber() >= 1)
+    if (forum != nullptr && forum->getPageNumber() >= 1)
     {
         QString strText(threadPageNumEdit->text());
         bool bOk = false;
@@ -1784,7 +1785,7 @@ void MainWindow::threadFirstPageBtnClicked()
 {
     ForumPtr forum = getCurrentForum();
 
-    if (forum != NULL)
+    if (forum != nullptr)
     {
         navigateToThreadListPage(forum, 1);
     }
@@ -1794,7 +1795,7 @@ void MainWindow::threadPrevPageBtnClicked()
 {
     ForumPtr forum = getCurrentForum();
 
-    if (forum != NULL)
+    if (forum != nullptr)
     {
         navigateToThreadListPage(forum, (forum->getPageNumber() - 1));
     }
@@ -1804,7 +1805,7 @@ void MainWindow::threadNextPageBtnClicked()
 {
     ForumPtr forum = getCurrentForum();
 
-    if (forum != NULL)
+    if (forum != nullptr)
     {
         navigateToThreadListPage(forum, (forum->getPageNumber() + 1));
     }
@@ -1814,7 +1815,7 @@ void MainWindow::threadLastPageBtnClicked()
 {
     ForumPtr forum = getCurrentForum();
 
-    if (forum != NULL)
+    if (forum != nullptr)
     {
         navigateToThreadListPage(forum, forum->getPageCount());
     }
@@ -1823,7 +1824,7 @@ void MainWindow::threadLastPageBtnClicked()
 void MainWindow::newThreadBtnClicked()
 {
     ForumPtr forum = this->getCurrentForum();
-    if (forum != NULL)
+    if (forum != nullptr)
     {
         NewThreadDlg* newdlg = new NewThreadDlg(forum, this);
         newdlg->setModal(false);
@@ -1878,7 +1879,7 @@ ForumPtr MainWindow::getCurrentForum() const
     QModelIndex index = servicesTree->currentIndex();
     QStandardItem* item = _svcModel->itemFromIndex(index);
 
-    if (item != NULL && item->data().canConvert<ForumPtr>())
+    if (item != nullptr && item->data().canConvert<ForumPtr>())
     {
         forum = item->data().value<ForumPtr>();
     }
@@ -2019,7 +2020,8 @@ void MainWindow::createBoardPanel()
     servicesTree->setSelectionBehavior(QTreeView::SelectRows);
     servicesTree->setSortingEnabled(false);
     servicesTree->resizeColumnToContents(0);
-    servicesTree->setColumnWidth(0,servicesTree->width() * 0.66);
+    qreal width = static_cast<qreal>(servicesTree->width()) * qreal(0.66);
+    servicesTree->setColumnWidth(0, static_cast<int>(width));
     servicesTree->setContextMenuPolicy(Qt::CustomContextMenu);
     //servicesTree->setModel(_svcModel);
     
@@ -2128,7 +2130,7 @@ void MainWindow::onRefreshForum()
     QAction* caller = qobject_cast<QAction*>(sender());
     
     ForumPtr forum;
-    if (caller != NULL && !caller->data().canConvert<ForumPtr>())
+    if (caller != nullptr && !caller->data().canConvert<ForumPtr>())
     {
         forum = caller->data().value<ForumPtr>();
     }
@@ -2137,7 +2139,7 @@ void MainWindow::onRefreshForum()
         forum = getCurrentForum();
     }
     
-    if (forum != NULL)
+    if (forum != nullptr)
     {
         auto board = forum->getBoard().lock();
 
@@ -2156,7 +2158,7 @@ void MainWindow::onOpenBrowserToolbar()
 {
     QAction* caller = qobject_cast<QAction*>(sender());
 
-    if (caller != NULL)
+    if (caller != nullptr)
     {
         QString url;
 
@@ -2186,7 +2188,7 @@ void MainWindow::onCopyUrl()
 {
     QAction* caller = qobject_cast<QAction*>(sender());
 
-    if (caller != NULL)
+    if (caller != nullptr)
     {
         QString url;
         BoardItemPtr boardItem;
@@ -2218,7 +2220,7 @@ void MainWindow::onBoardDelete()
 {
     QAction* caller = qobject_cast<QAction*>(sender());
 
-    if (caller != NULL && caller->data().canConvert<BoardWeakPtr>())
+    if (caller != nullptr && caller->data().canConvert<BoardWeakPtr>())
     {
         BoardPtr b = caller->data().value<BoardWeakPtr>().lock();
         QString strMsg = QString(tr("Are you sure you want to delete the board \"%1\"?\n\n"
@@ -2285,7 +2287,7 @@ void MainWindow::onBoardDelete(BoardPtr b)
     b.reset();
 }
     
-void MainWindow::readSettings()
+void MainWindow::readWindowSettings()
 {
     const QString writePath = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
     const QString iniFile = QDir(writePath).absoluteFilePath("owl.ini");
@@ -2329,7 +2331,7 @@ void MainWindow::readSettings()
     }
 }
 
-void MainWindow::writeSettings()
+void MainWindow::writeWindowSettings()
 {
     const QString writePath = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
     const QString iniFile = QDir(writePath).absoluteFilePath("owl.ini");
