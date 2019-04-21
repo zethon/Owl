@@ -519,7 +519,7 @@ void MainWindow::loginEvent(BoardPtr b, StringMap sp)
             .arg(b->getUsername())
             .arg(b->getName());
 
-        _logger->debug(msg.toStdString());
+        _logger->info(msg.toStdString());
     }
     else
     {
