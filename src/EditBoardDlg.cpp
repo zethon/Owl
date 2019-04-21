@@ -45,8 +45,8 @@ EditBoardDlg::EditBoardDlg(BoardPtr board, QWidget* parent)
 	if (image.width() != 32 || image.height() != 32)
 	{
 		// calculate the scaling factor based on wanting a 32x32 image
-		qreal iXScale = (qreal)32 / (qreal)image.width();
-		qreal iYScale = (qreal)32 / (qreal)image.height();
+        qreal iXScale = qreal(32) / image.width();
+        qreal iYScale = qreal(32) / image.height();
 
 		QTransform transform;
 		transform.scale(iXScale, iYScale);
