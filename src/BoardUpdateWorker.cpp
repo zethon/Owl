@@ -40,8 +40,8 @@ public:
 BoardUpdateWorker::BoardUpdateWorker(BoardPtr board)
     : _board(board),
       _logger(owl::initializeLogger("BoardUpdateWorker"))
-
-{}
+{
+}
 
 void BoardUpdateWorker::doWork()
 {

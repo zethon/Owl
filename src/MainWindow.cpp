@@ -472,7 +472,6 @@ void MainWindow::onForumStructureChanged(BoardPtr b)
 void MainWindow::loginEvent(BoardPtr b, StringMap sp)
 {
     auto doc = b->getBoardItemDocument();
-    QString itemText;
     QString msg;
 
     _logger->debug("Board '{}' login result with user '{}' was {}",
@@ -482,19 +481,31 @@ void MainWindow::loginEvent(BoardPtr b, StringMap sp)
     
     if (sp.getBool("success"))
     {
-        //doc->setOrAddVar("%BOARDSTATUSIMG%", ":/icons/online.png");
-        //doc->setOrAddVar("%BOARDSTATUSALT%", tr("Online"));
-
         if (_workerMap.contains(b->hash()))
         {
             QThreadEx* workerThread = _workerMap.value(b->hash());
+            
+            const QString threadName = QString("%1:%2:%3")
+                .arg(b->getName()).arg(b->getServiceUrl()).arg(b->hash());
+            workerThread->setObjectName(threadName);
 
             BoardUpdateWorker* pWorker = new BoardUpdateWorker(b);
             pWorker->moveToThread(workerThread);
 
-            connect(pWorker, SIGNAL(onForumStructureChanged(BoardPtr)), this, SLOT(onForumStructureChanged(BoardPtr)));
-            connect(workerThread, SIGNAL(started()), pWorker, SLOT(doWork()));
-            QObject::connect(workerThread, &QThread::finished, [workerThread, pWorker] ()
+            QObject::connect(pWorker, &BoardUpdateWorker::onForumStructureChanged,
+                [this](BoardPtr board)
+                {
+                    QMetaObject::invokeMethod(this, "onForumStructureChanged", Q_ARG(owl::BoardPtr, board));
+                });
+
+            QObject::connect(workerThread, &QThread::started,
+                [pWorker]()
+                {
+                    QMetaObject::invokeMethod(pWorker, "doWork");
+                });
+
+            QObject::connect(workerThread, &QThread::finished, 
+                [workerThread, pWorker]()
                 {
                     pWorker->setIsDone(true);
                     pWorker->deleteLater();
@@ -512,9 +523,6 @@ void MainWindow::loginEvent(BoardPtr b, StringMap sp)
     }
     else
     {
-        //doc->setOrAddVar("%BOARDSTATUSIMG%", ":/icons/error.png");
-        //doc->setOrAddVar("%BOARDSTATUSALT%", tr("Offline"));
-
         msg = QString(tr("User %1 could not sign on to '%2'"))
             .arg(b->getUsername())
             .arg(b->getName());
@@ -530,9 +538,7 @@ void MainWindow::loginEvent(BoardPtr b, StringMap sp)
 
         _logger->info(msg.toStdString());
     }
-    
-    //doc->reloadHtml();
-    //servicesTree->update();
+
     QMainWindow::statusBar()->showMessage(msg, 5000);
 }
 
