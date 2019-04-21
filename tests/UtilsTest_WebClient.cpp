@@ -78,7 +78,7 @@ std::tuple<const char*, const char*> redirectData[]
     std::tuple<const char*, const char*>
     {
         "http://juot.net",
-        "https://www.juot.net/forums/index.php"
+        "https://www.juot.net/forums/"
     },
     std::tuple<const char*, const char*>
     {

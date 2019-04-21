@@ -204,7 +204,7 @@ void EditBoardDlg::renderPluginSettings()
     catch (const owl::Exception&)
     {
         bo->add(Board::Options::USE_ENCRYPTION, (bool)false);
-        bo->add(Board::Options::ENCSEED, (QString)"");
+        bo->add(Board::Options::ENCSEED, "");
         bo->add(Board::Options::ENCKEY, (QString)"");
 
         useEncryptionCB->setChecked(false);
