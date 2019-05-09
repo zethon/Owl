@@ -74,40 +74,40 @@ public:
 	Q_INVOKABLE LuaParserBase(const QString& url, const QString& luaFile);
 	virtual ~LuaParserBase();
 
-        virtual QString getName() const override;
-        virtual QString getPrettyName() const override;
+    virtual QString getName() const override;
+    virtual QString getPrettyName() const override;
 
-        virtual QString getItemUrl(ForumPtr forum) override;
-        virtual QString getItemUrl(ThreadPtr thread) override;
-        virtual QString getItemUrl(PostPtr post) override;
+    virtual QString getItemUrl(ForumPtr forum) override;
+    virtual QString getItemUrl(ThreadPtr thread) override;
+    virtual QString getItemUrl(PostPtr post) override;
 
-        virtual QString getPostQuote(PostPtr post) override;
+    virtual QString getPostQuote(PostPtr post) override;
 
     virtual ParserBasePtr clone(ParserBasePtr other = ParserBasePtr()) override;
 
     virtual QString getLastRequestUrl() override;
 
 protected:
-	/* ParserBase implementation */
-        virtual QVariant doLogin(const LoginInfo&) override;
-        virtual QVariant doLogout() override;
-	
-        virtual QVariant doGetBoardwareInfo() override;
-        virtual QVariant doTestParser(const QString&) override;
+    /* ParserBase implementation */
+    virtual QVariant doLogin(const LoginInfo&) override;
+    virtual QVariant doLogout() override;
 
-        virtual QVariant doGetForumList(const QString& forumId) override;
-        virtual QVariant doThreadList(ForumPtr forumInfo, int options) override;
-	
-	//virtual QVariant doPostList(ThreadPtr threadInfo, int options);
-	virtual QVariant doGetPostList(ThreadPtr t, PostListOptions listOption, int webOptions) override;
+    virtual QVariant doGetBoardwareInfo() override;
+    virtual QVariant doTestParser(const QString&) override;
 
-        virtual QVariant doSubmitNewThread(ThreadPtr threadInfo) override;
-        virtual QVariant doSubmitNewPost(PostPtr postInfo) override;
+    virtual QVariant doGetForumList(const QString& forumId) override;
+    virtual QVariant doThreadList(ForumPtr forumInfo, int options) override;
 
-        virtual QVariant doGetUnreadForums() override;
-        virtual QVariant doMarkForumRead(ForumPtr forumInfo) override;
+    //virtual QVariant doPostList(ThreadPtr threadInfo, int options);
+    virtual QVariant doGetPostList(ThreadPtr t, PostListOptions listOption, int webOptions) override;
 
-        virtual QVariant doGetEncryptionSettings() override;
+    virtual QVariant doSubmitNewThread(ThreadPtr threadInfo) override;
+    virtual QVariant doSubmitNewPost(PostPtr postInfo) override;
+
+    virtual QVariant doGetUnreadForums() override;
+    virtual QVariant doMarkForumRead(ForumPtr forumInfo) override;
+
+    virtual QVariant doGetEncryptionSettings() override;
 
 private:
 	void registerFunctions();
