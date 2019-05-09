@@ -5,10 +5,15 @@
 #include <QCoreApplication>
 #include <QSysInfo>
 
+#include <spdlog/common.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/rotating_file_sink.h>
+
 #include "../src/Parsers/BBCodeParser.h"
 #include "../src/Parsers/ParserManager.h"
 #include "../src/Utils/OwlUtils.h"
 #include "../src/Utils/Moment.h"
+#include "../src/Utils/OwlLogger.h"
 
 #include "Core.h"
 #include "rang.hpp"
@@ -131,6 +136,9 @@ ConsoleApp::ConsoleApp(QObject *parent)
         _appOptions.setOrAdd("wwidth", 80);
         _appOptions.setOrAdd("wheight", 25);
     }
+
+    auto logger = owl::rootLogger();
+    logger->set_level(spdlog::level::off);
 }
 
 void ConsoleApp::setCommandfile(const QString &f)
