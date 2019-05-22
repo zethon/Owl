@@ -57,4 +57,84 @@ There is a good deal of information packed onto a single line. To explain the di
 
 ### List Posts 
 
-    Usage: posts <page-number> <per-page> [--ids|-i] 
+    Usage: posts <page-number> <per-page> [--ids|-i]
+
+### Application Settings
+
+Settings can be set either through the command line interface or the JSON file. 
+
+`save [filename]`<br/>
+
+`load [filename]`<br/>
+
+`set <setting> <value>`<br/>
+
+`list`<br/>
+
+### Thread and Post Template
+
+When creating a new thread or post, Owl will generate a template for the user to fill out in the configured text editor. The template contains fields to define the subject, tags and text of the thread or post. The text editor used can be configure (see *Configuring Default Text Editor* below).
+
+Below is the template with some sample content.
+
+```
+# All lines beginning with '#' are comments if they appear above the post 
+# marker ("----"). 
+
+# The text after "Title:" will be the thread or post's title. The entire title
+# must be on the same line. Any whitespace at the beginning or the end of the
+# title is trimmed.
+Title: Leaving for Alaska today!
+
+# Tags can be entered on a single line seperated by a comma. All tags must be on a 
+# single line. Any whitespace at the beginning or end of a tag is trimmed.
+Tags: thursday, alaska, travel
+
+# The "Sticky" setting only applies to new threads and is ignored for posts. The 
+# default value is 'false'. Valid true values are `true|on|yes|1` and valid false
+# values are `false|off|no|0`. If the user attempts to create a sticky thread but
+# does not have the correct permissions the thread may not be created.
+Sticky: false
+
+# The post marker "----" below indicates the beginning of the post. All text below 
+# this marker is considered part of the post. All whitespace, including empty lines, 
+# is preserved.
+----
+Hi everyone! Today is the day I've been waiting for for the past year. The family and I are leaving for Alask! :woohoo:
+
+We will fly into Anchorage where we will spend three days. Then we are driving up to Denali where we will camp for another three days. Then to Fairbanks, then Juneau and then back home!
+
+I will make sure to post pictures when I get back. Have a great week!
+```
+
+This template is very verbose with comments. The comments can be turned off by setting the app-setting `editor.template.verbose` to `false`, which case the template will appear like so:
+
+```
+Title: Leaving for Alaska today!
+Tags: thursday, alaska, travel
+Sticky: false
+----
+Hi everyone! Today is the day I've been waiting for for the past year. The family and I are leaving for Alask! :woohoo:
+
+We will fly into Anchorage where we will spend three days. Then we are driving up to Denali where we will camp for another three days. Then to Fairbanks, then Juneau and then back home!
+
+I will make sure to post pictures when I get back. Have a great week!
+```
+
+```
+Title: 
+Tags: 
+Sticky: false
+----
+
+```
+
+### Configuring Default Text Editor
+
+The default on macOS and Linus is vi. The default on Windows is Notepad.
+
+The command to start vi may look like: `vi +:cal\ cursor(%2,%3) %1`. The arguments are:
+
+`%1` - the temporary filename Owl uses to save and parse the post.
+`%2` - the line number where the cursor should be placed when the editor loads
+`%2` - the column number where the cursor should be placed when the editor loads

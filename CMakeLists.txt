@@ -170,7 +170,7 @@ elseif(BUILD_TEST)
 endif()
 
 if (BUILD_CONSOLE)
-    add_subdirectory(OwlConsole)
+    add_subdirectory(console)
 endif(BUILD_CONSOLE)
 
 if (BUILD_TEST)

@@ -3,7 +3,7 @@
 #include <mutex>
 #include <stack>
 #include <QtCore>
-#include <Parsers/Forum.h>
+#include "../src/Parsers/Forum.h"
 #include "Terminal.h"
 
 namespace owl
@@ -48,32 +48,19 @@ private:
     QString _text;
 
 public:
-    TextItem(const QString& text)
-        : _text(text)
-    {
-        // do nothing
-    }
+    TextItem(const QString& text);
+    TextItem(const TextItem& other);
 
-    TextItem(const TextItem& other)
-    {
-        _text = other._text;
-    }
-
-    virtual ~TextItem() = default;
-
-    virtual QString operator()() const override
-    {
-        return _text;
-    }
+    virtual QString operator()() const override;
 };
 
 class ConsoleOutput
 {
-    std::vector<const TextItem> _items;
+    std::vector<TextItem> _items;
 
 public:
-    using iterator = std::vector<const TextItem>::iterator;
-    using const_iterator = std::vector<const TextItem>::const_iterator;
+    using iterator = std::vector<TextItem>::iterator;
+    using const_iterator = std::vector<TextItem>::const_iterator;
 
     iterator begin()
     {
@@ -121,11 +108,11 @@ struct ConsoleCommand
     ConsoleCommand(const QString& list, const QString& help, Command c)
         : helpMsg(help), command(c)
     {
-        for (const QString cmd : list.split(","))
+        for (const QString& cmd : list.split(","))
         {
             commandNames << cmd.trimmed().toLower();
         }
-    };
+    }
 };
 
 struct Location
@@ -206,7 +193,7 @@ public:
             path.clear();
 
             std::for_each(_location.forums.rbegin(), _location.forums.rend(),
-                [&path, this](const Location::Info& info)
+                [&path](const Location::Info& info)
                 {
                     path.append(QStringLiteral("/") + info.second);
                 });

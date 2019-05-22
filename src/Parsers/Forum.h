@@ -102,7 +102,7 @@ public:
 
     QString getId() const { return _boardId; }
 
-	const int getDBId() { return _dbId;; }
+    int getDBId() { return _dbId;; }
 	void setDBId(int var) { _dbId = var; }
 
 	void setTitle(const QString& var) { _title = var; }
@@ -230,7 +230,7 @@ public:
 	Post(const QString& id)
 		: BoardItem(id)
 	{
-	};
+    }
 
 	// default constructor
     Post() : Post(QString()) { }
@@ -274,14 +274,14 @@ class Thread : public BoardItem
 public:
 
 	// default constructor
-	Thread() { };
+    Thread() { }
     
     Thread(const QString& id)
 		: BoardItem(id),
 		  _bSticky(false)
 	{
 		// do nothing
-	};
+    }
 
     virtual ~Thread() = default;
 

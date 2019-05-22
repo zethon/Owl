@@ -1,8 +1,8 @@
 #include <QCoreApplication>
 #include <QCommandLineParser>
+#include "../src/Utils/OwlUtils.h"
 #include "Core.h"
 #include "OwlConsole.h"
-#include <Utils/OwlUtils.h>
 
 std::unique_ptr<QCommandLineParser> createCommandLineParser()
 {

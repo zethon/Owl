@@ -45,8 +45,8 @@ EditBoardDlg::EditBoardDlg(BoardPtr board, QWidget* parent)
 	if (image.width() != 32 || image.height() != 32)
 	{
 		// calculate the scaling factor based on wanting a 32x32 image
-		qreal iXScale = (qreal)32 / (qreal)image.width();
-		qreal iYScale = (qreal)32 / (qreal)image.height();
+        qreal iXScale = qreal(32) / image.width();
+        qreal iYScale = qreal(32) / image.height();
 
 		QTransform transform;
 		transform.scale(iXScale, iYScale);
@@ -204,7 +204,7 @@ void EditBoardDlg::renderPluginSettings()
     catch (const owl::Exception&)
     {
         bo->add(Board::Options::USE_ENCRYPTION, (bool)false);
-        bo->add(Board::Options::ENCSEED, (QString)"");
+        bo->add(Board::Options::ENCSEED, "");
         bo->add(Board::Options::ENCKEY, (QString)"");
 
         useEncryptionCB->setChecked(false);

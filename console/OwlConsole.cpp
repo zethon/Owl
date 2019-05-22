@@ -1,9 +1,20 @@
+#ifndef _WINDOWS
 #include <sys/ioctl.h>
+#endif
 
 #include <QCoreApplication>
-#include <Parsers/BBCodeParser.h>
-#include <Parsers/ParserManager.h>
-#include <Utils/OwlUtils.h>
+#include <QSysInfo>
+
+#include <spdlog/common.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/rotating_file_sink.h>
+
+#include "../src/Parsers/BBCodeParser.h"
+#include "../src/Parsers/ParserManager.h"
+#include "../src/Utils/OwlUtils.h"
+#include "../src/Utils/Moment.h"
+#include "../src/Utils/OwlLogger.h"
+
 #include "Core.h"
 #include "rang.hpp"
 #include "OwlConsole.h"
@@ -27,6 +38,11 @@ void OUTPUTLN(const QString& text)
 void OUTPUTLN(const char* text)
 {
     OUTPUTLN(QString::fromLatin1(text));
+}
+
+void OUTPUTLN(const std::string& text)
+{
+    OUTPUTLN(QString::fromStdString(text));
 }
 
 void OUTPUTLN(const ConsoleOutput& output)
@@ -87,7 +103,7 @@ void ERROR(const QString& text)
     ERROR(text.toStdString());
 }
 
-void ConsoleApp::doHelp(const QString& cmdLn)
+void ConsoleApp::doHelp(const QString&)
 {
     OUTPUTLN("Owl Console Help");
     OUTPUTLN("");
@@ -120,6 +136,9 @@ ConsoleApp::ConsoleApp(QObject *parent)
         _appOptions.setOrAdd("wwidth", 80);
         _appOptions.setOrAdd("wheight", 25);
     }
+
+    auto logger = owl::rootLogger();
+    logger->set_level(spdlog::level::off);
 }
 
 void ConsoleApp::setCommandfile(const QString &f)
@@ -151,15 +170,7 @@ void ConsoleApp::doLogin(const QString& options)
     const auto posArgs = p.positionalArguments();
     if (posArgs.size() < 1 || posArgs.at(0).isEmpty())
     {
-        std::cout << "Usage: login {boardurl} [username] [password]" << std::endl;
-        std::cout << "Connect to a message board" << std::endl << std::endl;
-        std::cout << "boardurl - The url the message board" << std::endl;
-        std::cout << "username - (optional) Username to use for the connection. If left black, you will" << std::endl;
-        std::cout << "           be prompted." << std::endl;
-        std::cout << "password - (optional) Password for the username. If left blank then you will be" << std::endl;
-        std::cout << "           prompted." << std::endl;
-        std::cout << std::endl;
-        std::cout << "Example: login www.amb.la BarakObama passW0rD" << std::endl;
+        std::cout << p.helpText().toStdString() << std::endl;
         return;
     }
 
@@ -220,7 +231,7 @@ void ConsoleApp::doLogin(const QString& options)
                     parser.reset();
                 }
             }
-            catch (const owl::OwlException& ex)
+            catch (const owl::Exception& ex)
             {
                 qDebug() << "Parser " << name << " failed: " << ex.details();
                 parser.reset();
@@ -266,7 +277,7 @@ void ConsoleApp::doLogin(const QString& options)
                     break;
                 }
             }
-            catch (const owl::OwlException& ex)
+            catch (const owl::Exception& ex)
             {
                 qDebug() << "Parser " << name << " failed: " << ex.details();
                 parser.reset();
@@ -309,7 +320,7 @@ void ConsoleApp::doLogin(const QString& options)
                 ERROR("Could not sign into " + boardUrl);
             }
         }
-        catch (const owl::OwlException& ex)
+        catch (const owl::Exception& ex)
         {
             std::cerr << "Login failed: " << ex.details().toStdString() << std::endl;
         }
@@ -324,11 +335,11 @@ void ConsoleApp::doLogin(const QString& options)
     }
     else
     {
-        ERROR("Could not find a paser for board '" + boardUrl + "'");
+        ERROR("Could not find a parser for board '" + boardUrl + "'");
     }
 }
 
-void ConsoleApp::doParsers(const QString &cmdLn)
+void ConsoleApp::doParsers(const QString&)
 {
     std::cout << "Parsers folder:" << _luaFolder.toStdString() << std::endl << std::endl;
     for (const auto& p : ParserManager::instance()->getParsers())
@@ -476,7 +487,7 @@ void ConsoleApp::listThreads(const uint pagenumber, const uint perpage, bool bSh
         auto idx = 0u;
         owl::Moment moment;
 
-        for (const owl::ThreadPtr t : threads)
+        for (const owl::ThreadPtr& t : threads)
         {
             ++idx;
 
@@ -567,7 +578,7 @@ void ConsoleApp::doListPosts(const QString& options)
             temp = p.positionalArguments()[1].toUInt(&bOk);
             if (bOk) // hard perpage limit of 50
             {
-                perpage = std::min(temp, (uint)50);
+                perpage = std::min(temp, static_cast<uint>(50));
             }
         }
     }
@@ -585,7 +596,7 @@ void ConsoleApp::listPosts(const uint pagenumber, const uint perpage, bool bShow
     thread->setPerPage(perpage);
 
     // allow 40 characters for other text with a min of 40
-    const auto textwidth = std::max((uint)_appOptions.getInt("wwidth") - 40, 40u);
+    const auto textwidth = std::max((uint)_appOptions.get<std::uint32_t>("width") - 40, 40u);
     PostList posts = _parser->getPosts(thread, ParserBase::PostListOptions::FIRST_POST);
     if (posts.size() > 0)
     {
@@ -595,7 +606,7 @@ void ConsoleApp::listPosts(const uint pagenumber, const uint perpage, bool bShow
         owl::Moment moment;
         auto idx = ((thread->getPageNumber()-1) * thread->getPerPage()) + 1;
 
-        for (const owl::PostPtr p : posts)
+        for (const owl::PostPtr& p : posts)
         {
             moment.setDateTime(p->getDateTime());
 
@@ -772,7 +783,8 @@ void ConsoleApp::initCommands()
         ConsoleCommand("login", "Login to a remote board", std::bind(&ConsoleApp::doLogin, this, std::placeholders::_1)),
         ConsoleCommand("parsers", "List parsers",std::bind(&ConsoleApp::doParsers, this, std::placeholders::_1)),
         ConsoleCommand("quit,exit,q", "", [this](const QString&) { _bDoneApp = true; }),
-        ConsoleCommand("clear,cls", "", [this](const QString&)
+        ConsoleCommand("clear,cls", "",
+            [](const QString&)
             {
                 OUTPUT("\033[2J\033[1;1H");
             }),
@@ -1041,7 +1053,7 @@ void ConsoleApp::run()
             _terminal.run();
         }
     }
-    catch (const owl::OwlException& ex)
+    catch (const owl::Exception& ex)
     {
         std::cerr << "Owl exception: " << ex.details().toStdString() << std::endl;
     }
@@ -1061,13 +1073,12 @@ void ConsoleApp::doSysInfo(const QString &cmdLn)
 {
     Q_UNUSED(cmdLn);
 
-    const auto& os = getOSString();
     const QString consoleVer { OWLCONSOLE_VERSION };
     const QString buildDateTime { OWLCONSOLE_BUILDTIMESTAMP };
 
     OUTPUTLN("Owl Console version: " + consoleVer);
     OUTPUTLN("Build date: " + buildDateTime);
-    OUTPUTLN("Operating System: " + os);
+    OUTPUTLN("Operating System: " + QSysInfo::prettyProductName().toStdString());
 }
 
 QString shortText(const QString& original, const uint maxwidth)
@@ -1078,7 +1089,7 @@ QString shortText(const QString& original, const uint maxwidth)
     QString retval = bbparser.toPlainText(original);
     retval = retval.replace(whitespace, QString());
 
-    if (retval.size() > (int)maxwidth)
+    if (retval.size() > static_cast<int>(maxwidth))
     {
         // TODO: would be nice if the '25' could be determined by the console's width
         retval = retval.left(maxwidth-3) + QStringLiteral("...");
@@ -1111,6 +1122,22 @@ QString printableDateTime(const QDateTime &dt, bool bShowTime)
     }
 
     return retval.toLower();
+}
+
+TextItem::TextItem(const QString &text)
+    : _text(text)
+{
+    // do nothing
+}
+
+TextItem::TextItem(const TextItem &other)
+{
+    _text = other._text;
+}
+
+QString TextItem::operator()() const
+{
+    return _text;
 }
 
 } // namespace
