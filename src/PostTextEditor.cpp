@@ -332,7 +332,7 @@ void SpellCheckEdit::showContextMenu(const QPoint& pos)
 
             const auto addToDict = newMenu->addAction(tr("Add to Dictionary"));
             QObject::connect(addToDict, &QAction::triggered,
-                [this, selectedText, cursor, cursorPosition]() mutable
+                [selectedText, cursor, cursorPosition]() mutable
                 {
                     SpellChecker::instance()->addToUserWordlist(selectedText);
 

@@ -201,19 +201,20 @@ void PostListWebView::contextMenuEvent(QContextMenuEvent *e)
         const QString filename = QFileDialog::getSaveFileName();
         if (!filename.isNull())
         {
-            page()->toHtml([this,filename](const QString& html)
-            {
-                if (QFile::exists(filename))
+            page()->toHtml(
+                [&filename](const QString& html)
                 {
-                    QFile::remove(filename);
-                }
+                    if (QFile::exists(filename))
+                    {
+                        QFile::remove(filename);
+                    }
 
-                QFile outfile(filename);
-                outfile.open(QIODevice::WriteOnly | QIODevice::Text);
-                QTextStream stream(&outfile);
-                stream << html;
-                outfile.close();
-            });
+                    QFile outfile(filename);
+                    outfile.open(QIODevice::WriteOnly | QIODevice::Text);
+                    QTextStream stream(&outfile);
+                    stream << html;
+                    outfile.close();
+                });
         }
     };
 
@@ -221,7 +222,7 @@ void PostListWebView::contextMenuEvent(QContextMenuEvent *e)
     QAction* copySrc = menu.addAction("Copy Source");
     QObject::connect(copySrc, &QAction::triggered, [this]()
     {
-        this->page()->toHtml([this](const QString& html) mutable
+        this->page()->toHtml([](const QString& html) mutable
         {
             qApp->clipboard()->setText(html);
         });
