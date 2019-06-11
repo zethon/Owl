@@ -1,5 +1,5 @@
 // Owl - www.owlclient.com
-// Copyright (c) 2012-2018, Adalid Claure <aclaure@gmail.com>
+// Copyright (c) 2012-2019, Adalid Claure <aclaure@gmail.com>
 
 #include <Parsers/ParserManager.h>
 #include "ConfiguringBoardDlg.h"

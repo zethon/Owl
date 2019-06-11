@@ -1,5 +1,5 @@
 // Owl - www.owlclient.com
-// Copyright (c) 2012-2018, Adalid Claure <aclaure@gmail.com>
+// Copyright (c) 2012-2019, Adalid Claure <aclaure@gmail.com>
 
 #include <QFile>
 #include <QSqlDriver>
@@ -147,7 +147,7 @@ void BoardManager::loadBoards()
 		qSort(_boardList.begin(), _boardList.end(), &BoardManager::boardDisplayOrderLessThan);
 	}
 
-    _logger->info("{} board(s) loaded", (int)getBoardCount());
+    _logger->info("{} board(s) loaded", getBoardCount());
 }
 
 QSqlDatabase BoardManager::initializeDatabase(const QString& filename)
