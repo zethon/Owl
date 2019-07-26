@@ -238,7 +238,7 @@ private Q_SLOTS:
 	
 	// handlers
 	void boardwareInfoEvent(BoardPtr, StringMap);
-	void loginEvent(BoardPtr, StringMap);
+    void loginEvent(BoardPtr, const StringMap&);
 	void getUnreadForumsEvent(BoardPtr, ForumList);
 
 	void getForumHandler(BoardPtr, ForumPtr);

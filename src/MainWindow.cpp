@@ -469,7 +469,7 @@ void MainWindow::onForumStructureChanged(BoardPtr b)
     }
 }
 
-void MainWindow::loginEvent(BoardPtr b, StringMap sp)
+void MainWindow::loginEvent(BoardPtr b, const StringMap& sp)
 {
     auto doc = b->getBoardItemDocument();
     QString msg;
