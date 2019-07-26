@@ -1,6 +1,7 @@
 // Owl - www.owlclient.com
 // Copyright (c) 2012-2019, Adalid Claure <aclaure@gmail.com>
 
+#include <spdlog/sinks/stdout_color_sinks.h>
 #include "OwlLogger.h"
 
 namespace owl
