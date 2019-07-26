@@ -785,7 +785,7 @@ void PreferencesDlg::renderPostPaneSettings()
         fontSizes.append(fixedSize);
     }
 
-    qSort(fontSizes.begin(), fontSizes.end());
+    std::sort(fontSizes.begin(), fontSizes.end());
 
     for (int size : fontSizes)
     {
