@@ -22,7 +22,7 @@ class BoardsModel : public QStandardItemModel
 	Q_OBJECT
 	
 public:
-	BoardsModel(QWidget* parent = 0);
+    BoardsModel(QWidget* parent = nullptr);
 	virtual ~BoardsModel();
 
     const static uint ITEMHEIGHT;

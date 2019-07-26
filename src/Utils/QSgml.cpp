@@ -568,7 +568,7 @@ QSgml::QSgml(void)
    // set EndTag as only Child of DocTag
    DocTag->Children.append(EndTag);
    // Set Path to Default-Path
-   dirPath=QDir::homePath();
+   dirPath.setPath(QDir::homePath());
 
    // should be done externaly later
    tagExeption.append("script");
@@ -584,7 +584,7 @@ QSgml::QSgml(const QString SgmlString)
    // set EndTag as only Child of DocTag
    DocTag->Children.append(EndTag);
    // Set Path to Default-Path
-   dirPath=QDir::homePath();
+   dirPath.setPath(QDir::homePath());
 
    // should be done externaly later
    tagExeption.append("script");

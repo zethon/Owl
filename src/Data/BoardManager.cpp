@@ -144,7 +144,7 @@ void BoardManager::loadBoards()
                 b->getName().toStdString(), b->getLastUpdate().toString().toStdString());
 		}
 
-		qSort(_boardList.begin(), _boardList.end(), &BoardManager::boardDisplayOrderLessThan);
+        std::sort(_boardList.begin(), _boardList.end(), &BoardManager::boardDisplayOrderLessThan);
 	}
 
     _logger->info("{} board(s) loaded", getBoardCount());
@@ -331,7 +331,7 @@ void BoardManager::reload()
 void BoardManager::sort()
 {
     QMutexLocker locker(&_mutex);
-    qSort(_boardList.begin(), _boardList.end(), &BoardManager::boardDisplayOrderLessThan);
+    std::sort(_boardList.begin(), _boardList.end(), &BoardManager::boardDisplayOrderLessThan);
 }
     
 void BoardManager::createForumVars(ForumPtr forum)
@@ -460,7 +460,7 @@ bool BoardManager::createBoard(BoardPtr board)
 		_boardList.push_back(board);
         Q_EMIT onEndAddBoard();
 
-		qSort(_boardList.begin(), _boardList.end(), &BoardManager::boardDisplayOrderLessThan);
+        std::sort(_boardList.begin(), _boardList.end(), &BoardManager::boardDisplayOrderLessThan);
 
 		bRet = true;
 	}
