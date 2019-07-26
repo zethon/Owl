@@ -33,7 +33,7 @@ QSqlDatabase BoardManager::getDatabase(bool doOpen) const
     // connection name. This solution was conceived at:
     // https://github.com/mumble-voip/mumble/pull/3419/files
     const QString thread_address = QLatin1String("0x") 
-        + QString::number((quintptr)QThread::currentThreadId(), 16);
+        + QString::number(reinterpret_cast<quintptr>(QThread::currentThreadId()), 16);
 
     QSqlDatabase db = QSqlDatabase::database(thread_address);
     if (!db.isOpen() || !db.isValid())
@@ -373,7 +373,7 @@ void BoardManager::createForumEntries( ForumPtr forum, BoardPtr board )
 	query.bindValue(":forumId", forum->getId());
 	
 	QString rootId = board->getOptions()->getText("rootId");
-	query.bindValue(":parentId", forum->getParent() != NULL ? forum->getParent()->getId() : rootId);
+    query.bindValue(":parentId", forum->getParent() != nullptr ? forum->getParent()->getId() : rootId);
 	
 	query.bindValue(":forumName", forum->getName());
 	query.bindValue(":forumType", forum->getForumTypeString());
@@ -452,7 +452,7 @@ bool BoardManager::createBoard(BoardPtr board)
 	if (query.exec())
 	{
 		db.commit();
-		board->setDBId(query.lastInsertId().toInt());
+        board->setDBId(static_cast<std::uint32_t>(query.lastInsertId().toInt()));
 		
         // TODO: we probably want to Q_EMIT the index of the new board in the
         // sorted list, but for now this works
@@ -556,9 +556,9 @@ void BoardManager::retrieveSubForumList(BoardPtr board, ForumPtr forum, bool bDe
 		while (query.next())
 		{
 			ForumPtr newForum(new Forum(query.value(forumId).toString()));
-			newForum->setDBId(query.value(id).toUInt());
+            newForum->setDBId(static_cast<std::int32_t>(query.value(id).toUInt()));
 			newForum->setName(query.value(forumName).toString());
-			newForum->setDisplayOrder(query.value(forumOrder).toUInt());
+            newForum->setDisplayOrder(static_cast<std::int32_t>(query.value(forumOrder).toUInt()));
 
 			forum->addChild(newForum);
 			newForum->setBoard(board);
@@ -755,7 +755,7 @@ bool BoardManager::deleteBoard(BoardPtr board)
 				auto bDO = b->getOptions()->get<std::uint32_t>("displayOrder");
 				if (bDO > displayOrder)
 				{
-					b->getOptions()->setOrAdd("displayOrder", (int)(bDO - 1));
+                    b->getOptions()->setOrAdd("displayOrder", static_cast<std::int32_t>(bDO - 1));
 					updateBoardOptions(b, false);
 				}
 			}
@@ -839,7 +839,7 @@ BoardPtr BoardManager::boardByItem(QStandardItem* item) const
 
 BoardPtr BoardManager::boardByIndex(std::size_t index) const
 {
-    return _boardList.at(static_cast<int>(index));
+    return _boardList.at(static_cast<std::size_t>(index));
 }
 
 BoardManagerPtr BoardManager::_instance;
