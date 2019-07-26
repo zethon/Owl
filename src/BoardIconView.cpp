@@ -215,7 +215,7 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
             QPen pen(QBrush(QColor(DEFAULT_SELECTED)), 6);
             painter->setPen(pen);
             painter->setRenderHint(QPainter::Antialiasing, true);
-            painter->drawRoundRect(selectRect);
+            painter->drawRoundedRect(selectRect, 10.0, 10.0);
         }
     }
     else
@@ -233,7 +233,7 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
         QPen pen(QBrush(QColor(DEFAULT_HOVER)), 4);
         painter->setPen(pen);
         painter->setRenderHint(QPainter::Antialiasing, true);
-        painter->drawRoundRect(iconRect);
+        painter->drawRoundedRect(iconRect, 10.0, 10.0);
     }
 
     painter->restore();
