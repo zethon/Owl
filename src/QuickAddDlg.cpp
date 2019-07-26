@@ -38,7 +38,7 @@ QuickAddDlg::QuickAddDlg(QWidget* parent)
 
     auto parserList = PARSERMGR->getParsers();
     auto keyList = parserList.keys();
-    qSort(keyList);
+    std::sort(keyList.begin(), keyList.end());
 
     for (const auto& k : keyList)
     {

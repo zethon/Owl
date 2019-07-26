@@ -402,7 +402,7 @@ void PreferencesDlg::renderParserSettings()
     QHash<QString, ParserInfo> parsers = PARSERMGR->getParsers();
 
     auto keys = PARSERMGR->getParsers().keys();
-    qSort(keys.begin(), keys.end(),[] (QString k1, QString k2) { return k2 > k1; });
+    std::sort(keys.begin(), keys.end(),[] (QString k1, QString k2) { return k2 > k1; });
 
     for (auto& k : keys)
     {
@@ -785,7 +785,7 @@ void PreferencesDlg::renderPostPaneSettings()
         fontSizes.append(fixedSize);
     }
 
-    qSort(fontSizes);
+    qSort(fontSizes.begin(), fontSizes.end());
 
     for (int size : fontSizes)
     {
