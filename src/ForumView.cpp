@@ -333,13 +333,16 @@ void ForumView::doBoardClicked(const owl::BoardWeakPtr boardWeakPtr)
     {
         _rootCache.remove(currentBoard->hash());
         ForumPtr root = currentBoard->getRootStructure(false);
-        
         model = new ForumTreeModel{ root };
 
-        QDateTime expiry{ QDateTime::currentDateTime() };
-        expiry = expiry.addSecs(60 * 10);
-        CacheEntry* entry = new CacheEntry(expiry, model);
-        _rootCache.insert(currentBoard->hash(), entry);
+        // only add the model to the cache if there's something in it
+        if (root->getForums().size() > 0 || root->getThreads().size() > 0)
+        {
+            QDateTime expiry{ QDateTime::currentDateTime() };
+            expiry = expiry.addSecs(60 * 10);
+            CacheEntry* entry = new CacheEntry(expiry, model);
+            _rootCache.insert(currentBoard->hash(), entry);
+        }
     }
 
     Q_ASSERT(model);
