@@ -255,9 +255,9 @@ QVariant Tapatalk4x::doGetForumList(const QString& forumId)
 		searchId = _rootId;
 	}
 
-	if (_forumMap.contains(forumId))
+    if (_forumMap.contains(searchId))
 	{
-		ForumPtr f = _forumMap[forumId];
+        ForumPtr f = _forumMap[searchId];
 
         const auto& children = f->getChildren();
         for (const BoardItemPtr& bi : children)
