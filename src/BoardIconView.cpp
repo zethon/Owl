@@ -149,7 +149,7 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
         QImage boardImg = pixmap.toImage();
 
         // slightly darken image if it's not selected
-        if (!(option.state & QStyle::State_Selected))
+        if (boardData->getStatus() != BoardStatus::ONLINE)
         {
             QImage *tmpImage = &boardImg;
             QPainter p(tmpImage);
@@ -166,56 +166,68 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
             p.end();
         }
 
-        switch (boardData->getStatus())
-        {
-            case BoardStatus::ONLINE:
-            {
-                if (boardData->hasUnread()
-                    && !((option.state & QStyle::State_Selected)))
-                {
-                    QPoint circleCenter = iconCellRect.center();
-                    circleCenter.setX(5);
-
-                    QPainterPath path;
-                    path.addEllipse(circleCenter, 5, 5);
-
-                    QPen pen(QBrush(QColor(Qt::transparent)), 0);
-                    painter->setPen(pen);
-                    painter->setRenderHint(QPainter::Antialiasing, true);
-                    painter->fillPath(path, QColor { DEFAULT_UNREAD_INDICATOR });
-                    painter->drawPath(path);
-                }
-
-                painter->drawImage(iconRect, boardImg);
-                break;
-            }
-            case BoardStatus::OFFLINE:
-            {
-                painter->drawImage(iconRect, boardImg);
-                break;
-            }
-            case BoardStatus::ERR:
-            {
-                static const QImage errorImage { ":/icons/error_32.png" };
-                QImage tempImage = overlayImages(boardImg.convertToFormat(QImage::Format_Grayscale8), errorImage);
-                painter->drawImage(iconRect, tempImage);
-                break;
-            }
-        }
-
         if (option.state & QStyle::State_Selected)
         {
-            auto padding = (iconCellRect.height() - iconRect.height()) / 2;
-            padding += 4;
-
-            QRect selectRect { iconCellRect };
-            selectRect.moveRight(selectRect.left() + 1);
-            selectRect.adjust(0, padding + 5, 0, -padding);
-
-            QPen pen(QBrush(QColor(DEFAULT_SELECTED)), 6);
+            QPen pen(QBrush(QColor(DEFAULT_SELECTED)), 3.25);
             painter->setPen(pen);
             painter->setRenderHint(QPainter::Antialiasing, true);
-            painter->drawRoundedRect(selectRect, 10.0, 10.0);
+
+            QRect tempRect{ iconRect };
+            tempRect.adjust(-5,-5,5,5);
+            painter->drawRoundedRect(tempRect, 10.0, 10.0);
+        }
+
+        {
+            constexpr std::int32_t cirlceSize = 6;
+            constexpr std::int32_t circleRadius = cirlceSize / 2;
+
+            switch (boardData->getStatus())
+            {
+                case BoardStatus::ONLINE:
+                {
+                    const QColor circleColor = boardData->hasUnread()
+                            ? QColor{INDICATOR_UNREAD} : QColor{INDICATOR_LOGGED_IN};
+
+                    painter->drawImage(iconRect, boardImg);
+                    QPoint center = iconRect.center();
+                    center.setX(iconRect.right() - circleRadius);
+                    center.setY(iconRect.top() + circleRadius);
+
+                    QPainterPath path;
+                    path.addEllipse(center, cirlceSize, cirlceSize);
+
+                    QPen pen(QBrush(QColor(circleColor)), 0);
+                    painter->setPen(pen);
+                    painter->setRenderHint(QPainter::Antialiasing, true);
+                    painter->fillPath(path, QColor{circleColor});
+                    painter->drawPath(path);
+                }
+                break;
+
+                case BoardStatus::OFFLINE:
+                {
+                    painter->drawImage(iconRect, boardImg);
+                }
+                break;
+
+                case BoardStatus::ERR:
+                {
+                    painter->drawImage(iconRect, boardImg);
+                    QPoint center = iconRect.center();
+                    center.setX(iconRect.right() - circleRadius);
+                    center.setY(iconRect.top() + circleRadius);
+
+                    QPainterPath path;
+                    path.addEllipse(center, cirlceSize, cirlceSize);
+
+                    QPen pen(QBrush(QColor(INDICATOR_ERROR)), 0);
+                    painter->setPen(pen);
+                    painter->setRenderHint(QPainter::Antialiasing, true);
+                    painter->fillPath(path, QColor{INDICATOR_ERROR});
+                    painter->drawPath(path);
+                }
+                break;
+            }
         }
     }
     else
@@ -228,11 +240,14 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
         painter->drawPixmap(iconRect, pixmap);
     }
 
-    if (option.state & QStyle::State_MouseOver)
+    if ((option.state & QStyle::State_MouseOver)
+        && !(option.state & QStyle::State_Selected))
     {
-        QPen pen(QBrush(QColor(DEFAULT_HOVER)), 4);
+        QPen pen(QBrush(QColor(DEFAULT_HOVER)), 3.25);
         painter->setPen(pen);
         painter->setRenderHint(QPainter::Antialiasing, true);
+
+        iconRect.adjust(-5,-5,5,5);
         painter->drawRoundedRect(iconRect, 10.0, 10.0);
     }
 
