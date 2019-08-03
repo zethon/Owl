@@ -27,6 +27,14 @@
 #define LISTICONWIDTH         70
 #define LISTICONHEIGHT        64
 
+#ifdef Q_OS_WINDOWS
+    #define TOP_PADDING     20
+#elif defined(Q_OS_MAC)
+    #define TOP_PADDING     20
+#else
+    #define TOP_PADDING     5
+#endif
+
 namespace owl
 {
 
@@ -289,7 +297,6 @@ QModelIndex BoardIconModel::index(int row, int column, const QModelIndex& parent
     Q_ASSERT(!parent.isValid());
     Q_ASSERT(column == 0);
 
-
     std::size_t trow = static_cast<std::size_t>(row);
     if (trow < _boardManager->getBoardCount())
     {
@@ -366,7 +373,7 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
     layout->setSpacing(0);
     layout->setMargin(0);
 
-    layout->addSpacing(20);
+    layout->addSpacing(TOP_PADDING);
     layout->addWidget(_listView);
 
     setLayout(layout);
@@ -393,7 +400,10 @@ void BoardIconView::initListView()
     _listView->setModel(new owl::BoardIconModel(this));
 
     QObject::connect(_listView, &QWidget::customContextMenuRequested,
-        [this](const QPoint &pos) { this->doContextMenu(pos); });
+        [this](const QPoint &pos)
+        {
+            this->doContextMenu(pos);
+        });
 
     QObject::connect(_listView, &QAbstractItemView::clicked,
         [this](const QModelIndex& index)
