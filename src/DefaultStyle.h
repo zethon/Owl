@@ -7,4 +7,4 @@
 
 #define INDICATOR_ERROR             "#FF0000"
 #define INDICATOR_LOGGED_IN         "#ADFF2F"
-#define INDICATOR_UNREAD            "#FFFF33"
+#define INDICATOR_UNREAD            "#ADFF2F"

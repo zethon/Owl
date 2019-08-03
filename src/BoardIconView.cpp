@@ -185,57 +185,55 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
             painter->drawRoundedRect(tempRect, 10.0, 10.0);
         }
 
+        constexpr std::int32_t cirlceSize = 6;
+        constexpr std::int32_t circleRadius = cirlceSize / 2;
+
+        switch (boardData->getStatus())
         {
-            constexpr std::int32_t cirlceSize = 6;
-            constexpr std::int32_t circleRadius = cirlceSize / 2;
-
-            switch (boardData->getStatus())
+            case BoardStatus::ONLINE:
             {
-                case BoardStatus::ONLINE:
-                {
-                    const QColor circleColor = boardData->hasUnread()
-                            ? QColor{INDICATOR_UNREAD} : QColor{INDICATOR_LOGGED_IN};
+                const QColor circleColor = boardData->hasUnread()
+                        ? QColor{INDICATOR_UNREAD} : QColor{INDICATOR_LOGGED_IN};
 
-                    painter->drawImage(iconRect, boardImg);
-                    QPoint center = iconRect.center();
-                    center.setX(iconRect.right() - circleRadius);
-                    center.setY(iconRect.top() + circleRadius);
+                painter->drawImage(iconRect, boardImg);
+                QPoint center = iconRect.center();
+                center.setX(iconRect.right() - circleRadius);
+                center.setY(iconRect.top() + circleRadius);
 
-                    QPainterPath path;
-                    path.addEllipse(center, cirlceSize, cirlceSize);
+                QPainterPath path;
+                path.addEllipse(center, cirlceSize, cirlceSize);
 
-                    QPen pen(QBrush(QColor(circleColor)), 0);
-                    painter->setPen(pen);
-                    painter->setRenderHint(QPainter::Antialiasing, true);
-                    painter->fillPath(path, QColor{circleColor});
-                    painter->drawPath(path);
-                }
-                break;
-
-                case BoardStatus::OFFLINE:
-                {
-                    painter->drawImage(iconRect, boardImg);
-                }
-                break;
-
-                case BoardStatus::ERR:
-                {
-                    painter->drawImage(iconRect, boardImg);
-                    QPoint center = iconRect.center();
-                    center.setX(iconRect.right() - circleRadius);
-                    center.setY(iconRect.top() + circleRadius);
-
-                    QPainterPath path;
-                    path.addEllipse(center, cirlceSize, cirlceSize);
-
-                    QPen pen(QBrush(QColor(INDICATOR_ERROR)), 0);
-                    painter->setPen(pen);
-                    painter->setRenderHint(QPainter::Antialiasing, true);
-                    painter->fillPath(path, QColor{INDICATOR_ERROR});
-                    painter->drawPath(path);
-                }
-                break;
+                QPen pen(QBrush(QColor(Qt::black)), 2);
+                painter->setPen(pen);
+                painter->setRenderHint(QPainter::Antialiasing, true);
+                painter->fillPath(path, QColor{circleColor});
+                painter->drawPath(path);
             }
+            break;
+
+            case BoardStatus::OFFLINE:
+            {
+                painter->drawImage(iconRect, boardImg);
+            }
+            break;
+
+            case BoardStatus::ERR:
+            {
+                painter->drawImage(iconRect, boardImg);
+                QPoint center = iconRect.center();
+                center.setX(iconRect.right() - circleRadius);
+                center.setY(iconRect.top() + circleRadius);
+
+                QPainterPath path;
+                path.addEllipse(center, cirlceSize, cirlceSize);
+
+                QPen pen(QBrush(QColor(Qt::black)), 2);
+                painter->setPen(pen);
+                painter->setRenderHint(QPainter::Antialiasing, true);
+                painter->fillPath(path, QColor{INDICATOR_ERROR});
+                painter->drawPath(path);
+            }
+            break;
         }
     }
     else
