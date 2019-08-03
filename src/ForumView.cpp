@@ -263,6 +263,10 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     _boardLabel->setFont(font);
     _boardLabel->setStyleSheet("QLabel { color : white; }");
 
+    QHBoxLayout* boardNameLayout = new QHBoxLayout();
+    boardNameLayout->addSpacing(5);
+    boardNameLayout->addWidget(_boardLabel);
+
     QHBoxLayout* userLayout = new QHBoxLayout();
     _userLabel = new QLabel(this);
     _userLabel->setMaximumHeight(64);
@@ -282,7 +286,7 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     layout->setSpacing(0);
     layout->setMargin(0);
     layout->addSpacing(TOP_PADDING);
-    layout->addWidget(_boardLabel);
+    layout->addLayout(boardNameLayout);
     layout->addLayout(userLayout);
     layout->addItem(new QSpacerItem(0,15));
     layout->addWidget(_listView);

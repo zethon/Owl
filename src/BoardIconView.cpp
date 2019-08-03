@@ -191,23 +191,27 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
             painter->drawRoundedRect(tempRect, 10.0, 10.0);
         }
 
-        constexpr std::int32_t cirlceSize = 6;
-        constexpr std::int32_t circleRadius = cirlceSize / 2;
+        painter->drawImage(iconRect, boardImg);
+
+        constexpr std::double_t cirlceSize = 6.75;
+        constexpr std::double_t circleRadius = cirlceSize / 2;
+
+        QPoint circleCenter = iconRect.center();
+        circleCenter.setX(iconRect.right() - static_cast<std::int32_t>(std::floor(circleRadius + 1)));
+        circleCenter.setY(iconRect.top() + static_cast<std::int32_t>(std::floor(circleRadius + 2)));
 
         switch (boardData->getStatus())
         {
+            default:
+            break;
+
             case BoardStatus::ONLINE:
             {
                 const QColor circleColor = boardData->hasUnread()
                         ? QColor{INDICATOR_UNREAD} : QColor{INDICATOR_LOGGED_IN};
 
-                painter->drawImage(iconRect, boardImg);
-                QPoint center = iconRect.center();
-                center.setX(iconRect.right() - circleRadius);
-                center.setY(iconRect.top() + circleRadius);
-
                 QPainterPath path;
-                path.addEllipse(center, cirlceSize, cirlceSize);
+                path.addEllipse(circleCenter, cirlceSize, cirlceSize);
 
                 QPen pen(QBrush(QColor(Qt::black)), 2);
                 painter->setPen(pen);
@@ -217,21 +221,10 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
             }
             break;
 
-            case BoardStatus::OFFLINE:
-            {
-                painter->drawImage(iconRect, boardImg);
-            }
-            break;
-
             case BoardStatus::ERR:
             {
-                painter->drawImage(iconRect, boardImg);
-                QPoint center = iconRect.center();
-                center.setX(iconRect.right() - circleRadius);
-                center.setY(iconRect.top() + circleRadius);
-
                 QPainterPath path;
-                path.addEllipse(center, cirlceSize, cirlceSize);
+                path.addEllipse(circleCenter, cirlceSize, cirlceSize);
 
                 QPen pen(QBrush(QColor(Qt::black)), 2);
                 painter->setPen(pen);
