@@ -15,7 +15,6 @@
 #include "Data/BoardManager.h"
 #include "Utils/Exception.h"
 
-#include "DefaultStyle.h"
 #include "BoardIconView.h"
 
 #define ICONSCALEWIDTH       128
@@ -26,6 +25,13 @@
 
 #define LISTICONWIDTH         70
 #define LISTICONHEIGHT        64
+
+#define DEFAULT_HOVER         "darkgrey"
+#define DEFAULT_SELECTED      "white"
+
+#define INDICATOR_ERROR       "#FF0000"
+#define INDICATOR_LOGGED_IN   "#ADFF2F"
+#define INDICATOR_UNREAD      "#ADFF2F"
 
 #ifdef Q_OS_WINDOWS
     #define TOP_PADDING     20
