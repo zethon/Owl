@@ -59,6 +59,18 @@ QListView::item::selected{}
 QListView::item::hover{}
 )";
 
+constexpr const char* contextMenuStyle = R"(
+QMenu
+{
+    background-color: #FFFFFF;
+}
+QMenu::item::selected
+{
+    background-color: lightgrey;
+    color: #000000;
+}
+)";
+
 QIcon bufferToIcon(const char* buf)
 {
     QByteArray buffer(buf);
@@ -445,6 +457,7 @@ void BoardIconView::doContextMenu(const QPoint &pos)
     {
         BoardPtr boardPtr = boardVar.value<BoardWeakPtr>().lock();
         QMenu* menu = new QMenu(this);
+        menu->setStyleSheet(contextMenuStyle);
 
         if (boardPtr->getStatus() == BoardStatus::OFFLINE)
         {
@@ -458,10 +471,9 @@ void BoardIconView::doContextMenu(const QPoint &pos)
 
             menu->addSeparator();
         }
-
-        if (boardPtr->getStatus() == BoardStatus::ONLINE)
+        else if (boardPtr->getStatus() == BoardStatus::ONLINE)
         {
-            QAction* action = menu->addAction(QIcon(":/icons/markforumread.png"), tr("Mark All Forums Read"));
+            QAction* action = menu->addAction(tr("Mark All Forums Read"));
             action->setToolTip(tr("Mark All Forums Read"));
 #ifdef Q_OS_MACX
             action->setIconVisibleInMenu(false);
@@ -474,8 +486,6 @@ void BoardIconView::doContextMenu(const QPoint &pos)
                 });
         }
 
-        menu->addSeparator();
-
         {
             QAction* action = menu->addAction(tr("Copy Board Address"));
             action->setToolTip(tr("Copy Board Address"));
@@ -487,7 +497,7 @@ void BoardIconView::doContextMenu(const QPoint &pos)
         }
 
         {
-            QAction* action = menu->addAction(QIcon(":/icons/link.png"), tr("Open in Browser"));
+            QAction* action = menu->addAction(tr("Open in Browser"));
             action->setToolTip(tr("Open in Browser"));
 #ifdef Q_OS_MACX
             action->setIconVisibleInMenu(false);
@@ -503,7 +513,7 @@ void BoardIconView::doContextMenu(const QPoint &pos)
         menu->addSeparator();
 
         {
-            QAction* action = menu->addAction(QIcon(":/icons/settings.png"), tr("Settings"));
+            QAction* action = menu->addAction(tr("Settings"));
 #ifdef Q_OS_MACX
             action->setIconVisibleInMenu(false);
 #endif
@@ -516,7 +526,7 @@ void BoardIconView::doContextMenu(const QPoint &pos)
         }
 
         {
-            QAction* action = menu->addAction(QIcon(":/icons/delete.png"), tr("Delete"));
+            QAction* action = menu->addAction(tr("Delete"));
             QObject::connect(action, &QAction::triggered,
                 [this, boardVar]()
                 {

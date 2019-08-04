@@ -15,7 +15,7 @@
     #define TREEFONTSIZE        10
     #define TREEITEMHEIGHT      30
     #define TREECATHEIGHT       50
-    #define TOP_PADDING         20
+    #define TOP_PADDING         10
     #define LEFT_PADDING        2
 #elif defined(Q_OS_MAC)
     #define BOARDNAMEFONT       20
