@@ -15,18 +15,24 @@
     #define TREEFONTSIZE        10
     #define TREEITEMHEIGHT      30
     #define TREECATHEIGHT       50
+    #define TOP_PADDING         10
+    #define LEFT_PADDING        2
 #elif defined(Q_OS_MAC)
-    #define BOARDNAMEFONT       18
-    #define USERNAMEFONT        12
+    #define BOARDNAMEFONT       20
+    #define USERNAMEFONT        15
     #define TREEFONTSIZE        14
     #define TREEITEMHEIGHT      25
     #define TREECATHEIGHT       45
+    #define TOP_PADDING         23
+    #define LEFT_PADDING        6
 #else
     #define BOARDNAMEFONT       14
     #define USERNAMEFONT        11
     #define TREEFONTSIZE        12
     #define TREEITEMHEIGHT      30
     #define TREECATHEIGHT       50
+    #define TOP_PADDING         20
+    #define LEFT_PADDING        2
 #endif
 
 static const char* strListStyleSheet = R"(
@@ -257,6 +263,10 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     _boardLabel->setFont(font);
     _boardLabel->setStyleSheet("QLabel { color : white; }");
 
+    QHBoxLayout* boardNameLayout = new QHBoxLayout();
+    boardNameLayout->addSpacing(5);
+    boardNameLayout->addWidget(_boardLabel);
+
     QHBoxLayout* userLayout = new QHBoxLayout();
     _userLabel = new QLabel(this);
     _userLabel->setMaximumHeight(64);
@@ -275,8 +285,8 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     QVBoxLayout* layout = new QVBoxLayout();
     layout->setSpacing(0);
     layout->setMargin(0);
-    layout->addSpacing(20);
-    layout->addWidget(_boardLabel);
+    layout->addSpacing(TOP_PADDING);
+    layout->addLayout(boardNameLayout);
     layout->addLayout(userLayout);
     layout->addItem(new QSpacerItem(0,15));
     layout->addWidget(_listView);
@@ -284,7 +294,7 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     QHBoxLayout* rootLayout = new QHBoxLayout();
     rootLayout->setSpacing(0);
     rootLayout->setMargin(0);
-    rootLayout->addSpacing(2);
+    rootLayout->addSpacing(LEFT_PADDING);
     rootLayout->addLayout(layout);
 
     setLayout(rootLayout);

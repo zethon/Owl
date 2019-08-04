@@ -15,7 +15,6 @@
 #include "Data/BoardManager.h"
 #include "Utils/Exception.h"
 
-#include "DefaultStyle.h"
 #include "BoardIconView.h"
 
 #define ICONSCALEWIDTH       128
@@ -26,6 +25,21 @@
 
 #define LISTICONWIDTH         70
 #define LISTICONHEIGHT        64
+
+#define DEFAULT_HOVER         "darkgrey"
+#define DEFAULT_SELECTED      "white"
+
+#define INDICATOR_ERROR       "#FF0000"
+#define INDICATOR_LOGGED_IN   "#ADFF2F"
+#define INDICATOR_UNREAD      "#ADFF2F"
+
+#ifdef Q_OS_WINDOWS
+    #define TOP_PADDING     20
+#elif defined(Q_OS_MAC)
+    #define TOP_PADDING     20
+#else
+    #define TOP_PADDING     5
+#endif
 
 namespace owl
 {
@@ -43,6 +57,18 @@ QListView
 
 QListView::item::selected{}
 QListView::item::hover{}
+)";
+
+constexpr const char* contextMenuStyle = R"(
+QMenu
+{
+    background-color: #FFFFFF;
+}
+QMenu::item::selected
+{
+    background-color: lightgrey;
+    color: #000000;
+}
 )";
 
 QIcon bufferToIcon(const char* buf)
@@ -149,7 +175,7 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
         QImage boardImg = pixmap.toImage();
 
         // slightly darken image if it's not selected
-        if (!(option.state & QStyle::State_Selected))
+        if (boardData->getStatus() != BoardStatus::ONLINE)
         {
             QImage *tmpImage = &boardImg;
             QPainter p(tmpImage);
@@ -166,56 +192,59 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
             p.end();
         }
 
-        switch (boardData->getStatus())
-        {
-            case BoardStatus::ONLINE:
-            {
-                if (boardData->hasUnread()
-                    && !((option.state & QStyle::State_Selected)))
-                {
-                    QPoint circleCenter = iconCellRect.center();
-                    circleCenter.setX(5);
-
-                    QPainterPath path;
-                    path.addEllipse(circleCenter, 5, 5);
-
-                    QPen pen(QBrush(QColor(Qt::transparent)), 0);
-                    painter->setPen(pen);
-                    painter->setRenderHint(QPainter::Antialiasing, true);
-                    painter->fillPath(path, QColor { DEFAULT_UNREAD_INDICATOR });
-                    painter->drawPath(path);
-                }
-
-                painter->drawImage(iconRect, boardImg);
-                break;
-            }
-            case BoardStatus::OFFLINE:
-            {
-                painter->drawImage(iconRect, boardImg);
-                break;
-            }
-            case BoardStatus::ERR:
-            {
-                static const QImage errorImage { ":/icons/error_32.png" };
-                QImage tempImage = overlayImages(boardImg.convertToFormat(QImage::Format_Grayscale8), errorImage);
-                painter->drawImage(iconRect, tempImage);
-                break;
-            }
-        }
-
         if (option.state & QStyle::State_Selected)
         {
-            auto padding = (iconCellRect.height() - iconRect.height()) / 2;
-            padding += 4;
-
-            QRect selectRect { iconCellRect };
-            selectRect.moveRight(selectRect.left() + 1);
-            selectRect.adjust(0, padding + 5, 0, -padding);
-
-            QPen pen(QBrush(QColor(DEFAULT_SELECTED)), 6);
+            QPen pen(QBrush(QColor(DEFAULT_SELECTED)), 3.25);
             painter->setPen(pen);
             painter->setRenderHint(QPainter::Antialiasing, true);
-            painter->drawRoundedRect(selectRect, 10.0, 10.0);
+
+            QRect tempRect{ iconRect };
+            tempRect.adjust(-5,-5,5,5);
+            painter->drawRoundedRect(tempRect, 10.0, 10.0);
+        }
+
+        painter->drawImage(iconRect, boardImg);
+
+        constexpr std::double_t cirlceSize = 6.75;
+        constexpr std::double_t circleRadius = cirlceSize / 2;
+
+        QPoint circleCenter = iconRect.center();
+        circleCenter.setX(iconRect.right() - static_cast<std::int32_t>(std::floor(circleRadius + 1)));
+        circleCenter.setY(iconRect.top() + static_cast<std::int32_t>(std::floor(circleRadius + 2)));
+
+        switch (boardData->getStatus())
+        {
+            default:
+            break;
+
+            case BoardStatus::ONLINE:
+            {
+                const QColor circleColor = boardData->hasUnread()
+                        ? QColor{INDICATOR_UNREAD} : QColor{INDICATOR_LOGGED_IN};
+
+                QPainterPath path;
+                path.addEllipse(circleCenter, cirlceSize, cirlceSize);
+
+                QPen pen(QBrush(QColor(Qt::black)), 2);
+                painter->setPen(pen);
+                painter->setRenderHint(QPainter::Antialiasing, true);
+                painter->fillPath(path, QColor{circleColor});
+                painter->drawPath(path);
+            }
+            break;
+
+            case BoardStatus::ERR:
+            {
+                QPainterPath path;
+                path.addEllipse(circleCenter, cirlceSize, cirlceSize);
+
+                QPen pen(QBrush(QColor(Qt::black)), 2);
+                painter->setPen(pen);
+                painter->setRenderHint(QPainter::Antialiasing, true);
+                painter->fillPath(path, QColor{INDICATOR_ERROR});
+                painter->drawPath(path);
+            }
+            break;
         }
     }
     else
@@ -228,11 +257,14 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
         painter->drawPixmap(iconRect, pixmap);
     }
 
-    if (option.state & QStyle::State_MouseOver)
+    if ((option.state & QStyle::State_MouseOver)
+        && !(option.state & QStyle::State_Selected))
     {
-        QPen pen(QBrush(QColor(DEFAULT_HOVER)), 4);
+        QPen pen(QBrush(QColor(DEFAULT_HOVER)), 3.25);
         painter->setPen(pen);
         painter->setRenderHint(QPainter::Antialiasing, true);
+
+        iconRect.adjust(-5,-5,5,5);
         painter->drawRoundedRect(iconRect, 10.0, 10.0);
     }
 
@@ -273,7 +305,6 @@ QModelIndex BoardIconModel::index(int row, int column, const QModelIndex& parent
 
     Q_ASSERT(!parent.isValid());
     Q_ASSERT(column == 0);
-
 
     std::size_t trow = static_cast<std::size_t>(row);
     if (trow < _boardManager->getBoardCount())
@@ -351,7 +382,7 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
     layout->setSpacing(0);
     layout->setMargin(0);
 
-    layout->addSpacing(20);
+    layout->addSpacing(TOP_PADDING);
     layout->addWidget(_listView);
 
     setLayout(layout);
@@ -378,7 +409,10 @@ void BoardIconView::initListView()
     _listView->setModel(new owl::BoardIconModel(this));
 
     QObject::connect(_listView, &QWidget::customContextMenuRequested,
-        [this](const QPoint &pos) { this->doContextMenu(pos); });
+        [this](const QPoint &pos)
+        {
+            this->doContextMenu(pos);
+        });
 
     QObject::connect(_listView, &QAbstractItemView::clicked,
         [this](const QModelIndex& index)
@@ -423,6 +457,7 @@ void BoardIconView::doContextMenu(const QPoint &pos)
     {
         BoardPtr boardPtr = boardVar.value<BoardWeakPtr>().lock();
         QMenu* menu = new QMenu(this);
+        menu->setStyleSheet(contextMenuStyle);
 
         if (boardPtr->getStatus() == BoardStatus::OFFLINE)
         {
@@ -436,10 +471,9 @@ void BoardIconView::doContextMenu(const QPoint &pos)
 
             menu->addSeparator();
         }
-
-        if (boardPtr->getStatus() == BoardStatus::ONLINE)
+        else if (boardPtr->getStatus() == BoardStatus::ONLINE)
         {
-            QAction* action = menu->addAction(QIcon(":/icons/markforumread.png"), tr("Mark All Forums Read"));
+            QAction* action = menu->addAction(tr("Mark All Forums Read"));
             action->setToolTip(tr("Mark All Forums Read"));
 #ifdef Q_OS_MACX
             action->setIconVisibleInMenu(false);
@@ -452,8 +486,6 @@ void BoardIconView::doContextMenu(const QPoint &pos)
                 });
         }
 
-        menu->addSeparator();
-
         {
             QAction* action = menu->addAction(tr("Copy Board Address"));
             action->setToolTip(tr("Copy Board Address"));
@@ -465,7 +497,7 @@ void BoardIconView::doContextMenu(const QPoint &pos)
         }
 
         {
-            QAction* action = menu->addAction(QIcon(":/icons/link.png"), tr("Open in Browser"));
+            QAction* action = menu->addAction(tr("Open in Browser"));
             action->setToolTip(tr("Open in Browser"));
 #ifdef Q_OS_MACX
             action->setIconVisibleInMenu(false);
@@ -481,7 +513,7 @@ void BoardIconView::doContextMenu(const QPoint &pos)
         menu->addSeparator();
 
         {
-            QAction* action = menu->addAction(QIcon(":/icons/settings.png"), tr("Settings"));
+            QAction* action = menu->addAction(tr("Settings"));
 #ifdef Q_OS_MACX
             action->setIconVisibleInMenu(false);
 #endif
@@ -494,7 +526,7 @@ void BoardIconView::doContextMenu(const QPoint &pos)
         }
 
         {
-            QAction* action = menu->addAction(QIcon(":/icons/delete.png"), tr("Delete"));
+            QAction* action = menu->addAction(tr("Delete"));
             QObject::connect(action, &QAction::triggered,
                 [this, boardVar]()
                 {
