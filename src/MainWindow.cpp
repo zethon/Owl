@@ -38,7 +38,7 @@
 extern "C" void setupTitleBar(WId winId);
 #elif defined (Q_OS_WIN)
 extern "C" void setupTitleBar(WId winId);
-extern "C" void setShowMenuText(WId winId, const char* text)
+extern "C" void setShowMenuText(WId winId, const char* text);
 extern "C" bool handleWindowsEvent(const QMainWindow&, void*, long*);
 #endif
 
@@ -1555,12 +1555,6 @@ void MainWindow::createMenus()
             });
         }
     }
-
-    QObject::connect(sysMenuButton, &QPushButton::clicked, 
-        [this]() 
-        { 
-            menuBar()->setVisible(!menuBar()->isVisible()); 
-        });
 
 #ifndef RELEASE
     // Debug Menu
