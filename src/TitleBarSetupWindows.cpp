@@ -1,4 +1,4 @@
-#include <QMainWindow>
+#include "MainWindow.h"
 #include <QMenuBar>
 #include <QDebug>
 #include "windows.h"
@@ -30,7 +30,7 @@ extern "C" void setShowMenuText(WId winId, const char* text)
     }
 }
 
-extern "C" bool handleWindowsEvent(const QMainWindow& window, void* payload, long* result)
+extern "C" bool handleWindowsEvent(const owl::MainWindow& window, void* payload, long* result)
 {
     MSG* m = (MSG*)payload;
 
@@ -38,7 +38,7 @@ extern "C" bool handleWindowsEvent(const QMainWindow& window, void* payload, lon
     {
         if ((m->wParam & 0xfff0) == IDM_SHOWMENU)
         {
-            window.menuBar()->setVisible(true);
+            window.showMenuBar(!window.menuBar()->isVisible());
             *result = 0;
             return true;
         }

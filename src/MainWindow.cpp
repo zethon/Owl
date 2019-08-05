@@ -39,26 +39,11 @@ extern "C" void setupTitleBar(WId winId);
 #elif defined (Q_OS_WIN)
 extern "C" void setupTitleBar(WId winId);
 extern "C" void setShowMenuText(WId winId, const char* text);
-extern "C" bool handleWindowsEvent(const QMainWindow&, void*, long*);
+extern "C" bool handleWindowsEvent(const owl::MainWindow&, void*, long*);
 #endif
 
 namespace owl
 {
-
-void showMenuBar(const owl::MainWindow& window, bool visible)
-{
-    window.menuBar()->setVisible(visible);
-#if defined(Q_OS_WIN)
-    if (visible)
-    {
-        ::setShowMenuText(window.winId(), "Hide Menu");
-    }
-    else
-    {
-        ::setShowMenuText(window.winId(), "Show Menu");
-    }
-#endif
-}
 
 void initializeTitleBar(owl::MainWindow* window)
 {
@@ -1412,7 +1397,7 @@ void MainWindow::createMenus()
             QAction* action = viewMenu->addAction("Hide menu");
             QObject::connect(action, &QAction::triggered, [this]()
             {
-                showMenuBar(*this, false);
+                this->showMenuBar(false);
             });
         }
 
@@ -2335,6 +2320,21 @@ void MainWindow::onBoardDelete(BoardPtr b)
     b.reset();
 }
 
+void MainWindow::showMenuBar(bool visible) const
+{
+    menuBar()->setVisible(visible);
+#if defined(Q_OS_WIN)
+    if (visible)
+    {
+        ::setShowMenuText(winId(), "Hide Menu");
+    }
+    else
+    {
+        ::setShowMenuText(winId(), "Show Menu");
+    }
+#endif
+}
+
 void MainWindow::readWindowSettings()
 {
     const QString writePath = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
@@ -2372,7 +2372,8 @@ void MainWindow::readWindowSettings()
         {
             stickyButton->setToolTip(tr("Click to hide sticky threads"));
         }
-        menuBar()->setVisible(settings.value("showMenuBar").toBool());
+
+        this->showMenuBar(settings.value("showMenuBar").toBool());
     }
     else
     {

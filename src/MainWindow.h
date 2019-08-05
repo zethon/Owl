@@ -196,6 +196,8 @@ public:
     MainWindow(SplashScreen *splash, QWidget *parent = nullptr);
     virtual ~MainWindow() = default;
 
+    void showMenuBar(bool visible) const;
+
 protected:
 
     virtual bool event(QEvent* event) override;
