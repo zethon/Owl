@@ -200,6 +200,7 @@ protected:
 
     virtual bool event(QEvent* event) override;
     virtual void closeEvent(QCloseEvent* event) override;
+    virtual bool nativeEvent(const QByteArray& eventType, void* message, long* result);
 
 private Q_SLOTS:
 	void onLoaded();
