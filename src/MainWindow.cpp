@@ -1821,6 +1821,21 @@ void MainWindow::showMenuBar(bool visible) const
 #endif
 }
 
+void MainWindow::showMenuBar(bool visible) const
+{
+    menuBar()->setVisible(visible);
+#if defined(Q_OS_WIN)
+    if (visible)
+    {
+        ::setShowMenuText(winId(), "Hide Menu");
+    }
+    else
+    {
+        ::setShowMenuText(winId(), "Show Menu");
+    }
+#endif
+}
+
 void MainWindow::readWindowSettings()
 {
     const QString writePath = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
@@ -1856,7 +1871,7 @@ void MainWindow::readWindowSettings()
             stickyButton->setToolTip(tr("Click to hide sticky threads"));
         }
 
-        this->showMenuBar(settings.value("showMenuBar").toBool());
+        menuBar()->setVisible(settings.value("showMenuBar").toBool());
     }
     else
     {
