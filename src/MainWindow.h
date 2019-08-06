@@ -52,16 +52,7 @@ private:
 
 class ImageOverlay : public QWidget
 {
-    void newParent()
-    {
-        if (!parent())
-        {
-            return;
-        }
-
-        parent()->installEventFilter(this);
-        raise();
-    }
+    void newParent();
 
     const QRegExp imageDef = QRegExp("data:image/[a-z]+;base64,", Qt::CaseInsensitive);
 
@@ -202,7 +193,7 @@ protected:
 
     virtual bool event(QEvent* event) override;
     virtual void closeEvent(QCloseEvent* event) override;
-    virtual bool nativeEvent(const QByteArray& eventType, void* message, long* result);
+    virtual bool nativeEvent(const QByteArray& eventType, void* message, long* result) override;
 
 private Q_SLOTS:
 	void onLoaded();

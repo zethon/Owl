@@ -381,7 +381,7 @@ bool MainWindow::event(QEvent *event)
         {
             if (_servicePaneVisible)
             {
-                Q_ASSERT("Don't forget me!");
+                Q_ASSERT(false);
             }
 
             if (this->boardToolbar->isVisible())
@@ -416,7 +416,7 @@ bool MainWindow::nativeEvent(const QByteArray& eventType, void* message, long* r
     }
 #endif
 
-    return nativeEvent(eventType, message, result);
+    return QMainWindow::nativeEvent(eventType, message, result);
 }
 
 void MainWindow::onBoardToolbarItemClicked(QAction* action)
@@ -600,72 +600,71 @@ void MainWindow::getThreadsHandler(BoardPtr /*b*/, ForumPtr forum)
 // from a request to get a (flat) list of all forums with unread posts
 // NOTE: duplicates should be removed before the list is handed to 
 // this function
-void MainWindow::getUnreadForumsEvent(BoardPtr board, ForumList list)
+void MainWindow::getUnreadForumsEvent(BoardPtr, ForumList)
 {
     servicesTree2->update();
-    return;
+//    return;
 
-    bool bHasUnread = false;
+//    bool bHasUnread = false;
 
-    ForumHash tempHash;	
-    for (ForumPtr forum : list)
-    {
-        tempHash.insert(forum->getId(), forum);
-    }
+//    ForumHash tempHash;
+//    for (ForumPtr forum : list)
+//    {
+//        tempHash.insert(forum->getId(), forum);
+//    }
     
-    QHashIterator<QString, ForumPtr> it(board->getForumHash());
+//    QHashIterator<QString, ForumPtr> it(board->getForumHash());
 
-    while (it.hasNext())
-    {
-        it.next();
+//    while (it.hasNext())
+//    {
+//        it.next();
 
-        if (it.value()->getForumType() != Forum::FORUM)
-        {
-            continue; 
-        }
+//        if (it.value()->getForumType() != Forum::FORUM)
+//        {
+//            continue;
+//        }
 
-        ForumPtr treeForum = board->getForumHash().value(it.key());
-        QStandardItem* item = treeForum->getModelItem();
+//        ForumPtr treeForum = board->getForumHash().value(it.key());
+//        QStandardItem* item = treeForum->getModelItem();
 
-        if (item == nullptr)
-        {
-            continue;
-        }
+//        if (item == nullptr)
+//        {
+//            continue;
+//        }
 
-        // set the indicator on the forum's tree item
-        QFont itemFont(item->font());
-        if (tempHash.contains(it.key()))
-        {
-            bHasUnread = true;
-            itemFont.setBold(true);
-            item->setIcon(QIcon(":/icons/forum_new.png"));
-//			item->setForeground(QColor(Qt::darkGreen));			
-        }
-        else
-        {
-            itemFont.setBold(false);
-            item->setIcon(QIcon(":/icons/forum.png"));
-//			item->setForeground(QColor(Qt::black));
-        }
-        item->setFont(itemFont);
-    }
+//        // set the indicator on the forum's tree item
+//        QFont itemFont(item->font());
+//        if (tempHash.contains(it.key()))
+//        {
+//            bHasUnread = true;
+//            itemFont.setBold(true);
+//            item->setIcon(QIcon(":/icons/forum_new.png"));
+////			item->setForeground(QColor(Qt::darkGreen));
+//        }
+//        else
+//        {
+//            itemFont.setBold(false);
+//            item->setIcon(QIcon(":/icons/forum.png"));
+////			item->setForeground(QColor(Qt::black));
+//        }
+//        item->setFont(itemFont);
+//    }
 
-    if (board && board->getModelItem())
-    {
-        if (bHasUnread)
-        {
-            board->getModelItem()->setForeground(QColor(Qt::darkGreen));
-        }
-        else
-        {
-            board->getModelItem()->setForeground(QColor(Qt::black));
-        }
-    }
-    else
-    {
-        _logger->error("Trying to update null board item");
-    }
-
+//    if (board && board->getModelItem())
+//    {
+//        if (bHasUnread)
+//        {
+//            board->getModelItem()->setForeground(QColor(Qt::darkGreen));
+//        }
+//        else
+//        {
+//            board->getModelItem()->setForeground(QColor(Qt::black));
+//        }
+//    }
+//    else
+//    {
+//        _logger->error("Trying to update null board item");
+//    }
 }
 
 void MainWindow::getForumHandler(BoardPtr b, ForumPtr parent)
@@ -2680,6 +2679,17 @@ void BoardMenu::createMenu()
 
         connect(action, SIGNAL(triggered()), parent, SLOT(onBoardDelete()));
     }
+}
+
+void ImageOverlay::newParent()
+{
+    if (!parent())
+    {
+        return;
+    }
+
+    parent()->installEventFilter(this);
+    raise();
 }
 
 } // namespace owl
