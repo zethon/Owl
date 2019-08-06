@@ -94,6 +94,9 @@ ENDIF()
 if (WIN32)
     SET(CMAKE_EXE_LINKER_FLAGS "/NODEFAULTLIB:library")
     SET(RESOURCE_FILES "res/Owl.rc")
+    list(APPEND SOURCE_FILES
+        TitleBarSetupWindows.cpp
+    )
 endif()
 
 QT5_ADD_RESOURCES(RRC_SOURCE_FILES ${QRC_SOURCE_FILES})

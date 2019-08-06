@@ -17,7 +17,9 @@
 #include "MainWindow.h"
 #include "BoardUpdateWorker.h"
 
-#ifdef Q_OS_MACOS
+#ifdef Q_OS_WIN
+#include "windows.h"
+#elif defined(Q_OS_MACOS)
 #include <QtMac>
 #endif
 
@@ -34,6 +36,10 @@
 
 #if defined(Q_OS_MAC)
 extern "C" void setupTitleBar(WId winId);
+#elif defined (Q_OS_WIN)
+extern "C" void setupTitleBar(WId winId);
+extern "C" void setShowMenuText(WId winId, const char* text);
+extern "C" bool handleWindowsEvent(const owl::MainWindow&, void*, long*);
 #endif
 
 namespace owl
@@ -44,6 +50,7 @@ void initializeTitleBar(owl::MainWindow* window)
 #if defined(Q_OS_WIN)
     window->setWindowIcon(QIcon(":/icons/logo_64.png"));
     window->setWindowTitle(QStringLiteral(APP_NAME));
+    setupTitleBar(window->winId());
 #elif defined(Q_OS_MAC)
     window->setWindowTitle(QString{});
     setupTitleBar(window->winId());
@@ -398,6 +405,18 @@ void MainWindow::closeEvent(QCloseEvent *event)
     _logger->debug("Closing Owl window");
     writeWindowSettings();
     QMainWindow::closeEvent(event);
+}
+
+bool MainWindow::nativeEvent(const QByteArray& eventType, void* message, long* result)
+{
+#ifdef Q_OS_WIN
+    if (eventType == "windows_generic_MSG")
+    {
+        return handleWindowsEvent(*this, message, result);
+    }
+#endif
+
+    return nativeEvent(eventType, message, result);
 }
 
 void MainWindow::onBoardToolbarItemClicked(QAction* action)
@@ -1374,6 +1393,14 @@ void MainWindow::createMenus()
 
         viewMenu->addSeparator();
 
+        {
+            QAction* action = viewMenu->addAction("Hide menu");
+            QObject::connect(action, &QAction::triggered, [this]()
+            {
+                this->showMenuBar(false);
+            });
+        }
+
         // Status Bar menu settings and initialization for startup
         {
             QAction* action = viewMenu->addAction("Show Status Bar");
@@ -2292,7 +2319,22 @@ void MainWindow::onBoardDelete(BoardPtr b)
 
     b.reset();
 }
-    
+
+void MainWindow::showMenuBar(bool visible) const
+{
+    menuBar()->setVisible(visible);
+#if defined(Q_OS_WIN)
+    if (visible)
+    {
+        ::setShowMenuText(winId(), "Hide Menu");
+    }
+    else
+    {
+        ::setShowMenuText(winId(), "Show Menu");
+    }
+#endif
+}
+
 void MainWindow::readWindowSettings()
 {
     const QString writePath = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
@@ -2330,6 +2372,8 @@ void MainWindow::readWindowSettings()
         {
             stickyButton->setToolTip(tr("Click to hide sticky threads"));
         }
+
+        this->showMenuBar(settings.value("showMenuBar").toBool());
     }
     else
     {
@@ -2352,6 +2396,7 @@ void MainWindow::writeWindowSettings()
     settings.setValue("statusBarVisible", _statusBarVisibile);
     settings.setValue("postsPanePosition", _postsPanePosition);
     settings.setValue("showStickies", threadListWidget->showStickies());
+    settings.setValue("showMenuBar", menuBar()->isVisible());
 }
                                                              
 void MainWindow::startThreadLoading()
