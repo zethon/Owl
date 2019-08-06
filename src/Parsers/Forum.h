@@ -59,7 +59,7 @@ public:
 		  _childLock()
 	{	  
 		registerMeta();
-	};
+    }
 
 	// default constructor
 	BoardItem() 
@@ -188,7 +188,8 @@ public:
 
         if (auto parent = _parent.lock(); parent)
         {
-            idx = parent->_children.indexOf(std::const_pointer_cast<BoardItem>(shared_from_this()));
+            auto temp = parent->_children.indexOf(std::const_pointer_cast<BoardItem>(shared_from_this()));
+            idx = static_cast<std::size_t>(temp);
         }
 
         return idx;
@@ -300,11 +301,11 @@ public:
 		return QString();
 	}
 
-	void setViews(int var) { _iViews = var; }
-	int getViews() const { return _iViews; }
+    void setViews(int var) { _iViews = static_cast<std::uint32_t>(var); }
+    int getViews() const { return static_cast<std::int32_t>(_iViews); }
 
     void setReplyCount(int var);
-    int getReplyCount() const { return _iReplyCount; }
+    int getReplyCount() const { return static_cast<std::int32_t>(_iReplyCount); }
 
 	void setAuthor(const QString& var) { _strAuthor = var; }
 	const QString& getAuthor() const { return _strAuthor; }
@@ -391,7 +392,7 @@ public:
     void setDisplayOrder(int var) { _iDisplayOrder = var; }
     int getDisplayOrder() const { return _iDisplayOrder; }
     
-    const std::int32_t getLevel() const;
+    std::int32_t getLevel() const;
 
 	virtual bool isStructureEqual(Forum& other);
     virtual bool isStructureEqual(std::shared_ptr<Forum> other);

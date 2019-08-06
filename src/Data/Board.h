@@ -117,8 +117,8 @@ public:
 
     QString getUserAgent() const;
     
-    void setLastForumId(int id) { getOptions()->setOrAdd("lastForumId", (int)id); }
-    int getLastForumId() const { return getOptions()->get<std::uint32_t>("lastForumId"); }
+    void setLastForumId(int id) { getOptions()->setOrAdd("lastForumId", static_cast<std::int32_t>(id)); }
+    int getLastForumId() const { return getOptions()->get<std::int32_t>("lastForumId"); }
 
 	void setEnabled(bool bEnabled) { _bEnabled = bEnabled; }
 	bool isEnabled() const { return _bEnabled; }
