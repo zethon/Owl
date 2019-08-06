@@ -6,6 +6,7 @@
 
 #include <Utils/Settings.h>
 #include <Utils/OwlLogger.h>
+#include <Utils/OwlUtils.h>
 
 #include "Board.h"
 
@@ -120,7 +121,7 @@ void Board::setLoginInfo(const LoginInfo& var)
 
 void Board::setCustomUserAgent(bool bCustom)
 {
-    getOptions()->setOrAdd(Options::USE_USERAGENT, (bool)bCustom);
+    getOptions()->setOrAdd(Options::USE_USERAGENT, static_cast<bool>(bCustom));
 }
 
 bool Board::getCustomUserAgent() const
@@ -130,7 +131,7 @@ bool Board::getCustomUserAgent() const
 
 void Board::setUserAgent(const QString &var)
 {
-    getOptions()->setOrAdd(Options::USERAGENT, (QString)var);
+    getOptions()->setOrAdd(Options::USERAGENT, static_cast<QString>(var));
     _parser->setUserAgent(var);
 }
 
@@ -221,7 +222,7 @@ void Board::requestThreadList(ForumPtr forum)
 void Board::requestThreadList(ForumPtr forum, int options)
 {
 	this->setCurrentForum(forum);
-	int iPerPage = this->getOptions()->get<std::uint32_t>("threadsPerPage");
+    int iPerPage = this->getOptions()->get<std::int32_t>("threadsPerPage");
     forum->setPerPage(iPerPage);
     
 	getParser()->getThreadListAsync(forum, options);
@@ -235,12 +236,14 @@ void Board::requestPostList(ThreadPtr thread)
 void Board::requestPostList(ThreadPtr thread, int options, bool bForceGoto/*=false*/)
 {
 	this->setCurrentThread(thread);
-	int iPerPage = this->getOptions()->get<std::uint32_t>("postsPerPage");
+    int iPerPage = this->getOptions()->get<std::int32_t>("postsPerPage");
     thread->setPerPage(iPerPage);
 
 	if (!bForceGoto)
 	{
-        const auto viewOption = (ParserBase::PostListOptions)SettingsObject().read("view.threads.action").toInt();
+        const auto viewOption =
+            static_cast<ParserBase::PostListOptions>(SettingsObject().read("view.threads.action").toInt());
+
 		getParser()->getPostsAsync(thread, viewOption, options);
 	}
 	else
@@ -374,7 +377,7 @@ void Board::crawlSubForum(ForumPtr parent, ForumIdList* dupList /*= NULL*/, bool
 		parent->addChild(forum);
 		parent->getForums().push_back(forum);
 
-		if (dupList != NULL
+        if (dupList != nullptr
 			&& !dupList->contains(forum->getId())
 			&& forum->getForumType() != owl::Forum::LINK)
 		{
@@ -618,12 +621,12 @@ StringMap Board::getBoardData()
 {
     StringMap params;
     
-    params.add("boardname", (QString)this->getName());
-    params.add("username", (QString)this->getUsername());
-    params.add("refreshRate", (int)this->getOptions()->get<std::uint32_t>("refreshRate"));
-    params.add("showImages", (bool)this->getOptions()->getBool("showImages"));
-    params.add("threadsPerPage", (int)getOptions()->get<std::uint32_t>("threadsPerPage"));
-    params.add("postsPerPage", (int)getOptions()->get<std::uint32_t>("postsPerPage"));
+    params.add("boardname", static_cast<QString>(this->getName()));
+    params.add("username", static_cast<QString>(this->getUsername()));
+    params.add("refreshRate", static_cast<int>(this->getOptions()->get<std::uint32_t>("refreshRate")));
+    params.add("showImages", static_cast<bool>(this->getOptions()->getBool("showImages")));
+    params.add("threadsPerPage", static_cast<int>(getOptions()->get<std::uint32_t>("threadsPerPage")));
+    params.add("postsPerPage", static_cast<int>(getOptions()->get<std::uint32_t>("postsPerPage")));
     
     return params;
 }
@@ -650,11 +653,11 @@ BoardItemDoc::BoardItemDoc(const BoardPtr board, const QString& t)
     QByteArray buffer(board->getFavIcon().toLatin1());
 	QImage image = QImage::fromData(QByteArray::fromBase64(buffer));
 
-	qreal iXScale = (qreal)boardIconWidth / (qreal)image.width();
-	qreal iYScale = (qreal)boardIconHeight / (qreal)image.height();
+    qreal iXScale = static_cast<qreal>(boardIconWidth) / image.width();
+    qreal iYScale = static_cast<qreal>(boardIconHeight) / image.height();
 
 	// only scale the image if it's not the right size
-	if (iXScale != 1 || iYScale != 1)
+    if (!owl::numericEquals(iXScale, 1.0) || !owl::numericEquals(iYScale, 1.0))
 	{
 		QTransform transform;
 		transform.scale(iXScale, iYScale);

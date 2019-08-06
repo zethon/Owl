@@ -1392,6 +1392,7 @@ void MainWindow::createMenus()
 
         viewMenu->addSeparator();
 
+        if (owl::isWindowsHost())
         {
             QAction* action = viewMenu->addAction("Hide menu");
             QObject::connect(action, &QAction::triggered, [this]()
