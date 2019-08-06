@@ -33,7 +33,7 @@ QString Post::getPrettyTimestamp(const DateTimeFormatOptions& options)
         else
         {
             const auto now = QDateTime::currentDateTime();
-            const int daysAgo = datetime.daysTo(now);
+            const int daysAgo = static_cast<int>(std::ceil(datetime.daysTo(now)));
 
             QString day { datetime.date().toString() };
             QString time { datetime.time().toString(options.timeFormat) };
@@ -82,7 +82,7 @@ Forum::Forum(const QString& id, const QString& name, const ForumType type)
       _iDisplayOrder(0),
 	  _bIsRoot(false),
 	  _forumType(type),
-      _modelItem(NULL)
+      _modelItem(nullptr)
 {
 	// do nothing
 };
@@ -129,7 +129,7 @@ QString Forum::getForumTypeString() const
 	return retStr;
 }
 
-const std::int32_t Forum::getLevel() const
+std::int32_t Forum::getLevel() const
 {
     return _iForumLevel;
 }
@@ -196,7 +196,7 @@ BoardItemPtr BoardItem::addChild(BoardItemPtr child, bool bThrow /*= true*/)
 	{
 		if (bThrow)
 		{
-            OWL_THROW_EXCEPTION(Exception("Cannot add NULL BoardItem as child"));
+            OWL_THROW_EXCEPTION(Exception("Cannot add nullptr BoardItem as child"));
 		}
 		else
 		{
@@ -230,7 +230,7 @@ void BoardItem::removeChild(BoardItemPtr child, bool bThrow)
 	{
 		if (bThrow)
 		{
-            OWL_THROW_EXCEPTION(Exception("Cannot remove NULL BoardItem child"));
+            OWL_THROW_EXCEPTION(Exception("Cannot remove nullptr BoardItem child"));
 		}
 		else
 		{
@@ -256,7 +256,7 @@ void BoardItem::removeChild(BoardItemPtr child, bool bThrow)
 
 void Thread::setReplyCount(int var)
 {
-    _iReplyCount = var;
+    _iReplyCount = static_cast<std::uint32_t>(var);
 }
 
 QString Thread::getPreviewText(uint maxLen /* =128 */ ) const

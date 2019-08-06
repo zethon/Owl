@@ -203,7 +203,7 @@ void EditBoardDlg::renderPluginSettings()
     }
     catch (const owl::Exception&)
     {
-        bo->add(Board::Options::USE_ENCRYPTION, (bool)false);
+        bo->add(Board::Options::USE_ENCRYPTION, false);
         bo->add(Board::Options::ENCSEED, "");
         bo->add(Board::Options::ENCKEY, (QString)"");
 

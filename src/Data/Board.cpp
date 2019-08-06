@@ -364,7 +364,7 @@ void Board::markForumReadEvent(ForumPtr f)
     Q_EMIT onMarkedForumRead(shared_from_this(), f);
 }
 
-void Board::crawlSubForum(ForumPtr parent, ForumIdList* dupList /*= NULL*/, bool bThrow /*= true*/)
+void Board::crawlSubForum(ForumPtr parent, ForumIdList* dupList /*= nullptr*/, bool bThrow /*= true*/)
 {
 	Q_ASSERT(!parent->getId().isEmpty());
 

@@ -51,7 +51,7 @@ public:
       private:
          QSgmlTag *pTag;
       public:
-         iterator(void) { pTag=NULL; }
+         iterator(void) { pTag=nullptr; }
          iterator(QSgmlTag *oTag){ pTag=oTag; }
          ~iterator() {}
          iterator & operator++() { pTag=&pTag->getNextElement(); return(*this); }

@@ -170,7 +170,7 @@ QVariant Xenforo::doMarkForumRead(ForumPtr forumInfo)
 QVariant Xenforo::doLogin(const LoginInfo& loginInfo)
 {
     owl::StringMap result;
-    result.setOrAdd("success", (bool)false); // assume failure!
+    result.setOrAdd("success", false); // assume failure!
 
     StringMap params;
 
@@ -208,7 +208,7 @@ QVariant Xenforo::doLogin(const LoginInfo& loginInfo)
             _logoutUrl = logoutnodes.at(0)->getArgValue("href");
 
             // signify success
-            result.setOrAdd("success", (bool)true);
+            result.setOrAdd("success", true);
             result.add("boardware", "xenforo");
         }
     }
@@ -228,11 +228,11 @@ QVariant Xenforo::doLogout()
     {
         _webclient.DownloadString(_logoutUrl, WebClient::NOCACHE);
         _logoutUrl.clear();
-        result.add("success",(bool)true);
+        result.add("success",true);
     }
     else
     {
-        result.add("success",(bool)false);
+        result.add("success",false);
     }
 
     return QVariant::fromValue(result);
@@ -255,7 +255,7 @@ QVariant Xenforo::doGetBoardwareInfo()
             const auto titleNode = doc.getElementsByName("title");
             if (titleNode.size() > 0)
             {
-                result.setOrAdd("success", (bool)true);
+                result.setOrAdd("success", true);
                 result.setOrAdd("name", doc.getText(titleNode.at(0)));
                 result.setOrAdd("version", (QString)"1.x");
                 result.add("boardware", "xenforo");

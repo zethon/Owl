@@ -1,4 +1,6 @@
 #pragma once
+
+#include <string>
 #include <lua/lua.hpp>
 
 class QSgml;
@@ -69,7 +71,7 @@ public:
 
 private:
 	static QSgml* checkSgml(lua_State* L, int index = 1);
-	static QRegExp* checkRegExp(lua_State* L, int index = 1);
+    static QRegExp* checkRegExp(lua_State* L, int index = 1);
     static WebClient* checkWebClient(lua_State* L, int index = 1);
 };
 
@@ -82,7 +84,7 @@ static const struct luaL_Reg webclientlib[] =
 	{"postRaw", OwlLua::WebClientPostRaw},	
 	{"getLastUrl", OwlLua::WebClientGetLastUrl},
 	{"__gc", OwlLua::WebClientDestructor},
-	{NULL, NULL}
+    {nullptr, nullptr}
 };
 
 static const struct luaL_Reg regexplib[] =
@@ -92,7 +94,7 @@ static const struct luaL_Reg regexplib[] =
 	{"cap", OwlLua::RegExCap},
     {"matchedlength",OwlLua::RegExMatchedLength},
 	{"__gc", OwlLua::RegExDestructor},
-	{NULL, NULL}
+    {nullptr, nullptr}
 };
 
 static const struct luaL_Reg sgmltaglib[] =
@@ -110,7 +112,7 @@ static const struct luaL_Reg sgmltaglib[] =
 	{"parent", OwlLua::SgmlTagParent},
 	{"compare", OwlLua::SgmlTagCompare},
 	{"value", OwlLua::SgmlTagValue},
-	{NULL, NULL}
+    {nullptr, nullptr}
 };
 
 static const struct luaL_Reg sgmllib[] =
@@ -122,7 +124,7 @@ static const struct luaL_Reg sgmllib[] =
 	{"getText", OwlLua::SgmlDocGetText},
 	{"docText", OwlLua::SgmlGetDocText },
 	{"__gc", OwlLua::SgmlDestructor},
-	{NULL, NULL}
+    {nullptr, nullptr}
 };
 
 static const struct luaL_Reg owlutilslib[] = 
@@ -132,16 +134,16 @@ static const struct luaL_Reg owlutilslib[] =
 	{"md5", OwlLua::getMD5String},
 	{"stripHtml", OwlLua::stripHtml},
 	{"percentEncode", OwlLua::percentEncode},
-	{NULL, NULL}
+    {nullptr, nullptr}
 };
     
 static const struct luaL_Reg errorlib[] =
 {
     {"warn", OwlLua::SgmlErrorWarn},
-    {"notify", NULL},
+    {"notify", nullptr},
     {"throw", OwlLua::SgmlErrorThrow},
-    {"panic", NULL},
-    {NULL,NULL}
+    {"panic", nullptr},
+    {nullptr,nullptr}
 };
 
 namespace lua

@@ -21,8 +21,8 @@ public:
 	DateTimeParser();
     virtual ~DateTimeParser();
 
-	QDate parseDate(const QString& text, bool *bOk = NULL);
-	QTime parseTime(const QString& text, bool *bOk = NULL);
+	QDate parseDate(const QString& text, bool *bOk = nullptr);
+	QTime parseTime(const QString& text, bool *bOk = nullptr);
 
 	void Reset();
 

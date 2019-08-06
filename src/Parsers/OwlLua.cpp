@@ -190,10 +190,10 @@ int OwlLua::newWebClient(lua_State* L)
 	ParserBase* parser = static_cast<ParserBase*>(lua_touserdata(L, -1));
 	Q_ASSERT(parser != nullptr);    
 
-    int size = sizeof(WebClient*);
+    std::size_t size = sizeof(WebClient*);
 
 	// create the new WebClient
-    WebClient** data = (WebClient**)lua_newuserdata(L, size);
+    WebClient** data = static_cast<WebClient**>(lua_newuserdata(L, size));
     *data = new WebClient();
 	(*data)->setConfig(parser->createWebClientConfig());
 
@@ -396,7 +396,8 @@ int OwlLua::WebClientDestructor(lua_State* L)
 
 WebClient* OwlLua::checkWebClient(lua_State* L, int index/* = 1*/)
 {
-    return *(WebClient**)luaL_checkudata(L, index, "Owl.webclient");
+    auto temp = static_cast<WebClient**>(luaL_checkudata(L, index, "Owl.webclient"));
+    return *temp;
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -407,7 +408,7 @@ int OwlLua::newRegEx(lua_State* L)
 {
 	QString strPattern;
 	bool bCheckCase = false;
-	int size = sizeof(QRegExp*);
+    std::size_t size = sizeof(QRegExp*);
 
 	if (lua_isboolean(L, -1))
 	{
@@ -421,7 +422,7 @@ int OwlLua::newRegEx(lua_State* L)
 
 	Qt::CaseSensitivity sen = bCheckCase ? Qt::CaseSensitive : Qt::CaseInsensitive;
 
-	QRegExp** data = (QRegExp**)lua_newuserdata(L, size);
+    QRegExp** data = static_cast<QRegExp**>(lua_newuserdata(L, size));
 	*data = new QRegExp(strPattern, sen);
 
 	luaL_setmetatable(L, "Owl.regexp");
@@ -453,7 +454,7 @@ int OwlLua::RegExCap(lua_State* L)
 
 	if (lua_isnumber(L, -1))
 	{
-		int iIdx = lua_tonumber(L, -1);
+        int iIdx = lua_tonumber(L, -1);
 		
 		if (iIdx > 0 && iIdx >= exp->captureCount())
 		{
@@ -482,7 +483,8 @@ int OwlLua::RegExDestructor(lua_State* L)
 
 QRegExp* OwlLua::checkRegExp(lua_State* L, int index)
 {
-	return *(QRegExp**)luaL_checkudata(L, index, "Owl.regexp");
+    auto temp = static_cast<QRegExp**>(luaL_checkudata(L, index, "Owl.regexp"));
+    return *temp;
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -555,7 +557,7 @@ int OwlLua::SgmlGetElementsByName(lua_State* L)
 			// local tags = doc:getElementsByName("meta", "name", reg)
 			QRegExp* reg = checkRegExp(L,-1);
 
-			if (reg != NULL)
+            if (reg != nullptr)
 			{
 				exp->getElementsByName(element, attribute,(const QRegExp&)*reg, &tags);
 			}
@@ -598,7 +600,7 @@ int OwlLua::SgmlDocTag(lua_State* L)
 	QSgml* doc = checkSgml(L);
 	QSgmlTag* docTag = doc->DocTag;
 
-	if (docTag != NULL)
+    if (docTag != nullptr)
 	{
 		int size = sizeof(QSgmlTag**);
 		*((QSgmlTag**)lua_newuserdata(L, size)) = docTag;
@@ -619,7 +621,7 @@ int OwlLua::SgmlDocGetText(lua_State* L)
 	QSgmlTag* tag = *((QSgmlTag**)luaL_checkudata(L, 2, "Owl.sgmltag"));
 	QString strText;
 
-	if (doc != NULL && tag != NULL)
+    if (doc != nullptr && tag != nullptr)
 	{
 		doc->getText(tag, &strText);
 		lua_pushstring(L, strText.toLatin1());
@@ -755,7 +757,7 @@ int OwlLua::SgmlTagPrevious(lua_State* L)
 	QSgmlTag* tag = *((QSgmlTag**)luaL_checkudata(L, 1, "Owl.sgmltag"));
 	QSgmlTag* prev = tag->getPrevious();
 
-	if (prev != NULL)
+    if (prev != nullptr)
 	{
 		int size = sizeof(QSgmlTag**);
 		*((QSgmlTag**)lua_newuserdata(L, size)) = prev;
@@ -774,7 +776,7 @@ int OwlLua::SgmlTagParent(lua_State* L)
 	QSgmlTag* tag = *((QSgmlTag**)luaL_checkudata(L, 1, "Owl.sgmltag"));
 	QSgmlTag* parent = tag->Parent;
 
-	if (parent != NULL)
+    if (parent != nullptr)
 	{
 		int size = sizeof(QSgmlTag**);
 		*((QSgmlTag**)lua_newuserdata(L, size)) = parent;
@@ -800,7 +802,7 @@ int OwlLua::SgmlTagValue(lua_State* L)
 {
 	QSgmlTag* tag = *((QSgmlTag**)luaL_checkudata(L, 1, "Owl.sgmltag"));
 
-	if (tag != NULL)
+    if (tag != nullptr)
 	{
 		lua_pushstring(L, tag->Value.toLatin1());
 	}
@@ -820,7 +822,7 @@ void pushstring(lua_State * L, const std::string & s)
     lua_pushlstring(L, s.empty() ? "" : s.c_str(), s.size());
 }
 
-//const static luaL_Reg emptyLib[] = { { NULL, NULL } };
+//const static luaL_Reg emptyLib[] = { { nullptr, nullptr } };
 
 /**
  * [-0, +1, m]
@@ -863,7 +865,7 @@ bool checktable(lua_State *L, int narg, const char * tname)
     bool result = false;
     if (!lua_getmetatable(L, narg))
     {
-        if (tname == NULL)
+        if (tname == nullptr)
         {
             // no metatable and none specified
             result = true;
@@ -1031,7 +1033,7 @@ void dumpString(const char * str, size_t len)
     {
         if (str[i] < 32)
         {
-            printf("\\%u", (unsigned int)str[i]);
+            printf("\\%u", static_cast<std::uint32_t>(str[i]));
         }
         else
         {

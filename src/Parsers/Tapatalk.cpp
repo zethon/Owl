@@ -97,7 +97,7 @@ QVariant Tapatalk4x::doLogin(const LoginInfo& info)
     _webclient.eraseSendCookies();
 
     StringMap result;
-    result.setOrAdd("success", (bool)false);
+    result.setOrAdd("success", false);
 
     // for example, a 503 can cause an empty reply, in which case we want to return false, and in the case
     // of an auto-relogin, we will try to re-login in the next request since _lastLogin will not get changed
@@ -116,7 +116,7 @@ QVariant Tapatalk4x::doLogin(const LoginInfo& info)
         {
             _lastLogin = QDateTime::currentDateTime();
 
-            result.setOrAdd("success", (bool)true);
+            result.setOrAdd("success", true);
 
             if (!_rootIdRealized)
             {
@@ -146,7 +146,7 @@ QVariant Tapatalk4x::doLogout()
 
 	// Tapatalk gives no feedback to 'logout_user'
     StringMap result;
-	result.add("success", (bool)true);
+	result.add("success", true);
 
 	return QVariant::fromValue(result);
 }
@@ -167,7 +167,7 @@ QVariant Tapatalk4x::doGetBoardwareInfo()
 	
 	if (infoMap.contains("version"))
 	{
-		result.add("success", (bool)true);
+		result.add("success", true);
 		result.add("boardware", "tapatalk");
 
         // _version must be set before getForumName() is called else it will fail
@@ -205,7 +205,7 @@ QVariant Tapatalk4x::doGetBoardwareInfo()
 QVariant Tapatalk4x::doTestParser(const QString& html)
 {
     StringMap result;
-	result.add("success", (bool)false); // assume failure!
+	result.add("success", false); // assume failure!
 
 	QDomDocument xmlDoc;
 	if (xmlDoc.setContent(html))
@@ -216,7 +216,7 @@ QVariant Tapatalk4x::doTestParser(const QString& html)
 			auto infoMap = infoVar.toMap();
 			if (!infoMap.value("version").toString().isEmpty())
 			{
-				result.setOrAdd("success", (bool)true);
+				result.setOrAdd("success", true);
 			}
 		}	
 	}

@@ -303,13 +303,13 @@ void QSgml::HandleEndTag(QString SgmlString,QSgmlTag* &pLastTag,int &iStart,int 
 
    // find a fitting start-tag
    pDummyTag = pLastTag;
-   while( (pDummyTag->Name!=pTag->Name)&&(pDummyTag->Parent!=NULL) )
+   while( (pDummyTag->Name!=pTag->Name)&&(pDummyTag->Parent!=nullptr) )
    {
       pDummyTag = pDummyTag->Parent;
    }
    delete pTag;
 
-   if( pDummyTag->Parent!=NULL )
+   if( pDummyTag->Parent!=nullptr )
    {  // start-tag found
       while( pLastTag!=pDummyTag )
       {  // all tags in between are standalone tags
@@ -504,7 +504,7 @@ bool QSgml::load(QString sFileName)
    delete DocTag;
    //delete EndTag;
    // create new doc-tag
-   DocTag = new QSgmlTag("DocTag",QSgmlTag::eVirtualBeginTag,NULL);
+   DocTag = new QSgmlTag("DocTag",QSgmlTag::eVirtualBeginTag,nullptr);
    EndTag = new QSgmlTag("EndTag",QSgmlTag::eVirtualEndTag,DocTag);
    // set EndTag as only Child of DocTag
    DocTag->Children.append(EndTag);
@@ -530,7 +530,7 @@ bool QSgml::parse(const QString& html)
 	delete DocTag;
 	//delete EndTag;
 	// create new doc-tag
-	DocTag = new QSgmlTag("DocTag",QSgmlTag::eVirtualBeginTag,NULL);
+	DocTag = new QSgmlTag("DocTag",QSgmlTag::eVirtualBeginTag,nullptr);
 	EndTag = new QSgmlTag("EndTag",QSgmlTag::eVirtualEndTag,DocTag);
 	// set EndTag as only Child of DocTag
 	DocTag->Children.append(EndTag);
@@ -563,7 +563,7 @@ QString QSgml::getOuterHtml(QSgmlTag* tag)
 QSgml::QSgml(void)
 {
    // create DocTag and EndTag
-   DocTag = new QSgmlTag("DocTag",QSgmlTag::eVirtualBeginTag,NULL);
+   DocTag = new QSgmlTag("DocTag",QSgmlTag::eVirtualBeginTag,nullptr);
    EndTag = new QSgmlTag("EndTag",QSgmlTag::eVirtualEndTag,DocTag);
    // set EndTag as only Child of DocTag
    DocTag->Children.append(EndTag);
@@ -579,7 +579,7 @@ QSgml::QSgml(void)
 QSgml::QSgml(const QString SgmlString)
 {
    // create DocTag and EndTag
-   DocTag = new QSgmlTag("DocTag",QSgmlTag::eVirtualBeginTag,NULL);
+   DocTag = new QSgmlTag("DocTag",QSgmlTag::eVirtualBeginTag,nullptr);
    EndTag = new QSgmlTag("EndTag",QSgmlTag::eVirtualEndTag,DocTag);
    // set EndTag as only Child of DocTag
    DocTag->Children.append(EndTag);
@@ -598,7 +598,7 @@ QSgml::QSgml(const QString SgmlString)
 QSgml::QSgml(QFile &SgmlFile)
 {
    // create DocTag and EndTag
-   DocTag = new QSgmlTag("DocTag",QSgmlTag::eVirtualBeginTag,NULL);
+   DocTag = new QSgmlTag("DocTag",QSgmlTag::eVirtualBeginTag,nullptr);
    EndTag = new QSgmlTag("EndTag",QSgmlTag::eVirtualEndTag,DocTag);
    // set EndTag as only Child of DocTag
    DocTag->Children.append(EndTag);

@@ -108,13 +108,13 @@ public:
     // Submits an HTTP GET and returns the webpage contents or an empty string
     QString DownloadString(const QString& url, uint options = Options::DEFAULT);
 
-    // Submits an HTTP GET and returns a reply object or NULL
+    // Submits an HTTP GET and returns a reply object or nullptr
     ReplyPtr GetUrl(const QString& url, uint options = Options::DEFAULT);
 
     // Submits an HTTP POST and returns the result's string or an empty string
     QString UploadString(const QString& address, const QString& payload, uint options = Options::DEFAULT);
 
-    // Submits an HTTP POST and returns a reply object or NULL
+    // Submits an HTTP POST and returns a reply object or nullptr
     ReplyPtr PostUrl(const QString& url, const QString& payload, uint options = Options::DEFAULT);
 
 private:
