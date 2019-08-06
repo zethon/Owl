@@ -196,7 +196,7 @@ BoardItemPtr BoardItem::addChild(BoardItemPtr child, bool bThrow /*= true*/)
 	{
 		if (bThrow)
 		{
-            OWL_THROW_EXCEPTION(Exception("Cannot add NULL BoardItem as child"));
+            OWL_THROW_EXCEPTION(Exception("Cannot add nullptr BoardItem as child"));
 		}
 		else
 		{
@@ -230,7 +230,7 @@ void BoardItem::removeChild(BoardItemPtr child, bool bThrow)
 	{
 		if (bThrow)
 		{
-            OWL_THROW_EXCEPTION(Exception("Cannot remove NULL BoardItem child"));
+            OWL_THROW_EXCEPTION(Exception("Cannot remove nullptr BoardItem child"));
 		}
 		else
 		{

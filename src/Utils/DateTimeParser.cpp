@@ -70,7 +70,7 @@ QDate DateTimeParser::parseDate(const QString& text, bool *bOk)
 		}
 	}
 
-	if (bOk != NULL)
+	if (bOk != nullptr)
 	{
 		*bOk = bSuccess;
 	}
@@ -113,7 +113,7 @@ QTime DateTimeParser::parseTime(const QString& text, bool *bOk)
 		}
 	}
 
-	if (bOk != NULL)
+	if (bOk != nullptr)
 	{
 		*bOk = bSuccess;
 	}

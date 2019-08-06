@@ -95,17 +95,17 @@ BoardsModel::~BoardsModel()
 /**
     \param BoardPtr Board to be added to the model.
 
-    \return Pointer to the QStandardItem added or NULL if it already existed.
+    \return Pointer to the QStandardItem added or nullptr if it already existed.
 
     \TODO: this method should search by the Board's *URL* and not *name*
 */
 QStandardItem* BoardsModel::addBoardItem(const BoardPtr& b, bool bThrowOnFail)
 {
-    QStandardItem* retItem(NULL);
+    QStandardItem* retItem(nullptr);
     QStandardItem* boardItem = getBoardItem(b, false);
     bool doCreate = false;
 
-    if (boardItem == NULL)
+    if (boardItem == nullptr)
     {
         doCreate = true;
     }
@@ -191,7 +191,7 @@ void BoardsModel::removeBoardItem(BoardPtr b)
 
     QStandardItem* bi = getBoardItem(b, false);
 
-    if (bi != NULL)
+    if (bi != nullptr)
     {
         auto lastItemIdx = index(bi->index().row() + 1, 0);
         auto itemLast = this->itemFromIndex(lastItemIdx);
@@ -207,7 +207,7 @@ void BoardsModel::removeBoardItem(BoardPtr b)
 void BoardsModel::addForums(BoardPtr board, ForumPtr forum)
 {
     QStandardItem*	boardItem(getBoardItem(board));
-    QStandardItem*	parentItem(NULL);
+    QStandardItem*	parentItem(nullptr);
 
     if (forum->IsRoot())
     {
@@ -221,7 +221,7 @@ void BoardsModel::addForums(BoardPtr board, ForumPtr forum)
         {
             parentItem = _index.value(forumKey);
         }
-        else if (forum->getParent() != NULL)
+        else if (forum->getParent() != nullptr)
         {
             ForumPtr parent = forum->getParent()->upCast<ForumPtr>(false);
 
@@ -236,7 +236,7 @@ void BoardsModel::addForums(BoardPtr board, ForumPtr forum)
         }
     }
 
-    QStandardItem* subItem(NULL);
+    QStandardItem* subItem(nullptr);
     QString subKey = getIndexKey(board, forum);
 
     if (_index.contains(subKey))
@@ -282,7 +282,7 @@ void BoardsModel::addForums(BoardPtr board, ForumPtr forum)
 QStandardItem* BoardsModel::updateForumItem(BoardPtr b, ForumPtr forum)
 {
     QStandardItem* boardItem = getBoardItem(b);
-    QStandardItem* parentItem(NULL);
+    QStandardItem* parentItem(nullptr);
 
     QString forumKey = getIndexKey(b, forum);
 
@@ -306,7 +306,7 @@ QStandardItem* BoardsModel::updateForumItem(BoardPtr b, ForumPtr forum)
 
     for (ForumPtr f : forum->getForums())
     {
-        QStandardItem* subItem(NULL);
+        QStandardItem* subItem(nullptr);
         QString fKey = getIndexKey(b, f);
 
         if (_index.contains(fKey))
@@ -350,7 +350,7 @@ QStandardItem* BoardsModel::updateForumItem(BoardPtr b, ForumPtr forum)
 
 QStandardItem* BoardsModel::getBoardItem(BoardPtr board, bool bThrowOnFail /*= true*/)
 {
-    QStandardItem* ret(NULL);
+    QStandardItem* ret(nullptr);
 
     QList<QStandardItem*> items = findItems(board->getName(), Qt::MatchExactly);
 

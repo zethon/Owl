@@ -24,7 +24,7 @@ under certain conditions.
 #include <QtCore>
 #include "QSgmlTag.h"
 
-//QSgmlTag Notag( "NoTag",QSgmlTag::eNoTag,(QSgmlTag&)NULL );
+//QSgmlTag Notag( "NoTag",QSgmlTag::eNoTag,(QSgmlTag&)nullptr );
 
 // set the type of the tag
 void QSgmlTag::SetType(const QString &InnerTag)
@@ -175,7 +175,7 @@ QSgmlTag* QSgmlTag::getPreviousSibling(void)
    }
    if( i==0 )
    {
-      //return( *((QSgmlTag*)NULL) );
+      //return( *((QSgmlTag*)nullptr) );
        return nullptr;
    }
    else
@@ -195,7 +195,7 @@ QSgmlTag* QSgmlTag::getPrevious()
    }
    if( i==0 )
    {
-      return( NULL) ;
+      return( nullptr) ;
    }
    else
    {
@@ -217,7 +217,7 @@ QSgmlTag& QSgmlTag::getNextElement(void)
    {
       // search the next parent with sibling
       Return = this;
-//      while( &Return->getNextSibling()==NULL )
+//      while( &Return->getNextSibling()==nullptr )
       while(Return->getNextSibling() == nullptr)
       {
          Return = Return->Parent;
@@ -289,7 +289,7 @@ QSgmlTag* QSgmlTag::getFirstElementByName(const QString& Name,
 	const QString& AtrName, 
 	const QRegExp& atrExp)
 {
-	QSgmlTag* ret = NULL;
+	QSgmlTag* ret = nullptr;
 	QList<QSgmlTag*> list;
 
 	getElementsByName(Name, AtrName, atrExp, &list);
@@ -332,7 +332,7 @@ QSgmlTag* QSgmlTag::addChild(QString InnerTag, TagType eType)
    // don't add childs to that eDoctype
    if( this->Type==eDoctype )
    {
-      tagRet = NULL;
+      tagRet = nullptr;
    }
 
    // change type of this tag if it was eStandalone
@@ -349,7 +349,7 @@ QSgmlTag* QSgmlTag::addChild(QString InnerTag, TagType eType)
       case eEndTag:
       case eNoTag:
          // can't add childs of this type
-         tagRet = NULL;
+         tagRet = nullptr;
          break;
       case eStartTag:
       case eStandalone:
@@ -371,7 +371,7 @@ QSgmlTag* QSgmlTag::addChild(QString InnerTag, TagType eType)
    pnewTag->Parent = this;
 
    // add the new tag
-   if( tagRet!=NULL )
+   if( tagRet!=nullptr )
    {
       if( Level==0 )
          this->Children.insert(Children.count()-1,pnewTag);
@@ -385,7 +385,7 @@ QSgmlTag* QSgmlTag::addChild(QString InnerTag, TagType eType)
 // constructor
 QSgmlTag::QSgmlTag(void)
 {
-	Parent = NULL;
+	Parent = nullptr;
 }
 
 // constructor
@@ -402,7 +402,7 @@ QSgmlTag::QSgmlTag(const QString &InnerTag,TagType eType,QSgmlTag *tParent)
 	Parent = tParent;
 	Children = QSgmlTaglist();
 
-	if( tParent==NULL )
+	if( tParent==nullptr )
 	{  Level = 0;  }
 	else
 	{  Level = tParent->Level+1;  }
