@@ -344,7 +344,7 @@ owl::StringMap ConfiguringBoardDlg::createBoard(const QString& parserName, const
     options->add("treeRefresh.enabled", (bool)DEFAULT_TREEREFRESH_ENABLED);
     options->add("treeRefresh.rate", (uint)DEFAULT_TREEREFRESH_RATE);
 
-    options->add(Board::Options::USE_USERAGENT, (bool)false); // use the default user agent
+    options->add(Board::Options::USE_USERAGENT, false); // use the default user agent
     options->add(Board::Options::USERAGENT, SettingsObject().read("web.useragent").toString());
 
     const auto postsPP = parser->defaultPostsPerPage();
@@ -408,13 +408,13 @@ owl::StringMap ConfiguringBoardDlg::createBoard(const QString& parserName, const
 			StringMap s = parser->getEncryptionSettings();
 			if (s.has("success") && s.getBool("success"))
 			{
-				options->setOrAdd(Board::Options::USE_ENCRYPTION, (bool)true);
+				options->setOrAdd(Board::Options::USE_ENCRYPTION, true);
 				options->setOrAdd(Board::Options::ENCKEY, (QString)s.getText("key"));
 				options->setOrAdd(Board::Options::ENCSEED, (QString)s.getText("seed"));
 			}
 			else
 			{
-				options->add(Board::Options::USE_ENCRYPTION, (bool)false);
+				options->add(Board::Options::USE_ENCRYPTION, false);
 				options->add(Board::Options::ENCSEED, (QString)"");
 				options->add(Board::Options::ENCKEY, (QString)"");
 			}
@@ -660,7 +660,7 @@ void ConfiguringBoardDlg::onConfigurationError()
     catch (const Exception& ex)
 	{
 		StringMap results;
-		results.add("success", (bool)false); 
+		results.add("success", false); 
 		results.add("msg", ex.message());
 
         Q_EMIT completeEvent(results);
@@ -668,7 +668,7 @@ void ConfiguringBoardDlg::onConfigurationError()
     catch (const QUnhandledException&)
 	{
 		StringMap results;
-		results.add("success", (bool)false); 
+		results.add("success", false); 
 		results.add("msg", QString("There was an unexpected error while configuring the board"));
 
         Q_EMIT completeEvent(results);

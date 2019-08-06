@@ -121,7 +121,7 @@ void ParserBase::loginSlot()
 		}
 		catch (const owl::Exception& owe)
 		{
-            params.setOrAdd("success", (bool)false);
+            params.setOrAdd("success", false);
             params.setOrAdd("error", owe.message());
             _logger->warn("loginSlot() error: {}", owe.message().toStdString());
             Q_EMIT errorNotification(owe);
@@ -129,7 +129,7 @@ void ParserBase::loginSlot()
 		catch (...)
 		{
             const auto errorMessage = QString("There was an error connecting to ") + this->getBaseUrl() + QString(". Please check your login credentials, firewall/proxy settings or your Internet connection.");
-            params.setOrAdd("success", (bool)false);
+            params.setOrAdd("success", false);
             params.setOrAdd("error", errorMessage);
             _logger->warn("loginSlot() error: {}", errorMessage.toStdString());
             Q_EMIT errorNotification(Exception(errorMessage));
@@ -138,7 +138,7 @@ void ParserBase::loginSlot()
 	else
 	{
         _logger->error("loginSlot() could not cast sender() to QFutureWatcher<StringMap>*");
-        params.setOrAdd("success", (bool)false);
+        params.setOrAdd("success", false);
         params.setOrAdd("error", "There was an unknown login error");
         Q_EMIT errorNotification(Exception("There was an unknown error."));
 	}	

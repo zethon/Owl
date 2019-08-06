@@ -157,7 +157,7 @@ QStandardItem* BoardsModel::addBoardItem(const BoardPtr& b, bool bThrowOnFail)
 
             // insert a last item object so that we can properly paint the servcesTree
             QStandardItem* lastItem(new QStandardItem());
-            lastItem->setData((bool)true, LASTITEM_ROLE);
+            lastItem->setData(true, LASTITEM_ROLE);
             lastItem->setSizeHint(QSize(lastItem->sizeHint().width(), 1));
             appendRow(lastItem);
         }
