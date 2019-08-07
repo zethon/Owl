@@ -568,7 +568,7 @@ void MainWindow::getThreadsHandler(BoardPtr /*b*/, ForumPtr forum)
 void MainWindow::getUnreadForumsEvent(BoardPtr board, ForumList list)
 {
     _logger->debug("unread forum list retrieved for '{}' with {} forums", board->readableHash(), list.size());
-    servicesTree2->update();
+    boardIconPanel->update();
 }
 
 void MainWindow::onNewBoard()
@@ -923,7 +923,7 @@ void MainWindow::createMenus()
              auto activeWindow = QApplication::activeWindow();
              auto widget = activeWindow->focusWidget();
 
-             if (widget == servicesTree2)
+             if (widget == boardIconPanel)
              {
                  undo->setEnabled(false);
                  redo->setEnabled(false);
@@ -964,9 +964,9 @@ void MainWindow::createMenus()
             auto boardPaneMenu = viewMenu->addAction("Hide Boards Pane");
             QObject::connect(boardPaneMenu, &QAction::triggered, [this,boardPaneMenu]()
             {
-                servicesTree2->setVisible(!servicesTree2->isVisible());
+                boardIconPanel->setVisible(!boardIconPanel->isVisible());
                 
-                if (servicesTree2->isVisible())
+                if (boardIconPanel->isVisible())
                 {
                     boardPaneMenu->setText(tr("Hide Boards Pane"));
                 }
@@ -1491,17 +1491,17 @@ void MainWindow::createBoardPanel()
 {
     // NEW
 #ifdef Q_OS_MACX
-    servicesTree2->setAttribute(Qt::WA_MacShowFocusRect, 0);
+    boardIconPanel->setAttribute(Qt::WA_MacShowFocusRect, 0);
 #endif
 
-    QObject::connect(servicesTree2, &BoardIconView::onBoardClicked,
+    QObject::connect(boardIconPanel, &BoardIconView::onBoardClicked,
         [this](owl::BoardWeakPtr bwp)
         {
             contentView->doShowLoading(bwp);
             threadListWidget2->doBoardClicked(bwp);
         });
 
-    QObject::connect(servicesTree2, &BoardIconView::onEditBoard,
+    QObject::connect(boardIconPanel, &BoardIconView::onEditBoard,
         [this](owl::BoardWeakPtr boardWeakPtr)
         {
             auto boardPtr = boardWeakPtr.lock();
@@ -1538,7 +1538,7 @@ void MainWindow::createBoardPanel()
             dlg->open();
         });
 
-    QObject::connect(servicesTree2, &BoardIconView::onAddNewBoard,
+    QObject::connect(boardIconPanel, &BoardIconView::onAddNewBoard,
         [this]()
         {
             QuickAddDlg* addDlg = new QuickAddDlg(this);
@@ -1557,7 +1557,7 @@ void MainWindow::createBoardPanel()
             addDlg->open();
         });
 
-    QObject::connect(servicesTree2, &BoardIconView::onDeleteBoard,
+    QObject::connect(boardIconPanel, &BoardIconView::onDeleteBoard,
         [this](owl::BoardWeakPtr bwp)
         {
             BoardPtr board = bwp.lock();
@@ -1595,7 +1595,7 @@ void MainWindow::createBoardPanel()
             }
         });
 
-    QObject::connect(servicesTree2, &BoardIconView::onConnectBoard,
+    QObject::connect(boardIconPanel, &BoardIconView::onConnectBoard,
         [this](owl::BoardWeakPtr bwp)
         {
             BoardPtr board = bwp.lock();

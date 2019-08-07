@@ -762,7 +762,7 @@ QToolButton:hover
       <number>0</number>
      </property>
      <item>
-      <widget class="owl::BoardIconView" name="servicesTree2" native="true">
+      <widget class="owl::BoardIconView" name="boardIconPanel" native="true">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>0</horstretch>
