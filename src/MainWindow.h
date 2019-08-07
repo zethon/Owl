@@ -205,13 +205,6 @@ private Q_SLOTS:
     void onLinkActivated(const QString &urlStr);
     
 	void expandThreadMenuPressed();
-	void threadPageNumberEnterPressed();
-	void threadFirstPageBtnClicked();
-	void threadPrevPageBtnClicked();
-	void threadNextPageBtnClicked();
-	void threadLastPageBtnClicked();
-    
-    void newThreadBtnClicked();
 
 	// SLOTS related to the PostView pane
 	void newPostBtnClicked();
@@ -242,7 +235,6 @@ private Q_SLOTS:
     void newPostHandler(BoardPtr, PostPtr);
 
 	// toolbar drop down menu
-    void onRefreshForum();
 	void onOpenBrowserToolbar();
 	void onBoardDelete();
 	void onBoardDelete(BoardPtr);
@@ -274,12 +266,8 @@ private:
 
     void createDebugMenu();
 
-    QMenu* createForumMenu(ForumPtr forum);
-
     void updateSelectedThread(ThreadPtr thread = ThreadPtr());
     void updateSelectedForum(ForumPtr forum = ForumPtr());
-
-    ForumPtr getCurrentForum() const;
 
     void navigateToThreadListPage(ForumPtr forum, int iPageNumber);
     void navigateToPostListPage(ThreadPtr thread, int iPageNumber);

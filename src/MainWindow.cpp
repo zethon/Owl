@@ -632,82 +632,17 @@ void MainWindow::markForumReadHandler(BoardPtr b, ForumPtr f)
 
 void MainWindow::newThreadHandler(BoardPtr b, ThreadPtr /*t*/)
 {
-    ForumPtr forum = this->getCurrentForum();
+//    ForumPtr forum = this->getCurrentForum();
 
-    if (forum != nullptr)
-    {
-        startThreadLoading();
-        newThreadBtn->setEnabled(false);
+//    if (forum != nullptr)
+//    {
+//        startThreadLoading();
+//        newThreadBtn->setEnabled(false);
 
-        b->requestThreadList(forum, ParserEnums::REQUEST_NOCACHE);
-    }
+//        b->requestThreadList(forum, ParserEnums::REQUEST_NOCACHE);
+//    }
 
-    QMainWindow::statusBar()->showMessage("New thread sent", 5000);
-}
-
-QMenu* MainWindow::createForumMenu(ForumPtr forum)
-{
-    QMenu* ret = new QMenu(this);
-    
-    if (forum->getForumType() != Forum::LINK)
-    {
-        QAction* action = ret->addAction(QIcon(":icons/refresh.png"), tr("Refresh Forum"));
-        action->setToolTip(tr("Refresh Selected Forums"));
-        action->setData(QVariant::fromValue(forum));
-        
-#ifdef Q_OS_MACX
-        action->setIconVisibleInMenu(false);
-#endif
-
-        connect(action, SIGNAL(triggered()), this, SLOT(onRefreshForum()));
-        
-        ret->addSeparator();  
-    }
-
-    {
-        //QAction* action = ret->addAction(QIcon(":/icons/link.png"), tr("Copy Forum Address"));
-        QAction* action = ret->addAction(tr("Copy Forum Address"));
-        action->setToolTip(tr("Copy Forum Address"));
-        action->setData(QVariant::fromValue(forum));
-        
-        connect(action, SIGNAL(triggered()), this, SLOT(onCopyUrl()));
-    }
-
-    {
-        QAction* action = ret->addAction(QIcon(":/icons/link.png"), tr("Open Forum in Browser"));
-        action->setToolTip(tr("Open in Browser"));
-        action->setData(QVariant::fromValue(forum));
-        
-#ifdef Q_OS_MACX
-        action->setIconVisibleInMenu(false);
-#endif
-
-        connect(action, SIGNAL(triggered()), this, SLOT(onOpenBrowserToolbar()));
-    }
-
-    if (forum->getForumType() != Forum::LINK)
-    {
-        ret->addSeparator();    
-        QAction* action = ret->addAction(QIcon(":/icons/markforumread.png"), tr("Mark Forum Read"));
-        action->setData(QVariant::fromValue(forum));
-
-#ifdef Q_OS_MACX
-        action->setIconVisibleInMenu(false);
-#endif
-        
-        connect(action, &QAction::triggered, [this, forum]()
-        {
-            auto board = forum->getBoard().lock();
-
-            if (board)
-            {
-                startThreadLoading();
-                board->markForumRead(forum);
-            }
-        });
-    }
-    
-    return ret;
+//    QMainWindow::statusBar()->showMessage("New thread sent", 5000);
 }
 
 void MainWindow::updateSelectedForum(ForumPtr f)
@@ -1503,78 +1438,6 @@ void MainWindow::navigateToThreadListPage(ForumPtr forum, int iPageNumber)
     }
 }
 
-void MainWindow::threadPageNumberEnterPressed()
-{
-    ForumPtr forum = getCurrentForum();
-
-    if (forum != nullptr && forum->getPageNumber() >= 1)
-    {
-        QString strText(threadPageNumEdit->text());
-        bool bOk = false;
-        int iPageNumber = strText.toInt(&bOk);
-        
-        if (bOk)
-        {
-            navigateToThreadListPage(forum, iPageNumber);
-        }
-        else
-        {
-            threadPageNumEdit->setText(QString::number(forum->getPageNumber()));
-        }
-    }
-}
-
-void MainWindow::threadFirstPageBtnClicked()
-{
-    ForumPtr forum = getCurrentForum();
-
-    if (forum != nullptr)
-    {
-        navigateToThreadListPage(forum, 1);
-    }
-}
-
-void MainWindow::threadPrevPageBtnClicked()
-{
-    ForumPtr forum = getCurrentForum();
-
-    if (forum != nullptr)
-    {
-        navigateToThreadListPage(forum, (forum->getPageNumber() - 1));
-    }
-}
-
-void MainWindow::threadNextPageBtnClicked()
-{
-    ForumPtr forum = getCurrentForum();
-
-    if (forum != nullptr)
-    {
-        navigateToThreadListPage(forum, (forum->getPageNumber() + 1));
-    }
-}
-
-void MainWindow::threadLastPageBtnClicked()
-{
-    ForumPtr forum = getCurrentForum();
-
-    if (forum != nullptr)
-    {
-        navigateToThreadListPage(forum, forum->getPageCount());
-    }
-}
-    
-void MainWindow::newThreadBtnClicked()
-{
-    ForumPtr forum = this->getCurrentForum();
-    if (forum != nullptr)
-    {
-        NewThreadDlg* newdlg = new NewThreadDlg(forum, this);
-        newdlg->setModal(false);
-        newdlg->show();
-    }
-}
-
 void MainWindow::newPostBtnClicked()
 {
     auto threadPtr = this->threadListWidget->getCurrentThread().lock();
@@ -1614,12 +1477,6 @@ void MainWindow::newPostHandler(BoardPtr b, PostPtr p)
 
         QMainWindow::statusBar()->showMessage("New post saved", 5000);
     }
-}
-
-ForumPtr MainWindow::getCurrentForum() const
-{
-    ForumPtr forum;
-    return forum;
 }
 
 void MainWindow::createLinkMessages()
@@ -1777,14 +1634,6 @@ void MainWindow::createThreadPanel()
     QObject::connect(threadMenuMoreBtn, &QPushButton::clicked, moreMenuPressed);
     QObject::connect(currentForumLbl, &ClickableLabel::clicked, moreMenuPressed);
 
-    // and now connect all the other buttons
-    QObject::connect(newThreadBtn, SIGNAL(clicked()), this, SLOT(newThreadBtnClicked()));
-    QObject::connect(threadPrevPageBtn, SIGNAL(clicked()), this, SLOT(threadPrevPageBtnClicked()));
-    QObject::connect(threadNextPageBtn, SIGNAL(clicked()), this, SLOT(threadNextPageBtnClicked()));
-    QObject::connect(threadFirstPageBtn, SIGNAL(clicked()), this, SLOT(threadFirstPageBtnClicked()));
-    QObject::connect(threadLastPageBtn, SIGNAL(clicked()), this, SLOT(threadLastPageBtnClicked()));
-    QObject::connect(threadPageNumEdit, SIGNAL(returnPressed()), this, SLOT(threadPageNumberEnterPressed()));
-
     QObject::connect(stickyButton, &QToolButton::clicked,
         [this](bool checked)
         {
@@ -1828,34 +1677,6 @@ void MainWindow::createPostPanel()
     });
 }
 
-void MainWindow::onRefreshForum()
-{
-    QAction* caller = qobject_cast<QAction*>(sender());
-    
-    ForumPtr forum;
-    if (caller != nullptr && !caller->data().canConvert<ForumPtr>())
-    {
-        forum = caller->data().value<ForumPtr>();
-    }
-    else
-    {
-        forum = getCurrentForum();
-    }
-    
-    if (forum != nullptr)
-    {
-        auto board = forum->getBoard().lock();
-
-        if (board)
-        {
-            startThreadLoading();
-            newThreadBtn->setEnabled(false);
-
-            board->requestThreadList(forum, ParserEnums::REQUEST_NOCACHE);
-        }
-    }
-}
-    
 // Invoked from the board toolbar when user clicks 'Open in Browser'
 void MainWindow::onOpenBrowserToolbar()
 {
