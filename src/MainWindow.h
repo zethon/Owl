@@ -235,7 +235,6 @@ private Q_SLOTS:
     void loginEvent(BoardPtr, const StringMap&);
 	void getUnreadForumsEvent(BoardPtr, ForumList);
 
-	void getForumHandler(BoardPtr, ForumPtr);
 	void getThreadsHandler(BoardPtr, ForumPtr);
 	void getPostsHandler(BoardPtr, ThreadPtr);
     void markForumReadHandler(BoardPtr, ForumPtr);
@@ -243,10 +242,6 @@ private Q_SLOTS:
     // handlers when a new thread or post is submitted successfully
     void newThreadHandler(BoardPtr, ThreadPtr);
     void newPostHandler(BoardPtr, PostPtr);
-
-	// services tree handler
-	void onSvcTreeClicked(const QModelIndex &);
-	void onSvcTreeContextMenu(const QPoint& pnt);
 
 	// toolbar drop down menu
     void onRefreshForum();

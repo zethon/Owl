@@ -171,6 +171,7 @@ public:
     ParserBasePtr cloneParser() const { return getParser()->clone(); }
 
     std::size_t hash() const;
+    std::string readableHash() const;
 
     bool hasUnread() const noexcept { return _hasUnread; }
     void setHasUnread(bool v) noexcept { _hasUnread = v; }
