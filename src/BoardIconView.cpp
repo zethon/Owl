@@ -17,28 +17,28 @@
 
 #include "BoardIconView.h"
 
-#define ICONSCALEWIDTH       128
-#define ICONSCALEHEIGHT      128
+constexpr auto ICONSCALEWIDTH = 128;
+constexpr auto ICONSCALEHEIGHT = 128;
 
-#define ICONDISPLAYWIDTH      48
-#define ICONDISPLAYHEIGHT     48
+constexpr auto ICONDISPLAYWIDTH = 48;
+constexpr auto ICONDISPLAYHEIGHT = 48;
 
-#define LISTICONWIDTH         64
-#define LISTICONHEIGHT        64
+constexpr auto LISTICONWIDTH = 64;
+constexpr auto LISTICONHEIGHT = 64;
 
-#define DEFAULT_HOVER         "darkgrey"
-#define DEFAULT_SELECTED      "white"
+constexpr auto DEFAULT_HOVER = "darkgrey";
+constexpr auto DEFAULT_SELECTED = "white";
 
-#define INDICATOR_ERROR       "#FF0000"
-#define INDICATOR_LOGGED_IN   "#ADFF2F"
-#define INDICATOR_UNREAD      "#ADFF2F"
+constexpr auto INDICATOR_ERROR = "#FF0000";
+constexpr auto INDICATOR_LOGGED_IN = "#ADFF2F";
+constexpr auto INDICATOR_UNREAD = "#ADFF2F";
 
 #ifdef Q_OS_WINDOWS
-    #define TOP_PADDING     20
+    constexpr auto TOP_PADDING = 20;
 #elif defined(Q_OS_MAC)
-    #define TOP_PADDING     20
+    constexpr auto TOP_PADDING = 20;
 #else
-    #define TOP_PADDING     5
+    constexpr auto TOP_PADDING = 5;
 #endif
 
 namespace owl
