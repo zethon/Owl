@@ -630,8 +630,11 @@ void MainWindow::markForumReadHandler(BoardPtr b, ForumPtr f)
     // TODO: reaload UI elements?
 }
 
-void MainWindow::newThreadHandler(BoardPtr b, ThreadPtr /*t*/)
+void MainWindow::newThreadHandler(BoardPtr board, ThreadPtr thread)
 {
+    _logger->trace("Thread successfully submitted to board '{}' with title '{}'",
+        board->readableHash(), thread->getTitle().toStdString());
+
 //    ForumPtr forum = this->getCurrentForum();
 
 //    if (forum != nullptr)
