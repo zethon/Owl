@@ -22,7 +22,8 @@ CREATE TABLE boards
 	username TEXT,                       
 	password TEXT,                       
 	icon BLOB,	
-	lastupdate TEXT			-- last time the forums of the board were synced
+    lastupdate TEXT,    -- last time the forums of the board were synced
+    uuid TEXT
 );
 
 CREATE TABLE boardvars 

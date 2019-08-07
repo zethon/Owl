@@ -6,6 +6,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlRecord>
+#include <QUuid>
 
 #include <Utils/OwlLogger.h>
 
@@ -87,6 +88,7 @@ void BoardManager::loadBoards()
 	int iAutoLogin = rec.indexOf("autologin");
 	int iIcon = rec.indexOf("icon");
 	int iLastUpdate = rec.indexOf("lastupdate");
+    int iUuid = rec.indexOf("uuid");
 
 	if (query.isActive())
 	{
@@ -118,6 +120,7 @@ void BoardManager::loadBoards()
 			b->setEnabled(query.value(iEnabledIdx).toBool());
 			b->setAutoLogin(query.value(iAutoLogin).toBool());
 			b->setFavIcon(query.value(iIcon).toString());
+            b->setUuid(query.value(iUuid).toString().toStdString());
 
 			QString updateStr = query.value(iLastUpdate).toString();
 			QDateTime lastUpdate = QDateTime::fromString(updateStr, Qt::ISODate);
@@ -448,6 +451,9 @@ bool BoardManager::createBoard(BoardPtr board)
 	
 	query.bindValue(":icon", board->getFavIcon());
 	query.bindValue(":lastupdate", QDateTime::currentDateTime());
+
+    const auto uuid = QUuid::createUuid();
+    query.bindValue(":uuid", uuid.toString());
 
 	if (query.exec())
 	{

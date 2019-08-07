@@ -1,13 +1,13 @@
 #pragma once
 #include <QtGui>
 #include <QtCore>
+#include <QtWidgets>
 #include <Parsers/ParserManager.h>
 #include <Utils/Exception.h>
 #include <Utils/QThreadEx.h>
 #include "Data/BoardManager.h"
 #include "NewThreadDlg.h"
 #include "AspectRatioPixmapLabel.h"
-#include "BoardsModel.h"
 #include "PostListWidget.h"
 #include "ui_MainWindow.h"
 

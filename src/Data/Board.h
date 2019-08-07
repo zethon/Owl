@@ -35,6 +35,8 @@ class Board :
 {
     Q_OBJECT
 
+    Q_PROPERTY(std::string uuid READ uuid WRITE setUuid NOTIFY UuidChanged)
+
 public:
 	
 	// used in the Board's options member for easy string names
@@ -54,12 +56,12 @@ public:
 
     virtual ~Board() = default;
 
-    bool operator==(const Board& other)
+    bool operator==(const Board& other) const
     {
         return hash() == other.hash();
     }
 
-    bool operator!=(const Board& other)
+    bool operator!=(const Board& other) const
     {
         return !(*this == other);
     }
@@ -91,6 +93,9 @@ public:
 	// PROPERTIES
 	void setDBId(const uint id) { _boardId = id; }
 	uint getDBId() const { return _boardId; }
+
+    void setUuid(const std::string& var) { _uuid = var; }
+    std::string uuid() const { return _uuid; }
     
     void setName(const QString& name) { _name = name; }
     QString getName() const;
@@ -177,6 +182,7 @@ public:
     void setHasUnread(bool v) noexcept { _hasUnread = v; }
 
 Q_SIGNALS:
+    void UuidChanged();
 	void onBoardwareInfo(BoardPtr, StringMap);
 	void onLogin(BoardPtr, StringMap);
 	void onForumList(BoardPtr, ForumList list);
@@ -207,6 +213,7 @@ private:
 	void doUpdateHash(ForumPtr parent);
 
 	uint			_boardId;
+    std::string     _uuid;
 
 	QString			_name;
 	QString			_url;
