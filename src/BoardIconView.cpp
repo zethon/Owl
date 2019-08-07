@@ -20,10 +20,10 @@
 #define ICONSCALEWIDTH       128
 #define ICONSCALEHEIGHT      128
 
-#define ICONDISPLAYWIDTH      38
-#define ICONDISPLAYHEIGHT     38
+#define ICONDISPLAYWIDTH      48
+#define ICONDISPLAYHEIGHT     48
 
-#define LISTICONWIDTH         70
+#define LISTICONWIDTH         64
 #define LISTICONHEIGHT        64
 
 #define DEFAULT_HOVER         "darkgrey"
