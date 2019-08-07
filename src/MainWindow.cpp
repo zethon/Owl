@@ -88,8 +88,8 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
     initializeTitleBar(this);
     toggleOldControls(false);
 
-    this->boardsViewDockWidget->setMaximumWidth(BOARDICONWIDGETWIDTH);
-    this->boardsViewDockWidget->setMinimumWidth(BOARDICONWIDGETWIDTH);
+    this->boardIconDockWidget->setMaximumWidth(BOARDICONWIDGETWIDTH);
+    this->boardIconDockWidget->setMinimumWidth(BOARDICONWIDGETWIDTH);
     this->centralWidget()->setMaximumWidth(CENTRALWIDGETWIDTH);
     this->centralWidget()->setMinimumWidth(CENTRALWIDGETWIDTH);
 
@@ -106,7 +106,7 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
     
     // create a blank title bar for the post view dock
     postViewDockWidget->setTitleBarWidget(new QWidget(postViewDockWidget));
-    boardsViewDockWidget->setTitleBarWidget(new QWidget(boardsViewDockWidget));
+    boardIconDockWidget->setTitleBarWidget(new QWidget(boardIconDockWidget));
     
     QTimer::singleShot(0, this, SLOT(onLoaded()));
 }
