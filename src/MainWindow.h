@@ -202,9 +202,7 @@ private Q_SLOTS:
 //	void onPreferences();
 	void onNewBoard();
 
-	void onLoginClicked();
     void onLinkActivated(const QString &urlStr);
-	void onTreeDoubleClicked(const QModelIndex&);
     
 	void expandThreadMenuPressed();
 	void threadPageNumberEnterPressed();
@@ -319,7 +317,6 @@ private:
     QSize           _servicesTreeLastSize;
 
     // MainWindow UI Settings that need class members
-    bool            _servicePaneVisible = true;
     bool            _statusBarVisibile = true;
     uint            _postsPanePosition = PANERIGHT;
 

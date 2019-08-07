@@ -361,11 +361,6 @@ bool MainWindow::event(QEvent *event)
 
         connect(timer, &QTimer::timeout, [=]()
         {
-            if (_servicePaneVisible)
-            {
-                Q_ASSERT(false);
-            }
-
             if (this->boardToolbar->isVisible())
             {
                 _actions.showBoardbar->setText("Hide Boards Toolbar");
@@ -780,22 +775,6 @@ void MainWindow::updateSelectedThread(ThreadPtr t)
     }
 }
 
-void MainWindow::onLoginClicked()
-{
-//    QModelIndexList selected = servicesTree->selectionModel()->selectedRows();
-
-//    for (QModelIndex index : selected)
-//    {
-//        QStandardItem* item = _svcModel->itemFromIndex(index);
-        
-//        if (item->parent() == nullptr)
-//        {
-//            BoardPtr b = item->data().value<BoardWeakPtr>().lock();
-//            b->login();
-//        }
-//    }
-}
-    
 void MainWindow::onLinkActivated(const QString &urlStr)
 {
     // TODO: test, this function changed a lot going from Qt4 -> Qt5
@@ -819,46 +798,8 @@ void MainWindow::onLinkActivated(const QString &urlStr)
     }
 }
 
-void MainWindow::onTreeDoubleClicked(const QModelIndex& idx)
-{
-    QStandardItem* item = _svcModel->itemFromIndex(idx);
-    
-    if (item->data().canConvert<BoardWeakPtr>())
-    {
-        BoardPtr board = item->data().value<BoardWeakPtr>().lock();
-
-        if (board->getStatus() != BoardStatus::ONLINE)
-        {
-            board->login();
-            
-            auto doc = board->getBoardItemDocument();
-            doc->setOrAddVar("%BOARDSTATUSIMG%", ":/icons/loading.gif");
-            doc->setOrAddVar("%BOARDSTATUSALT%", tr("Connecting"));
-            doc->reloadHtml();
-//            servicesTree->update();
-        }
-    }
-    else if (item->data().canConvert<ForumPtr>())
-    {
-        ForumPtr f = item->data().value<ForumPtr>();
-
-        auto board = f->getBoard().lock();
-
-        if (board && board->getStatus() != BoardStatus::ONLINE)
-        {
-            board->login();
-        }
-        else if (f->getForumType() == Forum::LINK)
-        {
-            QDesktopServices::openUrl(f->getVar("link", false));
-        }
-    }
-}
-
 void MainWindow::toggleOldControls(bool doshow)
 {
-//    servicesTree->setVisible(doshow);
-
     currentForumFrame->setVisible(doshow);
     threadNavFrame->setVisible(doshow);
     threadListWidget->setVisible(doshow);
@@ -1042,19 +983,19 @@ void MainWindow::createMenus()
         
         QObject::connect(menu, &QMenu::aboutToShow, [=]()
          {
-//             auto activeWindow = QApplication::activeWindow();
-//             auto widget = activeWindow->focusWidget();
-// 
-//             if (widget == servicesTree || widget == threadListView)
-//             {
-//                 undo->setEnabled(false);
-//                 redo->setEnabled(false);
-//                 cut->setEnabled(false);
-//                 copy->setEnabled(false);
-//                 paste->setEnabled(false);
-//                 selectAll->setEnabled(false);
-//                 deselectAll->setEnabled(false);
-//             }
+             auto activeWindow = QApplication::activeWindow();
+             auto widget = activeWindow->focusWidget();
+
+             if (widget == servicesTree2)
+             {
+                 undo->setEnabled(false);
+                 redo->setEnabled(false);
+                 cut->setEnabled(false);
+                 copy->setEnabled(false);
+                 paste->setEnabled(false);
+                 selectAll->setEnabled(false);
+                 deselectAll->setEnabled(false);
+             }
      });
     }
 
@@ -1335,20 +1276,12 @@ void MainWindow::createStatusBar()
     bvbtn->setAutoRaise(true);
     bvbtn->setStyleSheet("QToolButton { background-color: transparent; } QToolButton:hover { background-color: #D0D0D0; border-radius: 2px; }");
 
-//    QObject::connect(bvbtn, &QToolButton::clicked,
-//        [this](bool)
-//        {
-//            if (servicesTree->isVisible())
-//            {
-//                _servicesTreeLastSize = servicesTree->size();
-//            }
-//            else if (_servicesTreeLastSize.isValid())
-//            {
-//                servicesTree->resize(_servicesTreeLastSize);
-//            }
-
-//            servicesTree->setVisible(!servicesTree->isVisible());
-//        });
+    QObject::connect(bvbtn, &QToolButton::clicked,
+        [this](bool)
+        {
+            // TODO: need to toggle the visibility of the `BoardIconView`
+            _logger->trace("Toggling visibility of boards view");
+        });
 
     QMainWindow::statusBar()->addWidget(bvbtn);
     QMainWindow::statusBar()->setMaximumHeight(20);
@@ -1357,8 +1290,6 @@ void MainWindow::createStatusBar()
 void MainWindow::createSignals()
 {
     QObject::connect(actionExit, SIGNAL(triggered()), this, SLOT(close()));
-//    QObject::connect(servicesTree, SIGNAL(linkActivated(const QString&)), this, SLOT(onLinkActivated(const QString&)));
-
     QObject::connect(threadListWidget, &owl::ThreadListWidget::threadLoading, [this]()
     {
         startPostsLoading();
@@ -2047,18 +1978,14 @@ void MainWindow::onBoardDelete(BoardPtr b)
 
     // clear the serviceTree selection and remove
     // the board from the serviceTree
-//    servicesTree->clearSelection();
     _svcModel->removeBoardItem(b);
 
     // remove the board from the database
     BOARDMANAGER->deleteBoard(b);
-    //BOARDMANAGER->reload();
 
     if (BOARDMANAGER->getBoardCount() == 0)
     {
-//        servicesTree->setHasBoards(false);
         update();
-
         updateSelectedForum(ForumPtr());
         updateSelectedThread(ThreadPtr());
 
@@ -2104,9 +2031,6 @@ void MainWindow::readWindowSettings()
         const auto statusBarGeometry = settings.value("statusBarGeometry").value<QByteArray>();
         QMainWindow::statusBar()->restoreGeometry(statusBarGeometry);
 
-        _servicePaneVisible = settings.value("servicePaneVisibility").toBool();
-//        servicesTree->setVisible(_servicePaneVisible);
-
         _statusBarVisibile = settings.value("statusBarVisible").toBool();
         _postsPanePosition = settings.value("postsPanePosition").toUInt();
 
@@ -2140,11 +2064,13 @@ void MainWindow::writeWindowSettings()
     settings.setValue("geometry",saveGeometry());
     settings.setValue("state", saveState());
     settings.setValue("statusBarGeometry", QMainWindow::statusBar()->saveGeometry());
-//    settings.setValue("servicePaneVisibility", servicesTree->isVisible());
     settings.setValue("statusBarVisible", _statusBarVisibile);
     settings.setValue("postsPanePosition", _postsPanePosition);
     settings.setValue("showStickies", threadListWidget->showStickies());
     settings.setValue("showMenuBar", menuBar()->isVisible());
+
+    // TODO: hide servicesTree?
+    // settings.setValue("servicePaneVisibility", servicesTree->isVisible());
 }
                                                              
 void MainWindow::startThreadLoading()
@@ -2187,8 +2113,7 @@ void MainWindow::onDisplayOrderChanged(BoardPtr b, int iDirection)
 {	
     QMutexLocker locker(&_updateMutex);
 
-    // clear out any selection in the servicesTree the user may have
-//    servicesTree->setCurrentIndex(QModelIndex());
+    _logger->debug("Display order changed, moving board '{}' in direction {}", b->readableHash(), iDirection);
 
     // rearrange the board in the _svcModel 
     auto boardItem = _svcModel->getBoardItem(b);
