@@ -20,9 +20,6 @@
 constexpr auto ICONSCALEWIDTH = 128;
 constexpr auto ICONSCALEHEIGHT = 128;
 
-constexpr auto ICONDISPLAYWIDTH = 48;
-constexpr auto ICONDISPLAYHEIGHT = 48;
-
 constexpr auto LISTICONWIDTH = 64;
 constexpr auto LISTICONHEIGHT = 64;
 
@@ -35,10 +32,16 @@ constexpr auto INDICATOR_UNREAD = "#ADFF2F";
 
 #ifdef Q_OS_WINDOWS
     constexpr auto TOP_PADDING = 20;
+    constexpr auto ICONDISPLAYWIDTH = 48;
+    constexpr auto ICONDISPLAYHEIGHT = 48;
 #elif defined(Q_OS_MAC)
     constexpr auto TOP_PADDING = 20;
+    constexpr auto ICONDISPLAYWIDTH = 40;
+    constexpr auto ICONDISPLAYHEIGHT = 40;
 #else
     constexpr auto TOP_PADDING = 5;
+    constexpr auto ICONDISPLAYWIDTH = 40;
+    constexpr auto ICONDISPLAYHEIGHT = 40;
 #endif
 
 namespace owl
