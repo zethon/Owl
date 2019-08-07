@@ -78,7 +78,6 @@ SplashScreen::SplashScreen(const QPixmap & pixmap)
 ///////////////////////////////////////////////////////////////////////////////
 MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
     : QMainWindow(parent),
-      _svcModel{new BoardsModel(this)},
       _splash(splash),
       _imageOverlay{this},
       _logger(owl::initializeLogger("MainWindow"))
@@ -1620,14 +1619,6 @@ void MainWindow::newPostHandler(BoardPtr b, PostPtr p)
 ForumPtr MainWindow::getCurrentForum() const
 {
     ForumPtr forum;
-//    QModelIndex index = servicesTree->currentIndex();
-//    QStandardItem* item = _svcModel->itemFromIndex(index);
-
-//    if (item != nullptr && item->data().canConvert<ForumPtr>())
-//    {
-//        forum = item->data().value<ForumPtr>();
-//    }
-
     return forum;
 }
 
@@ -1976,10 +1967,6 @@ void MainWindow::onBoardDelete(BoardPtr b)
         }
     }
 
-    // clear the serviceTree selection and remove
-    // the board from the serviceTree
-    _svcModel->removeBoardItem(b);
-
     // remove the board from the database
     BOARDMANAGER->deleteBoard(b);
 
@@ -2115,17 +2102,6 @@ void MainWindow::onDisplayOrderChanged(BoardPtr b, int iDirection)
 
     _logger->debug("Display order changed, moving board '{}' in direction {}", b->readableHash(), iDirection);
 
-    // rearrange the board in the _svcModel 
-    auto boardItem = _svcModel->getBoardItem(b);
-    auto row = boardItem->row();
-    
-    auto takenBoardRow = _svcModel->takeRow(row);
-    auto takenSepRow = _svcModel->takeRow(row);
-
-    auto newRow = row + (iDirection * 2);
-    _svcModel->insertRow(newRow, takenSepRow);
-    _svcModel->insertRow(newRow, takenBoardRow);
-
     // search through the toolbar looking for the board
     auto actionIdx = -1;
     QAction* tbAction = nullptr;
@@ -2144,49 +2120,48 @@ void MainWindow::onDisplayOrderChanged(BoardPtr b, int iDirection)
     // then do we move it
     if (tbAction)
     {
-        if (iDirection > 0)
-        {
-            auto beforeIdx = actionIdx - +iDirection + 1;
-            auto numActions = boardToolbar->actions().size();
+//        if (iDirection > 0)
+//        {
+//            auto beforeIdx = actionIdx - +iDirection + 1;
+//            auto numActions = boardToolbar->actions().size();
             
-            if (beforeIdx >= numActions)
-            {
-                boardToolbar->addAction(tbAction);
-            }
-            else
-            {
-                boardToolbar->removeAction(tbAction);
+//            if (beforeIdx >= numActions)
+//            {
+//                boardToolbar->addAction(tbAction);
+//            }
+//            else
+//            {
+//                boardToolbar->removeAction(tbAction);
                 
-                // iDirection + 1 since we have to insert 'before'
-                auto otherIdx = row + iDirection + 1;
-                if (otherIdx >= boardToolbar->actions().size())
-                {
-                    // board icon is being moved to last position
-                    boardToolbar->addAction(tbAction);
-                }
-                else
-                {
-                    QAction* otherAction = boardToolbar->actions().at(otherIdx);
-                    boardToolbar->insertAction(otherAction, tbAction);
-                }
-            }
-        }
-        else if (iDirection < 0)
-        {
-            auto otherIdx = actionIdx - 1;
-            QAction* otherAction = boardToolbar->actions().at(otherIdx);
+//                // iDirection + 1 since we have to insert 'before'
+//                auto otherIdx = row + iDirection + 1;
+//                if (otherIdx >= boardToolbar->actions().size())
+//                {
+//                    // board icon is being moved to last position
+//                    boardToolbar->addAction(tbAction);
+//                }
+//                else
+//                {
+//                    QAction* otherAction = boardToolbar->actions().at(otherIdx);
+//                    boardToolbar->insertAction(otherAction, tbAction);
+//                }
+//            }
+//        }
+//        else if (iDirection < 0)
+//        {
+//            auto otherIdx = actionIdx - 1;
+//            QAction* otherAction = boardToolbar->actions().at(otherIdx);
 
-            if (otherAction)
-            {
-                boardToolbar->removeAction(tbAction);
-                boardToolbar->insertAction(otherAction, tbAction);
-            }
-        }
+//            if (otherAction)
+//            {
+//                boardToolbar->removeAction(tbAction);
+//                boardToolbar->insertAction(otherAction, tbAction);
+//            }
+//        }
     }
     else
     {
-        _logger->warn("Board '{}' ({}) not found in boardToolbar",
-            b->getName().toStdString(), b->getDBId());
+        _logger->warn("Board '{}' not found in boardToolbar", b->readableHash());
     }
 }
 

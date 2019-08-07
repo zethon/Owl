@@ -320,7 +320,6 @@ private:
     bool            _statusBarVisibile = true;
     uint            _postsPanePosition = PANERIGHT;
 
-    BoardsModel*    _svcModel = nullptr;
     SplashScreen*   _splash = nullptr;
     ImageOverlay    _imageOverlay;
 
