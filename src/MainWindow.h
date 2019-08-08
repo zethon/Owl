@@ -1,13 +1,13 @@
 #pragma once
 #include <QtGui>
 #include <QtCore>
+#include <QtWidgets>
 #include <Parsers/ParserManager.h>
 #include <Utils/Exception.h>
 #include <Utils/QThreadEx.h>
 #include "Data/BoardManager.h"
 #include "NewThreadDlg.h"
 #include "AspectRatioPixmapLabel.h"
-#include "BoardsModel.h"
 #include "PostListWidget.h"
 #include "ui_MainWindow.h"
 
@@ -202,18 +202,9 @@ private Q_SLOTS:
 //	void onPreferences();
 	void onNewBoard();
 
-	void onLoginClicked();
     void onLinkActivated(const QString &urlStr);
-	void onTreeDoubleClicked(const QModelIndex&);
     
 	void expandThreadMenuPressed();
-	void threadPageNumberEnterPressed();
-	void threadFirstPageBtnClicked();
-	void threadPrevPageBtnClicked();
-	void threadNextPageBtnClicked();
-	void threadLastPageBtnClicked();
-    
-    void newThreadBtnClicked();
 
 	// SLOTS related to the PostView pane
 	void newPostBtnClicked();
@@ -235,7 +226,6 @@ private Q_SLOTS:
     void loginEvent(BoardPtr, const StringMap&);
 	void getUnreadForumsEvent(BoardPtr, ForumList);
 
-	void getForumHandler(BoardPtr, ForumPtr);
 	void getThreadsHandler(BoardPtr, ForumPtr);
 	void getPostsHandler(BoardPtr, ThreadPtr);
     void markForumReadHandler(BoardPtr, ForumPtr);
@@ -244,12 +234,7 @@ private Q_SLOTS:
     void newThreadHandler(BoardPtr, ThreadPtr);
     void newPostHandler(BoardPtr, PostPtr);
 
-	// services tree handler
-	void onSvcTreeClicked(const QModelIndex &);
-	void onSvcTreeContextMenu(const QPoint& pnt);
-
 	// toolbar drop down menu
-    void onRefreshForum();
 	void onOpenBrowserToolbar();
 	void onBoardDelete();
 	void onBoardDelete(BoardPtr);
@@ -281,12 +266,8 @@ private:
 
     void createDebugMenu();
 
-    QMenu* createForumMenu(ForumPtr forum);
-
     void updateSelectedThread(ThreadPtr thread = ThreadPtr());
     void updateSelectedForum(ForumPtr forum = ForumPtr());
-
-    ForumPtr getCurrentForum() const;
 
     void navigateToThreadListPage(ForumPtr forum, int iPageNumber);
     void navigateToPostListPage(ThreadPtr thread, int iPageNumber);
@@ -324,11 +305,9 @@ private:
     QSize           _servicesTreeLastSize;
 
     // MainWindow UI Settings that need class members
-    bool            _servicePaneVisible = true;
     bool            _statusBarVisibile = true;
     uint            _postsPanePosition = PANERIGHT;
 
-    BoardsModel*    _svcModel = nullptr;
     SplashScreen*   _splash = nullptr;
     ImageOverlay    _imageOverlay;
 

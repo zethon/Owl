@@ -637,7 +637,13 @@ std::size_t Board::hash() const
     boost::hash_combine(seed, _name.toStdString());
     boost::hash_combine(seed, _url.toStdString());
     boost::hash_combine(seed, _protocolName.toStdString());
+    boost::hash_combine(seed, _uuid);
     return seed;
+}
+
+std::string Board::readableHash() const
+{
+    return fmt::format("{} ({})", this->getName().toStdString(), this->uuid());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
