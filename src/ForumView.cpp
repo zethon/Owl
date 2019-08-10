@@ -95,6 +95,7 @@ void ForumViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         painter->save();
         
         QFont font{ option.font };
+        font.setCapitalization(QFont::Capitalization::Capitalize);
         painter->setPen(QPen(Qt::white));
 
         QRect textRect { option.rect };
@@ -124,8 +125,8 @@ void ForumViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         painter->fillRect(option.rect, bgColor);
 
         owl::Forum* item = static_cast<owl::Forum*>(index.internalPointer());
+        QImage image;
 
-         QImage image;
         if (item->getForumType() == owl::Forum::ForumType::FORUM)
         {
             image = QImage(":/icons/forum.png");
