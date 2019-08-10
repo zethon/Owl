@@ -93,21 +93,13 @@ void ForumViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     if (item->getForumType() == owl::Forum::ForumType::CATEGORY)
     {
         painter->save();
-
-        if (option.state & QStyle::State_MouseOver)
-        {
-            painter->setPen(QPen(Qt::white));
-        }
-        else
-        {
-            painter->setPen(QColor("#f2f2f2"));
-        }
+        
+        QFont font{ option.font };
+        painter->setPen(QPen(Qt::white));
 
         QRect textRect { option.rect };
         textRect.adjust(5, 1, 0, -7);
 
-        QFont font{ option.font };
-        font.setBold(true);
         QFontMetrics metrics(font);
         QString elidedText = metrics.elidedText(item->getName(), Qt::ElideRight, textRect.width());
 
@@ -127,17 +119,16 @@ void ForumViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         }
         else if (option.state & QStyle::State_MouseOver)
         {
-            bgColor = QColor("#25383C");
+            bgColor = QColor("#6B818C");
         }
         painter->fillRect(option.rect, bgColor);
 
-        QImage image;
         owl::Forum* item = static_cast<owl::Forum*>(index.internalPointer());
 
+         QImage image;
         if (item->getForumType() == owl::Forum::ForumType::FORUM)
         {
-            if (item->hasUnread()) image = QImage(":/icons/forum_new.png");
-            else image = QImage(":/icons/forum.png");
+            image = QImage(":/icons/forum.png");
         }
         else if (item->getForumType() == owl::Forum::ForumType::LINK)
         {
@@ -151,19 +142,18 @@ void ForumViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         QRect workingRect{ option.rect };
         workingRect.adjust(5, yAdjust, 0, 0);
         painter->drawImage(QPoint(workingRect.x(), workingRect.y()), image);
-
-        // figure out which font we're gonna draw and then
-        //  adjust the rect accordingly
+        
         if (item->hasUnread())
         {
             QFont newfont { option.font };
             newfont.setBold(true);
             painter->setFont(newfont);
-            painter->setPen(QColor("white"));
+            painter->setPen(QColor("#FFFFFF"));
         }
         else
         {
-            painter->setPen(QColor("#f2f2f2"));
+            painter->setFont(option.font);
+            painter->setPen(QColor("#A5A5A5"));
         }
 
         // now adjust for the text
