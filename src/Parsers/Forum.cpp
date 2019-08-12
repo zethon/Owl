@@ -254,9 +254,19 @@ void BoardItem::removeChild(BoardItemPtr child, bool bThrow)
 	child->_parent.reset();
 }
 
-void Thread::setReplyCount(int var)
+QString Thread::getFirstUnreadId() const
 {
-    _iReplyCount = static_cast<std::uint32_t>(var);
+    if (_firstUnread)
+    {
+        return _firstUnread->getId();
+    }
+
+    return QString();
+}
+
+void Thread::setReplyCount(std::uint32_t var)
+{
+    _iReplyCount = var;
 }
 
 QString Thread::getPreviewText(uint maxLen /* =128 */ ) const

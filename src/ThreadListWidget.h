@@ -76,16 +76,16 @@ Q_SIGNALS:
     void threadLoading();
 
 private:
-    QString     _threadID;
-    QString     _title;
-    QString     _author;
-    QString     _lastAuthor;
-    QString     _dateText;
-    QString     _iconUrl;
-    uint        _replyCount = 0;
-    bool        _unread = false;
-    bool        _sticky = false;
-    bool        _selected = false;
+    QString         _threadID;
+    QString         _title;
+    QString         _author;
+    QString         _lastAuthor;
+    QString         _dateText;
+    QString         _iconUrl;
+    std::uint32_t   _replyCount = 0;
+    bool            _unread = false;
+    bool            _sticky = false;
+    bool            _selected = false;
 
     QString _name;
     QString _color;
@@ -121,8 +121,8 @@ public:
     Q_INVOKABLE void refreshThreadDisplay();
 
     // called from
-    Q_INVOKABLE void loadInBrowser(uint index);
-    Q_INVOKABLE void copyUrl(uint index);
+    Q_INVOKABLE void loadInBrowser(std::int32_t index);
+    Q_INVOKABLE void copyUrl(std::int32_t index);
 
 Q_SIGNALS:
     void threadLoading();

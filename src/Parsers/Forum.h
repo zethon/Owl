@@ -291,21 +291,13 @@ public:
 
     void setFirstUnreadPost(std::shared_ptr<Post> var) { _firstUnread = var; }
     std::weak_ptr<Post> getFirstUnread() const { return _firstUnread; }
-	QString getFirstUnreadId() const 
-	{ 
-		if (_firstUnread)
-		{
-			return _firstUnread->getId();
-		}
-
-		return QString();
-	}
+    QString getFirstUnreadId() const;
 
     void setViews(int var) { _iViews = static_cast<std::uint32_t>(var); }
     int getViews() const { return static_cast<std::int32_t>(_iViews); }
 
-    void setReplyCount(int var);
-    int getReplyCount() const { return static_cast<std::int32_t>(_iReplyCount); }
+    void setReplyCount(std::uint32_t var);
+    std::uint32_t getReplyCount() const { return _iReplyCount; }
 
 	void setAuthor(const QString& var) { _strAuthor = var; }
 	const QString& getAuthor() const { return _strAuthor; }
