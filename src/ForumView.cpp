@@ -20,9 +20,9 @@
 #elif defined(Q_OS_MAC)
     #define BOARDNAMEFONT       20
     #define USERNAMEFONT        15
-    #define TREEFONTSIZE        14
-    #define TREEITEMHEIGHT      25
-    #define TREECATHEIGHT       45
+    #define TREEFONTSIZE        16
+    #define TREEITEMHEIGHT      28
+    #define TREECATHEIGHT       48
     #define TOP_PADDING         23
     #define LEFT_PADDING        6
 #else
