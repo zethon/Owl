@@ -1014,13 +1014,26 @@ owl::ThreadPtr Tapatalk4x::makeThreadObject( QVariant* variant )
             }
         }
 
-		QDateTime dt = topicMap["last_reply_time"].toDateTime();
-		if (dt.isValid())
+		if (QDateTime dt = topicMap["last_reply_time"].toDateTime(); dt.isValid())
 		{
 			QString strTime = dt.toString("MM-dd-yyyy hh:mm AP");
 			post->setDatelineString(strTime);
 			post->setDateTime(dt);
 		}
+        else if (auto dt = topicMap["postTime"].toDateTime(); dt.isValid())
+        {
+            QString strTime = dt.toString("MM-dd-yyyy hh:mm AP");
+            post->setDatelineString(strTime);
+            post->setDateTime(dt);
+        }
+        else
+        {
+            auto epochTS = topicMap["timestamp"].toUInt();
+            auto dt2 = QDateTime::fromSecsSinceEpoch(epochTS);
+            QString strTime = dt2.toString("MM-dd-yyyy hh:mm AP");
+            post->setDatelineString(strTime);
+            post->setDateTime(dt2);
+        }
 
 		newThread->setLastPost(post);
 	}

@@ -245,6 +245,16 @@ Item
 
                         Text
                         {
+                            id: dateText
+                            anchors.top: titleText.bottom
+                            anchors.left: repliesText.right
+                            text: " " + String.fromCharCode(8226) + " " + model.modelData.dateText
+                            font.pointSize: 8;
+                            color: "grey"
+                        }
+
+                        Text
+                        {
                             id: previewTextItem
                             anchors.top: authorText.bottom
                             anchors.left: parent.left
