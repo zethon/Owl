@@ -201,6 +201,21 @@ QString ThreadObject::previewText() const
     return retval;
 }
 
+QString ThreadObject::createdTimeText() const
+{
+    QString dateText = _dateText; // fail safe
+    const ThreadPtr thread = _threadPtr.lock();
+    if (thread)
+    {
+        const auto postList = thread->getPosts();
+        if (!postList.empty())
+        {
+            dateText = postList.front()->getPrettyTimestamp(_dtOptions);
+        }
+    }
+    return dateText;
+}
+
 QString ThreadObject::dateText() const
 {
     QString dateText = _dateText; // fail safe
@@ -208,7 +223,10 @@ QString ThreadObject::dateText() const
     if (thread)
     {
         const auto lastPost = thread->getLastPost();
-        dateText = lastPost->getPrettyTimestamp(_dtOptions);
+        if (lastPost)
+        {
+            dateText = lastPost->getPrettyTimestamp(_dtOptions);
+        }
     }
     return dateText;
 }
