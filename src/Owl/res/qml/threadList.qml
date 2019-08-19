@@ -115,7 +115,7 @@ Item
 
                 property int avatarRectWidth: 68
                 property int spacerRectHeight: 10
-                property int delegateSpacerHeight: 35
+                property int delegateSpacerHeight: 25
 
                 width: parent.width
 
@@ -216,7 +216,7 @@ Item
                             anchors.left: parent.left
                             width: parent.width
                             text: title
-                            font.pointSize: 13;
+                            font.pointSize: 11;
                             font.bold: unread
                             wrapMode: Text.Wrap
                         }
@@ -226,7 +226,7 @@ Item
                             id: authorText
                             anchors.top: titleText.bottom
                             text: author
-                            font.pointSize: 8;
+                            font.pointSize: 9;
                             color: "grey"
                             font.bold: true
                         }
@@ -239,7 +239,7 @@ Item
                             text: " " + String.fromCharCode(8226) + " "
                                   + replyCount + " "
                                   + (replyCount == 1 ? qsTr("reply") : qsTr("replies"))
-                            font.pointSize: 8;
+                            font.pointSize: 9;
                             color: "grey"
                         }
 
@@ -249,7 +249,7 @@ Item
                             anchors.top: titleText.bottom
                             anchors.left: repliesText.right
                             text: " " + String.fromCharCode(8226) + " " + model.modelData.dateText
-                            font.pointSize: 8;
+                            font.pointSize: 9;
                             color: "grey"
                         }
 
@@ -261,7 +261,7 @@ Item
                             width: parent.width
                             text: previewText
                             wrapMode: Text.Wrap
-                            font.pointSize: 9
+                            font.pointSize: 8
                             color: "grey"
                         }
                     }
