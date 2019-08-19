@@ -715,10 +715,10 @@ QVariant Xenforo::doSubmitNewPost(PostPtr postInfo)
             if (replyDoc.parse(replyStr))
             {
                 // NOTE: There's no real way to discern the postID of the post we just submitted from the rest of the posts
-                // on the page. What we do instead is get a is of all the posts on reponse and assume that the last one is
+                // on the page. What we do instead is get a list of all the posts on reponse and assume that the last one is
                 // the post we just submitted. This should work *most* of the time.
                 const QList<QSgmlTag*> linodes = replyDoc.getElementsByName("li", "id", QRegExp{"post\\-\\d+"});
-                if (linodes.size() >0)
+                if (linodes.size() > 0)
                 {
                     // As noted above, the postID needs to be numeric. It probably isn't too important here but
                     // we'll be consistent.

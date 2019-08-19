@@ -15,13 +15,14 @@ class ThreadObject final : public QObject
     Q_PROPERTY(QString threadID READ threadID WRITE setThreadID NOTIFY threadIDChanged)
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
     Q_PROPERTY(QString previewText READ previewText NOTIFY previewTextChanged)
-    Q_PROPERTY(QString author READ author WRITE setAuthor NOTIFY authorChanged)
-    Q_PROPERTY(QString lastAuthor READ lastAuthor WRITE setLastAuthor NOTIFY lastAuthorChanged)
-    Q_PROPERTY(QString dateText READ dateText WRITE setDateText NOTIFY dateTextChanged)
     Q_PROPERTY(QString iconUrl READ iconUrl WRITE setIconUrl NOTIFY iconUrlChanged)
     Q_PROPERTY(uint replyCount READ replyCount WRITE setReplyCount NOTIFY replyCountChanged)
     Q_PROPERTY(bool unread READ unread WRITE setUnread NOTIFY unreadChanged)
     Q_PROPERTY(bool sticky READ sticky WRITE setSticky NOTIFY stickyChanged)
+    Q_PROPERTY(QString author READ author WRITE setAuthor NOTIFY authorChanged)
+    Q_PROPERTY(QString createdTimeText READ createdTimeText WRITE setCreatedTimeText NOTIFY createdTimeTextChanged)
+    Q_PROPERTY(QString lastAuthor READ lastAuthor WRITE setLastAuthor NOTIFY lastAuthorChanged)
+    Q_PROPERTY(QString dateText READ dateText WRITE setDateText NOTIFY dateTextChanged)
 
 public:
     explicit ThreadObject(ThreadPtr ptr, const DateTimeFormatOptions& dtOptions, QObject* parent = 0);
@@ -37,6 +38,9 @@ public:
 
     QString author() const { return _author; }
     void setAuthor(const QString& var) { _author = var; }
+
+    QString createdTimeText() const;
+    void setCreatedTimeText(const QString& var) { _createdTimeText = var; }
 
     QString lastAuthor() const { return _lastAuthor; }
     void setLastAuthor(const QString& var) { _lastAuthor = var; }
@@ -71,21 +75,23 @@ Q_SIGNALS:
     void replyCountChanged();
     void unreadChanged();
     void stickyChanged();
+    void createdTimeTextChanged();
 
     // sent when the thread is clicked on and a request to load it has been sent
     void threadLoading();
 
 private:
-    QString     _threadID;
-    QString     _title;
-    QString     _author;
-    QString     _lastAuthor;
-    QString     _dateText;
-    QString     _iconUrl;
-    uint        _replyCount = 0;
-    bool        _unread = false;
-    bool        _sticky = false;
-    bool        _selected = false;
+    QString         _threadID;
+    QString         _title;
+    QString         _author;
+    QString         _createdTimeText;
+    QString         _lastAuthor;
+    QString         _dateText;
+    QString         _iconUrl;
+    std::uint32_t   _replyCount = 0;
+    bool            _unread = false;
+    bool            _sticky = false;
+    bool            _selected = false;
 
     QString _name;
     QString _color;
@@ -121,8 +127,8 @@ public:
     Q_INVOKABLE void refreshThreadDisplay();
 
     // called from
-    Q_INVOKABLE void loadInBrowser(uint index);
-    Q_INVOKABLE void copyUrl(uint index);
+    Q_INVOKABLE void loadInBrowser(std::int32_t index);
+    Q_INVOKABLE void copyUrl(std::int32_t index);
 
 Q_SIGNALS:
     void threadLoading();

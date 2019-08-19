@@ -44,7 +44,7 @@ public:
 
 	struct TapaTalkParam 
 	{
-		ParamType type;
+        ParamType type = ParamType::STRING;
 		QVariant value;
 		QString name;
 

@@ -114,13 +114,14 @@ void ThreadListWidget::refreshThreadDisplay()
         }
 
         rootContext()->setContextProperty("threadListModel", QVariant::fromValue(modelList));
-        QMetaObject::invokeMethod(rootObject(), "setHasThreads", Qt::DirectConnection, Q_ARG(QVariant, (bool)(_threadList.size() > 0)));
+        QMetaObject::invokeMethod(rootObject(), "setHasThreads", Qt::DirectConnection,
+            Q_ARG(QVariant, static_cast<bool>(_threadList.size() > 0)));
     }
 }
 
-void ThreadListWidget::loadInBrowser(uint index)
+void ThreadListWidget::loadInBrowser(std::int32_t index)
 {
-    if (index < (uint)_threadList.size())
+    if (index < _threadList.size())
     {
         ThreadPtr thread = _threadList[index]->getSharedPtr();
         if (thread)
@@ -135,9 +136,9 @@ void ThreadListWidget::loadInBrowser(uint index)
     }
 }
 
-void ThreadListWidget::copyUrl(uint index)
+void ThreadListWidget::copyUrl(std::int32_t index)
 {
-    if (index < (uint)_threadList.size())
+    if (index < _threadList.size())
     {
         ThreadPtr thread = _threadList[index]->getSharedPtr();
         if (thread)
@@ -200,6 +201,21 @@ QString ThreadObject::previewText() const
     return retval;
 }
 
+QString ThreadObject::createdTimeText() const
+{
+    QString dateText = _dateText; // fail safe
+    const ThreadPtr thread = _threadPtr.lock();
+    if (thread)
+    {
+        const auto postList = thread->getPosts();
+        if (!postList.empty())
+        {
+            dateText = postList.front()->getPrettyTimestamp(_dtOptions);
+        }
+    }
+    return dateText;
+}
+
 QString ThreadObject::dateText() const
 {
     QString dateText = _dateText; // fail safe
@@ -207,7 +223,10 @@ QString ThreadObject::dateText() const
     if (thread)
     {
         const auto lastPost = thread->getLastPost();
-        dateText = lastPost->getPrettyTimestamp(_dtOptions);
+        if (lastPost)
+        {
+            dateText = lastPost->getPrettyTimestamp(_dtOptions);
+        }
     }
     return dateText;
 }

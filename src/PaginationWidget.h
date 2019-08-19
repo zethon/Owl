@@ -76,11 +76,11 @@ private:
     void createPreviousButtons();
     void createNextButtons();
 
-    std::uint32_t   _currentPage;
-    std::uint32_t   _totalPages;
+    std::uint32_t   _currentPage = 0;
+    std::uint32_t   _totalPages = 0;
 
-    QHBoxLayout*    _buttonLayout;
-    SimpleToolBar*  _toolBar = nullptr;
+    QHBoxLayout* _buttonLayout = nullptr;
+    SimpleToolBar* _toolBar = nullptr;
 };
 
 } // namespace
