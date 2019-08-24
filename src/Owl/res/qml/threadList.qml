@@ -274,12 +274,12 @@ Item
                             anchors.left: parent.left
                             anchors.topMargin: 3
                             width: parent.width
-                            text: qsTr("%1 replied %2")
+                            text: qsTr("<b>%1</b> replied %2")
                                 .arg(lastAuthor)
                                 .arg(model.modelData.dateText)
                             wrapMode: Text.Wrap
                             font.pointSize: 8
-                            font.bold: true
+//                            font.bold: true
                             color: "grey"
                         }
                     }
