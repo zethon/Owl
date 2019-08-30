@@ -209,7 +209,11 @@ public:
         }
         else
         {
+#ifdef _WINDOWS
+            prompt = QStringLiteral("$> ");
+#else
             prompt = QString("\033[35m$\033[0m> ");
+#endif
         }
 
         return prompt;
@@ -285,12 +289,12 @@ class ConsoleApp final : public QObject
     void listPosts(const uint pagenumber, const uint perpage, bool bShowIds);
 
     void printPost(const owl::PostPtr post, uint id);
-    void printPost(uint postIdx);
+    void printPost(size_t postIdx);
 
     // makes sure there's an active connection and throws an error if not
     bool verifyLoggedIn(bool bSupressMessage = false);
 
-    void gotoItemNumber(const size_t idx);
+    void gotoItemNumber(size_t idx);
     void gotoNext(const QString&);
     void gotoPrevious(const QString&);
 

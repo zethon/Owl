@@ -8,3 +8,4 @@ wincmake.sh
 build
 .vscode/
 *.txt.user.4.8-pre1
+src/res/Owl.aps

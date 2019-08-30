@@ -53,8 +53,8 @@ QVariant Tapatalk4x::doLogin(const LoginInfo& info)
 
     _loginInfo = info;
 
-	QString username(info.first.toLatin1().toBase64());
-	QString password(info.second.toLatin1().toBase64());
+	QString username(info.login().toLatin1().toBase64());
+	QString password(info.password().toLatin1().toBase64());
 
 	if (_bUseMD5)
 	{

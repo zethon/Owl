@@ -318,9 +318,9 @@ QVariant LuaParserBase::doLogin(const LoginInfo& info)
 	
 	// pass a login table as a param
 	lua_newtable(L);
-	lua_pushstring(L, info.first.toLatin1());
+	lua_pushstring(L, info.login().toLatin1());
 	lua_setfield(L, -2, "username");
-	lua_pushstring(L, info.second.toLatin1());
+	lua_pushstring(L, info.password().toLatin1());
 	lua_setfield(L, -2, "password");
 
 	// call Lua's function

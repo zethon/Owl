@@ -4,6 +4,7 @@
 
 #include "Tapatalk.h"
 #include "Xenforo.h"
+#include "Xenforo2.h"
 
 #include <Utils/OwlLogger.h>
 
@@ -39,6 +40,7 @@ void ParserManager::init(bool bLoadLuaParsers, QString luaParserFolder)
 
     _nativeParsers.insert(TAPATALK_NAME, ParserInfo(TAPATALK_NAME, TAPATALK_PRETTYNAME, Tapatalk4x::staticMetaObject));
     _nativeParsers.insert(XENFORO_NAME, ParserInfo(XENFORO_NAME, XENFORO_PRETTYNAME, Xenforo::staticMetaObject));
+    _nativeParsers.insert(XENFORO2_NAME, ParserInfo(XENFORO2_NAME, XENFORO2_PRETTYNAME, Xenforo2::staticMetaObject));
 
 	if (bLoadLuaParsers)
 	{

@@ -79,7 +79,7 @@ void WARN(const QString& text)
     WARN(text.toStdString());
 }
 
-void ERROR(const std::string& text)
+void printError(const std::string& text)
 {
     std::lock_guard<std::mutex> lock(appOutputMutex);
 
@@ -93,14 +93,14 @@ void ERROR(const std::string& text)
               << std::endl;
 }
 
-void ERROR(const char* text)
+void printError(const char* text)
 {
-    ERROR(std::string(text));
+    printError(std::string(text));
 }
 
-void ERROR(const QString& text)
+void printError(const QString& text)
 {
-    ERROR(text.toStdString());
+    printError(text.toStdString());
 }
 
 void ConsoleApp::doHelp(const QString&)
@@ -124,6 +124,7 @@ ConsoleApp::ConsoleApp(QObject *parent)
     : QObject(parent),
       _prompt(_location)
 {
+#ifndef _WINDOWS
     struct winsize sz;
     if (ioctl(0,TIOCGWINSZ, &sz) == 0 && sz.ws_col > 0 && sz.ws_row > 0)
     {
@@ -131,6 +132,7 @@ ConsoleApp::ConsoleApp(QObject *parent)
         _appOptions.setOrAdd("wheight", sz.ws_row);
     }
     else
+#endif
     {
         // old DOS window default
         _appOptions.setOrAdd("wwidth", 80);
@@ -317,7 +319,7 @@ void ConsoleApp::doLogin(const QString& options)
             }
             else
             {
-                ERROR("Could not sign into " + boardUrl);
+                printError("Could not sign into " + boardUrl);
             }
         }
         catch (const owl::Exception& ex)
@@ -335,7 +337,7 @@ void ConsoleApp::doLogin(const QString& options)
     }
     else
     {
-        ERROR("Could not find a parser for board '" + boardUrl + "'");
+        printError("Could not find a parser for board '" + boardUrl + "'");
     }
 }
 
@@ -673,16 +675,16 @@ void ConsoleApp::printPost(const PostPtr post, uint idx/*=0 */)
     _lastListType = ListType::SINGLEPOST;
 }
 
-void ConsoleApp::printPost(uint idx)
+void ConsoleApp::printPost(std::size_t idx)
 {
     owl::ThreadPtr currentThread = std::make_shared<owl::Thread>(_location.thread.first);
-    currentThread->setPageNumber(idx);
+    currentThread->setPageNumber(static_cast<int>(idx));
     currentThread->setPerPage(1);
 
     owl::PostList posts = _parser->getPosts(currentThread, ParserBase::PostListOptions::FIRST_POST);
     if (posts.size() > 0)
     {
-        _location.postIdx = idx;
+        _location.postIdx = static_cast<uint>(idx);
         printPost(posts.at(0), _location.postIdx);
     }
     else
@@ -703,7 +705,7 @@ bool ConsoleApp::verifyLoggedIn(bool bSupressMessage/*=false*/)
     return bLoggedIn;
 }
 
-void ConsoleApp::gotoItemNumber(const size_t idx)
+void ConsoleApp::gotoItemNumber(size_t idx)
 {
     if (_lastListType == ListType::POSTS)
     {
@@ -712,7 +714,7 @@ void ConsoleApp::gotoItemNumber(const size_t idx)
     else if (idx > 0 && idx <= (size_t)_listItems.size())
     {
         const auto zeroIdx = idx - 1;
-        BoardItemPtr item = _listItems.at(zeroIdx);
+        BoardItemPtr item = _listItems.at(static_cast<std::int32_t>(zeroIdx));
 
         if (_lastListType == ListType::FORUMS)
         {

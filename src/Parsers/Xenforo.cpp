@@ -175,8 +175,8 @@ QVariant Xenforo::doLogin(const LoginInfo& loginInfo)
     StringMap params;
 
     // set up our login-info
-    params.add("login", loginInfo.first);
-    params.add("password", loginInfo.second);
+    params.add("login", loginInfo.login());
+    params.add("password", loginInfo.password());
 
     // and other params we want to pass
     params.add("cookie_check", "0");

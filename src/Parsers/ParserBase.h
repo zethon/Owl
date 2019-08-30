@@ -22,7 +22,23 @@ struct ParserEnums
 };
 
 typedef QVector<QString> ForumIdList;
-typedef std::pair<QString, QString> LoginInfo;
+
+class LoginInfo
+{
+    QString _login;
+    QString _password;
+
+public:
+    LoginInfo() = default;
+    LoginInfo(const QString& login, const QString& pass)
+        : _login(login),
+          _password(pass)
+    {}
+
+    QString login() const { return _login;  }
+    QString password() const { return _password; }
+    bool empty() const { return _login.isEmpty() && _password.isEmpty(); }
+};
 
 class ParserBase;
 using ParserBasePtr = std::shared_ptr<ParserBase>;
@@ -81,8 +97,6 @@ public:
 
     void setOptions(StringMapPtr var);
 
-	void clearCache();
-    
     WebClientConfig createWebClientConfig();
 //	WebClientPtr createWebClient();
 

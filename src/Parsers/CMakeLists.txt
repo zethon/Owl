@@ -13,6 +13,7 @@ set (SOURCE_FILES
     ParserManager.cpp
     Tapatalk.cpp
     Xenforo.cpp
+    Xenforo2.cpp
     xrvariant.cpp
     xrbase64.cpp
 )
@@ -25,6 +26,7 @@ set (MOC_HEADERS
     ParserManager.h
     Tapatalk.h
     Xenforo.h
+    Xenforo2.h
 )
 
 set (HEADER_FILES

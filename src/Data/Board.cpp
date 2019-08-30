@@ -115,8 +115,8 @@ void Board::setParser(ParserBasePtr parser)
 
 void Board::setLoginInfo(const LoginInfo& var)
 {
-	setUsername(var.first);
-	setPassword(var.second);
+	setUsername(var.login());
+	setPassword(var.password());
 }
 
 void Board::setCustomUserAgent(bool bCustom)
