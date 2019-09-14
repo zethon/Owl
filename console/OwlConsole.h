@@ -4,7 +4,9 @@
 #include <stack>
 #include <QtCore>
 #include "../src/Parsers/Forum.h"
+
 #include "Terminal.h"
+#include "CommandHistory.h"
 
 namespace owl
 {
@@ -265,6 +267,7 @@ class ConsoleApp final : public QObject
     QList<ConsoleCommand>       _commands;
     QList<ConsoleCommand>       _boardCommands;
 
+    CommandHistory              _cmdHistory;
     Prompt                      _prompt;
 
     bool                        _bDoneApp = false;
@@ -310,6 +313,11 @@ public:
     QStringList& getStartCommands() { return _startCommands; }
 
     void setColor(bool colorOn);
+
+    void doUpArrow();
+    void doDownArrow();
+    void doLeftArrow();
+    void doRightArrow();
     
 Q_SIGNALS:
     void finished();

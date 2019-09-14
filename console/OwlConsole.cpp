@@ -793,8 +793,38 @@ void ConsoleApp::initCommands()
         ConsoleCommand("version,about", tr("Display version information"),
             [](const QString&)
             {
-
                 std::cout << "OwlConsol v" << OWLCONSOLE_VERSION << " \tBuilt: " OWLCONSOLE_BUILDTIMESTAMP << std::endl;
+            }),
+
+        ConsoleCommand("score", tr("Query an URL and a parser for its parsing score"),
+            [&](const QString& options)
+            {
+                QCommandLineParser p;
+                p.addPositionalArgument("parser", "Parser name", "parser");
+                p.addPositionalArgument("url", "URL");
+                p.addPositionalArgument("login", "username");
+                p.addPositionalArgument("password", "Password");
+                p.parse(QStringList() << "score" << options.split(' '));
+
+                const auto& args = p.positionalArguments();
+                if (args.size() != 4)
+                {
+                    std::cout << p.helpText().toStdString() << std::endl;
+                    return;
+                }
+
+                QString parserName = args.at(0);
+                QString url = args.at(1);
+                QString username = args.at(2);
+                QString password = args.at(3);
+
+                auto parser = ParserManager::instance()->createParser(parserName, url, false);
+                if (!parser)
+                {
+                    std::cout << "Unknown parser '" << parserName.toStdString() << "'" << std::endl;
+                }
+
+                //const auto score = parser->
             }),
 
         ConsoleCommand("set", tr("Set application variable"),
@@ -974,7 +1004,7 @@ void ConsoleApp::doBackspace()
     if (!_commandLine.isEmpty())
     {
         _commandLine.remove(_commandLine.size() - 1, 1);
-        std::cout << "\b \b" << std::flush;
+        _terminal.backspace();
     }
 }
 
@@ -988,6 +1018,7 @@ bool ConsoleApp::doEnter()
     else if (!_commandLine.isEmpty())
     {
         parseCommand(_commandLine);
+        _cmdHistory.commit(_commandLine);
         _commandLine.clear();
 
         if (!_bDoneApp)
@@ -999,6 +1030,47 @@ bool ConsoleApp::doEnter()
     return _bDoneApp;
 }
 
+void ConsoleApp::doUpArrow()
+{
+    if (_cmdHistory.size() > 0)
+    {
+        _cmdHistory.up();
+        _terminal.backspaces(_commandLine.size());
+        _commandLine = _cmdHistory.getCurrent();
+        _terminal.print(_commandLine);
+    }
+}
+
+void ConsoleApp::doDownArrow()
+{
+    if (_cmdHistory.size() > 0)
+    {
+        _cmdHistory.down();
+        _terminal.backspaces(_commandLine.size());
+        _commandLine = _cmdHistory.getCurrent();
+        _terminal.print(_commandLine);
+    }
+}
+
+void ConsoleApp::doLeftArrow()
+{
+    qDebug() << "LEFT ARROW";
+}
+
+void ConsoleApp::doRightArrow()
+{
+    qDebug() << "RIGHT ARROW";
+}
+
+void loadHistory(owl::CommandHistory& history)
+{
+    const QString writePath = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+    const QString historyFile = QDir(writePath).absoluteFilePath(".history");
+    qDebug() << historyFile;
+    history.setHistoryFile(historyFile);
+    history.loadHistory(false);
+}
+
 void ConsoleApp::run()
 {
     std::cout << "Owl Console " << OWLCONSOLE_VERSION << std::endl;
@@ -1007,13 +1079,19 @@ void ConsoleApp::run()
     // initialize the ParserManager
     ParserManager::instance()->init(!_luaFolder.isEmpty(), _luaFolder);
 
+    loadHistory(_cmdHistory);
+
     // set up all our terminal commands
     initCommands();
 
     // set up the Terminal signals
-    QObject::connect(&_terminal, SIGNAL(onChar(QChar)), this, SLOT(doChar(QChar)), Qt::DirectConnection);
-    QObject::connect(&_terminal, SIGNAL(onBackspace(void)), this, SLOT(doBackspace(void)), Qt::DirectConnection);
-    QObject::connect(&_terminal, SIGNAL(onEnter(void)), this, SLOT(doEnter(void)), Qt::DirectConnection);
+    QObject::connect(&_terminal, &Terminal::onChar, this, &ConsoleApp::doChar);
+    QObject::connect(&_terminal, &Terminal::onBackspace, this, &ConsoleApp::doBackspace);
+    QObject::connect(&_terminal, &Terminal::onEnter, this, &ConsoleApp::doEnter);
+    QObject::connect(&_terminal, &Terminal::onUpArrow, this, &ConsoleApp::doUpArrow);
+    QObject::connect(&_terminal, &Terminal::onDownArrow, this, &ConsoleApp::doDownArrow);
+    QObject::connect(&_terminal, &Terminal::onLeftArrow, this, &ConsoleApp::doLeftArrow);
+    QObject::connect(&_terminal, &Terminal::onRightArrow, this, &ConsoleApp::doRightArrow);
 
     try
     {
@@ -1068,6 +1146,7 @@ void ConsoleApp::run()
         std::cerr << "There was an unknown exception" << std::endl;
     }
 
+    _cmdHistory.saveHistory();
     Q_EMIT finished();
 }
 

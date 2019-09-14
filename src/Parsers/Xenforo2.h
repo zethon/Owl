@@ -1,5 +1,8 @@
 #pragma once
 #include <QtCore>
+
+#include "../Utils/QSgml.h"
+
 #include "ParserBase.h"
 
 class QSgml;
@@ -39,10 +42,7 @@ public:
 
 protected:
 
-    QVariant doLogin(const LoginInfo&) override
-    {
-        return QVariant{};
-    }
+    QVariant doLogin(const LoginInfo&) override;
 
     QVariant doLogout() override
     {
@@ -92,6 +92,7 @@ protected:
 private:
     owl::WebClient                      _webclient;
     std::shared_ptr<spdlog::logger>     _logger;
+    QSgml                               _parser;
 
 };
 

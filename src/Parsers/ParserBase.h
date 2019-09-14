@@ -164,6 +164,20 @@ public:
 
     virtual QString getLastRequestUrl() = 0;
 
+    // if you can login
+    // if you can list more than one sub (flat structure)
+    // if you can list more than one thread in one sub
+    // if you can list more than
+
+    // Score: 0 thru 100 
+    //  -> 100% if the board identifies itself AND it can be parsed
+    //  -> 0% if nothing works
+    virtual std::uint32_t parsingScore(const owl::LoginInfo& url)
+    {
+        // TODO: make this pure virtual
+        return 0;
+    }
+
 Q_SIGNALS:
     void loginCompleted(StringMap loginInfo);
 	void logoutCompleted();

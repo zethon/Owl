@@ -45,8 +45,51 @@ void Terminal::run()
             {
                 done = onEnter();
             }
+            break;
+
+            case 0:
+            case 224:
+            {
+                switch (_getch())
+                {
+                    default:
+                    break;
+
+                    case 72:
+                        Q_SIGNAL onUpArrow();
+                    break;
+
+                    case 80:
+                        Q_SIGNAL onDownArrow();
+                    break;
+
+                    case 75:
+                        Q_SIGNAL onLeftArrow();
+                    break;
+
+                    case 77:
+                        Q_SIGNAL onRightArrow();
+                    break;
+                }
+            }
+            break;
         }
     }
+}
+
+void Terminal::print(const QString& text)
+{
+    std::cout << text.toStdString();
+}
+
+void Terminal::println(const QString& text)
+{
+    std::cout << text.toStdString() << '\n';
+}
+
+void Terminal::backspace()
+{
+    std::cout << "\b \b" << std::flush;
 }
 
 } // namespace

@@ -6,17 +6,23 @@ INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-SET (SOURCE_FILES main.cpp OwlConsole.cpp)
+SET (SOURCE_FILES
+    CommandHistory.cpp
+    main.cpp 
+    OwlConsole.cpp)
+
 SET (MOC_HEADERS OwlConsole.h Terminal.h)
 
 SET (HEADER_FILES
     Core.h
+    CommandHistory.h
     libs/rang.hpp
     ${MOC_HEADERS}
 )
 
 if (WIN32)
     list(APPEND SOURCE_FILES TerminalWindows.cpp)
+    add_definitions(-D_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING)
 elseif (UNIX)
     list(APPEND SOURCE_FILES TerminalUnix.cpp)
 endif(WIN32)

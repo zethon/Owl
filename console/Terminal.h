@@ -26,9 +26,25 @@ public:
 
     void run();
 
+    void print(const QString& text);
+    void println(const QString& text);
+
+    void backspace();
+    void backspaces(std::size_t spaces)
+    {
+        for (auto i = 0; i < spaces; i++)
+        {
+            backspace();
+        }
+    }
+
 Q_SIGNALS:
     void onChar(QChar c);
     void onBackspace();
+    void onUpArrow();
+    void onDownArrow();
+    void onLeftArrow();
+    void onRightArrow();
     bool onEnter();
 
 private:
