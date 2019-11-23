@@ -8,7 +8,6 @@ install:
 
       alias python=python3
       sudo pip install conan
-      sudo apt-get install libgl1-mesa-dev
     fi
 
   - |
@@ -44,16 +43,15 @@ matrix:
         - CONFIG=RelWithDebInfo
       addons:
         apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: "ppa:beineri/opt-qt-5.12.3-bionic"
           packages:
             - gcc-7
             - g++-7
             - build-essential
-            - qt512base
-            - qt512tools
-            - qt512webengine
-          sources:
-            - ubuntu-toolchain-r-test
-            - sourceline: "ppa:beineri/opt-qt-5.12.3-bionic"
+            - qt512-meta-full
+            - libgl1-mesa-dev
 
 script:
   - mkdir build
@@ -61,14 +59,8 @@ script:
 
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      # NOTE: Ideally the "libstdc++" here would be "libstdc++11" but that seems to cause problems
-      # on Travis because they're using an old version of Ubuntu. Of course the "libstdc++" might 
-      # work as-is if Hunspell was built using the same standard library but as it stands now, my 
-      # Conan libs use "libstdc++11" and I don't feel like digging into this anymore right now in 
-      # order to fix that.
-      # conan install .. --build missing -s compiler=gcc -s compiler.libcxx=libstdc++ -s compiler.version=7
-      conan install .. --build missing  -s compiler.libcxx=libstdc++11
       source /opt/qt512/bin/qt512-env.sh;
+      conan install .. --build missing  -s compiler.libcxx=libstdc++11
       cmake .. -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DCONAN_LIBCXX=libstdc++ -DBUILD_TEST=ON -DBUILD_GUI=ON 
     fi
 
@@ -88,4 +80,4 @@ notifactions:
     recipients:
       - aclaure@gmail.com
     on_success: never
-    on_failre: always
+    on_failure: always
