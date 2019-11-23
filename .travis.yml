@@ -8,6 +8,7 @@ install:
 
       alias python=python3
       sudo pip install conan
+      sudo apt-get install libgl1-mesa-dev
     fi
 
   - |
@@ -58,7 +59,6 @@ script:
   - mkdir build
   - cd build
 
-  # Linux
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       # NOTE: Ideally the "libstdc++" here would be "libstdc++11" but that seems to cause problems
@@ -66,12 +66,12 @@ script:
       # work as-is if Hunspell was built using the same standard library but as it stands now, my 
       # Conan libs use "libstdc++11" and I don't feel like digging into this anymore right now in 
       # order to fix that.
-      conan install .. --build missing -s compiler=gcc -s compiler.libcxx=libstdc++ -s compiler.version=7
+      # conan install .. --build missing -s compiler=gcc -s compiler.libcxx=libstdc++ -s compiler.version=7
+      conan install .. --build missing  -s compiler.libcxx=libstdc++11
       source /opt/qt512/bin/qt512-env.sh;
-      cmake .. -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DCONAN_LIBCXX=libstdc++ -DBUILD_TEST=ON -DBUILD_GUI=OFF 
+      cmake .. -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DCONAN_LIBCXX=libstdc++ -DBUILD_TEST=ON -DBUILD_GUI=ON 
     fi
 
-  # OSX
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       conan install .. --build missing
