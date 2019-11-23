@@ -1,22 +1,3 @@
-# NOTE: Where we left off with Linux -- the -D_GLIBCXX_USE_CXX11_ABI=[0|1] does nothing
-# on the older version of Ubuntu (14.04) that Travis CI uses. Hence when I tried to link 
-# everything against the C++11 system libraries, I still got linker errors about 
-# "undefined reference to `std::__cxx11::basic_string...". When I tried to build against the
-# old libs, I get the same linker errors. These all seem related to hunspell. One possible
-# solution would be to re-build Hunspell and link against the old system libraries, but I'm
-# (1) not entirely that will work on 18.04, which is the Ubuntu version I'm using and (2)
-# I seem to remember something about static libraries not linking until they're linked with
-# an executable but maybe that depends on the implementation? I had to explicitly link the 
-# Conan libraries with the Owl libraries in order to avoid linking errors. ANOTHER possible
-# solution would be to use Docker, but that's an entire learning curve and pain in the ass 
-# that I don't want to deal with right now.
-# 
-# I'm going to put this to rest for a little bit so I can move on and work on other areas I want 
-# to work on. Hopefully Travis will support Ubuntu 16.04 (or possibly 18.04) soon and this will
-# "just work". In the meantime, we are able to build the unit tests on the old Ubuntu, so we will
-# go ahead and build those and skip building the GUI for now.
-#
-
 language: cpp
 
 install:
@@ -29,26 +10,6 @@ install:
       # cert failure when trying to download curl
       sudo pip install conan
       alias python=python3
-      
-      # Since we are using GCC7 we need to update `ld`. The default version, 2.24, will
-      # fail to link the generated object files. There seems to be no other easier way
-      # to update "ld", so we pull down binutils, build it and then link the resulting
-      # executable to the system's path
-      pushd .
-      cd ..
-      mkdir binutils
-      cd binutils
-      wget http://ftp.gnu.org/gnu/binutils/binutils-2.30.tar.gz
-      tar -xf binutils-2.30.tar.gz
-      mkdir binutils-build
-      cd binutils-build
-      ../binutils-2.30/configure --target=$TARGET --prefix="$PREFIX" --with-sysroot --disable-nls --disable-werror
-      make
-      sudo make install
-      cd ..
-      sudo rm -f /usr/bin/ld
-      sudo ln -s binutils-build/ld/ld-new /usr/bin/ld
-      popd
     fi
 
   - |
@@ -73,7 +34,7 @@ matrix:
       osx_image: xcode10
       compiler: clang
       env: CONFIG=Debug
-    - os: linux
+    - os: bionic
       dist: trusty
       sudo: required
       compiler: gcc
@@ -103,12 +64,13 @@ script:
   # Linux
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      # NOTE: Ideally the "libstdc++" here would be "libstdc++11" but that seems to cause problems
-      # on Travis because they're using an old version of Ubuntu. Of course the "libstdc++" might 
-      # work as-is if Hunspell was built using the same standard library but as it stands now, my 
-      # Conan libs use "libstdc++11" and I don't feel like digging into this anymore right now in 
-      # order to fix that.
-      conan install .. --build missing -s compiler=gcc -s compiler.libcxx=libstdc++ -s compiler.version=7
+      # # NOTE: Ideally the "libstdc++" here would be "libstdc++11" but that seems to cause problems
+      # # on Travis because they're using an old version of Ubuntu. Of course the "libstdc++" might 
+      # # work as-is if Hunspell was built using the same standard library but as it stands now, my 
+      # # Conan libs use "libstdc++11" and I don't feel like digging into this anymore right now in 
+      # # order to fix that.
+      # conan install .. --build missing -s compiler=gcc -s compiler.libcxx=libstdc++ -s compiler.version=7
+      conan install .. --build missing  -s compiler.libcxx=libstdc++11
       source /opt/qt510/bin/qt510-env.sh;
       cmake .. -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DCONAN_LIBCXX=libstdc++ -DBUILD_TEST=ON -DBUILD_GUI=OFF 
     fi
