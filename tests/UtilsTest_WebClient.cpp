@@ -83,7 +83,7 @@ std::tuple<const char*, const char*> redirectData[]
     std::tuple<const char*, const char*>
     {
         "http://lulzapps.com",
-        "http://www.owlclient.com/"
+        "https://www.owlclient.com/"
     },
 //    std::tuple<const char*, const char*>
 //    {

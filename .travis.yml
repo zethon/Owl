@@ -70,9 +70,7 @@ script:
       cmake .. -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DBUILD_TEST=ON -DBUILD_CONSOLE=ON
     fi
   
-  - cmake --build . --config "${CONFIG}" -- -j3 VERBOSE=1
-
-after_success:
+  - cmake --build . --config "${CONFIG}" -- -j3
   - ctest -C "${CONFIG}"
 
 notifactions:
