@@ -61,7 +61,7 @@ script:
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       source /opt/qt512/bin/qt512-env.sh;
       conan install .. --build missing  -s compiler.libcxx=libstdc++11
-      cmake .. -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DCONAN_LIBCXX=libstdc++ -DBUILD_TEST=ON -DBUILD_GUI=ON 
+      cmake .. -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DCONAN_LIBCXX=libstdc++11 -DBUILD_TEST=ON -DBUILD_GUI=ON 
     fi
 
   - |
