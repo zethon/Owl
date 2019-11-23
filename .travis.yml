@@ -6,10 +6,8 @@ install:
       export CC=${CC_COMPILER}
       export CXX=${CXX_COMPILER}
 
-      # Install conan and make sure that it uses Python3, otherwise we will get a
-      # cert failure when trying to download curl
-      sudo pip install conan
       alias python=python3
+      sudo pip install conan
     fi
 
   - |
@@ -20,9 +18,8 @@ install:
       brew link --force qt5
     fi
 
-  - conan remote add owl https://api.bintray.com/conan/zethon/owl
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
-  
+  - conan remote add owl https://api.bintray.com/conan/zethon/owl
 
 matrix:
   include:
