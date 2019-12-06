@@ -41,8 +41,6 @@ void CommandHistory::saveHistory()
 
     QFile file(_historyFile);
 
-    file.dir
-
     if (bool opened = file.open(QIODevice::WriteOnly | QIODevice::Text); !opened)
     {
         const auto msg = fmt::format("Cannot load file '{}'", _historyFile.toStdString());
