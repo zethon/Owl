@@ -1821,21 +1821,6 @@ void MainWindow::showMenuBar(bool visible) const
 #endif
 }
 
-void MainWindow::showMenuBar(bool visible) const
-{
-    menuBar()->setVisible(visible);
-#if defined(Q_OS_WIN)
-    if (visible)
-    {
-        ::setShowMenuText(winId(), "Hide Menu");
-    }
-    else
-    {
-        ::setShowMenuText(winId(), "Show Menu");
-    }
-#endif
-}
-
 void MainWindow::readWindowSettings()
 {
     const QString writePath = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
