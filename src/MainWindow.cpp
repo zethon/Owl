@@ -1856,7 +1856,7 @@ void MainWindow::readWindowSettings()
             stickyButton->setToolTip(tr("Click to hide sticky threads"));
         }
 
-        this->showMenuBar(settings.value("showMenuBar").toBool());
+        menuBar()->setVisible(settings.value("showMenuBar").toBool());
     }
     else
     {
