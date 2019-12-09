@@ -10,6 +10,7 @@ Item
     id: rootItem
 
     property int smallTextSize: 11
+    property int osTextSizeModifier: 5
 
     signal stickyDisplayChanged
 
@@ -140,6 +141,9 @@ Item
                     id: delegateFillRect
                     anchors.top: parent.top
                     width: parent.width
+                    color: "red"
+                    border.color: "black"
+                    border.width: 5
 
                     Rectangle
                     {
@@ -217,7 +221,7 @@ Item
                             anchors.left: parent.left
                             width: parent.width
                             text: title
-                            font.pointSize: 11;
+                            font.pointSize: 11 + rootItem.osTextSizeModifier;
                             font.bold: unread
                             wrapMode: Text.Wrap
                         }
@@ -227,7 +231,7 @@ Item
                             id: authorText
                             anchors.top: titleText.bottom
                             text: author
-                            font.pointSize: 9;
+                            font.pointSize: 9 + rootItem.osTextSizeModifier;
                             color: "grey"
                             font.bold: true
                         }
@@ -240,7 +244,7 @@ Item
                             text: " " + String.fromCharCode(8226) + " "
                                   + replyCount + " "
                                   + (replyCount == 1 ? qsTr("reply") : qsTr("replies"))
-                            font.pointSize: 9;
+                            font.pointSize: 9 + rootItem.osTextSizeModifier;
                             color: "grey"
                         }
 
@@ -263,7 +267,7 @@ Item
                             width: parent.width
                             text: previewText
                             wrapMode: Text.Wrap
-                            font.pointSize: 10
+                            font.pointSize: 10 + rootItem.osTextSizeModifier;
                             color: "grey"
                         }
 
@@ -278,7 +282,7 @@ Item
                                 .arg(lastAuthor)
                                 .arg(model.modelData.dateText)
                             wrapMode: Text.Wrap
-                            font.pointSize: 8
+                            font.pointSize: 8 + rootItem.osTextSizeModifier;
 //                            font.bold: true
                             color: "grey"
                         }
