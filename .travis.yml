@@ -71,7 +71,7 @@ script:
     fi
   
   - cmake --build . --config "${CONFIG}" -- -j3
-  - ctest -C "${CONFIG}"
+  - ctest -C "${CONFIG}" -VV --output-on-failure
 
 notifactions:
   email:

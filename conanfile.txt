@@ -19,8 +19,8 @@ libcurl/7.61.1@bincrafters/stable
 fmt/5.2.1@bincrafters/stable
 spdlog/1.2.1@bincrafters/stable
 libhunspell/1.7.0@owl/stable
+tidy-html5/5.7.28@owl/stable
 lua/5.2.3@owl/stable
-libtidy/5.6@owl/stable
 
 [options]
 # spdlog:fmt_external=True
