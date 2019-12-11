@@ -24,4 +24,4 @@ build_script:
 
 test_script:
   - set PATH=%PATH%;C:\Qt\5.11\msvc2017_64\bin
-  - ctest -C "${CONFIG}" -VV --output-on-failure
+  - ctest -C "%CONFIG%" -VV --output-on-failure
