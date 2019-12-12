@@ -7,12 +7,13 @@ env:
 
 matrix:
   include:
-    - os: osx
-      osx_image: xcode11
-      compiler: clang
     # - os: osx
     #   osx_image: xcode10
     #   compiler: clang
+    #   env: CONFIG=Debug
+    - os: osx
+      osx_image: xcode10
+      compiler: clang
     # - os: linux
     #   dist: bionic
     #   sudo: required
@@ -27,11 +28,13 @@ matrix:
     #         - g++-7
     #         - build-essential
     #         - qt512-meta-full
-    #         - libgl1-mesa-dev
+            - libgl1-mesa-dev
     # - os: linux
     #   dist: bionic
     #   sudo: required
     #   compiler: gcc
+    #   env:
+    #     - CONFIG=Release
     #   addons:
     #     apt:
     #       sources:
@@ -82,8 +85,8 @@ script:
     fi
 
   - cmake .. -DCMAKE_BUILD_TYPE=${CONFIG} -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DBUILD_GUI=ON -DBUILD_TEST=ON -DBUILD_CONSOLE=OFF
-  - cmake --build .
-  - ctest -VV --output-on-failure
+  - cmake --build . --config "${CONFIG}"
+  - ctest -VV -C ${CONFIG} --output-on-failure
 
 notifactions:
   email:
