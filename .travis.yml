@@ -23,24 +23,41 @@ install:
 
 matrix:
   include:
-    - os: osx
-      osx_image: xcode10
-      compiler: clang
-      env: CONFIG=Release
+# MACOS: DEBUG
     - os: osx
       osx_image: xcode10
       compiler: clang
       env: CONFIG=Debug
+# MACOS: RELEASE
+    - os: osx
+      osx_image: xcode10
+      compiler: clang
+      env: CONFIG=Release
+# UBUNTU: DEBUG
     - os: linux
       dist: bionic
       sudo: required
       compiler: gcc
-      language: python
-      python: "3.6"
       env:
-        - CC_COMPILER=gcc-7
-        - CXX_COMPILER=g++-7
-        - CONFIG=RelWithDebInfo
+        - CONFIG=Debug
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: "ppa:beineri/opt-qt-5.12.3-bionic"
+          packages:
+            - gcc-7
+            - g++-7
+            - build-essential
+            - qt512-meta-full
+            - libgl1-mesa-dev
+# UBUNTU: RELEASE
+    - os: linux
+      dist: bionic
+      sudo: required
+      compiler: gcc
+      env:
+        - CONFIG=Release
       addons:
         apt:
           sources:
