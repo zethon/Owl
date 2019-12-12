@@ -10,6 +10,7 @@ configuration:
 install:
   - echo "Downloading conan..."
   - set PATH=%PATH%;%PYTHON%/Scripts/
+  - set PATH=%PATH%;C:\Qt\5.11\msvc2017_64\bin
   - pip.exe install conan
   - conan remote add owl https://api.bintray.com/conan/zethon/owl
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
@@ -22,5 +23,4 @@ build_script:
   - cmake --build . -- /maxcpucount:4
 
 test_script:
-  - set PATH=%PATH%;C:\Qt\5.11\msvc2017_64\bin
-  - ctest -C "%CONFIG%" -VV --output-on-failure
+  - ctest -VV -C "%CONFIG%" --output-on-failure
