@@ -1,25 +1,23 @@
 language: cpp
 
-env:
-  jobs:
-    - CONFIG: Debug
-    - CONFIG: Release
-
 matrix:
   include:
     - os: osx
       osx_image: xcode11
       compiler: clang
+      env: CONFIG=Debug
     - os: osx
       osx_image: xcode11
       compiler: clang
+      env: CONFIG=Release
     - os: linux
       dist: bionic
       sudo: required
       compiler: gcc
       env:
-        - CC_COMPILER=gcc-7
-        - CXX_COMPILER=g++-7
+        # - CC_COMPILER=gcc-7
+        # - CXX_COMPILER=g++-7
+        - CONFIG=Debug
       addons:
         apt:
           sources:
@@ -36,8 +34,9 @@ matrix:
       sudo: required
       compiler: gcc
       env:
-        - CC_COMPILER=gcc-7
-        - CXX_COMPILER=g++-7
+        # - CC_COMPILER=gcc-7
+        # - CXX_COMPILER=g++-7
+        - CONFIG=Release
       addons:
         apt:
           sources:
@@ -53,8 +52,8 @@ matrix:
 install:
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      export CC=${CC_COMPILER}
-      export CXX=${CXX_COMPILER}
+      # export CC=${CC_COMPILER}
+      # export CXX=${CXX_COMPILER}
       alias python=python3
       sudo pip install conan
     fi

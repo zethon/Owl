@@ -28,5 +28,5 @@ build_script:
 test_script:
   - set PATH=%PATH%;%QT_VERSION%/bin
   - echo %PATH%
-  - dir /s %QT_VERSION%/bin
+  - dir /s C:/Qt/5.11/msvc2017_64
   - ctest -VV -C "%configuration%" --output-on-failure
