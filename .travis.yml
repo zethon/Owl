@@ -1,5 +1,54 @@
 language: cpp
 
+matrix:
+  include:
+    - os: osx
+      osx_image: xcode10
+      compiler: clang
+      env: CONFIG=Debug
+    - os: osx
+      osx_image: xcode10
+      compiler: clang
+      env: CONFIG=Release
+    - os: linux
+      dist: bionic
+      sudo: required
+      compiler: gcc
+      env:
+        - CC_COMPILER=gcc-7
+        - CXX_COMPILER=g++-7
+        - CONFIG=Debug
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: "ppa:beineri/opt-qt-5.12.3-bionic"
+          packages:
+            - gcc-7
+            - g++-7
+            - build-essential
+            - qt512-meta-full
+            - libgl1-mesa-dev
+    - os: linux
+      dist: bionic
+      sudo: required
+      compiler: gcc
+      env:
+        - CC_COMPILER=gcc-7
+        - CXX_COMPILER=g++-7
+        - CONFIG=Release
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: "ppa:beineri/opt-qt-5.12.3-bionic"
+          packages:
+            - gcc-7
+            - g++-7
+            - build-essential
+            - qt512-meta-full
+            - libgl1-mesa-dev
+
 install:
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
@@ -18,39 +67,8 @@ install:
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
   - conan remote add owl https://api.bintray.com/conan/zethon/owl
 
-matrix:
-  include:
-    - os: osx
-      osx_image: xcode10
-      compiler: clang
-      env: CONFIG=Release
-    - os: osx
-      osx_image: xcode10
-      compiler: clang
-      env: CONFIG=Debug
-    - os: linux
-      dist: bionic
-      sudo: required
-      compiler: gcc
-      language: python
-      python: "3.6"
-      env:
-        - CC_COMPILER=gcc-7
-        - CXX_COMPILER=g++-7
-        - CONFIG=RelWithDebInfo
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - sourceline: "ppa:beineri/opt-qt-5.12.3-bionic"
-          packages:
-            - gcc-7
-            - g++-7
-            - build-essential
-            - qt512-meta-full
-            - libgl1-mesa-dev
-
 script:
+  - JOBS=2
   - mkdir build
   - cd build
 
@@ -58,16 +76,15 @@ script:
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       source /opt/qt512/bin/qt512-env.sh;
       conan install .. --build missing  -s compiler.libcxx=libstdc++11
-      cmake .. -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DCONAN_LIBCXX=libstdc++11 -DBUILD_TEST=ON -DBUILD_GUI=ON 
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       conan install .. --build missing
-      cmake .. -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DBUILD_TEST=ON -DBUILD_CONSOLE=ON
     fi
   
-  - cmake --build . --config "${CONFIG}" -- -j3
-  - ctest -C "${CONFIG}" -VV --output-on-failure
+  - cmake .. -DCMAKE_BUILD_TYPE=${CONFIG} -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DBUILD_GUI=ON -DBUILD_TEST=ON -DBUILD_CONSOLE=OFF
+  - cmake --build . --config "${CONFIG}"
+  - ctest -VV -C ${CONFIG} --output-on-failure
 
 notifactions:
   email:
