@@ -15,8 +15,6 @@ matrix:
       sudo: required
       compiler: gcc
       env:
-        # - CC_COMPILER=gcc-7
-        # - CXX_COMPILER=g++-7
         - CONFIG=Debug
       addons:
         apt:
@@ -34,8 +32,6 @@ matrix:
       sudo: required
       compiler: gcc
       env:
-        # - CC_COMPILER=gcc-7
-        # - CXX_COMPILER=g++-7
         - CONFIG=Release
       addons:
         apt:
@@ -52,8 +48,6 @@ matrix:
 install:
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      # export CC=${CC_COMPILER}
-      # export CXX=${CXX_COMPILER}
       alias python=python3
       sudo pip install conan
     fi
@@ -82,7 +76,7 @@ script:
       conan install .. --build missing
     fi
   
-  - cmake .. -DCMAKE_BUILD_TYPE=${CONFIG} -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DBUILD_GUI=ON -DBUILD_TEST=ON -DBUILD_CONSOLE=OFF
+  - cmake .. -DCMAKE_BUILD_TYPE=${CONFIG} -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DBUILD_GUI=ON -DBUILD_CONSOLE=ON -DBUILD_TEST=ON
   - cmake --build . --config "${CONFIG}"
   - ctest -VV -C ${CONFIG} --output-on-failure
 
