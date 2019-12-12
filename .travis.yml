@@ -22,8 +22,6 @@ matrix:
             - ubuntu-toolchain-r-test
             - sourceline: "ppa:beineri/opt-qt-5.12.3-bionic"
           packages:
-            - gcc-7
-            - g++-7
             - build-essential
             - qt512-meta-full
             - libgl1-mesa-dev
@@ -39,8 +37,6 @@ matrix:
             - ubuntu-toolchain-r-test
             - sourceline: "ppa:beineri/opt-qt-5.12.3-bionic"
           packages:
-            - gcc-7
-            - g++-7
             - build-essential
             - qt512-meta-full
             - libgl1-mesa-dev
