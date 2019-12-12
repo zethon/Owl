@@ -1,4 +1,4 @@
-version: 0.7.{build}
+version: 0.7.{build}-{branch}
 
 image: 
  - Visual Studio 2017
@@ -26,5 +26,5 @@ build_script:
   - cmake --build . -- /maxcpucount:4
 
 test_script:
-  - set PATH=%PATH%;%QT_VERSION%
+  - set PATH=%PATH%;%QT_VERSION%/bin
   - ctest -VV -C "%configuration%" --output-on-failure
