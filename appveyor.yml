@@ -7,10 +7,15 @@ configuration:
   - Debug
   - Release
 
+environment: 
+  matrix:
+    - QT_VERSION: C:/Qt/5.11/msvc2017_64
+    # - QT_VERSION: C:/Qt/5.13/msvc2017_64
+
 install:
   - echo "Downloading conan..."
   - set PATH=%PATH%;%PYTHON%/Scripts/
-  - set PATH=%PATH%;C:\Qt\5.11\msvc2017_64\bin
+  - set PATH=%PATH%;%QT_VERSION%
   - pip.exe install conan
   - conan remote add owl https://api.bintray.com/conan/zethon/owl
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
@@ -19,8 +24,8 @@ build_script:
   - mkdir build
   - cd build
   - conan install .. --build missing -s build_type=%configuration%
-  - cmake .. -DCMAKE_BUILD_TYPE=%CONFIG% "-GVisual Studio 15 2017 Win64" -DCMAKE_PREFIX_PATH=C:/Qt/5.11/msvc2017_64 -DBUILD_GUI=ON -DBUILD_TEST=ON -DBUILD_CONSOLE=OFF
+  - cmake .. -DCMAKE_BUILD_TYPE=%configuration% "-GVisual Studio 15 2017 Win64" -DCMAKE_PREFIX_PATH=%QT_VERSION% -DBUILD_GUI=ON -DBUILD_TEST=ON -DBUILD_CONSOLE=OFF
   - cmake --build . -- /maxcpucount:4
 
 test_script:
-  - ctest -VV -C "%CONFIG%" --output-on-failure
+  - ctest -VV -C "%configuration%" --output-on-failure
