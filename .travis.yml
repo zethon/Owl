@@ -1,39 +1,15 @@
 language: cpp
 
-install:
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      export CC=${CC_COMPILER}
-      export CXX=${CXX_COMPILER}
-
-      alias python=python3
-      sudo pip install conan
-    fi
-
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      brew update
-      brew install conan
-      brew install qt5
-      brew link --force qt5
-    fi
-
-  - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
-  - conan remote add owl https://api.bintray.com/conan/zethon/owl
-
 matrix:
   include:
-# MACOS: DEBUG
-    - os: osx
-      osx_image: xcode10
-      compiler: clang
-      env: CONFIG=Debug
-# MACOS: RELEASE
+    # - os: osx
+    #   osx_image: xcode10
+    #   compiler: clang
+    #   env: CONFIG=Debug
     - os: osx
       osx_image: xcode10
       compiler: clang
       env: CONFIG=Release
-# UBUNTU: DEBUG
     - os: linux
       dist: bionic
       sudo: required
@@ -51,24 +27,46 @@ matrix:
             - build-essential
             - qt512-meta-full
             - libgl1-mesa-dev
-# UBUNTU: RELEASE
-    - os: linux
-      dist: bionic
-      sudo: required
-      compiler: gcc
-      env:
-        - CONFIG=Release
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - sourceline: "ppa:beineri/opt-qt-5.12.3-bionic"
-          packages:
-            - gcc-7
-            - g++-7
-            - build-essential
-            - qt512-meta-full
-            - libgl1-mesa-dev
+    # - os: linux
+    #   dist: bionic
+    #   sudo: required
+    #   compiler: gcc
+    #   env:
+    #     - CONFIG=Release
+    #   addons:
+    #     apt:
+    #       sources:
+    #         - ubuntu-toolchain-r-test
+    #         - sourceline: "ppa:beineri/opt-qt-5.12.3-bionic"
+    #       packages:
+    #         - gcc-7
+    #         - g++-7
+    #         - build-essential
+    #         - qt512-meta-full
+    #         - libgl1-mesa-dev
+
+install:
+  - JOBS=2
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      export CC=${CC_COMPILER}
+      export CXX=${CXX_COMPILER}
+      alias python=python3
+      sudo pip install conan
+    fi
+
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      brew update
+      brew install conan
+      brew install qt5
+      brew link --force qt5
+      brew install cmake || brew upgrade cmake
+    fi
+  - cmake --version
+  - conan remote add owl https://api.bintray.com/conan/zethon/owl
+  - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
+  - source /opt/qt512/bin/qt512-env.sh;
 
 script:
   - mkdir build
@@ -76,19 +74,17 @@ script:
 
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      source /opt/qt512/bin/qt512-env.sh;
       conan install .. --build missing  -s compiler.libcxx=libstdc++11
-      cmake .. -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DCONAN_LIBCXX=libstdc++11 -DBUILD_TEST=ON -DBUILD_GUI=ON 
     fi
 
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       conan install .. --build missing
-      cmake .. -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DBUILD_TEST=ON -DBUILD_CONSOLE=ON
     fi
-  
-  - cmake --build . --config "${CONFIG}" -- -j3
-  - ctest -C "${CONFIG}" -VV --output-on-failure
+
+  - cmake .. -DCMAKE_BUILD_TYPE=${CONFIG} -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DBUILD_GUI=ON -DBUILD_TEST=ON -DBUILD_CONSOLE=OFF
+  - cmake --build .
+  - ctest -VV --output-on-failure
 
 notifactions:
   email:

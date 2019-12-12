@@ -19,8 +19,8 @@ build_script:
   - mkdir build
   - cd build
   - conan install .. --build missing
-  - cmake .. "-GVisual Studio 15 2017 Win64" -DCMAKE_PREFIX_PATH=C:/Qt/5.11/msvc2017_64 -DBUILD_GUI=ON -DBUILD_TEST=ON -DBUILD_CONSOLE=OFF
-  - cmake --build . --config "%CONFIG%" -- /maxcpucount:4
+  - cmake .. -DCMAKE_BUILD_TYPE=%CONFIG% "-GVisual Studio 15 2017 Win64" -DCMAKE_PREFIX_PATH=C:/Qt/5.11/msvc2017_64 -DBUILD_GUI=ON -DBUILD_TEST=ON -DBUILD_CONSOLE=OFF
+  - cmake --build . -- /maxcpucount:4
 
 test_script:
   - set PATH=%PATH%;C:\Qt\5.11\msvc2017_64\bin
