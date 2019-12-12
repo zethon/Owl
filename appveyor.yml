@@ -3,10 +3,9 @@ version: 0.7.{build}
 image: 
  - Visual Studio 2017
 
-environment:
-  matrix:
-    - CONFIG: Debug
-    - CONFIG: Release
+configuration:
+  - Debug
+  - Release
 
 install:
   - echo "Downloading conan..."
