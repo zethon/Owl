@@ -66,7 +66,6 @@ install:
   - cmake --version
   - conan remote add owl https://api.bintray.com/conan/zethon/owl
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
-  - source /opt/qt512/bin/qt512-env.sh;
 
 script:
   - mkdir build
@@ -74,6 +73,7 @@ script:
 
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      source /opt/qt512/bin/qt512-env.sh;
       conan install .. --build missing  -s compiler.libcxx=libstdc++11
     fi
 
