@@ -226,6 +226,70 @@ private:
 
 class ConsoleApp final : public QObject
 {
+public:
+    template<typename... Args>
+    static void printError(Args&&... args)
+    {
+        std::cout
+            << rang::fg::red
+            << rang::style::bold
+            << "-- "
+            << "error: "
+            << rang::fg::reset
+            << rang::style::reset
+            << fmt::format(std::forward<Args>(args)...)
+            << '\n';
+    }
+
+    template<typename... Args>
+    static void printWarning(Args&&... args)
+    {
+        std::cout
+            << rang::fg::yellow
+            << rang::style::bold
+            << "-- "
+            << "warning: "
+            << rang::fg::reset
+            << rang::style::reset
+            << fmt::format(std::forward<Args>(args)...)
+            << '\n';
+    }
+
+    template<typename... Args>
+    static void printStatus(Args&&... args)
+    {
+        std::cout
+            << rang::fg::magenta
+            << rang::style::bold
+            << "-- "
+            << rang::fg::reset
+            << rang::style::reset
+            << fmt::format(std::forward<Args>(args)...)
+            << '\n';
+    }
+
+public:
+    ConsoleApp(QObject* parent = nullptr);
+    virtual ~ConsoleApp() = default;
+
+    void setLuaFolder(const QString& f) { _luaFolder = f; }
+    void setCommandfile(const QString& f);
+
+    QStringList& getStartCommands() { return _startCommands; }
+
+    void setColor(bool colorOn);
+
+Q_SIGNALS:
+    void finished();
+
+public Q_SLOTS:
+    bool doEnter();
+    void doChar(QChar c);
+    void doBackspace();
+    void run();
+
+private:
+
     enum GotoTyoe
     {
         DIRECT,
@@ -294,68 +358,6 @@ class ConsoleApp final : public QObject
     void gotoPrevious(const QString&);
 
     void initCommands();
-
-public:
-    ConsoleApp(QObject* parent = nullptr);
-    virtual ~ConsoleApp() = default;
-
-    void setLuaFolder(const QString& f) { _luaFolder = f; }
-    void setCommandfile(const QString& f);
-
-    QStringList& getStartCommands() { return _startCommands; }
-
-    void setColor(bool colorOn);
-    
-Q_SIGNALS:
-    void finished();
-    
-public Q_SLOTS:
-    bool doEnter();
-    void doChar(QChar c);
-    void doBackspace();
-    void run();
-
-public:
-    template<typename... Args>
-    static void printError(Args&&... args)
-    {
-        std::cout
-            << rang::fg::red
-            << rang::style::bold
-            << "-- "
-            << "error: "
-            << rang::fg::reset
-            << rang::style::reset
-            << fmt::format(std::forward<Args>(args)...)
-            << '\n';
-    }
-
-    template<typename... Args>
-    static void printWarning(Args&&... args)
-    {
-        std::cout
-            << rang::fg::yellow
-            << rang::style::bold
-            << "-- "
-            << "warning: "
-            << rang::fg::reset
-            << rang::style::reset
-            << fmt::format(std::forward<Args>(args)...)
-            << '\n';
-    }
-
-    template<typename... Args>
-    static void printStatus(Args&&... args)
-    {
-        std::cout
-            << rang::fg::magenta
-            << rang::style::bold
-            << "-- "
-            << rang::fg::reset
-            << rang::style::reset
-            << fmt::format(std::forward<Args>(args)...)
-            << '\n';
-    }
 
 };
 
