@@ -22,7 +22,8 @@ class OwlConan(ConanFile):
         "spdlog/1.2.1@bincrafters/stable",
         "libhunspell/1.7.0@owl/stable",
         "tidy-html5/5.7.28@owl/stable",
-        "luadist/5.2.3@owl/stable"
+        "luadist/5.2.3@owl/stable",
+        "rang/3.1@owl/stable"
     )
 
     generators = "cmake"

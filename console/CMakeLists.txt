@@ -11,7 +11,6 @@ SET (MOC_HEADERS OwlConsole.h Terminal.h)
 
 SET (HEADER_FILES
     Core.h
-    libs/rang.hpp
     ${MOC_HEADERS}
 )
 

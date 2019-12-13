@@ -2,7 +2,11 @@
 #include <iostream>
 #include <mutex>
 #include <stack>
+
 #include <QtCore>
+#include <fmt/core.h>
+#include <rang.hpp>
+
 #include "../src/Parsers/Forum.h"
 #include "Terminal.h"
 
@@ -11,11 +15,6 @@ namespace owl
 
 class ParserBase;
 using ParserBasePtr = std::shared_ptr<ParserBase>;
-
-using namespace std;
-
-void OUTPUT(const QString& text);
-void OUTPUTLN(const QString& text);
 
 QString printableDateTime(const QDateTime& dt, bool bShowTime);
 QString shortText(const QString& text, const uint maxwidth);
@@ -314,9 +313,50 @@ public Q_SLOTS:
     bool doEnter();
     void doChar(QChar c);
     void doBackspace();
-
-
     void run();
+
+public:
+    template<typename... Args>
+    static void printError(Args&&... args)
+    {
+        std::cout
+            << rang::fg::red
+            << rang::style::bold
+            << "-- "
+            << "error: "
+            << rang::fg::reset
+            << rang::style::reset
+            << fmt::format(std::forward<Args>(args)...)
+            << '\n';
+    }
+
+    template<typename... Args>
+    static void printWarning(Args&&... args)
+    {
+        std::cout
+            << rang::fg::yellow
+            << rang::style::bold
+            << "-- "
+            << "warning: "
+            << rang::fg::reset
+            << rang::style::reset
+            << fmt::format(std::forward<Args>(args)...)
+            << '\n';
+    }
+
+    template<typename... Args>
+    static void printStatus(Args&&... args)
+    {
+        std::cout
+            << rang::fg::magenta
+            << rang::style::bold
+            << "-- "
+            << rang::fg::reset
+            << rang::style::reset
+            << fmt::format(std::forward<Args>(args)...)
+            << '\n';
+    }
+
 };
 
 } // end namespace

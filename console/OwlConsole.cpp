@@ -8,6 +8,7 @@
 #include <spdlog/common.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/rotating_file_sink.h>
+#include <rang.hpp>
 
 #include "../src/Parsers/BBCodeParser.h"
 #include "../src/Parsers/ParserManager.h"
@@ -16,97 +17,14 @@
 #include "../src/Utils/OwlLogger.h"
 
 #include "Core.h"
-#include "rang.hpp"
 #include "OwlConsole.h"
 
 namespace owl
 {
 
-std::mutex appOutputMutex;
-
-void OUTPUT(const QString& text)
-{
-    std::lock_guard<std::mutex> lock(appOutputMutex);
-    std::cout << text.toStdString() << std::flush;
-}
-    
-void OUTPUTLN(const QString& text)
-{
-    OUTPUT(text + "\n");
-}
-
-void OUTPUTLN(const char* text)
-{
-    OUTPUTLN(QString::fromLatin1(text));
-}
-
-void OUTPUTLN(const std::string& text)
-{
-    OUTPUTLN(QString::fromStdString(text));
-}
-
-void OUTPUTLN(const ConsoleOutput& output)
-{
-    std::lock_guard<std::mutex> lock(appOutputMutex);
-
-    for (const auto& o : output)
-    {
-        std::cout << (o()).toStdString() << std::flush;
-    }
-}
-
-void WARN(const std::string& text)
-{
-    std::lock_guard<std::mutex> lock(appOutputMutex);
-
-    std::cout << rang::style::bold
-              << rang::fg::yellow
-              << "Warning: "
-              << text
-              << rang::style::reset
-              << rang::bg::reset
-              << rang::fg::reset
-              << std::endl;
-}
-
-void WARN(const char* text)
-{
-    WARN(std::string(text));
-}
-
-void WARN(const QString& text)
-{
-    WARN(text.toStdString());
-}
-
-void ERROR(const std::string& text)
-{
-    std::lock_guard<std::mutex> lock(appOutputMutex);
-
-    std::cout << rang::style::bold
-              << rang::bg::red
-              << rang::fg::gray
-              << text
-              << rang::style::reset
-              << rang::bg::reset
-              << rang::fg::reset
-              << std::endl;
-}
-
-void ERROR(const char* text)
-{
-    ERROR(std::string(text));
-}
-
-void ERROR(const QString& text)
-{
-    ERROR(text.toStdString());
-}
-
 void ConsoleApp::doHelp(const QString&)
 {
-    OUTPUTLN("Owl Console Help");
-    OUTPUTLN("");
+    std::cout << "Owl Console Help\n";
     for (const auto& cmd : _commands)
     {
         if (!cmd.helpMsg.isEmpty())
@@ -115,7 +33,7 @@ void ConsoleApp::doHelp(const QString&)
                 .arg(cmd.commandNames.front())
                 .arg(cmd.helpMsg);
 
-            OUTPUTLN(output);
+            std::cout << output.toStdString();
         }
     }
 }
@@ -150,11 +68,11 @@ void ConsoleApp::setColor(bool colorOn)
 {
     if (colorOn)
     {
-        std::cout << rang::control::autoColor;
+        rang::setControlMode(rang::control::Auto);
     }
     else
     {
-        std::cout << rang::control::offColor;
+        rang::setControlMode(rang::control::Off);
     }
 }
 
@@ -313,11 +231,14 @@ void ConsoleApp::doLogin(const QString& options)
                 // update the prompt
                 _prompt.setHost(boardUrl);
 
-                OUTPUTLN("Successfully signed in as '"+ username+"' to " + boardUrl);
+                std::cout
+                    << fmt::format("Successfully signed in as '{}' to {}",
+                            username.toStdString(), boardUrl.toStdString())
+                    << '\n';
             }
             else
             {
-                ERROR("Could not sign into " + boardUrl);
+                ConsoleApp::printError("Could not sign into {}", boardUrl.toStdString());
             }
         }
         catch (const owl::Exception& ex)
@@ -335,7 +256,7 @@ void ConsoleApp::doLogin(const QString& options)
     }
     else
     {
-        ERROR("Could not find a parser for board '" + boardUrl + "'");
+        ConsoleApp::printError("Could not find a parser for board '{}'", boardUrl.toStdString());
     }
 }
 
@@ -538,7 +459,7 @@ void ConsoleApp::listThreads(const uint pagenumber, const uint perpage, bool bSh
     }
     else
     {
-        OUTPUTLN("No threads returned");
+        std::cout << "No threads returned\n";
     }
 }
 
@@ -551,7 +472,7 @@ void ConsoleApp::doListPosts(const QString& options)
 
     if (_location.thread.first.isEmpty())
     {
-        WARN("Cannot display thread because it has an invalid id");
+        ConsoleApp::printWarning("Cannot display thread because it has an invalid id");
     }
 
     uint pagenumber = 1;
@@ -620,7 +541,7 @@ void ConsoleApp::listPosts(const uint pagenumber, const uint perpage, bool bShow
                 .arg(moment.toString().toLower())
                 .arg(p->getAuthor());
 
-            OUTPUTLN(text);
+            std::cout << text.toStdString() << '\n';
             _listItems.push_back(p);
         }
 
@@ -631,7 +552,7 @@ void ConsoleApp::listPosts(const uint pagenumber, const uint perpage, bool bShow
     }
     else
     {
-        WARN("No posts returned");
+        ConsoleApp::printWarning("No posts returned");
     }
 
 }
@@ -659,8 +580,8 @@ void ConsoleApp::printPost(const PostPtr post, uint idx/*=0 */)
 
     const QString posttxt = parser.toPlainText(post->getText());
 
-    OUTPUTLN(firstline);
-    OUTPUTLN("\033[0m" + posttxt);
+    std::cout << firstline.toStdString() << '\n';
+    std::cout << posttxt.toStdString() << '\n';
 
 //    const QString text = QString("\n%1\n%2%3 by %4\n")
 //        .arg(post->getText())
@@ -687,7 +608,7 @@ void ConsoleApp::printPost(uint idx)
     }
     else
     {
-        WARN("Invalid post index");
+        ConsoleApp::printWarning("Invalid post index");
     }
 }
 
@@ -737,7 +658,7 @@ void ConsoleApp::gotoItemNumber(const size_t idx)
     }
     else
     {
-        OUTPUTLN("Invalid index: " + QString::number(idx));
+        ConsoleApp::printError("Invalid index: {}", idx);
     }
 }
 
@@ -783,11 +704,6 @@ void ConsoleApp::initCommands()
         ConsoleCommand("login", "Login to a remote board", std::bind(&ConsoleApp::doLogin, this, std::placeholders::_1)),
         ConsoleCommand("parsers", "List parsers",std::bind(&ConsoleApp::doParsers, this, std::placeholders::_1)),
         ConsoleCommand("quit,exit,q", "", [this](const QString&) { _bDoneApp = true; }),
-        ConsoleCommand("clear,cls", "",
-            [](const QString&)
-            {
-                OUTPUT("\033[2J\033[1;1H");
-            }),
         ConsoleCommand("version,about", tr("Display version information"),
             [](const QString&)
             {
@@ -807,7 +723,11 @@ void ConsoleApp::initCommands()
                 {
                     for (const auto& p : _appOptions)
                     {
-                        OUTPUTLN(QString("%1=%2").arg(p.first).arg(p.second));
+                        std::cout
+                            << p.first.toStdString()
+                            << '='
+                            << p.second.toStdString()
+                            << '\n';
                     }
                 }
                 else if (p.positionalArguments().size() == 2)
@@ -815,11 +735,13 @@ void ConsoleApp::initCommands()
                     const auto key = p.positionalArguments().at(0);
                     const auto val = p.positionalArguments().at(1);
                     _appOptions.setOrAdd(key, val);
-                    OUTPUTLN(tr("The key '%1' has been set to '%2'").arg(key).arg(val));
+                    std::cout
+                        << fmt::format("The key '{}' has been set to '{}'\n",
+                                key.toStdString(), val.toStdString());
                 }
                 else
                 {
-                   OUTPUTLN("Usage: set {key} {value}");
+                   std::cout << "Usage: set {key} {value}\n";
                 }
             })
     };
@@ -855,16 +777,23 @@ void ConsoleApp::initCommands()
                 if (_location.forums.size() > 0)
                 {
                     const auto currentForum = _location.forums.front();
-                    OUTPUTLN(tr("Current forum: %1 (%2)").arg(currentForum.second).arg(currentForum.first));
+                    std::cout
+                        << fmt::format("Current forum: {} ({})\n",
+                            currentForum.second.toStdString(), currentForum.first.toStdString());
                 }
                 else
                 {
-                    OUTPUTLN(tr("Current forum: <root> (%1)").arg(_parser->getRootForumId()));
+                    std::cout
+                        << fmt::format("Current forum: <root> ({})\n",
+                            _parser->getRootForumId().toStdString());
                 }
 
                 if (!_location.thread.first.isEmpty())
                 {
-                    OUTPUTLN(QString(tr("Current thread: %1 (%2)")).arg(_location.thread.second).arg(_location.thread.first));
+                    std::cout
+                        << fmt::format("Current thread: {} ({})\n",
+                            _location.thread.second.toStdString(),
+                            _location.thread.first.toStdString());
                 }
             }),
 
@@ -940,7 +869,8 @@ void ConsoleApp::parseCommand(const QString& cmdLn)
             }
             else
             {
-                OUTPUTLN("Unknown command '" + commandName + "'");
+                std::cout
+                    << fmt::format("Unknown command '{}'\n", commandName.toStdString());
             }
         }
     }
@@ -1069,16 +999,11 @@ void ConsoleApp::run()
     Q_EMIT finished();
 }
 
-void ConsoleApp::doSysInfo(const QString &cmdLn)
+void ConsoleApp::doSysInfo(const QString&)
 {
-    Q_UNUSED(cmdLn);
-
-    const QString consoleVer { OWLCONSOLE_VERSION };
-    const QString buildDateTime { OWLCONSOLE_BUILDTIMESTAMP };
-
-    OUTPUTLN("Owl Console version: " + consoleVer);
-    OUTPUTLN("Build date: " + buildDateTime);
-    OUTPUTLN("Operating System: " + QSysInfo::prettyProductName().toStdString());
+    std::cout << "version: " << OWLCONSOLE_VERSION << '\n';
+    std::cout << fmt::format("build-date: ", OWLCONSOLE_BUILDTIMESTAMP) << '\n';
+    std::cout << "os: " << QSysInfo::prettyProductName().toStdString() << '\n';
 }
 
 QString shortText(const QString& original, const uint maxwidth)
