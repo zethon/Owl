@@ -116,6 +116,9 @@ if (MSVC)
     add_compile_options(
         # treat warnings as errors
         /WX
+
+        # eliminate a lot of debug linking errors
+        /wd4099
     )
 endif(MSVC)
 

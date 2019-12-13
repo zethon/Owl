@@ -1,12 +1,11 @@
-version: 0.7.{build}
+version: 0.7.{build}-{branch}
 
 image: 
  - Visual Studio 2017
 
-environment:
-  matrix:
-    - CONFIG: Release
-    - CONFIG: RelWithDebInfo
+configuration:
+  - Debug
+  - Release
 
 install:
   - echo "Downloading conan..."
@@ -18,10 +17,12 @@ install:
 build_script:
   - mkdir build
   - cd build
-  - conan install .. --build missing
-  - cmake .. "-GVisual Studio 15 2017 Win64" -DCMAKE_PREFIX_PATH=C:/Qt/5.11/msvc2017_64 -DBUILD_GUI=ON -DBUILD_TEST=OFF -DBUILD_CONSOLE=OFF
-  - cmake --build . --config "%CONFIG%" -- /maxcpucount:4
+  - conan install .. --build missing -s build_type=%configuration%
+  - cmake .. -DCMAKE_BUILD_TYPE=%configuration% "-GVisual Studio 15 2017 Win64" -DCMAKE_PREFIX_PATH=C:/Qt/5.11/msvc2017_64 -DBUILD_GUI=ON -DBUILD_CONSOLE=OFF -DBUILD_TEST=OFF
+  - cmake --build . --config %configuration% -- /maxcpucount:4
 
 test_script:
   - set PATH=%PATH%;C:\Qt\5.11\msvc2017_64\bin
-  - ctest -C "%CONFIG%" -VV --output-on-failure
+  - echo %PATH%
+  - dir /s C:\Qt\5.11\msvc2017_64
+  - ctest -VV -C "%configuration%" --output-on-failure
