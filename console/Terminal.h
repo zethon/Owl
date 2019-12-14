@@ -12,8 +12,10 @@
 namespace owl
 {
 
-class Terminal final
+class Terminal final : public QObject
 {
+    Q_OBJECT
+
     std::string _commandline;
 
 public:

@@ -42,18 +42,18 @@ ConsoleApp::ConsoleApp(QObject *parent)
     : QObject(parent),
       _prompt(_location)
 {
-    struct winsize sz;
-    if (ioctl(0,TIOCGWINSZ, &sz) == 0 && sz.ws_col > 0 && sz.ws_row > 0)
-    {
-        _appOptions.setOrAdd("wwidth", sz.ws_col);
-        _appOptions.setOrAdd("wheight", sz.ws_row);
-    }
-    else
-    {
-        // old DOS window default
-        _appOptions.setOrAdd("wwidth", 80);
-        _appOptions.setOrAdd("wheight", 25);
-    }
+    //struct winsize sz;
+    //if (ioctl(0,TIOCGWINSZ, &sz) == 0 && sz.ws_col > 0 && sz.ws_row > 0)
+    //{
+    //    _appOptions.setOrAdd("wwidth", sz.ws_col);
+    //    _appOptions.setOrAdd("wheight", sz.ws_row);
+    //}
+    //else
+    //{
+    //    // old DOS window default
+    //    _appOptions.setOrAdd("wwidth", 80);
+    //    _appOptions.setOrAdd("wheight", 25);
+    //}
 
     auto logger = owl::rootLogger();
     logger->set_level(spdlog::level::off);
@@ -628,12 +628,12 @@ void ConsoleApp::gotoItemNumber(const size_t idx)
 {
     if (_lastListType == ListType::POSTS)
     {
-        printPost(idx);
+        printPost((uint)idx);
     }
     else if (idx > 0 && idx <= (size_t)_listItems.size())
     {
         const auto zeroIdx = idx - 1;
-        BoardItemPtr item = _listItems.at(zeroIdx);
+        BoardItemPtr item = _listItems.at((int)zeroIdx);
 
         if (_lastListType == ListType::FORUMS)
         {
