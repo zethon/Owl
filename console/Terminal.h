@@ -17,6 +17,7 @@ class Terminal final : public QObject
     Q_OBJECT
 
     std::string _commandline;
+    bool        _echo = true;
 
 public:
     Terminal();
@@ -39,6 +40,8 @@ public:
         _commandline.clear();
     }
 
+    void setEcho(bool val) { _echo = val; }
+
     boost::signals2::signal<bool(char)> onChar2;
     boost::signals2::signal<bool()> onBackspace2;
     boost::signals2::signal<bool()> onEnter2;
@@ -56,7 +59,6 @@ public:
 
 // START OLD CODE
 public:
-    void setEcho(bool b) { _bEcho = b; }
     bool getEcho() const { return _bEcho; }
 
     void setPrompt(bool b) { _bPrompt = b; }

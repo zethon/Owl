@@ -99,12 +99,8 @@ void ConsoleApp::doLogin(const QString& options)
     if (posArgs.size() < 2)
     {
         std::cout << "Username: " << std::flush;
-
-        _terminal.setPrompt(true);
-        _terminal.run();
-        _terminal.setPrompt(false);
-        username = _promptLine;
-        _promptLine.clear();
+        username = QString::fromStdString(_terminal.getLine());
+        std::cout << '\n';
     }
     else
     {
@@ -114,15 +110,10 @@ void ConsoleApp::doLogin(const QString& options)
     if (posArgs.size() < 3)
     {
         _terminal.setEcho(false);
-        _terminal.setPrompt(true);
         std::cout << "Password: " << std::flush;
-
-        _terminal.run();
+        password = QString::fromStdString(_terminal.getLine());
         _terminal.setEcho(true);
-        _terminal.setPrompt(false);
-
-        password = _promptLine;
-        _promptLine.clear();
+        std::cout << '\n';
     }
     else
     {
@@ -818,6 +809,8 @@ void ConsoleApp::initCommands()
 
 void ConsoleApp::parseCommand(const QString& cmdLn)
 {
+    std::cout << '\n';
+
     // split the line by white space
     auto parts = cmdLn.trimmed().split(QRegExp("\\s"));
     
@@ -941,7 +934,7 @@ void ConsoleApp::run()
     // set up the Terminal signals
     QObject::connect(&_terminal, SIGNAL(onChar(QChar)), this, SLOT(doChar(QChar)), Qt::DirectConnection);
     QObject::connect(&_terminal, SIGNAL(onBackspace(void)), this, SLOT(doBackspace(void)), Qt::DirectConnection);
-    QObject::connect(&_terminal, SIGNAL(onEnter(void)), this, SLOT(doEnter(void)), Qt::DirectConnection);
+    // QObject::connect(&_terminal, SIGNAL(onEnter(void)), this, SLOT(doEnter(void)), Qt::DirectConnection);
 
     try
     {
@@ -977,11 +970,23 @@ void ConsoleApp::run()
             }
         }
 
-        if (!_bDoneApp)
+        while (!_bDoneApp)
         {
             std::cout << _prompt.toStdString() << std::flush;
-            _terminal.run();
+            
+            if (std::string line = _terminal.getLine();
+                    line.size() > 0)
+            {
+                parseCommand(QString::fromStdString(line));
+            }
+
+            std::cout << std::endl;
         }
+        // if (!_bDoneApp)
+        // {
+        //     std::cout << _prompt.toStdString() << std::flush;
+        //     _terminal.run();
+        // }
     }
     catch (const owl::Exception& ex)
     {

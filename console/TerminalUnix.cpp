@@ -63,7 +63,14 @@ std::string Terminal::getLine()
                     op == boost::none || !*op)
                 {
                     _commandline += retpair.second;
-                    std::cout << retpair.second << std::flush;
+                    if (_echo)
+                    {
+                        std::cout << retpair.second << std::flush;
+                    }
+                    else
+                    {
+                        std::cout << '*' << std::flush;
+                    }
                 }
             break;
 
