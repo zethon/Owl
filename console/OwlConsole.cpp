@@ -553,13 +553,6 @@ void ConsoleApp::printPost(const PostPtr post, uint idx/*=0 */)
     BBRegExParser parser;
     owl::Moment moment(post->getDateTime());
 
-//    ConsoleOutput output;
-////    output << console.purple().bold().bg() << QString("Post #%1").arg(idx) << console.reset();
-//    output << QString("hi%1").arg(idx);
-////    _terminal.writelin(output);
-
-//    OUTPUTLN(output);
-
     const QString idxtxt = (idx > 0) ? tr("\033[1m\033[35m#%1\033[0m ").arg(idx) : "";
     const QString authortxt = QString("\033[1m\033[34m%1\033[0m").arg(post->getAuthor());
     const QString timetxt = QString("\033[1m\033[37m%1\033[0m").arg(moment.toString());
@@ -982,11 +975,6 @@ void ConsoleApp::run()
 
             std::cout << std::endl;
         }
-        // if (!_bDoneApp)
-        // {
-        //     std::cout << _prompt.toStdString() << std::flush;
-        //     _terminal.run();
-        // }
     }
     catch (const owl::Exception& ex)
     {
@@ -1052,22 +1040,6 @@ QString printableDateTime(const QDateTime &dt, bool bShowTime)
     }
 
     return retval.toLower();
-}
-
-TextItem::TextItem(const QString &text)
-    : _text(text)
-{
-    // do nothing
-}
-
-TextItem::TextItem(const TextItem &other)
-{
-    _text = other._text;
-}
-
-QString TextItem::operator()() const
-{
-    return _text;
 }
 
 } // namespace
