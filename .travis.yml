@@ -65,13 +65,9 @@ script:
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       source /opt/qt512/bin/qt512-env.sh;
-      conan install .. --build missing  -s compiler.libcxx=libstdc++11
     fi
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      conan install .. --build missing
-    fi
-  
+
+  - conan install .. --build missing  -s compiler.cppstd=17
   - cmake .. -DCMAKE_BUILD_TYPE=${CONFIG} -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DBUILD_GUI=ON -DBUILD_CONSOLE=OFF -DBUILD_TEST=ON
   - cmake --build . --config "${CONFIG}"
   - ctest -VV -C ${CONFIG} --output-on-failure

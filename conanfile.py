@@ -16,7 +16,7 @@ class OwlConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
 
     requires = (
-        "boost/1.68.0@conan/stable",
+        "boost/1.71.0@conan/stable",
         "libcurl/7.61.1@bincrafters/stable",
         "fmt/5.2.1@bincrafters/stable",
         "spdlog/1.2.1@bincrafters/stable",
@@ -48,7 +48,6 @@ class OwlConan(ConanFile):
         "boost:without_regex":True,
         "boost:without_mpi":True,
         "boost:without_serialization":True,
-        "boost:without_signals":True,
         "boost:without_coroutine":True,
         "boost:without_fiber":True,
         "boost:without_context":True,

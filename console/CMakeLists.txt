@@ -39,7 +39,7 @@ ADD_EXECUTABLE(owlc
 )
 
 TARGET_LINK_LIBRARIES(owlc
-    ${LOG4QT_LIBRARIES}
+    ${CONAN_LIBS}
     Parsers
     Utils
 )
