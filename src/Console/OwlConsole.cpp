@@ -1089,4 +1089,14 @@ QString printableDateTime(const QDateTime &dt, bool bShowTime)
     return retval.toLower();
 }
 
+std::string stripWideCharacters(const std::string &text)
+{
+    std::string retval{ text };
+#ifdef _WINDOWS
+    std::replace_if(retval.begin(), retval.end(),
+                    [](auto c) { return !(c >= 0 && c < 256); }, '?');
+#endif
+    return retval;
+}
+
 } // namespace

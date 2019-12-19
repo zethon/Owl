@@ -23,6 +23,7 @@ class CommandHistory;
 
 QString printableDateTime(const QDateTime& dt, bool bShowTime);
 QString shortText(const QString& text, const uint maxwidth);
+std::string stripWideCharacters(const std::string &text);
 
 typedef std::function<void(const QString&)> Command;
     
@@ -91,14 +92,6 @@ class Prompt
 {
     const Location&     _location;
     std::string         _host;
-
-    std::string stripWideCharacters(const std::string &text) const
-    {
-        std::string retval{ text };
-        std::replace_if(retval.begin(), retval.end(), 
-            [](auto c) { return !(c >= 0 && c < 256); }, '?');
-        return retval;
-    }
 
 public:
     Prompt(const Location& loc)
