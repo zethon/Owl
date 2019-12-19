@@ -6,8 +6,9 @@ set(OWL_VERSION "0.7.7")
 
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 set(CMAKE_CXX_STANDARD 17)
-
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 
 # initialize conan libs
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
@@ -31,6 +32,7 @@ add_definitions(
     -DHUNSPELL_STATIC
     -DBOOST_TEST_NO_LIB
     -DBOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
+    -D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
 )
 
 # Add this definition for release since we cannot rely on 

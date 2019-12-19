@@ -2,9 +2,16 @@
 #include <iostream>
 #include <mutex>
 #include <stack>
+
 #include <QtCore>
+#include <fmt/core.h>
+#include <rang.hpp>
+
 #include "../src/Parsers/Forum.h"
+#include "CommandHistory.h"
 #include "Terminal.h"
+
+using namespace std::string_literals;
 
 namespace owl
 {
@@ -12,90 +19,10 @@ namespace owl
 class ParserBase;
 using ParserBasePtr = std::shared_ptr<ParserBase>;
 
-using namespace std;
-
-void OUTPUT(const QString& text);
-void OUTPUTLN(const QString& text);
+class CommandHistory;
 
 QString printableDateTime(const QDateTime& dt, bool bShowTime);
 QString shortText(const QString& text, const uint maxwidth);
-
-class OutputItem : public QObject
-{
-
-public:
-    virtual QString operator()() const = 0;
-};
-
-class ColorItem : public OutputItem
-{
-
-public:
-    void reset()
-    {
-
-    }
-
-    virtual QString operator()() const override
-    {
-        return "";
-    }
-};
-
-class TextItem : public OutputItem
-{
-private:
-    QString _text;
-
-public:
-    TextItem(const QString& text);
-    TextItem(const TextItem& other);
-
-    virtual QString operator()() const override;
-};
-
-class ConsoleOutput
-{
-    std::vector<TextItem> _items;
-
-public:
-    using iterator = std::vector<TextItem>::iterator;
-    using const_iterator = std::vector<TextItem>::const_iterator;
-
-    iterator begin()
-    {
-        return _items.begin();
-    }
-
-    iterator end()
-    {
-        return _items.end();
-    }
-
-    const_iterator begin() const
-    {
-        return _items.cbegin();
-    }
-
-    const_iterator end() const
-    {
-        return _items.cend();
-    }
-
-
-    template<class T>
-    ConsoleOutput& operator<<(const T& item)
-    {
-        _items.push_back(item);
-        return *this;
-    }
-
-    ConsoleOutput& operator<<(const QString& item)
-    {
-        _items.emplace_back(TextItem(item));
-        return *this;
-    }
-};
 
 typedef std::function<void(const QString&)> Command;
     
@@ -162,6 +89,16 @@ struct Location
 
 class Prompt
 {
+    const Location&     _location;
+    std::string         _host;
+
+    std::string stripWideCharacters(const std::string &text) const
+    {
+        std::string retval{ text };
+        std::replace_if(retval.begin(), retval.end(), 
+            [](auto c) { return !(c >= 0 && c < 256); }, '?');
+        return retval;
+    }
 
 public:
     Prompt(const Location& loc)
@@ -172,61 +109,111 @@ public:
 
     void setHost(const QString& host)
     {
-        if (host.isEmpty())
-        {
-            _hostBit.clear();
-        }
-        else
-        {
-            QUrl u  = QUrl::fromUserInput(host);
-            _hostBit = "\033[1m\033[37m[\033[1m\033[36m" + u.host() + "\033[1m\033[37m]\033[0m ";
-        }
+        _host = host.toStdString();
     }
 
-    const QString prompt() const
+    void print() const
     {
-        QString prompt;
-        QString path;
-
-        if (_hostBit.size() > 0)
+        if (_host.size() > 0)
         {
-            path.clear();
-
+            std::string path;
             std::for_each(_location.forums.rbegin(), _location.forums.rend(),
                 [&path](const Location::Info& info)
                 {
-                    path.append(QStringLiteral("/") + info.second);
+                    path.append("/"s + info.second.toStdString());
                 });
 
-            if (path.isEmpty())
+            if (path.empty())
             {
-                path.append(QStringLiteral("/"));
+                path.append("/"s);
             }
 
-            prompt = QString("%1\033[1m\033[32m%2\033[0m> ")
-                .arg(_hostBit)
-                .arg(path);
+            std::cout
+                << rang::fg::cyan
+                << _host
+                << rang::fg::magenta
+                << stripWideCharacters(path)
+                << rang::fg::reset
+                << rang::bg::reset
+                << rang::style::reset
+                << "> ";
         }
         else
         {
-            prompt = QString("\033[35m$\033[0m> ");
+            std::cout
+                << rang::style::bold
+                << rang::fg::red
+                << "$/"
+                << rang::style::reset
+                << rang::fg::reset
+                << "> ";
         }
-
-        return prompt;
     }
-
-    const std::string toStdString()
-    {
-        return prompt().toStdString();
-    }
-
-private:
-    const Location&     _location;
-    QString             _hostBit;
 };
 
 class ConsoleApp final : public QObject
 {
+public:
+    template<typename... Args>
+    static void printError(Args&&... args)
+    {
+        std::cout
+            << rang::fg::red
+            << rang::style::bold
+            << "-- "
+            << "error: "
+            << rang::fg::reset
+            << rang::style::reset
+            << fmt::format(std::forward<Args>(args)...)
+            << '\n';
+    }
+
+    template<typename... Args>
+    static void printWarning(Args&&... args)
+    {
+        std::cout
+            << rang::fg::yellow
+            << rang::style::bold
+            << "-- "
+            << "warning: "
+            << rang::fg::reset
+            << rang::style::reset
+            << fmt::format(std::forward<Args>(args)...)
+            << '\n';
+    }
+
+    template<typename... Args>
+    static void printStatus(Args&&... args)
+    {
+        std::cout
+            << rang::fg::magenta
+            << rang::style::bold
+            << "-- "
+            << rang::fg::reset
+            << rang::style::reset
+            << fmt::format(std::forward<Args>(args)...)
+            << '\n';
+    }
+
+public:
+    ConsoleApp(QObject* parent = nullptr);
+    virtual ~ConsoleApp() = default;
+
+    void setLuaFolder(const QString& f) { _luaFolder = f; }
+    void setCommandfile(const QString& f);
+
+    QStringList& getStartCommands() { return _startCommands; }
+
+    void setColor(bool colorOn);
+
+Q_SIGNALS:
+    void finished();
+
+public Q_SLOTS:
+    void run();
+
+private:
+
     enum GotoTyoe
     {
         DIRECT,
@@ -245,6 +232,7 @@ class ConsoleApp final : public QObject
     
     QString                     _commandFile;       // file of line-deliminted commands to execute on start
     QStringList                 _startCommands;     // list of commands passed on the command-line
+    CommandHistory              _history;
 
     ParserBasePtr               _parser;            // parser object of active connection or null
     QString                     _luaFolder;         // folder used to load Lua parsers
@@ -256,13 +244,11 @@ class ConsoleApp final : public QObject
 
     Terminal                    _terminal;
     QString                     _commandLine;
-    QString                     _promptLine;
 
     QList<ConsoleCommand>       _commands;
     QList<ConsoleCommand>       _boardCommands;
 
     Prompt                      _prompt;
-
     bool                        _bDoneApp = false;
 
     owl::StringMap              _appOptions;
@@ -273,6 +259,7 @@ class ConsoleApp final : public QObject
     void doSysInfo(const QString& cmdLn);
     void doLogin(const QString&);
     void doParsers(const QString& cmdLn);
+    void doHistory(const QString& cmdLn);
 
     void listForums() { doListForums(QString()); }
     void doListForums(const QString&);
@@ -295,28 +282,7 @@ class ConsoleApp final : public QObject
     void gotoPrevious(const QString&);
 
     void initCommands();
-
-public:
-    ConsoleApp(QObject* parent = nullptr);
-    virtual ~ConsoleApp() = default;
-
-    void setLuaFolder(const QString& f) { _luaFolder = f; }
-    void setCommandfile(const QString& f);
-
-    QStringList& getStartCommands() { return _startCommands; }
-
-    void setColor(bool colorOn);
-    
-Q_SIGNALS:
-    void finished();
-    
-public Q_SLOTS:
-    bool doEnter();
-    void doChar(QChar c);
-    void doBackspace();
-
-
-    void run();
+    void initTerminal();
 };
 
 } // end namespace

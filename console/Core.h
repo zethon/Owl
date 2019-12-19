@@ -8,7 +8,7 @@
 #define __STRINGIFY__(x)            #x
 #define __EXPAND__(x)               __STRINGIFY__(x)
 
-#define APP_NAME                    "OwlConsole"
+#define APP_NAME                    "Owl Console"
 #define APP_TITLE					APP_NAME " " OWL_VERSION
 
 #define ORGANZATION_DOMAIN          "owlclient.com"
