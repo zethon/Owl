@@ -10,6 +10,8 @@
 #include "../src/Parsers/Forum.h"
 #include "Terminal.h"
 
+using namespace std::string_literals;
+
 namespace owl
 {
 
@@ -84,6 +86,16 @@ struct Location
 
 class Prompt
 {
+    const Location&     _location;
+    std::string         _host;
+
+    std::string stripWideCharacters(const std::string &text) const
+    {
+        std::string retval{ text };
+        std::replace_if(retval.begin(), retval.end(), 
+            [](auto c) { return !(c >= 0 && c < 256); }, '?');
+        return retval;
+    }
 
 public:
     Prompt(const Location& loc)
@@ -94,57 +106,46 @@ public:
 
     void setHost(const QString& host)
     {
-        if (host.isEmpty())
-        {
-            _hostBit.clear();
-        }
-        else
-        {
-            QUrl u  = QUrl::fromUserInput(host);
-            _hostBit = "\033[1m\033[37m[\033[1m\033[36m" + u.host() + "\033[1m\033[37m]\033[0m ";
-        }
+        _host = host.toStdString();
     }
 
-    const QString prompt() const
+    void print() const
     {
-        QString prompt;
-        QString path;
-
-        if (_hostBit.size() > 0)
+        if (_host.size() > 0)
         {
-            path.clear();
-
+            std::string path;
             std::for_each(_location.forums.rbegin(), _location.forums.rend(),
                 [&path](const Location::Info& info)
                 {
-                    path.append(QStringLiteral("/") + info.second);
+                    path.append("/"s + info.second.toStdString());
                 });
 
-            if (path.isEmpty())
+            if (path.empty())
             {
-                path.append(QStringLiteral("/"));
+                path.append("/"s);
             }
 
-            prompt = QString("%1\033[1m\033[32m%2\033[0m> ")
-                .arg(_hostBit)
-                .arg(path);
+            std::cout
+                << rang::fg::cyan
+                << _host
+                << rang::fg::magenta
+                << stripWideCharacters(path)
+                << rang::fg::reset
+                << rang::bg::reset
+                << rang::style::reset
+                << "> ";
         }
         else
         {
-            prompt = QString("\033[35m$\033[0m> ");
+            std::cout
+                << rang::style::bold
+                << rang::fg::red
+                << "$/"
+                << rang::style::reset
+                << rang::fg::reset
+                << "> ";
         }
-
-        return prompt;
     }
-
-    const std::string toStdString()
-    {
-        return prompt().toStdString();
-    }
-
-private:
-    const Location&     _location;
-    QString             _hostBit;
 };
 
 class ConsoleApp final : public QObject
@@ -206,9 +207,6 @@ Q_SIGNALS:
     void finished();
 
 public Q_SLOTS:
-    bool doEnter();
-    void doChar(QChar c);
-    void doBackspace();
     void run();
 
 private:
@@ -242,7 +240,6 @@ private:
 
     Terminal                    _terminal;
     QString                     _commandLine;
-    QString                     _promptLine;
 
     QList<ConsoleCommand>       _commands;
     QList<ConsoleCommand>       _boardCommands;

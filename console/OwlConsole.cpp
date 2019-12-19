@@ -33,7 +33,7 @@ void ConsoleApp::doHelp(const QString&)
                 .arg(cmd.commandNames.front())
                 .arg(cmd.helpMsg);
 
-            std::cout << output.toStdString();
+            std::cout << output.toStdString() << '\n';
         }
     }
 }
@@ -42,19 +42,6 @@ ConsoleApp::ConsoleApp(QObject *parent)
     : QObject(parent),
       _prompt(_location)
 {
-    //struct winsize sz;
-    //if (ioctl(0,TIOCGWINSZ, &sz) == 0 && sz.ws_col > 0 && sz.ws_row > 0)
-    //{
-    //    _appOptions.setOrAdd("wwidth", sz.ws_col);
-    //    _appOptions.setOrAdd("wheight", sz.ws_row);
-    //}
-    //else
-    //{
-    //    // old DOS window default
-    //    _appOptions.setOrAdd("wwidth", 80);
-    //    _appOptions.setOrAdd("wheight", 25);
-    //}
-
     auto logger = owl::rootLogger();
     logger->set_level(spdlog::level::off);
 }
@@ -861,62 +848,12 @@ void ConsoleApp::parseCommand(const QString& cmdLn)
         }
     }
 }
-    
-void ConsoleApp::doChar(QChar c)
-{
-    if (_terminal.isPrompt())
-    {
-        _promptLine.append(c);
-    }
-    else
-    {
-        _commandLine.append(c);
-    }
-
-    if (_terminal.getEcho())
-    {
-        std::cout << c.toLatin1() << std::flush;
-    }
-    else
-    {
-        std::cout << '*' << std::flush;
-    }
-}
-
-void ConsoleApp::doBackspace()
-{
-    if (!_commandLine.isEmpty())
-    {
-        _commandLine.remove(_commandLine.size() - 1, 1);
-        std::cout << "\b \b" << std::flush;
-    }
-}
-
-bool ConsoleApp::doEnter()
-{
-    std::cout << std::endl;
-    if (_terminal.isPrompt())
-    {
-        return true;
-    }
-    else if (!_commandLine.isEmpty())
-    {
-        parseCommand(_commandLine);
-        _commandLine.clear();
-
-        if (!_bDoneApp)
-        {
-            std::cout << _prompt.toStdString() << std::flush;
-        }
-    }
-
-    return _bDoneApp;
-}
 
 void ConsoleApp::run()
 {
-    std::cout << "Owl Console " << OWLCONSOLE_VERSION << std::endl;
+    std::cout << APP_NAME << " " << OWLCONSOLE_VERSION << std::endl;
     std::cout << COPYRIGHT << std::endl;
+    std::cout << std::endl;
 
     // initialize the ParserManager
     ParserManager::instance()->init(!_luaFolder.isEmpty(), _luaFolder);
@@ -924,15 +861,8 @@ void ConsoleApp::run()
     // set up all our terminal commands
     initCommands();
 
-    // set up the Terminal signals
-    QObject::connect(&_terminal, SIGNAL(onChar(QChar)), this, SLOT(doChar(QChar)), Qt::DirectConnection);
-    QObject::connect(&_terminal, SIGNAL(onBackspace(void)), this, SLOT(doBackspace(void)), Qt::DirectConnection);
-    // QObject::connect(&_terminal, SIGNAL(onEnter(void)), this, SLOT(doEnter(void)), Qt::DirectConnection);
-
     try
     {
-        std::cout << "Type \"help\" or \"quit\" to exit the program" << std::endl;
-
         if (!_commandFile.isEmpty())
         {
             QFile cmdf(_commandFile);
@@ -944,7 +874,8 @@ void ConsoleApp::run()
                     const QString cmd = in.readLine().trimmed();
                     if (!cmd.isEmpty())
                     {
-                        std::cout << _prompt.toStdString() << cmd.toStdString() << std::endl;
+                        _prompt.print();
+                        std::cout << cmd.toStdString() << std::endl;
                         parseCommand(cmd);
                     }
                 }
@@ -958,14 +889,15 @@ void ConsoleApp::run()
         {
             for (const auto& cmd : _startCommands)
             {
-                std::cout << _prompt.toStdString() << cmd.toStdString() << std::endl;
+                _prompt.print();
+                std::cout << cmd.toStdString() << std::endl;
                 parseCommand(cmd);
             }
         }
 
         while (!_bDoneApp)
         {
-            std::cout << _prompt.toStdString() << std::flush;
+            _prompt.print();
             
             if (std::string line = _terminal.getLine();
                     line.size() > 0)
