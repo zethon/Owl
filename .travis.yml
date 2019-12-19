@@ -54,6 +54,7 @@ install:
       brew install qt5
       brew link --force qt5
     fi
+  - conan --version
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
   - conan remote add owl https://api.bintray.com/conan/zethon/owl
 
