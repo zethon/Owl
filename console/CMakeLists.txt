@@ -6,11 +6,21 @@ INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-SET (SOURCE_FILES main.cpp OwlConsole.cpp)
-SET (MOC_HEADERS OwlConsole.h Terminal.h)
+SET (SOURCE_FILES 
+    CommandHistory.cpp
+    main.cpp 
+    OwlConsole.cpp
+)
+
+SET (MOC_HEADERS 
+    CommandHistory.h
+    OwlConsole.h 
+    Terminal.h
+)
 
 SET (HEADER_FILES
     Core.h
+    CommandHistory.h
     ${MOC_HEADERS}
 )
 

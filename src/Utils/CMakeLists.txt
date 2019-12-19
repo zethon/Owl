@@ -13,6 +13,7 @@ set (SOURCE_FILES
     StringMap.cpp
     OwlLogger.cpp
     OwlUtils.cpp
+    SimpleArgs.cpp
     Version.cpp
     WebClient.cpp
 )
@@ -31,6 +32,7 @@ set (HEADER_FILES
     QThreadEx.h
     OwlLogger.h
     OwlUtils.h
+    SimpleArgs.h
     StringMap.h
     Version.h
     ${MOC_HEADERS}

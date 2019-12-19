@@ -23,7 +23,14 @@ std::string Terminal::getLine()
                     op == boost::none || !*op)
                 {
                     _commandline += c;
-                    std::cout << static_cast<char>(c) << std::flush;
+                    if (_echo)
+                    {
+                        std::cout << static_cast<char>(c) << std::flush;
+                    }
+                    else
+                    {
+                        std::cout << '*' << std::flush;
+                    }
                 }
             break;
 

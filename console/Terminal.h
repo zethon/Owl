@@ -25,6 +25,7 @@ public:
 
     [[nodiscard]]
     std::string getLine();
+    void setLine(const std::string& v) { _commandline = v; }
 
     void backspace();
     void backspaces(std::size_t spaces)
@@ -33,6 +34,12 @@ public:
         {
             backspace();
         }
+    }
+
+    void clearLine()
+    {
+        backspaces(_commandline.size());
+        _commandline.clear();
     }
 
     void reset()

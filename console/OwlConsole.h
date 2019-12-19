@@ -8,6 +8,7 @@
 #include <rang.hpp>
 
 #include "../src/Parsers/Forum.h"
+#include "CommandHistory.h"
 #include "Terminal.h"
 
 using namespace std::string_literals;
@@ -17,6 +18,8 @@ namespace owl
 
 class ParserBase;
 using ParserBasePtr = std::shared_ptr<ParserBase>;
+
+class CommandHistory;
 
 QString printableDateTime(const QDateTime& dt, bool bShowTime);
 QString shortText(const QString& text, const uint maxwidth);
@@ -229,6 +232,7 @@ private:
     
     QString                     _commandFile;       // file of line-deliminted commands to execute on start
     QStringList                 _startCommands;     // list of commands passed on the command-line
+    CommandHistory              _history;
 
     ParserBasePtr               _parser;            // parser object of active connection or null
     QString                     _luaFolder;         // folder used to load Lua parsers
@@ -245,7 +249,6 @@ private:
     QList<ConsoleCommand>       _boardCommands;
 
     Prompt                      _prompt;
-
     bool                        _bDoneApp = false;
 
     owl::StringMap              _appOptions;
@@ -256,6 +259,7 @@ private:
     void doSysInfo(const QString& cmdLn);
     void doLogin(const QString&);
     void doParsers(const QString& cmdLn);
+    void doHistory(const QString& cmdLn);
 
     void listForums() { doListForums(QString()); }
     void doListForums(const QString&);
@@ -278,7 +282,7 @@ private:
     void gotoPrevious(const QString&);
 
     void initCommands();
-
+    void initTerminal();
 };
 
 } // end namespace

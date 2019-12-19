@@ -2,8 +2,14 @@
 #include <sys/ioctl.h>
 #endif
 
+#include <regex>
+#include <assert.h>
+
 #include <QCoreApplication>
 #include <QSysInfo>
+
+#include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include <spdlog/common.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -15,6 +21,7 @@
 #include "../src/Utils/OwlUtils.h"
 #include "../src/Utils/Moment.h"
 #include "../src/Utils/OwlLogger.h"
+#include "../src/Utils/SimpleArgs.h"
 
 #include "Core.h"
 #include "OwlConsole.h"
@@ -44,6 +51,13 @@ ConsoleApp::ConsoleApp(QObject *parent)
 {
     auto logger = owl::rootLogger();
     logger->set_level(spdlog::level::off);
+
+    const std::string historyFile{ 
+        QStandardPaths::writableLocation(QStandardPaths::HomeLocation).toStdString()
+        + QDir::separator().toLatin1() + ".owlc_history" };
+
+    _history.setHistoryFile(historyFile);
+    _history.loadHistory(false);
 }
 
 void ConsoleApp::setCommandfile(const QString &f)
@@ -247,6 +261,49 @@ void ConsoleApp::doParsers(const QString&)
     }
 
     std::cout << std::endl;
+}
+
+void ConsoleApp::doHistory(const QString& params)
+{
+    static const std::string usage = "usage: history [reset]";
+
+    owl::SimpleArgs args{ params.toStdString() };
+    if ((args.getPositionalCount() > 1)
+        || (args.getPositionalCount() == 1 && args.getPositional(0) != "reset"))
+    {
+        ConsoleApp::printError(usage);
+        return;
+    }
+
+    const std::string historyfile{
+        QStandardPaths::writableLocation(QStandardPaths::HomeLocation).toStdString()
+        + QDir::separator().toLatin1() + ".owlc_history" };
+
+    std::cout << "history file: " << historyfile << '\n';
+
+    if (args.getPositionalCount() == 0)
+    {    
+        for (auto index = 0u; index < _history.size(); index++)
+        {
+            std::cout
+                << std::right
+                << std::setw(5)
+                << index + 1
+                << std::left
+                << std::setw(5)
+                << ' '
+                << _history.at(index)
+                << '\n';
+        }
+
+        std::cout << std::flush;
+    }
+    else
+    {
+        boost::filesystem::remove(historyfile);
+        _history.clear();
+        std::cout << "history reset" << '\n';
+    }
 }
 
 void ConsoleApp::doListForums(const QString& options)
@@ -674,6 +731,7 @@ void ConsoleApp::initCommands()
         ConsoleCommand("sysinfo", "Show system info", std::bind(&ConsoleApp::doSysInfo, this, std::placeholders::_1)),
         ConsoleCommand("login", "Login to a remote board", std::bind(&ConsoleApp::doLogin, this, std::placeholders::_1)),
         ConsoleCommand("parsers", "List parsers",std::bind(&ConsoleApp::doParsers, this, std::placeholders::_1)),
+        ConsoleCommand("history", "Print history info",std::bind(&ConsoleApp::doHistory, this, std::placeholders::_1)),
         ConsoleCommand("quit,exit,q", "", [this](const QString&) { _bDoneApp = true; }),
         ConsoleCommand("version,about", tr("Display version information"),
             [](const QString&)
@@ -787,15 +845,71 @@ void ConsoleApp::initCommands()
     };
 }
 
+void ConsoleApp::initTerminal()
+{
+    _terminal.onUpArrow.connect(
+        [this]()
+        {
+            if (_history.up())
+            {
+                _terminal.clearLine();
+                const auto& newcmd = _history.getCurrent();
+                _terminal.setLine(newcmd);
+                std::cout << newcmd << std::flush;
+            }
+        });
+
+
+    _terminal.onDownArrow.connect(
+        [this]()
+        {
+            if (_history.down())
+            {
+                _terminal.clearLine();
+                const auto& newcmd = _history.getCurrent();
+                _terminal.setLine(newcmd);
+                std::cout << newcmd << std::flush;
+            }
+        });
+}
+
 void ConsoleApp::parseCommand(const QString& cmdLn)
 {
+    const static std::regex histre{ R"(^!(\d+)\s*(.*)$)" };
+
     std::cout << '\n';
+
+    //if (std::smatch match; std::regex_match(cmdLn.toStdString(), match, histre)
+    //    && match.size() > 1 && match[1].str().size() > 0)
+    //{
+    //    assert(utils::isNumeric(match[1].str()));
+    //    assert(match.size() == 3);
+
+    //    auto index = std::stoul(match[1].str()) - 1;
+    //    if (index >= _history.size())
+    //    {
+    //        ConsoleApp::printError(fmt::format("!{} event not found", match[1].str()));
+    //        return;
+    //    }
+
+    //    historyCommand = command = fmt::format("{} {}",
+    //        _history.at(index),
+    //        match[2].str());
+
+    //    // trim again in case we added any whitespace
+    //    boost::algorithm::trim(command);
+
+    //    // print the command we're executing
+    //    std::cout << command << std::endl;
+    //}
 
     // split the line by white space
     auto parts = cmdLn.trimmed().split(QRegExp("\\s"));
     
     if (parts.size() > 0)
     {
+        _history.commit(cmdLn.toStdString());
+
         ConsoleCommand* cmdPtr = nullptr;
         auto commandName = parts[0].toLower();
 
@@ -860,6 +974,7 @@ void ConsoleApp::run()
 
     // set up all our terminal commands
     initCommands();
+    initTerminal();
 
     try
     {

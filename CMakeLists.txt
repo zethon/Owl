@@ -31,6 +31,7 @@ add_definitions(
     -DHUNSPELL_STATIC
     -DBOOST_TEST_NO_LIB
     -DBOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
+    -D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
 )
 
 # Add this definition for release since we cannot rely on 
