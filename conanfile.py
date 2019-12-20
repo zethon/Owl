@@ -18,7 +18,6 @@ class OwlConan(ConanFile):
     requires = (
         "boost/1.71.0@conan/stable",
         "libcurl/7.66.0@bincrafters/stable",
-        "fmt/6.0.0@bincrafters/stable",
         "spdlog/1.2.1@bincrafters/stable",
         "libhunspell/1.7.0@owl/stable",
         "tidy-html5/5.7.28@owl/stable",
