@@ -30,14 +30,9 @@ test_script:
   - ctest -VV -C "%configuration%" --output-on-failure
 
 after_build:
-  - set
-  - echo "build number "
-  - echo %APPVEYOR_BUILD_NUMBER%
-  - echo "build version "
-  - echo %APPVEYOR_BUILD_NUMBER%
-  - copy src\%configuration%\Owl.exe .\Owl-%configuration%.exe
+  - copy src\%configuration%\Owl.exe .\Owl-%APPVEYOR_BUILD_VERSION$-%configuration%.exe
   - dir *.exe
 
 artifacts:
-  - path: Owl-Release.exe
+  - path: Owl-%APPVEYOR_BUILD_VERSION$-%configuration%.exe
     name: OwlInstaller
