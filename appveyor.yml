@@ -7,6 +7,10 @@ configuration:
   # - Debug
   - Release
 
+environment:
+  ftp_password:
+    secure: edNpE3aPKyOzzhE2sb6CKg==
+
 install:
   - echo "Environment"
   - set
@@ -29,10 +33,19 @@ test_script:
   # - dir /s .
   - ctest -VV -C "%configuration%" --output-on-failure
 
-after_build:
+after_success:
   - copy src\%configuration%\Owl.exe .\Owl-%APPVEYOR_BUILD_VERSION%-%configuration%.exe
   - dir *.exe
 
 artifacts:
   - path: Owl-%APPVEYOR_BUILD_VERSION%-%configuration%.exe
     name: OwlInstaller
+
+deploy:
+  provider: FTP
+  protocol: ftps
+  host: ftp.owlclient.com
+  username: admin@owlclient.com
+  password:
+    secure: AABBBCCCCddd123==
+  folder: /public_html/artifacts
