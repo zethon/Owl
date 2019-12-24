@@ -4,7 +4,7 @@ image:
  - Visual Studio 2017
 
 configuration:
-  - Debug
+  # - Debug
   - Release
 
 install:
@@ -29,4 +29,3 @@ test_script:
 
 after_build:
   cmd: copy src/%configuration%/Owl.exe ./Owl-%configuration%.exe
-  
