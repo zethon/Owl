@@ -7,6 +7,9 @@ configuration:
   # - Debug
   - Release
 
+environment:
+  - ARTIFACT_NAME: Owl-%APPVEYOR_BUILD_VERSION%-%configuration%.exe
+
 install:
   - echo "Environment"
   - set
@@ -30,9 +33,9 @@ test_script:
   - ctest -VV -C "%configuration%" --output-on-failure
 
 after_build:
-  - copy src\%configuration%\Owl.exe .\Owl-%APPVEYOR_BUILD_VERSION$-%configuration%.exe
+  - copy src\%configuration%\Owl.exe .\%ARTIFACT_NAME%
   - dir *.exe
 
 artifacts:
-  - path: Owl-%APPVEYOR_BUILD_VERSION$-%configuration%.exe
+  - path: %ARTIFACT_NAME%
     name: OwlInstaller
