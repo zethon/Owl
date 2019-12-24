@@ -15,7 +15,7 @@ install:
   - echo "Environment"
   - set
   - echo "NSIS Info"
-  - nsis --version
+  - makensis /LICENSE
   - echo "Downloading conan..."
   - set PATH=%PATH%;%PYTHON%/Scripts/
   - pip.exe install conan
