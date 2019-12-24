@@ -7,7 +7,13 @@ configuration:
   - Debug
   - Release
 
+environment:
+  ftp_password:
+    secure: edNpE3aPKyOzzhE2sb6CKg==
+
 install:
+  - echo "Environment"
+  - set
   - echo "Downloading conan..."
   - set PATH=%PATH%;%PYTHON%/Scripts/
   - pip.exe install conan
@@ -25,6 +31,30 @@ build_script:
 test_script:
   - set PATH=%PATH%;C:\Qt\5.11\msvc2017_64\bin
   - ctest -VV -C "%configuration%" --schedule-random --output-on-failure
+
+after_test:
+  # we still seem to be in the "build" directory in here, so 
+  # the .\<filename> refers to "build" folder accordingly
+  - copy src\%configuration%\Owl.exe .\Owl-%APPVEYOR_BUILD_VERSION%-%configuration%.exe
+
+artifacts:
+  # but the references here need to have "build\" prepended 
+  # since the context here is from the original build folder 
+  # before we "cd build" 
+  - path: build\Owl-%APPVEYOR_BUILD_VERSION%-%configuration%.exe
+    name: OwlInstaller
+
+deploy:
+  provider: FTP
+  protocol: ftp
+  host: ftp.owlclient.com
+  username: admin@owlclient.com
+  password:
+    secure: P7iZrcnNk20p8pi9kuUktg==
+  folder: /public_html/artifacts
+  on:
+    branch: deploy
+    configuration: Release
 
 notifications:
   - provider: Email
