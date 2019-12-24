@@ -4,7 +4,7 @@ image:
  - Visual Studio 2017
 
 configuration:
-  # - Debug
+  - Debug
   - Release
 
 environment:
@@ -12,11 +12,14 @@ environment:
     secure: edNpE3aPKyOzzhE2sb6CKg==
 
 install:
-  # - echo "Environment"
-  # - set
+  - echo "Environment"
+  - set
+  - echo "NSIS Info"
+  - nsis --version
   - echo "Downloading conan..."
   - set PATH=%PATH%;%PYTHON%/Scripts/
   - pip.exe install conan
+  - conan --version
   - conan remote add owl https://api.bintray.com/conan/zethon/owl
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
 
@@ -29,19 +32,17 @@ build_script:
 
 test_script:
   - set PATH=%PATH%;C:\Qt\5.11\msvc2017_64\bin
-  # - echo %PATH%
-  # - dir /s .
   - ctest -VV -C "%configuration%" --output-on-failure
 
 after_test:
-  # we still seem to be in the "build" directory in here, so the .\<filename>
-  # refers to "build" folder accordingly
+  # we still seem to be in the "build" directory in here, so 
+  # the .\<filename> refers to "build" folder accordingly
   - copy src\%configuration%\Owl.exe .\Owl-%APPVEYOR_BUILD_VERSION%-%configuration%.exe
-  # - dir *.exe
 
 artifacts:
-  # but there references here need to "build\" prepended since the context
-  # here is from the original build folder before we "cd build" 
+  # but the references here need to have "build\" prepended 
+  # since the context here is from the original build folder 
+  # before we "cd build" 
   - path: build\Owl-%APPVEYOR_BUILD_VERSION%-%configuration%.exe
     name: OwlInstaller
 
@@ -55,3 +56,4 @@ deploy:
   folder: /public_html/artifacts
   on:
     branch: deploy
+    configuration: Release
