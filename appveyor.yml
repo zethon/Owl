@@ -24,8 +24,18 @@ build_script:
 test_script:
   - set PATH=%PATH%;C:\Qt\5.11\msvc2017_64\bin
   # - echo %PATH%
-  # - dir /s C:\Qt\5.11\msvc2017_64
+  # - dir /s .
   - ctest -VV -C "%configuration%" --output-on-failure
 
 after_build:
+  cmd: set
+  cmd: echo "build number "
+  cmd: echo %APPVEYOR_BUILD_NUMBER%
+  cmd: echo "build version "
+  cmd: echo %APPVEYOR_BUILD_NUMBER%
   cmd: copy src\%configuration%\Owl.exe .\Owl-%configuration%.exe
+  cmd: dir *.exe
+
+artifacts:
+  - path: Owl-Release.exe
+    name: OwlInstaller
