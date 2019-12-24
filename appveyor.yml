@@ -12,8 +12,8 @@ environment:
     secure: edNpE3aPKyOzzhE2sb6CKg==
 
 install:
-  - echo "Environment"
-  - set
+  # - echo "Environment"
+  # - set
   - echo "Downloading conan..."
   - set PATH=%PATH%;%PYTHON%/Scripts/
   - pip.exe install conan
@@ -34,16 +34,20 @@ test_script:
   - ctest -VV -C "%configuration%" --output-on-failure
 
 after_test:
+  # we still seem to be in the "build" directory in here, so the .\<filename>
+  # refers to "build" folder accordingly
   - copy src\%configuration%\Owl.exe .\Owl-%APPVEYOR_BUILD_VERSION%-%configuration%.exe
-  - dir *.exe
+  # - dir *.exe
 
 artifacts:
+  # but there references here need to "build\" prepended since the context
+  # here is from the original build folder before we "cd build" 
   - path: build\Owl-%APPVEYOR_BUILD_VERSION%-%configuration%.exe
     name: OwlInstaller
 
 deploy:
   provider: FTP
-  protocol: ftps
+  protocol: ftp
   host: ftp.owlclient.com
   username: admin@owlclient.com
   password:
