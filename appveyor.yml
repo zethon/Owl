@@ -8,6 +8,8 @@ configuration:
   - Release
 
 install:
+  - echo "Environment"
+  - set
   - echo "Downloading conan..."
   - set PATH=%PATH%;%PYTHON%/Scripts/
   - pip.exe install conan
