@@ -28,13 +28,13 @@ test_script:
   - ctest -VV -C "%configuration%" --output-on-failure
 
 after_build:
-  cmd: set
-  cmd: echo "build number "
-  cmd: echo %APPVEYOR_BUILD_NUMBER%
-  cmd: echo "build version "
-  cmd: echo %APPVEYOR_BUILD_NUMBER%
-  cmd: copy src\%configuration%\Owl.exe .\Owl-%configuration%.exe
-  cmd: dir *.exe
+  - set
+  - echo "build number "
+  - echo %APPVEYOR_BUILD_NUMBER%
+  - echo "build version "
+  - echo %APPVEYOR_BUILD_NUMBER%
+  - copy src\%configuration%\Owl.exe .\Owl-%configuration%.exe
+  - dir *.exe
 
 artifacts:
   - path: Owl-Release.exe
