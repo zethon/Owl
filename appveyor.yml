@@ -33,7 +33,7 @@ test_script:
   # - dir /s .
   - ctest -VV -C "%configuration%" --output-on-failure
 
-after_success:
+after_test:
   - copy src\%configuration%\Owl.exe .\Owl-%APPVEYOR_BUILD_VERSION%-%configuration%.exe
   - dir *.exe
 
