@@ -53,3 +53,5 @@ deploy:
   password:
     secure: P7iZrcnNk20p8pi9kuUktg==
   folder: /public_html/artifacts
+  on:
+    branch: deploy
