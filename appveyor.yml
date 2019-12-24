@@ -47,5 +47,5 @@ deploy:
   host: ftp.owlclient.com
   username: admin@owlclient.com
   password:
-    secure: AABBBCCCCddd123==
+    secure: edNpE3aPKyOzzhE2sb6CKg==
   folder: /public_html/artifacts
