@@ -36,7 +36,8 @@ test_script:
 after_test:
   # we still seem to be in the "build" directory in here, so 
   # the .\<filename> refers to "build" folder accordingly
-  - copy src\%configuration%\Owl.exe .\Owl-%APPVEYOR_BUILD_VERSION%-%configuration%.exe
+  - copy src\Owl\%configuration%\Owl.exe .\Owl-%APPVEYOR_BUILD_VERSION%-%configuration%.exe
+  - copy src\Console\%configuration%\owlc.exe .\OwlConsole-%APPVEYOR_BUILD_VERSION%-%configuration%.exe
 
 artifacts:
   # but the references here need to have "build\" prepended 
@@ -44,6 +45,8 @@ artifacts:
   # before we "cd build" 
   - path: build\Owl-%APPVEYOR_BUILD_VERSION%-%configuration%.exe
     name: OwlInstaller
+  - path: build\OwlConsole-%APPVEYOR_BUILD_VERSION%-%configuration%.exe
+    name: OwlConsoleInstaller
 
 deploy:
   provider: FTP
