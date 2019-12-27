@@ -68,7 +68,7 @@ script:
       source /opt/qt512/bin/qt512-env.sh;
     fi
 
-  - conan install .. --build missing  -s compiler.cppstd=17
+  - conan install .. --build missing  -s compiler.cppstd=17 -s build_type=${CONFIG}
   - cmake .. -DCMAKE_BUILD_TYPE=${CONFIG} -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DBUILD_GUI=ON -DBUILD_CONSOLE=ON -DBUILD_TEST=ON
   - cmake --build . --config "${CONFIG}"
   - ctest -VV -C ${CONFIG} --output-on-failure
