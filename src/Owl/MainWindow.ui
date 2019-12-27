@@ -741,7 +741,7 @@ QToolButton:hover
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
-   <widget class="QWidget" name="boardIconDockWidget">
+   <widget class="QWidget" name="boardIconDockWidget1">
     <property name="styleSheet">
      <string notr="true"/>
     </property>

@@ -151,34 +151,8 @@ if (APPLE)
     find_package(Qt5MacExtras REQUIRED)
 endif (APPLE)
 
-#############################################
-
-# We need this to be able to include headers produced 
-# QT tools. This line should be in each sub project
-# CMakeLists.txt also
-include_directories(${CMAKE_BINARY_DIR})
-
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
-if (BUILD_GUI)
-    add_subdirectory(src)
-elseif(BUILD_TEST)
-    # NOTE: The `BUILD_GUI` flag is a bit of a hack. We only
-    # implement it because because Travis-CI currently cannot
-    # build Owl's GUI (see note in .travis.yml). However, 
-    # Travis can still buld the unit tests. This has value, so
-    # we go ahead and build/run the unit tests on Travis's 
-    # Ubuntu image.
-    include_directories(src)
-    add_subdirectory(src/Parsers)
-    add_subdirectory(src/Utils)
-endif()
-
-if (BUILD_CONSOLE)
-    add_subdirectory(console)
-endif(BUILD_CONSOLE)
+add_subdirectory(src)
 
 if (BUILD_TEST)
     enable_testing()
-    add_subdirectory(tests)
 endif (BUILD_TEST)
