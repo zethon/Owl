@@ -14,8 +14,6 @@ environment:
 install:
   - echo "Environment"
   - set
-  - echo "NSIS Info"
-  - makensis /LICENSE
   - echo "Downloading conan..."
   - set PATH=%PATH%;%PYTHON%/Scripts/
   - pip.exe install conan
@@ -27,12 +25,13 @@ build_script:
   - mkdir build
   - cd build
   - conan install .. --build missing -s build_type=%configuration%
-  - cmake .. -DCMAKE_BUILD_TYPE=%configuration% "-GVisual Studio 15 2017 Win64" -DCMAKE_PREFIX_PATH=C:/Qt/5.11/msvc2017_64 -DBUILD_GUI=ON -DBUILD_CONSOLE=OFF -DBUILD_TEST=ON
+  - cmake .. -DCMAKE_BUILD_TYPE=%configuration% "-GVisual Studio 15 2017 Win64" -DCMAKE_PREFIX_PATH=C:/Qt/5.11/msvc2017_64 -DBUILD_GUI=ON -DBUILD_CONSOLE=ON -DBUILD_TEST=ON
   - cmake --build . --config %configuration% -- /maxcpucount:4
 
 test_script:
   - set PATH=%PATH%;C:\Qt\5.11\msvc2017_64\bin
-  - ctest -VV -C "%configuration%" --output-on-failure
+  - ctest -VV -C "%configuration%" --schedule-random --output-on-failure
+
 
 after_test:
   # we still seem to be in the "build" directory in here, so 
@@ -57,3 +56,10 @@ deploy:
   on:
     branch: deploy
     configuration: Release
+
+notifications:
+  - provider: Email
+    to:
+      - builds@owl.dog
+    on_build_success: false
+    on_build_failure: true

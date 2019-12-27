@@ -118,11 +118,6 @@ std::tuple<const char*, const char*> webtextData[]
     },
     std::tuple<const char*, const char*>
     {
-        "http://itcorp.com/",
-        "A85DBDF7019E51724A29D8BAF1BE03B6710C1F7C"
-    },
-    std::tuple<const char*, const char*>
-    {
         "https://www.york.ac.uk/teaching/cws/wws/webpage1.html",
         "A3E86B5B146DCA332F862A8096158E009BEBAB23"
     },

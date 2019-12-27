@@ -13,7 +13,6 @@ SET (SOURCE_FILES
 )
 
 SET (MOC_HEADERS 
-    CommandHistory.h
     OwlConsole.h 
     Terminal.h
 )

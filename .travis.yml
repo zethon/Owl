@@ -54,6 +54,7 @@ install:
       brew install qt5
       brew link --force qt5
     fi
+  - conan --version
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
   - conan remote add owl https://api.bintray.com/conan/zethon/owl
 
@@ -67,14 +68,14 @@ script:
       source /opt/qt512/bin/qt512-env.sh;
     fi
 
-  - conan install .. --build missing  -s compiler.cppstd=17
-  - cmake .. -DCMAKE_BUILD_TYPE=${CONFIG} -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DBUILD_GUI=ON -DBUILD_CONSOLE=OFF -DBUILD_TEST=ON
+  - conan install .. --build missing  -s compiler.cppstd=17 -s build_type=${CONFIG}
+  - cmake .. -DCMAKE_BUILD_TYPE=${CONFIG} -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DBUILD_GUI=ON -DBUILD_CONSOLE=ON -DBUILD_TEST=ON
   - cmake --build . --config "${CONFIG}"
-  - ctest -VV -C ${CONFIG} --output-on-failure
+  - ctest -VV -C ${CONFIG} --schedule-random --output-on-failure
 
 notifactions:
   email:
     recipients:
-      - aclaure@gmail.com
+      - builds@owl.dog
     on_success: never
     on_failure: always
