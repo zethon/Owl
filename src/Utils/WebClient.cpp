@@ -211,7 +211,7 @@ WebClient::ReplyPtr WebClient::doRequest(const QString& url,
                                    uint options /*= Options::DEFAULT*/)
 {
     Lock lock(_curlMutex);
-    QTime timer;
+    QElapsedTimer timer;
     timer.start();
 
     bool bThrowOnFail = getThrowOnFail();

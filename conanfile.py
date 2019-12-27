@@ -1,14 +1,10 @@
-# Windows: 
-# 
-#   $ conan install .. --build missing
+# Requires: conan 1.21.0 or higher
+#   Note: Using an older version of conan yields a problem with
+#         qt's bzip2 requirement
+#   Reference: https://github.com/conan-io/conan-center-index/issues/533
 #
-# macOS:
-# 
-#   $ conan install .. --build missing
-#
-# Linux:
-#
-#   $ conan install .. --build missing  -s compiler.libcxx=libstdc++11
+# Building: 
+#   $ conan install .. --build missing -s build_type=(Debug|Release)
 
 from conans import ConanFile, CMake
 
