@@ -11,6 +11,7 @@ install:
   - echo "Downloading conan..."
   - set PATH=%PATH%;%PYTHON%/Scripts/
   - pip.exe install conan
+  - conan --version
   - conan remote add owl https://api.bintray.com/conan/zethon/owl
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
 
@@ -23,6 +24,11 @@ build_script:
 
 test_script:
   - set PATH=%PATH%;C:\Qt\5.11\msvc2017_64\bin
-  # - echo %PATH%
-  # - dir /s C:\Qt\5.11\msvc2017_64
   - ctest -VV -C "%configuration%" --schedule-random --output-on-failure
+
+notifications:
+  - provider: Email
+    to:
+      - builds@owl.dog
+    on_build_success: false
+    on_build_failure: true

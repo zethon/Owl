@@ -76,6 +76,6 @@ script:
 notifactions:
   email:
     recipients:
-      - aclaure@gmail.com
+      - builds@owl.dog
     on_success: never
     on_failure: always
