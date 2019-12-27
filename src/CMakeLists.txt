@@ -19,7 +19,3 @@ endif()
 if (BUILD_CONSOLE)
     add_subdirectory(Console)
 endif(BUILD_CONSOLE)
-
-if (BUILD_TEST)
-    add_subdirectory(Tests)
-endif (BUILD_TEST)
