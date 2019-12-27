@@ -32,7 +32,6 @@ test_script:
   - set PATH=%PATH%;C:\Qt\5.11\msvc2017_64\bin
   - ctest -VV -C "%configuration%" --schedule-random --output-on-failure
 
-
 after_test:
   # we still seem to be in the "build" directory in here, so 
   # the .\<filename> refers to "build" folder accordingly

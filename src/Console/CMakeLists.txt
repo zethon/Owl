@@ -1,5 +1,3 @@
-Project(OwlConsole)
-
 # we need this to be able to include headers produced by uic in our code
 INCLUDE_DIRECTORIES(
     libs

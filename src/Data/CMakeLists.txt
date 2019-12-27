@@ -1,8 +1,3 @@
-# Owl - www.owlclient.com
-# Copyright (c) 2012-2019, Adalid Claure <aclaure@gmail.com>
-
-project(Data)
-
 # we need this to be able to include headers produced by uic in our code
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 

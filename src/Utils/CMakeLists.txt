@@ -1,8 +1,3 @@
-# Owl - www.owlclient.com
-# Copyright (c) 2012-2019, Adalid Claure <aclaure@gmail.com>
-
-project(Utils)
-
 set (SOURCE_FILES
     DateTimeParser.cpp
     Exception.cpp
