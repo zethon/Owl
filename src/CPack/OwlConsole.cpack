@@ -1,0 +1,10 @@
+SET(CPACK_GENERATOR "NSIS64")
+set(CPACK_PACKAGE_FILE_NAME "OwlConsole")
+
+# set(CPACK_NSIS_DISPLAY_NAME "DISPLAY NAME!!")
+# set(CPACK_NSIS_DISPLAY_NAME_SET TRUE)
+# set(CPACK_NSIS_PACKAGE_NAME "PACKAGE NAME")
+# set(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.netwitness.com")
+# set(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.netwitness.com")
+# set(CPACK_NSIS_CONTACT "nw-support@netwitness.com")
+# set(CPACK_NSIS_MODIFY_PATH ON)
