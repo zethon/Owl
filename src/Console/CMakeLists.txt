@@ -40,3 +40,11 @@ TARGET_LINK_LIBRARIES(owlc
     Parsers
     Utils
 )
+
+install (
+    TARGETS owlc 
+    COMPONENT owlc
+    RUNTIME DESTINATION bin
+	LIBRARY DESTINATION lib
+	BUNDLE DESTINATION .
+)

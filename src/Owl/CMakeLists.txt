@@ -225,3 +225,11 @@ elseif (WIN32)
 elseif (LINUX)
     # nothing yet for Linux		
 endif()
+
+install (
+    TARGETS Owl 
+    COMPONENT Owl
+    RUNTIME DESTINATION bin
+	LIBRARY DESTINATION lib
+	BUNDLE DESTINATION .
+)
