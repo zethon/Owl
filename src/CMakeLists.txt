@@ -19,3 +19,18 @@ endif()
 if (BUILD_CONSOLE)
     add_subdirectory(Console)
 endif(BUILD_CONSOLE)
+    
+# this will generate seperate package files for each
+# executable so that we can have multiple intaller
+# biniaries
+foreach(_CONFIG_FILE_ 
+    Owl.CPackConfig.cmake 
+    OwlConsole.CPackConfig.cmake
+    OwlVersion.cmake)
+    
+    configure_file("CPack/${_CONFIG_FILE_}.in"
+		"${CMAKE_BINARY_DIR}/${_CONFIG_FILE_}"
+        @ONLY)
+endforeach()
+
+include(CPack)
