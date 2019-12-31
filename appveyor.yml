@@ -32,20 +32,16 @@ test_script:
   - set PATH=%PATH%;C:\Qt\5.11\msvc2017_64\bin
   - ctest -VV -C "%configuration%" --schedule-random --output-on-failure
 
-after_test:
-  # we still seem to be in the "build" directory in here, so 
-  # the .\<filename> refers to "build" folder accordingly
-  - copy src\Owl\%configuration%\Owl.exe .\Owl-%APPVEYOR_BUILD_VERSION%-%configuration%.exe
-  - copy src\Console\%configuration%\owlc.exe .\OwlConsole-%APPVEYOR_BUILD_VERSION%-%configuration%.exe
+on_success:
+  - cpack -G NSIS64 --config Owl.CPackConfig.cmake
+  - cpack -G NSIS64 --config OwlConsole.CPackConfig.cmake
 
 artifacts:
-  # but the references here need to have "build\" prepended 
-  # since the context here is from the original build folder 
+  # References here need to have "build\" prepended since 
+  # the context here is from the original build folder 
   # before we "cd build" 
-  - path: build\Owl-%APPVEYOR_BUILD_VERSION%-%configuration%.exe
-    name: OwlInstaller
-  - path: build\OwlConsole-%APPVEYOR_BUILD_VERSION%-%configuration%.exe
-    name: OwlConsoleInstaller
+  - path: build\owl-*.exe
+    name: OwlInstallers
 
 deploy:
   provider: FTP
