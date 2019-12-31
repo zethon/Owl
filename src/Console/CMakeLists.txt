@@ -29,22 +29,23 @@ endif(WIN32)
 
 QT5_WRAP_CPP(MOC_SOURCE_FILES ${MOC_HEADERS})
 
-ADD_EXECUTABLE(owlc
+ADD_EXECUTABLE(OwlConsole
     ${SOURCE_FILES}
     ${HEADER_FILES}
     ${MOC_SOURCE_FILES}    
 )
 
-TARGET_LINK_LIBRARIES(owlc
+TARGET_LINK_LIBRARIES(OwlConsole
     ${CONAN_LIBS}
     Parsers
     Utils
 )
 
 install (
-    TARGETS owlc 
-    COMPONENT owlc
+    TARGETS OwlConsole 
+    COMPONENT OwlConsole
     RUNTIME DESTINATION bin
 	LIBRARY DESTINATION lib
 	BUNDLE DESTINATION .
 )
+
