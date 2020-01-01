@@ -33,8 +33,8 @@ test_script:
   - ctest -VV -C "%configuration%" --schedule-random --output-on-failure
 
 after_test:
-  - cpack -G NSIS64 -C %configuration% --config Owl.CPackConfig.cmake
-  - cpack -G NSIS64 -C %configuration% --config OwlConsole.CPackConfig.cmake
+  - if "%configuration%"=="Release" cpack -G NSIS64 -C %configuration% --config Owl.CPackConfig.cmake
+  - if "%configuration%"=="Release" cpack -G NSIS64 -C %configuration% --config OwlConsole.CPackConfig.cmake
 
 artifacts:
   # References here need to have "build\" prepended since 
