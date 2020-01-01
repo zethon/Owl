@@ -2,44 +2,44 @@ language: cpp
 
 matrix:
   include:
-    - os: osx
-      osx_image: xcode10
-      compiler: clang
-      env: CONFIG=Debug
+    # - os: osx
+    #   osx_image: xcode10
+    #   compiler: clang
+    #   env: CONFIG=Debug
     - os: osx
       osx_image: xcode10
       compiler: clang
       env: CONFIG=Release
-    - os: linux
-      dist: bionic
-      sudo: required
-      compiler: gcc
-      env:
-        - CONFIG=Debug
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - sourceline: "ppa:beineri/opt-qt-5.12.3-bionic"
-          packages:
-            - build-essential
-            - qt512-meta-full
-            - libgl1-mesa-dev
-    - os: linux
-      dist: bionic
-      sudo: required
-      compiler: gcc
-      env:
-        - CONFIG=Release
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - sourceline: "ppa:beineri/opt-qt-5.12.3-bionic"
-          packages:
-            - build-essential
-            - qt512-meta-full
-            - libgl1-mesa-dev
+    # - os: linux
+    #   dist: bionic
+    #   sudo: required
+    #   compiler: gcc
+    #   env:
+    #     - CONFIG=Debug
+    #   addons:
+    #     apt:
+    #       sources:
+    #         - ubuntu-toolchain-r-test
+    #         - sourceline: "ppa:beineri/opt-qt-5.12.3-bionic"
+    #       packages:
+    #         - build-essential
+    #         - qt512-meta-full
+    #         - libgl1-mesa-dev
+    # - os: linux
+    #   dist: bionic
+    #   sudo: required
+    #   compiler: gcc
+    #   env:
+    #     - CONFIG=Release
+    #   addons:
+    #     apt:
+    #       sources:
+    #         - ubuntu-toolchain-r-test
+    #         - sourceline: "ppa:beineri/opt-qt-5.12.3-bionic"
+    #       packages:
+    #         - build-essential
+    #         - qt512-meta-full
+    #         - libgl1-mesa-dev
 
 install:
   - |
@@ -86,12 +86,14 @@ script:
     fi
 
 after_success:
-    - |
-      if [[ "$TRAVIS_BRANCH" == "deploy" ]]; then
-        if [[ "$CONFIG" == "Release" ]]; then
-          find . -maxdepth 1 -name "*.deb" -exec curl -T "{}" ftp://ftp.owlclient.com/public_html/artifacts/build/ --user "${SFTP_USER}:${SFTP_PASSWORD}" --ftp-create-dirs --insecure \;
-        fi
+  - pwd
+  - ls -al
+  - |
+    if [[ "$TRAVIS_BRANCH" == "deploy" ]]; then
+      if [[ "$CONFIG" == "Release" ]]; then
+        find . -maxdepth 1 -name "*.deb" -exec curl -T "{}" ftp://ftp.owlclient.com/public_html/artifacts/build/ --user "${SFTP_USER}:${SFTP_PASSWORD}" --ftp-create-dirs --insecure \;
       fi
+    fi
 
 notifactions:
   email:
