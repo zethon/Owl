@@ -87,8 +87,10 @@ script:
 
 after_success:
     - |
-      if [[ "$TRAVIS_BRANCH" == "deploy" AND "$CONFIG" == "Release" ]]; then
-        find . -maxdepth 1 -name "*.deb" -exec curl -T "{}" ftp://ftp.owlclient.com/public_html/artifacts/build/ --user "${SFTP_USER}:${SFTP_PASSWORD}" --ftp-create-dirs --insecure \;
+      if [[ "$TRAVIS_BRANCH" == "deploy" ]]; then
+        if [[ "$CONFIG" == "Release" ]]; then
+          find . -maxdepth 1 -name "*.deb" -exec curl -T "{}" ftp://ftp.owlclient.com/public_html/artifacts/build/ --user "${SFTP_USER}:${SFTP_PASSWORD}" --ftp-create-dirs --insecure \;
+        fi
       fi
 
 notifactions:
