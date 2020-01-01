@@ -73,6 +73,18 @@ script:
   - cmake --build . --config "${CONFIG}"
   - ctest -VV -C ${CONFIG} --schedule-random --output-on-failure
 
+  - |
+    if [[ "$CONFIG" == "Release" ]]; then
+      if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+        cpack -G DEB --config Owl.CPackConfig.cmake
+        cpack -G DEB --config OwlConsole.CPackConfig.cmake
+      fi
+      if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        cpack -G DMG --config Owl.CPackConfig.cmake
+        cpack -G DMG --config OwlConsole.CPackConfig.cmake
+      fi
+    fi
+
 notifactions:
   email:
     recipients:
