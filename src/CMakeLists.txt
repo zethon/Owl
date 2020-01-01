@@ -26,7 +26,8 @@ endif(BUILD_CONSOLE)
 foreach(_CONFIG_FILE_ 
     Owl.CPackConfig.cmake 
     OwlConsole.CPackConfig.cmake
-    OwlPackage.cmake)
+    OwlPackage.cmake
+    Info.plist)
     
     configure_file("CPack/${_CONFIG_FILE_}.in"
 		"${CMAKE_BINARY_DIR}/${_CONFIG_FILE_}"
