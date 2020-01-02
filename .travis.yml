@@ -77,7 +77,9 @@ after_success:
       if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
         cpack -G DEB --config Owl.CPackConfig.cmake
         cpack -G DEB --config OwlConsole.CPackConfig.cmake
-        find . -maxdepth 1 -name "*.deb" -exec curl -T "{}" ftp://ftp.owlclient.com/public_html/artifacts/build/ --user "${SFTP_USER}:${SFTP_PASSWORD}" --ftp-create-dirs --insecure \;
+        # For now, disable deployment of artifacts for Ubuntu
+        # See: https://blog.travis-ci.com/2018-07-23-the-tale-of-ftp-at-travis-ci
+        # find . -maxdepth 1 -name "*.deb" -exec curl -T "{}" ftp://ftp.owlclient.com/public_html/artifacts/build/ --user "${SFTP_USER}:${SFTP_PASSWORD}" --ftp-create-dirs --insecure \;
       elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         cpack -G Bundle --config Owl.CPackConfig.cmake
         cpack -G Bundle --config OwlConsole.CPackConfig.cmake
