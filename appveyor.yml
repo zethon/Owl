@@ -10,7 +10,7 @@ environment:
     secure: edNpE3aPKyOzzhE2sb6CKg==
 
 install:
-  - set BUILD_NUMER=%build%
+  - set BUILD_NUMBER=%build%
   - echo "Environment"
   - set
   - echo "Downloading conan..."
