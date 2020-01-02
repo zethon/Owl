@@ -46,9 +46,7 @@ install:
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       alias python=python3
       sudo pip install conan
-    fi
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+    elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       brew update
       brew install conan
       brew install qt5
@@ -73,25 +71,17 @@ script:
   - cmake --build . --config "${CONFIG}"
   - ctest -VV -C ${CONFIG} --schedule-random --output-on-failure
 
+after_success:
   - |
-    if [[ "$CONFIG" == "Release" ]]; then
+    if [ "$TRAVIS_BRANCH" == "deploy" ] && [ "$CONFIG" == "Release" ]; then
       if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
         cpack -G DEB --config Owl.CPackConfig.cmake
         cpack -G DEB --config OwlConsole.CPackConfig.cmake
-      fi
-      if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        find . -maxdepth 1 -name "*.deb" -exec curl -T "{}" ftp://ftp.owlclient.com/public_html/artifacts/build/ --user "${SFTP_USER}:${SFTP_PASSWORD}" --ftp-create-dirs --insecure \;
+      elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         cpack -G Bundle --config Owl.CPackConfig.cmake
         cpack -G Bundle --config OwlConsole.CPackConfig.cmake
-      fi
-    fi
-
-after_success:
-  - pwd
-  - ls -al
-  - |
-    if [[ "$TRAVIS_BRANCH" == "deploy" ]]; then
-      if [[ "$CONFIG" == "Release" ]]; then
-        find . -maxdepth 1 -name "*.deb" -exec curl -T "{}" ftp://ftp.owlclient.com/public_html/artifacts/build/ --user "${SFTP_USER}:${SFTP_PASSWORD}" --ftp-create-dirs --insecure \;
+        find . -maxdepth 1 -name "*.dmg" -exec curl -T "{}" ftp://ftp.owlclient.com/public_html/artifacts/build/ --user "${SFTP_USER}:${SFTP_PASSWORD}" --ftp-create-dirs --insecure \;
       fi
     fi
 
