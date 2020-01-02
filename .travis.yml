@@ -42,7 +42,6 @@ matrix:
             - libgl1-mesa-dev
 
 install:
-  - export BUILD_NUMBER=$TRAVIS_BUILD_NUMBER
   - set
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
