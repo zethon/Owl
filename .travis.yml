@@ -74,7 +74,7 @@ script:
 
 after_success:
   - |
-    if [ "$TRAVIS_BRANCH" == "deploy" ] && [ "$CONFIG" == "Release" ]; then
+    if [ "$TRAVIS_BRANCH" == "master" ] && [ "$CONFIG" == "Release" ]; then
       if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
         cpack -G DEB --config Owl.CPackConfig.cmake
         cpack -G DEB --config OwlConsole.CPackConfig.cmake
