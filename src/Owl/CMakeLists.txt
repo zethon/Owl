@@ -1,5 +1,3 @@
-PROJECT(Owl)
-
 # we need this to be able to include headers produced by uic in our code
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
@@ -227,3 +225,11 @@ elseif (WIN32)
 elseif (LINUX)
     # nothing yet for Linux		
 endif()
+
+install (
+    TARGETS Owl 
+    COMPONENT Owl
+    RUNTIME DESTINATION bin
+	LIBRARY DESTINATION lib
+	BUNDLE DESTINATION .
+)

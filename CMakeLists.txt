@@ -2,9 +2,8 @@
 # Copyright 2012-2019, Adalid Claure
 
 project(Owl)
-set(OWL_VERSION "0.7.7")
-
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
@@ -150,6 +149,28 @@ find_package(Qt5WebEngineWidgets REQUIRED)
 if (APPLE)
     find_package(Qt5MacExtras REQUIRED)
 endif (APPLE)
+
+# TODO: move the version information into a dedicated
+# file *just* for versioning information
+file(READ "src/Owl/Core.h" filecontent)
+string(REGEX MATCH "#define[ \t]+OWL_VERSION_MAJOR[ \t]+([0-9]*)" _ ${filecontent})
+set(OWL_VERSION_MAJOR ${CMAKE_MATCH_1})
+string(STRIP ${OWL_VERSION_MAJOR} OWL_VERSION_MAJOR)
+string(REGEX MATCH "#define[ \t]+OWL_VERSION_MINOR[ \t]+([0-9]*)" _ ${filecontent})
+set(OWL_VERSION_MINOR ${CMAKE_MATCH_1})
+string(STRIP ${OWL_VERSION_MINOR} OWL_VERSION_MINOR)
+string(REGEX MATCH "#define[ \t]+OWL_VERSION_PATCH[ \t]+([0-9]*)" _ ${filecontent})
+set(OWL_VERSION_PATCH ${CMAKE_MATCH_1})
+string(STRIP ${OWL_VERSION_PATCH} OWL_VERSION_PATCH)
+set(OWL_VERSION "${OWL_VERSION_MAJOR}.${OWL_VERSION_MINOR}.${OWL_VERSION_PATCH}.")
+
+if (NOT "$ENV{APPVEYOR_BUILD_NUMBER}" STREQUAL "")
+    set(OWL_BUILD_NUMBER "$ENV{APPVEYOR_BUILD_NUMBER}")
+elseif(NOT "$ENV{TRAVIS_BUILD_NUMBER}" STREQUAL "")
+    set(OWL_BUILD_NUMBER "$ENV{TRAVIS_BUILD_NUMBER}")
+else()
+    set(OWL_BUILD_NUMBER "0")
+endif()
 
 add_subdirectory(src)
 

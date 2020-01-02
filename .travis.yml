@@ -3,11 +3,11 @@ language: cpp
 matrix:
   include:
     - os: osx
-      osx_image: xcode11
+      osx_image: xcode10
       compiler: clang
       env: CONFIG=Debug
     - os: osx
-      osx_image: xcode11
+      osx_image: xcode10
       compiler: clang
       env: CONFIG=Release
     - os: linux
@@ -42,13 +42,12 @@ matrix:
             - libgl1-mesa-dev
 
 install:
+  - set
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       alias python=python3
       sudo pip install conan
-    fi
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+    elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       brew update
       brew install conan
       brew install qt5
@@ -72,6 +71,22 @@ script:
   - cmake .. -DCMAKE_BUILD_TYPE=${CONFIG} -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DBUILD_GUI=ON -DBUILD_CONSOLE=ON -DBUILD_TEST=ON
   - cmake --build . --config "${CONFIG}"
   - ctest -VV -C ${CONFIG} --schedule-random --output-on-failure
+
+after_success:
+  - |
+    if [ "$TRAVIS_BRANCH" == "master" ] && [ "$CONFIG" == "Release" ]; then
+      if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+        cpack -G DEB --config Owl.CPackConfig.cmake
+        cpack -G DEB --config OwlConsole.CPackConfig.cmake
+        # For now, disable deployment of artifacts for Ubuntu
+        # See: https://blog.travis-ci.com/2018-07-23-the-tale-of-ftp-at-travis-ci
+        # find . -maxdepth 1 -name "*.deb" -exec curl -T "{}" ftp://ftp.owlclient.com/public_html/artifacts/build/ --user "${SFTP_USER}:${SFTP_PASSWORD}" --ftp-create-dirs --insecure \;
+      elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        cpack -G Bundle --config Owl.CPackConfig.cmake
+        cpack -G Bundle --config OwlConsole.CPackConfig.cmake
+        find . -maxdepth 1 -name "*.dmg" -exec curl -T "{}" ftp://ftp.owlclient.com/public_html/artifacts/build/ --user "${SFTP_USER}:${SFTP_PASSWORD}" --ftp-create-dirs --insecure \;
+      fi
+    fi
 
 notifactions:
   email:
