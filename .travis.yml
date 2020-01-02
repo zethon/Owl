@@ -2,44 +2,44 @@ language: cpp
 
 matrix:
   include:
-    # - os: osx
-    #   osx_image: xcode10
-    #   compiler: clang
-    #   env: CONFIG=Debug
+    - os: osx
+      osx_image: xcode10
+      compiler: clang
+      env: CONFIG=Debug
     - os: osx
       osx_image: xcode10
       compiler: clang
       env: CONFIG=Release
-    # - os: linux
-    #   dist: bionic
-    #   sudo: required
-    #   compiler: gcc
-    #   env:
-    #     - CONFIG=Debug
-    #   addons:
-    #     apt:
-    #       sources:
-    #         - ubuntu-toolchain-r-test
-    #         - sourceline: "ppa:beineri/opt-qt-5.12.3-bionic"
-    #       packages:
-    #         - build-essential
-    #         - qt512-meta-full
-    #         - libgl1-mesa-dev
-    # - os: linux
-    #   dist: bionic
-    #   sudo: required
-    #   compiler: gcc
-    #   env:
-    #     - CONFIG=Release
-    #   addons:
-    #     apt:
-    #       sources:
-    #         - ubuntu-toolchain-r-test
-    #         - sourceline: "ppa:beineri/opt-qt-5.12.3-bionic"
-    #       packages:
-    #         - build-essential
-    #         - qt512-meta-full
-    #         - libgl1-mesa-dev
+    - os: linux
+      dist: bionic
+      sudo: required
+      compiler: gcc
+      env:
+        - CONFIG=Debug
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: "ppa:beineri/opt-qt-5.12.3-bionic"
+          packages:
+            - build-essential
+            - qt512-meta-full
+            - libgl1-mesa-dev
+    - os: linux
+      dist: bionic
+      sudo: required
+      compiler: gcc
+      env:
+        - CONFIG=Release
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: "ppa:beineri/opt-qt-5.12.3-bionic"
+          packages:
+            - build-essential
+            - qt512-meta-full
+            - libgl1-mesa-dev
 
 install:
   - |
