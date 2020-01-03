@@ -8,7 +8,14 @@ set(CPACK_PACKAGE_DESCRIPTION "CPACK_PACKAGE_DESCRIPTION")
 string(TOLOWER ${CPACK_PACKAGE_FILE_NAME} CPACK_PACKAGE_FILE_NAME)
 
 set(CPACK_INSTALL_CMAKE_PROJECTS "@CMAKE_BINARY_DIR@;Owl;Owl;/")
-set(CPACK_RESOURCE_FILE_LICENSE "@CMAKE_SOURCE_DIR@/src/CPack/license.txt")
+
+if (NOT APPLE)
+    # setting this on macOS causes the cpack error: 
+    #   CPack Error: Error adding SLA.
+    #   failed to find CoreServices/CoreServices.r
+    # but NSIS requires this to be defined.
+    set(CPACK_RESOURCE_FILE_LICENSE "@CMAKE_SOURCE_DIR@/src/CPack/license.txt")
+endif()
 
 set(CPACK_BUNDLE_NAME "Owl")
 set(CPACK_BUNDLE_PLIST "@CMAKE_BINARY_DIR@/Info.plist")
@@ -23,4 +30,3 @@ SET(CPACK_COMPONENT_OWL_INSTALL_TYPES Full)
 	
 # Component deps for SDK builds are needed for Windows only
 set(CPACK_COMPONENT_OWL_DEPENDS Runtime)
-

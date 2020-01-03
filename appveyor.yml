@@ -12,6 +12,7 @@ environment:
 install:
   - echo "Environment"
   - set
+  - cmake --version
   - echo "Downloading conan..."
   - set PATH=%PATH%;%PYTHON%/Scripts/
   - pip.exe install conan
