@@ -85,14 +85,12 @@ after_success:
     fi
 
 # only deploy master branch packages
-# For now, disable deployment of artifacts for Ubuntu
+# For now, disable deployment of artifacts for Ubuntu. 
 # See: https://blog.travis-ci.com/2018-07-23-the-tale-of-ftp-at-travis-ci
   - |
     if [ "$TRAVIS_BRANCH" == "master" ] && [ "$CONFIG" == "Release" ]; then
       if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         find . -maxdepth 1 -name "*.dmg" -exec curl -T "{}" ftp://ftp.owlclient.com/public_html/artifacts/build/ --user "${SFTP_USER}:${SFTP_PASSWORD}" --ftp-create-dirs --insecure \;
-      elif [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-        #   find . -maxdepth 1 -name "*.deb" -exec curl -T "{}" ftp://ftp.owlclient.com/public_html/artifacts/build/ --user "${SFTP_USER}:${SFTP_PASSWORD}" --ftp-create-dirs --insecure \;
       fi
     fi
 
