@@ -42,7 +42,7 @@ matrix:
             - libgl1-mesa-dev
 
 install:
-  - set
+  # - set
   - cmake --version
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
