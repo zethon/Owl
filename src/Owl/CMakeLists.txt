@@ -233,3 +233,55 @@ install (
 	LIBRARY DESTINATION lib
 	BUNDLE DESTINATION .
 )
+
+# message("M: ${CMAKE_INSTALL_PREFIX}")
+
+INSTALL(CODE "include(BundleUtilities) 
+fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/bin/Owl.exe\" \"\" \"\" IGNORE_ITEM \"vcredist_x86.exe;vcredist_x64.exe\")" 
+COMPONENT Owl)
+
+# INSTALL(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../CPack/vcredist_x64.exe"
+#     DESTINATION ./
+#     COMPONENT Owl
+# )
+
+set(CMAKE_INSTALL_UCRT_LIBRARIES FALSE)
+include(InstallRequiredSystemLibraries)
+INSTALL(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+        DESTINATION bin
+        COMPONENT Owl)
+
+if (WIN32)
+    get_target_property (QT_QMAKE_EXECUTABLE Qt5::qmake IMPORTED_LOCATION)
+
+    execute_process(COMMAND ${QT_QMAKE_EXECUTABLE} -query QT_INSTALL_PREFIX OUTPUT_VARIABLE QT_INSTALL_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+    execute_process(COMMAND ${QT_QMAKE_EXECUTABLE} -query QT_INSTALL_PLUGINS OUTPUT_VARIABLE QT_INSTALL_PLUGINS OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+    set(QWINDOWSDLL_PATH "${QT_INSTALL_PLUGINS}/platforms/qwindows$<$<CONFIG:Debug>:d>.dll")
+    install(FILES ${QWINDOWSDLL_PATH}
+        DESTINATION bin/platforms
+        COMPONENT Owl)
+
+    set(QSQLITEDLL_PATH "${QT_INSTALL_PLUGINS}/sqldrivers/qsqlite$<$<CONFIG:Debug>:d>.dll")
+    install(FILES ${QSQLITEDLL_PATH}
+        DESTINATION bin/sqldrivers
+        COMPONENT Owl)
+
+    set(BIN_FILES
+        "${QT_INSTALL_PREFIX}/bin/libEGL.dll"
+        "${QT_INSTALL_PREFIX}/bin/libGLESv2.dll"
+        "${QT_INSTALL_PREFIX}/bin/opengl32sw.dll"
+        "${QT_INSTALL_PREFIX}/bin/QtWebEngineProcess.exe"
+        "${QT_INSTALL_PREFIX}/resources/icudtl.dat"
+        "${QT_INSTALL_PREFIX}/resources/qtwebengine_devtools_resources.pak"
+        "${QT_INSTALL_PREFIX}/resources/qtwebengine_resources.pak"
+        "${QT_INSTALL_PREFIX}/resources/qtwebengine_resources_100p.pak"
+        "${QT_INSTALL_PREFIX}/resources/qtwebengine_resources_200p.pak"
+    )
+
+    install(FILES ${BIN_FILES}
+        DESTINATION bin
+        COMPONENT Owl)    
+endif(WIN32)
+

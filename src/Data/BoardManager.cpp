@@ -52,7 +52,8 @@ QSqlDatabase BoardManager::getDatabase(bool doOpen) const
 
         if (doOpen && !db.open())
         {
-            const std::string msg = fmt::format("Could not open database file '{}'", _databaseFilename);
+            const std::string msg = fmt::format("Could not open database file '{}' because: {}", 
+                _databaseFilename, db.lastError().text().toStdString());
             OWL_THROW_EXCEPTION(Exception(QString::fromStdString(msg)));
         }
     }
