@@ -234,17 +234,6 @@ install (
 	BUNDLE DESTINATION .
 )
 
-# # message("M: ${CMAKE_INSTALL_PREFIX}")
-
-INSTALL(CODE "include(BundleUtilities) 
-fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/bin/Owl.exe\" \"\" \"\" IGNORE_ITEM \"vcredist_x86.exe;vcredist_x64.exe\")" 
-COMPONENT Owl)
-
-# # INSTALL(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../CPack/vcredist_x64.exe"
-# #     DESTINATION ./
-# #     COMPONENT Owl
-# # )
-
 set(CMAKE_INSTALL_UCRT_LIBRARIES FALSE)
 include(InstallRequiredSystemLibraries)
 INSTALL(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
@@ -252,6 +241,15 @@ INSTALL(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
         COMPONENT Owl)
 
 if (WIN32)
+    # include(DeployQt)
+    # windeployqt(Owl)
+    get_filename_component(_target_folder_ "$<TARGET_FILE:Owl>" DIRECTORY)
+    message("target_folder: ${_target_folder_}")
+
+    INSTALL(CODE "include(BundleUtilities) 
+    fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/bin/Owl.exe\" \"\" \"\")" 
+    COMPONENT Owl)
+
     get_target_property(QT_QMAKE_EXECUTABLE Qt5::qmake IMPORTED_LOCATION)
     
     execute_process(COMMAND ${QT_QMAKE_EXECUTABLE} -query QT_INSTALL_BINS OUTPUT_VARIABLE QT_INSTALL_BINS  OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -284,46 +282,110 @@ if (WIN32)
         DESTINATION bin
         COMPONENT Owl)
 
-    # install(CODE ...) doesn't support generator expressions, but
-    # file(GENERATE ...) does - store the path in a file
-    file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>_path.txt"
-        CONTENT "$<TARGET_FILE:Owl>"
-    )
+    # execute_process(
+    #     COMMAND "${QT_INSTALL_BINS}/windeployqt.exe"
+    #             --dry-run
+    #             --no-patchqt 
+    #             --no-plugins 
+    #             --no-libraries 
+    #             --no-translations 
+    #             --no-angle 
+    #             --no-opengl-sw
+    #             --no-compiler-runtime
+    #             --qmldir=C:/Users/aclau/src/Owl/src/Owl/res/qml
+    #             # --list mapping
+    #             "${CMAKE_INSTALL_PREFIX}/bin/Owl.exe"
+    #     OUTPUT_VARIABLE _deploy_output_
+    #     OUTPUT_STRIP_TRAILING_WHITESPACE
+    # )
 
-    message("qt: ${QT_INSTALL_BINS}")
-
-    install(CODE
-    "
-        file(READ \"${CMAKE_CURRENT_BINARY_DIR}/\${CMAKE_INSTALL_CONFIG_NAME}_path.txt\" _exe_path_file_)
-        execute_process(
-            COMMAND \"${QT_INSTALL_BINS}/windeployqt.exe\"
-                    --dry-run
-                    --no-patchqt 
+    add_custom_command(TARGET Owl POST_BUILD
+        COMMAND "${QT_INSTALL_BINS}/windeployqt.exe"
+                    # --dry-run
+                    # --no-patchqt 
                     --no-plugins 
                     --no-libraries 
                     --no-translations 
                     --no-angle 
                     --no-opengl-sw
                     --no-compiler-runtime
-                    --list mapping
-                    \${_exe_path_file_}
-            OUTPUT_VARIABLE _deploy_output_
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
+                    --qmldir=C:/Users/aclau/src/Owl/src/Owl/res/qml
+                "$<TARGET_FILE:Owl>"
+        COMMENT "Deploying Qt..."
+    )
 
-        separate_arguments(_files_ WINDOWS_COMMAND \${_deploy_output_})
-        while(_files_)
-            list(GET _files_ 0 _src_)
-            list(GET _files_ 1 _dest_)
+    # separate_arguments(_files_ WINDOWS_COMMAND ${_deploy_output_})
+    # while(_files_)
+    #     list(GET _files_ 0 _src_)
+    #     list(GET _files_ 1 _dest_)
+    #     STRING(REGEX REPLACE "\\\\" "/" _src_ ${_src_}) 
+    #     list(APPEND _install_files_ ${_src_})
+    #     list(REMOVE_AT _files_ 0 1)
+    # endwhile()
 
-            execute_process(
-                COMMAND \"${CMAKE_COMMAND}\" -E
-                    copy_if_different \${_src_} \"${CMAKE_INSTALL_PREFIX}/bin/\${_dest_}\"
-            )
+    # install(FILES ${_install_files_}
+    #     DESTINATION bin
+    #     COMPONENT Owl)
 
-            list(REMOVE_AT _files_ 0 1)
-        endwhile()
-    "
-    COMPONENT Owl)    
+    # # install(CODE ...) doesn't support generator expressions, but
+    # # file(GENERATE ...) does - store the path in a file
+    # file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>_path.txt"
+    #     CONTENT "$<TARGET_FILE:Owl>"
+    # )
+
+    # install(CODE
+    # "
+    #     include(BundleUtilities) 
+    #     fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/bin/Owl.exe\" \"\" \"\")
+
+    #     file(READ \"${CMAKE_CURRENT_BINARY_DIR}/\${CMAKE_INSTALL_CONFIG_NAME}_path.txt\" _exe_path_file_)
+    #     execute_process(
+    #         COMMAND \"${QT_INSTALL_BINS}/windeployqt.exe\"
+    #                 --dry-run
+    #                 --no-patchqt 
+    #                 --no-plugins 
+    #                 --no-libraries 
+    #                 --no-translations 
+    #                 --no-angle 
+    #                 --no-opengl-sw
+    #                 --no-compiler-runtime
+    #                 --qmldir=C:/Users/aclau/src/Owl/src/Owl/res/qml
+    #                 --list mapping
+    #                 \${_exe_path_file_}
+    #         OUTPUT_VARIABLE _deploy_output_
+    #         OUTPUT_STRIP_TRAILING_WHITESPACE
+    #     )
+
+    #     separate_arguments(_files_ WINDOWS_COMMAND \${_deploy_output_})
+    #     while(_files_)
+    #         list(GET _files_ 0 _src_)
+    #         list(GET _files_ 1 _dest_)
+
+    #         execute_process(
+    #             COMMAND \"${CMAKE_COMMAND}\" -E
+    #                 copy_if_different \${_src_} \"${CMAKE_INSTALL_PREFIX}/bin/\${_dest_}\"
+    #         )
+
+    #         list(REMOVE_AT _files_ 0 1)
+    #     endwhile()
+    # "
+    # COMPONENT Owl)
+
+
+    
+    set(_directories_
+        "$<TARGET_FILE_DIR:Owl>/Qt"
+        "$<TARGET_FILE_DIR:Owl>/QtGraphicalEffects"
+        "$<TARGET_FILE_DIR:Owl>/QtQml"
+        "$<TARGET_FILE_DIR:Owl>/QtQuick"
+        "$<TARGET_FILE_DIR:Owl>/QtQuick.2"
+        "$<TARGET_FILE_DIR:Owl>/QtWebEngine"
+    )
+
+    install(DIRECTORY
+        ${_directories_}
+        DESTINATION bin
+        COMPONENT Owl
+    )
 endif(WIN32)
 
