@@ -32,6 +32,7 @@ test_script:
   - ctest -VV -C "%configuration%" --schedule-random --output-on-failure
 
 after_test:
+  - if "%configuration%"=="Release" cmake --build . --config %configuration% --target install
   - if "%configuration%"=="Release" cpack -G NSIS64 -C %configuration% --config Owl.CPackConfig.cmake
   - if "%configuration%"=="Release" cpack -G NSIS64 -C %configuration% --config OwlConsole.CPackConfig.cmake
 
@@ -51,7 +52,7 @@ deploy:
     secure: P7iZrcnNk20p8pi9kuUktg==
   folder: /public_html/artifacts
   on:
-    branch: master
+    branch: wininstaller
     configuration: Release
 
 notifications:
