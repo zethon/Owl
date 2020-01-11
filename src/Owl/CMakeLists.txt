@@ -279,20 +279,19 @@ if (WIN32)
 
     add_custom_command(TARGET Owl POST_BUILD
         COMMAND "${QT_INSTALL_BINS}/windeployqt.exe"
-                    --no-plugins 
-                    --no-libraries 
-                    --no-translations 
-                    --no-angle 
-                    --no-opengl-sw
-                    --no-compiler-runtime
-                    --qmldir=${CMAKE_SOURCE_DIR}/src/Owl/res/qml
-                "$<TARGET_FILE:Owl>"
-        COMMENT "Deploying Qt..."
+            --no-plugins 
+            --no-libraries 
+            --no-translations 
+            --no-angle 
+            --no-opengl-sw
+            --no-compiler-runtime
+            --qmldir=${CMAKE_SOURCE_DIR}/src/Owl/res/qml
+            "$<TARGET_FILE:Owl>"
     )
     
     set(_directories_
         "$<TARGET_FILE_DIR:Owl>/Qt"
-        "$<TARGET_FILE_DIR:Owl>/QtGraphicalEffects"
+        "$<TARGET_FILE_DIR:Owl>/QtGraphicalEffects" 
         "$<TARGET_FILE_DIR:Owl>/QtQml"
         "$<TARGET_FILE_DIR:Owl>/QtQuick"
         "$<TARGET_FILE_DIR:Owl>/QtQuick.2"
