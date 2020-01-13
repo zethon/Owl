@@ -2,7 +2,7 @@ image:
  - Visual Studio 2017
 
 configuration:
-  - Debug
+  # - Debug
   - Release
 
 environment:
@@ -32,8 +32,7 @@ test_script:
   - ctest -VV -C "%configuration%" --schedule-random --output-on-failure
 
 after_test:
-  - if "%configuration%"=="Release" cpack -G NSIS64 -C %configuration% --config Owl.CPackConfig.cmake
-  - if "%configuration%"=="Release" cpack -G NSIS64 -C %configuration% --config OwlConsole.CPackConfig.cmake
+  - if "%configuration%"=="Release" ..\installers\windows\build.cmd
 
 artifacts:
   # References here need to have "build\" prepended since 
