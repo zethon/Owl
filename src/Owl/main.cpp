@@ -19,7 +19,7 @@ using namespace owl;
 
 int main(int argc, char *argv[])
 {
-    Q_INIT_RESOURCE(Owl);
+//    Q_INIT_RESOURCE(Owl);
     owl::OwlApplication app(argc, &argv);
     QLoggingCategory::setFilterRules(QStringLiteral("qt.network.ssl=false"));
 
