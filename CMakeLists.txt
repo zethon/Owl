@@ -20,9 +20,6 @@ conan_basic_setup(NO_OUTPUT_DIRS KEEP_RPATHS)
 # Add our own custom CMake modules
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake)
 
-set(LUAPARSERS_FOLDER "" CACHE PATH "Lua Parses Folder")
-mark_as_advanced(LUAPARSERS_FOLDER)
-
 # configure optional projects
 option(BUILD_GUI "Build Owl GUI (default ON)" ON)
 option(BUILD_CONSOLE "Optionally build OwlConsole project (default OFF)" OFF)

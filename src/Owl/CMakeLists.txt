@@ -1,10 +1,3 @@
-# we need this to be able to include headers produced by uic in our code
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
-
-# the folder where Owl's default parsers exists
-set(OWL_PARSERS_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/../parsers")
-
 SET (SOURCE_FILES
     AboutDlg.cpp
     AspectRatioPixmapLabel.cpp
@@ -79,6 +72,8 @@ set(QRC_SOURCE_FILES
 file(GLOB_RECURSE QML_FILES res/qml/*.qml res/qml/*.js)
 
 IF (APPLE)
+    SET(GUI_TYPE MACOSX_BUNDLE)
+    
     SET(RESOURCE_FILES "Resources/Owl.icns")
     list(APPEND SOURCE_FILES
         TitleBarSetupMac.mm
@@ -86,6 +81,8 @@ IF (APPLE)
 ENDIF()
 
 if (WIN32)
+    SET(GUI_TYPE WIN32)
+
     SET(CMAKE_EXE_LINKER_FLAGS "/NODEFAULTLIB:library")
     SET(RESOURCE_FILES "res/Owl.rc")
     list(APPEND SOURCE_FILES
@@ -99,20 +96,10 @@ SET_SOURCE_FILES_PROPERTIES(
     MACOSX_PACKAGE_LOCATION Resources
 )
 
-if (APPLE)
-    SET(GUI_TYPE MACOSX_BUNDLE)
-endif(APPLE)
-
-if (WIN32)
-    SET(GUI_TYPE WIN32)
-endif(WIN32)
-
 ADD_EXECUTABLE(Owl ${GUI_TYPE} 
     ${SOURCE_FILES}
-    ${MOC_SOURCE_FILES}
     ${HEADER_FILES}
     ${RESOURCE_FILES}
-    ${UI_HEADERS}
     ${QML_FILES}
     ${QRC_SOURCE_FILES}
 )
@@ -157,10 +144,6 @@ if(WIN32 AND MSVC)
     set_target_properties(Owl PROPERTIES COMPILE_DEFINITIONS_RELWITHDEBINFO "_CONSOLE")
 endif()
 
-set(LUA_PARSERS
-    parser-vbulletin3x.lua
-)
-
 # the folder where Owl's default config files exist
 set(OWL_CONFIG_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/config")
 
@@ -175,9 +158,6 @@ if (APPLE)
     SET(MACOSX_BUNDLE_LONG_VERSION_STRING "Owl Version ${OWL_VERSION}")
     SET(MACOSX_BUNDLE_SHORT_VERSION_STRING "${OWL_VERSION}")
     SET(MACOSX_BUNDLE_COPYRIGHT "Copyright (c) 2012-2019, Adalid Claure")
-
-    #SET_TARGET_PROPERTIES(Owl PROPERTIES XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Mac Developer")
-    #SET_TARGET_PROPERTIES(Owl PROPERTIES XCODE_ATTRIBUTE_OTHER_CODE_SIGN_FLAGS "--deep")
 
     # the escaped \$ in \${CONFIGURATION} is an Xcode variable
     # see: http://stackoverflow.com/questions/13420117/how-to-get-a-path-of-the-app-bundle-in-a-cmake-script-to-supply-it-to-the-fixup
@@ -196,17 +176,6 @@ if (APPLE)
     ADD_CUSTOM_COMMAND(TARGET Owl POST_BUILD
         COMMAND "cp" ARGS "${OWL_CONFIG_FOLDER}/macOS/owl.ini" "${DEST_BIN_PATH}"
         COMMENT "Copying owl.ini")
-
-    # copy the included parsers
-    if (LUAPARSERS_FOLDER)
-        foreach(PARSER ${LUA_PARSERS})
-            ADD_CUSTOM_COMMAND(TARGET Owl POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                        "${LUAPARSERS_FOLDER}/${PARSER}"
-                        "${DEST_BIN_PATH}/parsers/${PARSER}"
-                COMMENT "Copying parser ${LUAPARSERS_FOLDER}/${PARSER}")
-        endforeach(PARSER)
-    endif(LUAPARSERS_FOLDER)
 
     # copy the included dictionaries
     ADD_CUSTOM_COMMAND(TARGET Owl POST_BUILD
@@ -300,4 +269,3 @@ if (WIN32)
         COMPONENT Owl
     )
 endif(WIN32)
-
