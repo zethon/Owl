@@ -6,8 +6,6 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-set(CMAKE_AUTOMOC ON)
-
 add_subdirectory(Data)
 add_subdirectory(Parsers)
 add_subdirectory(Utils)
