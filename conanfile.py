@@ -29,6 +29,8 @@ class OwlConan(ConanFile):
         "boost:without_filesystem":False,
         "boost:without_stacktrace":False,
         "boost:without_system":False,
+        "boost:without_program_options":False,
+
         "boost:without_math":True,
         "boost:without_wave":True,
         "boost:without_container":True,
@@ -38,7 +40,6 @@ class OwlConan(ConanFile):
         "boost:without_iostreams":True,
         "boost:without_locale":True,
         "boost:without_log":True,
-        "boost:without_program_options":True,
         "boost:without_random":True,
         "boost:without_regex":True,
         "boost:without_mpi":True,
