@@ -1,5 +1,4 @@
 #include <QMessageBox>
-#include <QtSql>
 #include <QWebEngineSettings>
 #include <QtQml>
 #include <QSysInfo>
@@ -146,6 +145,13 @@ void registerMetaTypes()
     qmlRegisterType<SettingsObject>("reader.owl", 1, 0, "Settings");
 }
 
+void printAboutInformation()
+{
+    std::cout << APP_TITLE << '\n';
+    std::cout << COPYRIGHT << '\n';
+    std::cout << "Build date: " << OWL_VERSION_DATE_TIME << '\n';
+}
+
 OwlApplication::OwlApplication(int& argc, char **argv[])
     : QApplication(argc,*argv),
       _settingsFile(new SettingsFile)
@@ -230,7 +236,7 @@ void OwlApplication::init()
     BoardManager::instance()->loadBoards();
 }
 
-// TODO: finish this when I'm sober
+// TODO: finish this when I'm soberparser.showVersion();parser.showVersion();
 void OwlApplication::initCommandLine()
 {
     QCommandLineParser parser;
@@ -239,11 +245,19 @@ void OwlApplication::initCommandLine()
     parser.addHelpOption();
     parser.addVersionOption();
 
-    parser.addOption({{"c", "config"}, QStringLiteral("Use the specified config value instead of the default"), "config"});
+    parser.addOption({{"a", "about"}, QStringLiteral("Print about information")});
+    parser.addOption({{"d", "db"}, QStringLiteral("Specify a database file"), "database"});
+    parser.addOption({{"c", "config"}, QStringLiteral("Specify a config folder"), "config"});
     parser.addOption({{"p", "parser"},QStringLiteral("Specify a parser folder"), "parser"});
-    parser.addOption({{"b", "boards"}, QStringLiteral("Specify a boards database file"), "boards"});
 
     parser.process(*this);
+
+    if (parser.isSet("a"))
+    {
+        printAboutInformation();
+        exit();
+        return;
+    }
 
     if (parser.isSet("config"))
     {
@@ -257,18 +271,18 @@ void OwlApplication::initCommandLine()
 
     if (parser.isSet("boards"))
     {
-        _dbFileName = parser.value("boards");
+        _dbFileName = parser.value("database");
     }
     else
     {
         _dbFileName = GetDatabaseName();
     }
 
+    // if `_parserFolder` is empty then we'll use the folder in the config file
     if (parser.isSet("parser"))
     {
         _parserFolder = parser.value("parser");
     }
-    // else, leave it empty to signal we'll use the folder in the config file
 }
     
 void OwlApplication::initializeLogger()
