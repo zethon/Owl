@@ -61,9 +61,23 @@ QSqlDatabase BoardManager::getDatabase(bool doOpen) const
     return db;
 }
     
-void BoardManager::loadBoards()
+void BoardManager::loadBoards(bool resetdb)
 {
 	QMutexLocker locker(&_mutex);
+
+	if (resetdb)
+	{
+		if (const QString dbfile = QString::fromStdString(_databaseFilename);
+			QFile::exists(dbfile))
+		{
+			_logger->info("delete database file '{}'", _databaseFilename);
+			if (QFile::remove(dbfile))
+			{
+				_logger->warn("could not delete database file '{}'", _databaseFilename);
+			}
+		}
+	}
+
     QSqlDatabase db = getDatabase();
 
     if (!db.isOpen())
@@ -329,7 +343,7 @@ void BoardManager::loadBoardOptions(const BoardPtr& board)
 void BoardManager::reload()
 {
 	_boardList.clear();
-    loadBoards();
+    loadBoards(false);
 }
     
 void BoardManager::sort()
