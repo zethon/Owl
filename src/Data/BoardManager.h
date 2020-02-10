@@ -46,7 +46,7 @@ public:
 	
     QSqlDatabase initializeDatabase(const QString& filename);
     
-    void loadBoards();
+    void loadBoards(bool resetdb);
     void reload();
 
     std::size_t getBoardCount() const;

@@ -1860,6 +1860,7 @@ void MainWindow::readWindowSettings()
     }
     else
     {
+        boardToolbar->setVisible(false);
         _logger->info("No settings file found at '{}', using defaults", iniFile.toStdString());
     }
 }

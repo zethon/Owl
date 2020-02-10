@@ -95,7 +95,7 @@ static void loadDefaultSettings(SettingsFilePtr settings)
 }
 
 static std::pair<bool, QString>
-    initSettings(const QString& filename, SettingsFilePtr settings, QLockFile **)
+    initSettings(const QString& filename, SettingsFilePtr settings, bool resetcfg)
 {
     QFileInfo info(filename);
 
@@ -104,6 +104,14 @@ static std::pair<bool, QString>
     {
         const QString errorMessage = QStringLiteral("Cannot create directory: %1").arg(dir.path());
         return std::make_pair(false, errorMessage);
+    }
+
+    if (info.exists() && resetcfg)
+    {
+        if (!QFile::remove(filename))
+        {
+            return { false, QStringLiteral("Could not delete file: %1").arg(filename) };
+        }
     }
 
     settings->setFilePath(filename);
@@ -196,7 +204,7 @@ OwlApplication::~OwlApplication()
 void OwlApplication::init()
 {
     // initialize the JSON settings file
-    const auto retval = initSettings(_jsonConfig,_settingsFile, &_settingsLock);
+    const auto retval = initSettings(_jsonConfig,_settingsFile, _resetcfg);
     if (!retval.first)
     {
         OWL_THROW_EXCEPTION(Exception(retval.second));
@@ -227,7 +235,21 @@ void OwlApplication::init()
     }
 
     // create the board objects from the db
-    BoardManager::instance()->loadBoards();
+    BoardManager::instance()->loadBoards(_resetdb);
+
+    if (_resetui)
+    {
+        const QString writePath = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+        const QString filename { QDir(writePath).absoluteFilePath("owl.ini") };
+        if (QFileInfo(filename).exists())
+        {
+            if (!QFile::remove(filename))
+            {
+                owl::SpdLogPtr logger = owl::rootLogger();
+                logger->warn("could not remove ui config file '{}'", filename.toStdString());
+            }
+        }
+    }
 }
 
 // TODO: finish this when I'm sober
@@ -242,8 +264,23 @@ void OwlApplication::initCommandLine()
     parser.addOption({{"c", "config"}, QStringLiteral("Use the specified config value instead of the default"), "config"});
     parser.addOption({{"p", "parser"},QStringLiteral("Specify a parser folder"), "parser"});
     parser.addOption({{"b", "boards"}, QStringLiteral("Specify a boards database file"), "boards"});
+    parser.addOption({"resetdb", QStringLiteral("Reset the default database")});
+    parser.addOption({"resetcfg", QStringLiteral("Reset the default configuration file")});
+    parser.addOption({"resetui", QStringLiteral("Reset the UI settings")});
+    parser.addOption({"resetall", QStringLiteral("Reset all settings")});
 
     parser.process(*this);
+
+    _resetdb = parser.isSet("resetdb");
+    _resetcfg = parser.isSet("resetcfg");
+    _resetui = parser.isSet("resetui");
+
+    if (parser.isSet("resetall"))
+    {
+        _resetdb = true;
+        _resetcfg = true;
+        _resetui = true;
+    }
 
     if (parser.isSet("config"))
     {
