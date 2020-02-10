@@ -305,7 +305,7 @@ private:
     QSize           _servicesTreeLastSize;
 
     // MainWindow UI Settings that need class members
-    bool            _statusBarVisibile = true;
+    bool            _statusBarVisibile = false;
     uint            _postsPanePosition = PANERIGHT;
 
     SplashScreen*   _splash = nullptr;
