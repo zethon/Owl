@@ -236,6 +236,20 @@ void OwlApplication::init()
 
     // create the board objects from the db
     BoardManager::instance()->loadBoards(_resetdb);
+
+    if (_resetui)
+    {
+        const QString writePath = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+        const QString filename { QDir(writePath).absoluteFilePath("owl.ini") };
+        if (QFileInfo(filename).exists())
+        {
+            if (!QFile::remove(filename))
+            {
+                owl::SpdLogPtr logger = owl::rootLogger();
+                logger->warn("could not remove ui config file '{}'", filename.toStdString());
+            }
+        }
+    }
 }
 
 // TODO: finish this when I'm sober
@@ -251,12 +265,22 @@ void OwlApplication::initCommandLine()
     parser.addOption({{"p", "parser"},QStringLiteral("Specify a parser folder"), "parser"});
     parser.addOption({{"b", "boards"}, QStringLiteral("Specify a boards database file"), "boards"});
     parser.addOption({"resetdb", QStringLiteral("Reset the default database")});
-    parser.addOption({"resetcfg", QStringLiteral("Reset the default configuration file") });
+    parser.addOption({"resetcfg", QStringLiteral("Reset the default configuration file")});
+    parser.addOption({"resetui", QStringLiteral("Reset the UI settings")});
+    parser.addOption({"resetall", QStringLiteral("Reset all settings")});
 
     parser.process(*this);
 
     _resetdb = parser.isSet("resetdb");
     _resetcfg = parser.isSet("resetcfg");
+    _resetui = parser.isSet("resetui");
+
+    if (parser.isSet("resetall"))
+    {
+        _resetdb = true;
+        _resetcfg = true;
+        _resetui = true;
+    }
 
     if (parser.isSet("config"))
     {

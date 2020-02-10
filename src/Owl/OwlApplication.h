@@ -38,6 +38,7 @@ private:
 
     bool                    _resetdb = false;
     bool                    _resetcfg = false;
+    bool                    _resetui = false;
 };
 
 } //namespace owl
