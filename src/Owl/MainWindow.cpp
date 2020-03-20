@@ -193,6 +193,10 @@ void MainWindow::loadBoards()
 
                 b->login();
             }
+            else
+            {
+                iErrors++;
+            }
         }
 
         if (iErrors > 0)
@@ -1649,7 +1653,7 @@ void MainWindow::createThreadPanel()
             }
             else
             {
-                stickyButton->setToolTip(tr("Click to hide sticky threads"));
+                stickyButton->setToolTip(tr("Click to show sticky threads"));
             }
         });
 }

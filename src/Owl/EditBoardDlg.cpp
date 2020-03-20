@@ -105,32 +105,30 @@ void EditBoardDlg::accept()
 {
 	if (boardName->text().size() == 0)
 	{
-		QMessageBox* warning = new QMessageBox(
+        QMessageBox warning {
 			QMessageBox::Warning,
 			tr("Invalid Message Board Name"),
             "The message board name cannot be blank",
 			QMessageBox::Ok,
             this, 
-			Qt::Sheet);
+            Qt::Sheet};
 
-		warning->open();
-
+        warning.exec();
 		return;
 	}
 
 	QUrl qUrl(boardUrl->text());
 	if (!qUrl.isValid())
 	{
-		QMessageBox* warning = new QMessageBox(
+        QMessageBox warning {
 			QMessageBox::Warning,
 			tr("Invalid Message Board Url"),
             "The message board Url you entered is invalid",
 			QMessageBox::Ok,
             this, 
-			Qt::Sheet);
+            Qt::Sheet};
 
-		warning->open();
-
+        warning.open();
 		return;
 	}
 
