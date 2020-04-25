@@ -85,7 +85,7 @@ namespace owl
 //* ForumViewDelegate
 //********************************
 
-void ForumViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+void ForumViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     QStyleOptionViewItem styledOption{option};
 
@@ -169,7 +169,7 @@ void ForumViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     }
 }
 
-QSize ForumViewDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+QSize ForumViewDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     QSize retsize { option.rect.size() };
     retsize.setHeight(TREEITEMHEIGHT);
@@ -323,7 +323,7 @@ void ForumView::doBoardClicked(const owl::BoardWeakPtr boardWeakPtr)
     ForumTreeModel* model{ nullptr };
     if (_rootCache.contains(currentBoard->hash()))
     {
-        auto [expiry, cacheModel] = *(_rootCache.object(currentBoard->hash()));
+        auto& [expiry, cacheModel] = *(_rootCache.object(currentBoard->hash()));
         if (QDateTime::currentDateTime() < expiry)
         {
             model = cacheModel;
