@@ -1,3 +1,5 @@
+#include <curses.h>
+
 #include <QCoreApplication>
 #include <QCommandLineParser>
 #include "../src/Utils/OwlUtils.h"
@@ -11,6 +13,7 @@ std::unique_ptr<QCommandLineParser> createCommandLineParser()
     parser->addHelpOption();
     parser->addVersionOption();
 
+    parser->addOption({{"m", "mode"}, "Console or curses mode", "mode"});
     parser->addOption({{"l", "lua", "luafolder"}, "The folder to use for Lua folders", "luafolder"});
     parser->addOption({{"f", "file"}, "Load file of line delimited list of commands to execute", "file"});
     parser->addOption({"color", "If true (default) terminal output will be colored. Set to fale to disable", "color"});
@@ -31,6 +34,17 @@ int main(int argc, char *argv[])
 
     auto parser = createCommandLineParser();
     parser->process(a);
+
+    if (parser->isSet("mode") 
+        && parser->value("mode").toLower() == "curses")
+    {
+        // [[maybe_unused]] auto window = arcc::curses_init();
+        initscr();
+        printw("Hi there!");
+        // printw("hi there! %d", static_cast<void*>(window));
+        getch();
+        endwin();
+    }
 
     owl::ConsoleApp mainApp(&a);
 

@@ -121,6 +121,9 @@ if (MSVC)
 
         # eliminate a lot of debug linking errors
         /wd4099
+
+        # ignore macro redefinition warnings because of PDCurses and MOUSE_MOVED
+        /wd4005 
     )
 endif(MSVC)
 
