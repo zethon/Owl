@@ -119,11 +119,11 @@ void MainWindow::onLoaded()
     createThreadPanel();
     createPostPanel();
 
-    threadLoadingImg->setMovie(new QMovie(":/images/loading_small.gif", QByteArray(), this));
-    threadLoadingImg->hide();
+    //threadLoadingImg->setMovie(new QMovie(":/images/loading_small.gif", QByteArray(), this));
+    //threadLoadingImg->hide();
 
-    postsLoadingImg->setMovie(new QMovie(":/images/loading_small.gif", QByteArray(), this));
-    postsLoadingImg->hide();
+    //postsLoadingImg->setMovie(new QMovie(":/images/loading_small.gif", QByteArray(), this));
+    //postsLoadingImg->hide();
 
     updateSelectedForum();
     updateSelectedThread();
@@ -332,11 +332,11 @@ void MainWindow::openPreferences()
             }
         });
 
-    QObject::connect(&dlg, &PreferencesDlg::reloadThreadPanel, this,
-        [this]()
-        {
-            this->threadListWidget->reload();
-        }, Qt::DirectConnection);
+    //QObject::connect(&dlg, &PreferencesDlg::reloadThreadPanel, this,
+    //    [this]()
+    //    {
+    //        this->threadListWidget->reload();
+    //    }, Qt::DirectConnection);
 
     QObject::connect(&dlg, &PreferencesDlg::reloadPostPanel, this,
         [this]()
@@ -554,7 +554,7 @@ void MainWindow::getThreadsHandler(BoardPtr /*b*/, ForumPtr forum)
 
     if (forum->getThreads().size() > 0)
     {
-        threadListWidget->setThreadList(forum->getThreads());
+        //threadListWidget->setThreadList(forum->getThreads());
     }
 
     updateSelectedForum(forum);
@@ -650,66 +650,66 @@ void MainWindow::newThreadHandler(BoardPtr board, ThreadPtr thread)
 
 void MainWindow::updateSelectedForum(ForumPtr f)
 {
-    threadNavFrame->setEnabled(f != nullptr);
+    //threadNavFrame->setEnabled(f != nullptr);
     postsWebView->resetView();
 
-    if (f != nullptr)
-    {
-        newThreadBtn->setEnabled(f->getForumType() == Forum::FORUM);
-        threadPageNumEdit->setText(QString::number(f->getPageNumber()));
-        threadPageNumLbl->setText(QString::number(f->getPageCount()));
-        this->currentForumLbl->setText(f->getName());
-    }
-    else
-    {
-        newThreadBtn->setEnabled(false);
-        this->currentForumLbl->setText(QString());
-    }
+    //if (f != nullptr)
+    //{
+    //    newThreadBtn->setEnabled(f->getForumType() == Forum::FORUM);
+    //    threadPageNumEdit->setText(QString::number(f->getPageNumber()));
+    //    threadPageNumLbl->setText(QString::number(f->getPageCount()));
+    //    this->currentForumLbl->setText(f->getName());
+    //}
+    //else
+    //{
+    //    newThreadBtn->setEnabled(false);
+    //    this->currentForumLbl->setText(QString());
+    //}
 }
 
 // called from theadslist double-click handler and
 // updates the UI
 void MainWindow::updateSelectedThread(ThreadPtr t)
 {
-    postNavFrame->setEnabled(t != nullptr);
-
-    if (t != nullptr)
-    {
-        newPostBtn->setEnabled(true);
-
-        postPageNumEdit->setText(QString::number(t->getPageNumber()));
-        postPageNumLbl->setText(QString::number(t->getPageCount()));
-
-        currentThreadLabel->setText(t->getTitle());
-
-        if (t->hasUnread() && t->getPageNumber() == t->getPageCount())
-        {
-            t->setHasUnread(false);
-
-            bool bForumHasUnread = false;
-            ForumPtr parent = t->getParent()->upCast<ForumPtr>();
-            for (auto th : parent->getThreads())
-            {
-                if (th->hasUnread())
-                {
-                    bForumHasUnread = true;
-                }
-            }
-
-            if (!bForumHasUnread)
-            {
-//                servicesTree->markForumRead(parent);
-            }
-
-            update();
-        }
-    }
-    else
-    {
-//		postsWebView->setThreadSelected(false);
-        newPostBtn->setEnabled(false);
-        currentThreadLabel->setText(QString());
-    }
+//    postNavFrame->setEnabled(t != nullptr);
+//
+//    if (t != nullptr)
+//    {
+//        newPostBtn->setEnabled(true);
+//
+//        postPageNumEdit->setText(QString::number(t->getPageNumber()));
+//        postPageNumLbl->setText(QString::number(t->getPageCount()));
+//
+//        currentThreadLabel->setText(t->getTitle());
+//
+//        if (t->hasUnread() && t->getPageNumber() == t->getPageCount())
+//        {
+//            t->setHasUnread(false);
+//
+//            bool bForumHasUnread = false;
+//            ForumPtr parent = t->getParent()->upCast<ForumPtr>();
+//            for (auto th : parent->getThreads())
+//            {
+//                if (th->hasUnread())
+//                {
+//                    bForumHasUnread = true;
+//                }
+//            }
+//
+//            if (!bForumHasUnread)
+//            {
+////                servicesTree->markForumRead(parent);
+//            }
+//
+//            update();
+//        }
+//    }
+//    else
+//    {
+////		postsWebView->setThreadSelected(false);
+//        newPostBtn->setEnabled(false);
+//        currentThreadLabel->setText(QString());
+//    }
 }
 
 void MainWindow::onLinkActivated(const QString &urlStr)
@@ -737,17 +737,17 @@ void MainWindow::onLinkActivated(const QString &urlStr)
 
 void MainWindow::toggleOldControls(bool doshow)
 {
-    currentForumFrame->setVisible(doshow);
-    threadNavFrame->setVisible(doshow);
-    threadListWidget->setVisible(doshow);
-    line->setVisible(doshow);
-    line_3->setVisible(doshow);
+    //currentForumFrame->setVisible(doshow);
+    //threadNavFrame->setVisible(doshow);
+    //threadListWidget->setVisible(doshow);
+    //line->setVisible(doshow);
+    //line_3->setVisible(doshow);
 
-    currentThreadFrame->setVisible(doshow);
+    //currentThreadFrame->setVisible(doshow);
     postsWebView->setVisible(doshow);
-    postNavFrame->setVisible(doshow);
-    line_2->setVisible(doshow);
-    line_4->setVisible(doshow);
+    //postNavFrame->setVisible(doshow);
+    //line_2->setVisible(doshow);
+    //line_4->setVisible(doshow);
 }
 
 void MainWindow::createDebugMenu()
@@ -812,8 +812,8 @@ void MainWindow::createDebugMenu()
         QObject::connect(action, &QAction::triggered,
             [this]()
             {
-                bool toggle = !currentForumFrame->isVisible();
-                toggleOldControls(toggle);
+                //bool toggle = !currentForumFrame->isVisible();
+                //toggleOldControls(toggle);
             });
     }
 }
@@ -1226,81 +1226,81 @@ void MainWindow::createStatusBar()
 
 void MainWindow::createSignals()
 {
-    QObject::connect(actionExit, SIGNAL(triggered()), this, SLOT(close()));
-    QObject::connect(threadListWidget, &owl::ThreadListWidget::threadLoading, [this]()
-    {
-        startPostsLoading();
-        newPostBtn->setEnabled(false);
-    });
+    //QObject::connect(actionExit, SIGNAL(triggered()), this, SLOT(close()));
+    //QObject::connect(threadListWidget, &owl::ThreadListWidget::threadLoading, [this]()
+    //{
+    //    startPostsLoading();
+    //    newPostBtn->setEnabled(false);
+    //});
 
-    auto gotoPrevPage = [this]()
-    {
-        auto thread = this->threadListWidget->getCurrentThread().lock();
-        if (thread)
-        {
-            navigateToPostListPage(thread, (thread->getPageNumber() - 1));
-        }
-    };
+    //auto gotoPrevPage = [this]()
+    //{
+    //    auto thread = this->threadListWidget->getCurrentThread().lock();
+    //    if (thread)
+    //    {
+    //        navigateToPostListPage(thread, (thread->getPageNumber() - 1));
+    //    }
+    //};
 
-    QObject::connect(postPrevPageBtn, &QPushButton::clicked, gotoPrevPage);
+    //QObject::connect(postPrevPageBtn, &QPushButton::clicked, gotoPrevPage);
 
-    auto gotoNextPage = [=]()
-    {
-        auto thread = this->threadListWidget->getCurrentThread().lock();
-        if (thread)
-        {
-            navigateToPostListPage(thread, (thread->getPageNumber() + 1));
-        }
-    };
+    //auto gotoNextPage = [=]()
+    //{
+    //    auto thread = this->threadListWidget->getCurrentThread().lock();
+    //    if (thread)
+    //    {
+    //        navigateToPostListPage(thread, (thread->getPageNumber() + 1));
+    //    }
+    //};
 
-    QObject::connect(postNextPageBtn, &QPushButton::clicked, gotoNextPage);
+    //QObject::connect(postNextPageBtn, &QPushButton::clicked, gotoNextPage);
 
-    auto gotoFirstPage = [=]()
-    {
-        auto thread = this->threadListWidget->getCurrentThread().lock();
-        if (thread)
-        {
-            navigateToPostListPage(thread, 1);
-        }
-    };
+    //auto gotoFirstPage = [=]()
+    //{
+    //    auto thread = this->threadListWidget->getCurrentThread().lock();
+    //    if (thread)
+    //    {
+    //        navigateToPostListPage(thread, 1);
+    //    }
+    //};
 
-    QObject::connect(postFirstPageBtn, &QPushButton::clicked, gotoFirstPage);
+    //QObject::connect(postFirstPageBtn, &QPushButton::clicked, gotoFirstPage);
 
-    auto gotoLastPage = [=]()
-    {
-        auto thread = this->threadListWidget->getCurrentThread().lock();
-        if (thread)
-        {
-            navigateToPostListPage(thread, thread->getPageCount());
-        }
-    };
+    //auto gotoLastPage = [=]()
+    //{
+    //    auto thread = this->threadListWidget->getCurrentThread().lock();
+    //    if (thread)
+    //    {
+    //        navigateToPostListPage(thread, thread->getPageCount());
+    //    }
+    //};
 
-    QObject::connect(postLastPageBtn, &QPushButton::clicked, gotoLastPage);
-    
-    // items in the postNavFrame
-    QObject::connect(expandAllBtn, &QPushButton::clicked, [this]()
-     {
-         postsWebView->expandAll();
-     });
-    
-    QObject::connect(collapseAllBtn, &QPushButton::clicked, [this]()
-     {
-         postsWebView->collapseAll();
-     });
+    //QObject::connect(postLastPageBtn, &QPushButton::clicked, gotoLastPage);
+    //
+    //// items in the postNavFrame
+    //QObject::connect(expandAllBtn, &QPushButton::clicked, [this]()
+    // {
+    //     postsWebView->expandAll();
+    // });
+    //
+    //QObject::connect(collapseAllBtn, &QPushButton::clicked, [this]()
+    // {
+    //     postsWebView->collapseAll();
+    // });
 
-    QObject::connect(postsWebView, &PostListWebView::quotePost,
-        [this](ThreadPtr thread, uint index)
-        {
-            const BoardPtr board = thread->getBoard().lock();
-            if (board)
-            {
-                NewThreadDlg* dlg = new NewThreadDlg(thread, this);
-                const auto strQuote = board->getPostQuote(thread->getPosts().at(static_cast<int>(index)));
-                dlg->setQuoteText(strQuote);
-                dlg->setModal(false);
-                dlg->show();
-            }
-        });
+    //QObject::connect(postsWebView, &PostListWebView::quotePost,
+    //    [this](ThreadPtr thread, uint index)
+    //    {
+    //        const BoardPtr board = thread->getBoard().lock();
+    //        if (board)
+    //        {
+    //            NewThreadDlg* dlg = new NewThreadDlg(thread, this);
+    //            const auto strQuote = board->getPostQuote(thread->getPosts().at(static_cast<int>(index)));
+    //            dlg->setQuoteText(strQuote);
+    //            dlg->setModal(false);
+    //            dlg->show();
+    //        }
+    //    });
 
     QObject::connect(postsWebView, &PostListWebView::replyPost,
         [this](ThreadPtr thread, uint index)
@@ -1328,158 +1328,158 @@ void MainWindow::createSignals()
 
 void MainWindow::expandPostMenuPressed()
 {
-    postNavFrame->setVisible(!postNavFrame->isVisible());
+    //postNavFrame->setVisible(!postNavFrame->isVisible());
 }
 
 void MainWindow::navigateToPostListPage(ThreadPtr thread, int iPageNumber)
 {
-    auto board = thread->getBoard().lock();
+    //auto board = thread->getBoard().lock();
 
-    if (board && iPageNumber != thread->getPageNumber())
-    {
-        if (iPageNumber > thread->getPageCount())
-        {
-            iPageNumber = thread->getPageCount();
-        }
-        else if (iPageNumber < 1)
-        {
-            iPageNumber = 1;
-        }
-        
-        startPostsLoading();
-        thread->setPageNumber(iPageNumber);
-        board->requestPostList(thread, ParserEnums::REQUEST_DEFAULT, true);
-        postPageNumEdit->setText(QString::number(iPageNumber));
-    }
+    //if (board && iPageNumber != thread->getPageNumber())
+    //{
+    //    if (iPageNumber > thread->getPageCount())
+    //    {
+    //        iPageNumber = thread->getPageCount();
+    //    }
+    //    else if (iPageNumber < 1)
+    //    {
+    //        iPageNumber = 1;
+    //    }
+    //    
+    //    startPostsLoading();
+    //    thread->setPageNumber(iPageNumber);
+    //    board->requestPostList(thread, ParserEnums::REQUEST_DEFAULT, true);
+    //    postPageNumEdit->setText(QString::number(iPageNumber));
+    //}
 }
 
 void MainWindow::postPageNumberEnterPressed()
 {
-    ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
-    
-    if (thread && thread->getPageNumber())
-    {
-        QString strText(postPageNumEdit->text());
-        bool bOk = false;
-        int iPageNumber = strText.toInt(&bOk);
-        
-        if (bOk)
-        {
-            navigateToPostListPage(thread, iPageNumber);
-        }
-        else
-        {
-            postPageNumEdit->setText(QString::number(thread->getPageNumber()));
-        }
-    }
+    //ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
+    //
+    //if (thread && thread->getPageNumber())
+    //{
+    //    QString strText(postPageNumEdit->text());
+    //    bool bOk = false;
+    //    int iPageNumber = strText.toInt(&bOk);
+    //    
+    //    if (bOk)
+    //    {
+    //        navigateToPostListPage(thread, iPageNumber);
+    //    }
+    //    else
+    //    {
+    //        postPageNumEdit->setText(QString::number(thread->getPageNumber()));
+    //    }
+    //}
 }
 
 void MainWindow::postFirstPageBtnClicked()
 {
-    ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
-    
-    if (thread)
-    {
-        navigateToPostListPage(thread, 1);
-    }
+    //ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
+    //
+    //if (thread)
+    //{
+    //    navigateToPostListPage(thread, 1);
+    //}
 }
 
 void MainWindow::postPrevPageBtnClicked()
 {
-    ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
+    //ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
 
-    if (thread)
-    {
-        navigateToPostListPage(thread, (thread->getPageNumber() - 1));
-    }
+    //if (thread)
+    //{
+    //    navigateToPostListPage(thread, (thread->getPageNumber() - 1));
+    //}
 }
 
 void MainWindow::postNextPageBtnClicked()
 {
-    ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
+    //ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
 
-    if (thread)
-    {
-        navigateToPostListPage(thread, (thread->getPageNumber() + 1));
-    }
+    //if (thread)
+    //{
+    //    navigateToPostListPage(thread, (thread->getPageNumber() + 1));
+    //}
 }
 
 void MainWindow::postLastPageBtnClicked()
 {
-    ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
+    //ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
 
-    if (thread)
-    {
-        navigateToPostListPage(thread, thread->getPageCount());
-    }
+    //if (thread)
+    //{
+    //    navigateToPostListPage(thread, thread->getPageCount());
+    //}
 }
 
 void MainWindow::expandThreadMenuPressed()
 {
-    threadNavFrame->setVisible(!threadNavFrame->isVisible());
+    //threadNavFrame->setVisible(!threadNavFrame->isVisible());
 }
     
 void MainWindow::navigateToThreadListPage(ForumPtr forum, int iPageNumber)
 {
-    auto board = forum->getBoard().lock();
+    //auto board = forum->getBoard().lock();
 
-    if (board && iPageNumber != forum->getPageNumber())
-    {
-        if (iPageNumber > forum->getPageCount())
-        {
-            iPageNumber = forum->getPageCount();
-        }
-        else if (iPageNumber < 1)
-        {
-            iPageNumber = 1;
-        }
+    //if (board && iPageNumber != forum->getPageNumber())
+    //{
+    //    if (iPageNumber > forum->getPageCount())
+    //    {
+    //        iPageNumber = forum->getPageCount();
+    //    }
+    //    else if (iPageNumber < 1)
+    //    {
+    //        iPageNumber = 1;
+    //    }
 
-        startThreadLoading();
-        threadPageNumEdit->setText(QString::number(iPageNumber));
-        forum->setPageNumber(iPageNumber);
-        board->requestThreadList(forum);
-    }
+    //    startThreadLoading();
+    //    threadPageNumEdit->setText(QString::number(iPageNumber));
+    //    forum->setPageNumber(iPageNumber);
+    //    board->requestThreadList(forum);
+    //}
 }
 
 void MainWindow::newPostBtnClicked()
 {
-    auto threadPtr = this->threadListWidget->getCurrentThread().lock();
-    if (threadPtr)
-    {
-        NewThreadDlg* dlg = new NewThreadDlg(threadPtr, this);
-        dlg->setModal(false);
-        dlg->show();
-    }
+    //auto threadPtr = this->threadListWidget->getCurrentThread().lock();
+    //if (threadPtr)
+    //{
+    //    NewThreadDlg* dlg = new NewThreadDlg(threadPtr, this);
+    //    dlg->setModal(false);
+    //    dlg->show();
+    //}
 }
 
 // event sent from Board object notifying the UI that a new post
 // has been successfully posted
 void MainWindow::newPostHandler(BoardPtr b, PostPtr p)
 {
-    if (p)
-    {
-        ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
+    //if (p)
+    //{
+    //    ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
 
-        if (thread && thread == p->getParent())
-        {
-            this->startPostsLoading();
-            this->newPostBtn->setEnabled(false);
-            b->requestPostList(thread, ParserEnums::REQUEST_NOCACHE);
-        }
-        else
-        {
-            Q_ASSERT(p->getParent() != nullptr);
-            QString msg = QString("New post successfully sent in thread '%1'").arg(p->getParent()->getTitle());
-            QMainWindow::statusBar()->showMessage(msg, 5000);
-        }
-    }
-    else
-    {
-        _logger->warn("Null new post returned for board {} ({})",
-            b->getName().toStdString(), b->getDBId());
+    //    if (thread && thread == p->getParent())
+    //    {
+    //        this->startPostsLoading();
+    //        this->newPostBtn->setEnabled(false);
+    //        b->requestPostList(thread, ParserEnums::REQUEST_NOCACHE);
+    //    }
+    //    else
+    //    {
+    //        Q_ASSERT(p->getParent() != nullptr);
+    //        QString msg = QString("New post successfully sent in thread '%1'").arg(p->getParent()->getTitle());
+    //        QMainWindow::statusBar()->showMessage(msg, 5000);
+    //    }
+    //}
+    //else
+    //{
+    //    _logger->warn("Null new post returned for board {} ({})",
+    //        b->getName().toStdString(), b->getDBId());
 
-        QMainWindow::statusBar()->showMessage("New post saved", 5000);
-    }
+    //    QMainWindow::statusBar()->showMessage("New post saved", 5000);
+    //}
 }
 
 void MainWindow::createLinkMessages()
@@ -1624,54 +1624,54 @@ void MainWindow::createThreadPanel()
     QObject::connect(threadListWidget2, &ForumView::onForumListLoaded,
         [this]() { contentView->doShowLogo(); });
 
-    // the "New Thread" button is disabled on startup
-    newThreadBtn->setEnabled(false);
+    //// the "New Thread" button is disabled on startup
+    //newThreadBtn->setEnabled(false);
 
-    // set up the menu's expand-button
-    auto moreMenuPressed = [this]
-    {
-        threadNavFrame->setVisible(!threadNavFrame->isVisible());
-        line->setVisible(threadNavFrame->isVisible());
-    };
+    //// set up the menu's expand-button
+    //auto moreMenuPressed = [this]
+    //{
+    //    threadNavFrame->setVisible(!threadNavFrame->isVisible());
+    //    line->setVisible(threadNavFrame->isVisible());
+    //};
 
-    QObject::connect(threadMenuMoreBtn, &QPushButton::clicked, moreMenuPressed);
-    QObject::connect(currentForumLbl, &ClickableLabel::clicked, moreMenuPressed);
+    //QObject::connect(threadMenuMoreBtn, &QPushButton::clicked, moreMenuPressed);
+    //QObject::connect(currentForumLbl, &ClickableLabel::clicked, moreMenuPressed);
 
-    QObject::connect(stickyButton, &QToolButton::clicked,
-        [this](bool checked)
-        {
-            this->threadListWidget->setShowStickies(checked);
-            this->threadListWidget->refreshThreadDisplay();
+    //QObject::connect(stickyButton, &QToolButton::clicked,
+    //    [this](bool checked)
+    //    {
+    //        this->threadListWidget->setShowStickies(checked);
+    //        this->threadListWidget->refreshThreadDisplay();
 
-            if (checked)
-            {
-                stickyButton->setToolTip(tr("Click to hide sticky threads"));
-            }
-            else
-            {
-                stickyButton->setToolTip(tr("Click to hide sticky threads"));
-            }
-        });
+    //        if (checked)
+    //        {
+    //            stickyButton->setToolTip(tr("Click to hide sticky threads"));
+    //        }
+    //        else
+    //        {
+    //            stickyButton->setToolTip(tr("Click to hide sticky threads"));
+    //        }
+    //    });
 }
 
 void MainWindow::createPostPanel()
 {
-    // the "New Post" button is disabled by default
-    newPostBtn->setEnabled(false);
+    //// the "New Post" button is disabled by default
+    //newPostBtn->setEnabled(false);
 
-    // set up the menu's expand button
-    auto moreMenuPressed = [this]
-    {
-            postNavFrame->setVisible(!postNavFrame->isVisible());
-            line_2->setVisible(postNavFrame->isVisible());
-    };
+    //// set up the menu's expand button
+    //auto moreMenuPressed = [this]
+    //{
+    //        postNavFrame->setVisible(!postNavFrame->isVisible());
+    //        line_2->setVisible(postNavFrame->isVisible());
+    //};
 
-    QObject::connect(postMenuMoreBtn, &QPushButton::clicked, moreMenuPressed);
-    QObject::connect(currentThreadLabel, &ClickableLabel::clicked, moreMenuPressed);
+    //QObject::connect(postMenuMoreBtn, &QPushButton::clicked, moreMenuPressed);
+    //QObject::connect(currentThreadLabel, &ClickableLabel::clicked, moreMenuPressed);
 
-    // set up the rest of the view's connections
-    QObject::connect(postPageNumEdit, SIGNAL(returnPressed()), this, SLOT(postPageNumberEnterPressed()));
-    QObject::connect(newPostBtn, SIGNAL(clicked()), this, SLOT(newPostBtnClicked()));
+    //// set up the rest of the view's connections
+    //QObject::connect(postPageNumEdit, SIGNAL(returnPressed()), this, SLOT(postPageNumberEnterPressed()));
+    //QObject::connect(newPostBtn, SIGNAL(clicked()), this, SLOT(newPostBtnClicked()));
 
     QObject::connect(postViewDockWidget, &QDockWidget::visibilityChanged, 
         [this](bool bVisible)
@@ -1845,15 +1845,15 @@ void MainWindow::readWindowSettings()
         _statusBarVisibile = settings.value("statusBarVisible").toBool();
         _postsPanePosition = settings.value("postsPanePosition").toUInt();
 
-        threadListWidget->setShowStickies(settings.value("showStickies").toBool());
-        stickyButton->setChecked(settings.value("showStickies").toBool());
+        //threadListWidget->setShowStickies(settings.value("showStickies").toBool());
+        //stickyButton->setChecked(settings.value("showStickies").toBool());
         if (settings.value("showStickies").toBool())
         {
-            stickyButton->setToolTip(tr("Click to hide sticky threads"));
+            //stickyButton->setToolTip(tr("Click to hide sticky threads"));
         }
         else
         {
-            stickyButton->setToolTip(tr("Click to hide sticky threads"));
+            //stickyButton->setToolTip(tr("Click to hide sticky threads"));
         }
 
         menuBar()->setVisible(settings.value("showMenuBar").toBool());
@@ -1878,7 +1878,7 @@ void MainWindow::writeWindowSettings()
     settings.setValue("statusBarGeometry", QMainWindow::statusBar()->saveGeometry());
     settings.setValue("statusBarVisible", _statusBarVisibile);
     settings.setValue("postsPanePosition", _postsPanePosition);
-    settings.setValue("showStickies", threadListWidget->showStickies());
+    //settings.setValue("showStickies", threadListWidget->showStickies());
     settings.setValue("showMenuBar", menuBar()->isVisible());
 
     // TODO: hide servicesTree?
@@ -1887,38 +1887,38 @@ void MainWindow::writeWindowSettings()
                                                              
 void MainWindow::startThreadLoading()
 {
-    threadNavFrame->setEnabled(false);
-//    threadPageNav->setEnabled(false);
-
-    threadLoadingImg->show();
-    threadLoadingImg->movie()->start();
-    currentForumLbl->setText("Loading...");
+//    threadNavFrame->setEnabled(false);
+////    threadPageNav->setEnabled(false);
+//
+//    threadLoadingImg->show();
+//    threadLoadingImg->movie()->start();
+//    currentForumLbl->setText("Loading...");
 }
 
 void MainWindow::stopThreadLoading()
 {
-    threadNavFrame->setEnabled(true);
-//    threadPageNav->setEnabled(true);
-
-    threadLoadingImg->hide();
-    threadLoadingImg->movie()->stop();
-    currentForumLbl->setText("");
+//    threadNavFrame->setEnabled(true);
+////    threadPageNav->setEnabled(true);
+//
+//    threadLoadingImg->hide();
+//    threadLoadingImg->movie()->stop();
+//    currentForumLbl->setText("");
 }
 
 void MainWindow::startPostsLoading()
 {
-    postNavFrame->setEnabled(false);
-    postsLoadingImg->show();
-    postsLoadingImg->movie()->start();
-    currentThreadLabel->setText("Loading...");
+    //postNavFrame->setEnabled(false);
+    //postsLoadingImg->show();
+    //postsLoadingImg->movie()->start();
+    //currentThreadLabel->setText("Loading...");
 }
 
 void MainWindow::stopPostsLoading()
 {
-    postNavFrame->setEnabled(true);
-    postsLoadingImg->hide();
-    postsLoadingImg->movie()->stop();
-    currentThreadLabel->setText("");
+    //postNavFrame->setEnabled(true);
+    //postsLoadingImg->hide();
+    //postsLoadingImg->movie()->stop();
+    //currentThreadLabel->setText("");
 }
 
 void MainWindow::onDisplayOrderChanged(BoardPtr b, int iDirection)
