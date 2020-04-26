@@ -1,5 +1,3 @@
-#include <curses.h>
-
 #include <QCoreApplication>
 #include <QCommandLineParser>
 #include "../src/Utils/OwlUtils.h"
