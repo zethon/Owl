@@ -3,8 +3,10 @@
 #include <QCoreApplication>
 #include <QCommandLineParser>
 #include "../src/Utils/OwlUtils.h"
+
 #include "Core.h"
 #include "OwlConsole.h"
+#include "CursesApp.h"
 
 std::unique_ptr<QCommandLineParser> createCommandLineParser()
 {
@@ -38,12 +40,14 @@ int main(int argc, char *argv[])
     if (parser->isSet("mode") 
         && parser->value("mode").toLower() == "curses")
     {
-        // [[maybe_unused]] auto window = arcc::curses_init();
-        initscr();
-        printw("Hi there!");
-        // printw("hi there! %d", static_cast<void*>(window));
-        getch();
-        endwin();
+        owl::CursesApp app;
+        app.run();
+        //// [[maybe_unused]] auto window = arcc::curses_init();
+        //initscr();
+        //printw("Hi there!");
+        //// printw("hi there! %d", static_cast<void*>(window));
+        //getch();
+        //endwin();
     }
 
     owl::ConsoleApp mainApp(&a);
