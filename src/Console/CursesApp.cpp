@@ -27,6 +27,9 @@ namespace owl
 //    refresh();
 //}
 
+namespace
+{
+
 int colornum(int fg, int bg)
 {
     int B, bbb, ffff;
@@ -60,6 +63,74 @@ short curs_color(int fg)
     }
 
     return 0;
+}
+
+int is_bold(int fg)
+{
+    /* return the intensity bit */
+
+    int i;
+
+    i = 1 << 3;
+    return (i & fg);
+}
+
+void setcolor(int fg, int bg)
+{
+    /* set the color pair (colornum) and bold/bright (A_BOLD) */
+
+    attron(COLOR_PAIR(colornum(fg, bg)));
+    if (is_bold(fg)) 
+    {
+        attron(A_BOLD);
+    }
+}
+
+void unsetcolor(int fg, int bg)
+{
+    /* unset the color pair (colornum) and
+       bold/bright (A_BOLD) */
+
+    attroff(COLOR_PAIR(colornum(fg, bg)));
+    if (is_bold(fg)) 
+    {
+        attroff(A_BOLD);
+    }
+}
+
+class ColorScope
+{
+    int     _fg = 0;
+    int     _bg = 0;
+    bool    _bold = false;
+
+public:
+    ColorScope(int fg, int bg, bool bold)
+        : _fg(fg), _bg(bg), _bold(bold)
+    {
+        setcolor(_fg, _bg);
+        //attron(COLOR_PAIR(colornum(_fg, _bg)));
+        //if (is_bold(_fg))// || _bold)
+        //{
+        //    attron(A_BOLD);
+        //}
+    }
+
+    ColorScope(int fg, int bg)
+        : ColorScope(fg, bg, false)
+    {}
+
+    ~ColorScope()
+    {
+        unsetcolor(_fg, _bg);
+        //attroff(COLOR_PAIR(colornum(_fg, _bg)));
+        //if (is_bold(_fg) || _bold)
+        //{
+        //    attroff(A_BOLD);
+        //}
+    }
+};
+
 }
 
 CursesApp::CursesApp()
@@ -107,14 +178,20 @@ void CursesApp::printHome()
 {
     auto [x, y] = this->getScreenSize();
     
-    std::string message = fmt::format("{}", APP_TITLE);
+    std::string message = fmt::format(":: {} ::", APP_TITLE);
     boost::algorithm::to_lower(message);
-    wmove(_window, 0, x - static_cast<int>(message.size()+1));
+    wmove(_window, 0, x - static_cast<int>(message.size()+3));
+     
+    {
+        ColorScope(COLOR_WHITE, COLOR_BLUE);
+        addstr(message.c_str());
+    }
 
-    attron(COLOR_PAIR(colornum(COLOR_WHITE, COLOR_CYAN)));
-    addstr(message.c_str());
-    refresh();
-    attroff(COLOR_PAIR(colornum(COLOR_WHITE, COLOR_CYAN)));
+    //{
+    //    setcolor(COLOR_WHITE, COLOR_BLUE);
+    //    addstr(message.c_str());
+    //    unsetcolor(COLOR_WHITE, COLOR_BLUE);
+    //}
 }
 
 } // namespace
