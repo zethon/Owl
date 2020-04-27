@@ -11,6 +11,11 @@
 namespace owl
 {
 
+//constexpr auto NORMAL_TEXT = 1u;
+//constexpr auto BRIGHT_TEXT = 2u;
+//constexpr auto YELLOW_TEXT = 3u;
+//constexpr auto HIGHLIGHT_TEXT = 4u;
+
 ///* If an xterm is resized the contents on your text windows might be messed up.
 //To handle this gracefully you should redraw all the stuff based on the new
 //height and width of the screen. When resizing happens, your program is sent
@@ -75,59 +80,142 @@ int is_bold(int fg)
     return (i & fg);
 }
 
-void setcolor(int fg, int bg)
+[[maybe_unused]] void drawHorizontalLine(WINDOW* window, int x, int y, int length)
+{
+    wmove(window, y, x);
+//    whline(window, ACS_HLINE, length);
+//    for (int idx = 0; idx < length; idx++)
+//    {
+//        wmove(window, y, x + idx);
+//        addch(char(196));
+//    }
+
+//    box(window, )
+    addch(ACS_HLINE);
+    addch(ACS_HLINE);
+}
+
+[[maybe_unused]] void setcolor(int fg, int bg, bool bold = false)
 {
     /* set the color pair (colornum) and bold/bright (A_BOLD) */
 
     attron(COLOR_PAIR(colornum(fg, bg)));
-    if (is_bold(fg)) 
+    if (is_bold(fg) || bold)
     {
         attron(A_BOLD);
     }
 }
 
-void unsetcolor(int fg, int bg)
+[[maybe_unused]] void unsetcolor(int fg, int bg, bool bold = false)
 {
     /* unset the color pair (colornum) and
        bold/bright (A_BOLD) */
 
     attroff(COLOR_PAIR(colornum(fg, bg)));
-    if (is_bold(fg)) 
+    if (is_bold(fg) || bold)
     {
         attroff(A_BOLD);
     }
 }
 
+[[maybe_unused]] void printText(int fg, int bg, const std::string_view& text)
+{
+    setcolor(fg, bg);
+    addstr(text.data());
+    unsetcolor(fg, bg);
+}
+
 class ColorScope
 {
+    WINDOW* _window = nullptr;
     int     _fg = 0;
     int     _bg = 0;
     bool    _bold = false;
+    bool    _reset = false;
 
 public:
-    ColorScope(int fg, int bg, bool bold)
-        : _fg(fg), _bg(bg), _bold(bold)
+    ColorScope(WINDOW* window, int fg, int bg, bool bold)
+        : _window{window}, _fg{fg}, _bg{bg}, _bold{bold}
     {
-        setcolor(_fg, _bg);
-        //attron(COLOR_PAIR(colornum(_fg, _bg)));
-        //if (is_bold(_fg))// || _bold)
-        //{
-        //    attron(A_BOLD);
-        //}
+        turnOnAttributes();
     }
 
-    ColorScope(int fg, int bg)
-        : ColorScope(fg, bg, false)
+    ColorScope(WINDOW* window, int fg, int bg)
+        : ColorScope(window, fg, bg, false)
     {}
 
     ~ColorScope()
     {
-        unsetcolor(_fg, _bg);
-        //attroff(COLOR_PAIR(colornum(_fg, _bg)));
-        //if (is_bold(_fg) || _bold)
-        //{
-        //    attroff(A_BOLD);
-        //}
+        turnOffAttributes();
+    }
+
+    void reset(int fg, int bg, bool bold = false)
+    {
+        turnOffAttributes();
+
+        _fg = fg;
+        _bg = bg;
+        _bold = bold;
+
+        attron(COLOR_PAIR(colornum(_fg, _bg)));
+        if (is_bold(_fg) || _bold)
+        {
+            attron(A_BOLD);
+        }
+
+        _reset = false;
+    }
+
+    void reset()
+    {
+        turnOffAttributes();
+    }
+
+    void print(const std::string_view& text)
+    {
+        addstr(text.data());
+    }
+
+    void printXY(int x, int y, const std::string_view& text)
+    {
+        int origx = 0;
+        int origy = 0;
+        getyx(_window, origy, origx);
+
+        wmove(_window, y, x);
+        addstr(text.data());
+        wmove(_window, origy, origx);
+    }
+
+    void drawHorizontalLine(int x, int y, int length)
+    {
+        wmove(_window, y, x);
+        whline(_window, ACS_HLINE, length);
+    }
+
+private:
+    void turnOnAttributes()
+    {
+        attron(COLOR_PAIR(colornum(_fg, _bg)));
+        if (is_bold(_fg) || _bold)
+        {
+            attron(A_BOLD);
+        }
+
+        _reset = false;
+    }
+
+    void turnOffAttributes()
+    {
+        if (_reset) return;
+
+        attroff(COLOR_PAIR(colornum(_fg, _bg)));
+        if (is_bold(_fg) || _bold)
+        {
+            attroff(A_BOLD);
+        }
+
+        _reset = true;
     }
 };
 
@@ -146,6 +234,12 @@ CursesApp::CursesApp()
 
     start_color();
 
+//    init_pair(NORMAL_TEXT, COLOR_WHITE, COLOR_BLACK);
+//    init_pair(BRIGHT_TEXT, COLOR_WHITE + 8, COLOR_BLACK);
+//    init_pair(YELLOW_TEXT, COLOR_YELLOW, COLOR_BLACK);
+//    init_pair(HIGHLIGHT_TEXT, COLOR_WHITE, COLOR_YELLOW);
+
+
     int fg, bg;
     int colorpair;
 
@@ -155,12 +249,14 @@ CursesApp::CursesApp()
             init_pair(colorpair, curs_color(fg), curs_color(bg));
         }
     }
+
+
 }
 
 void CursesApp::run()
 {
-    printw("Oh hi!");
-    getch();
+//    printw("Oh hi!");
+//    getch();
     printHome();
     getch();
     endwin();
@@ -178,20 +274,21 @@ void CursesApp::printHome()
 {
     auto [x, y] = this->getScreenSize();
     
-    std::string message = fmt::format(":: {} ::", APP_TITLE);
-    boost::algorithm::to_lower(message);
+    std::string message = fmt::format(" .:: {} ::. ", APP_TITLE);
+//    boost::algorithm::to_lower(message);
     wmove(_window, 0, x - static_cast<int>(message.size()+3));
-     
-    {
-        ColorScope(COLOR_WHITE, COLOR_BLUE);
-        addstr(message.c_str());
-    }
 
-    //{
-    //    setcolor(COLOR_WHITE, COLOR_BLUE);
-    //    addstr(message.c_str());
-    //    unsetcolor(COLOR_WHITE, COLOR_BLUE);
-    //}
+    ColorScope cs(_window, COLOR_WHITE, COLOR_YELLOW, true);
+    cs.printXY(0, x - static_cast<int>(message.size()+3), message);
+
+    cs.reset(COLOR_YELLOW, COLOR_BLACK, false);
+    cs.drawHorizontalLine(10, 5, 20);
+    cs.drawHorizontalLine(10, 9, 20);
+
+
+//    drawHorizontalLine(_window, 10, 5, 20);
+//    drawHorizontalLine(_window, 10, 9, 20);
+    wmove(_window, y - 1, x - 1);
 }
 
 } // namespace

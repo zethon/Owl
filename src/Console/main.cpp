@@ -46,6 +46,7 @@ int main(int argc, char *argv[])
         //// printw("hi there! %d", static_cast<void*>(window));
         //getch();
         //endwin();
+        return 0;
     }
 
     owl::ConsoleApp mainApp(&a);
