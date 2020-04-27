@@ -11,10 +11,14 @@
 namespace owl
 {
 
+constexpr auto APP_TITLE_TEXT = 1u;
+constexpr auto FG_HIGHLIGHT = 2u;
+constexpr auto MENU_COLOR = 10u;
 //constexpr auto NORMAL_TEXT = 1u;
 //constexpr auto BRIGHT_TEXT = 2u;
 //constexpr auto YELLOW_TEXT = 3u;
 //constexpr auto HIGHLIGHT_TEXT = 4u;
+
 
 ///* If an xterm is resized the contents on your text windows might be messed up.
 //To handle this gracefully you should redraw all the stuff based on the new
@@ -46,6 +50,7 @@ int colornum(int fg, int bg)
     return (B | bbb | ffff);
 }
 
+[[maybe_unused]]
 short curs_color(int fg)
 {
     switch (7 & fg) {           /* RGB */
@@ -80,19 +85,14 @@ int is_bold(int fg)
     return (i & fg);
 }
 
-[[maybe_unused]] void drawHorizontalLine(WINDOW* window, int x, int y, int length)
+[[maybe_unused]] void drawHorizontalLine(int x, int y, int length)
 {
-    wmove(window, y, x);
-//    whline(window, ACS_HLINE, length);
-//    for (int idx = 0; idx < length; idx++)
-//    {
-//        wmove(window, y, x + idx);
-//        addch(char(196));
-//    }
-
-//    box(window, )
-    addch(ACS_HLINE);
-    addch(ACS_HLINE);
+    move(y, x);
+    for (int idx = 0; idx < length; idx++)
+    {
+        addch(ACS_HLINE);
+        move(y, x + idx);
+    }
 }
 
 [[maybe_unused]] void setcolor(int fg, int bg, bool bold = false)
@@ -224,6 +224,7 @@ private:
 CursesApp::CursesApp()
 {
     _window = initscr();
+    curs_set(0); // hide cursor
 
     //signal(SIGWINCH, resizeHandler);
 
@@ -239,16 +240,19 @@ CursesApp::CursesApp()
 //    init_pair(YELLOW_TEXT, COLOR_YELLOW, COLOR_BLACK);
 //    init_pair(HIGHLIGHT_TEXT, COLOR_WHITE, COLOR_YELLOW);
 
+    init_pair(APP_TITLE_TEXT, COLOR_MAGENTA , COLOR_BLACK);
+    init_pair(FG_HIGHLIGHT, COLOR_YELLOW , COLOR_BLACK);
+    init_pair(MENU_COLOR, COLOR_BLACK, COLOR_CYAN);
 
-    int fg, bg;
-    int colorpair;
+//    int fg, bg;
+//    int colorpair;
 
-    for (bg = 0; bg <= 7; bg++) {
-        for (fg = 0; fg <= 7; fg++) {
-            colorpair = colornum(fg, bg);
-            init_pair(colorpair, curs_color(fg), curs_color(bg));
-        }
-    }
+//    for (bg = 0; bg <= 7; bg++) {
+//        for (fg = 0; fg <= 7; fg++) {
+//            colorpair = colornum(fg, bg);
+//            init_pair(colorpair, curs_color(fg), curs_color(bg));
+//        }
+//    }
 
 
 }
@@ -270,25 +274,75 @@ std::tuple<int, int> CursesApp::getScreenSize() const
     return { x, y };
 }
 
+void CursesApp::printBottomMenu()
+{
+    auto xy = getScreenSize();
+    auto y = std::get<1>(xy);
+
+    move(y-1, 0);
+
+    attron(COLOR_PAIR(MENU_COLOR));
+    attron(A_BOLD);
+
+    const auto menu =
+        fmt::format("{:<{}}", "[?]Help [q]Quit [/]Prompt [g]Go", std::get<0>(xy));
+
+    addstr(menu.c_str());
+
+    attroff(COLOR_PAIR(MENU_COLOR));
+    attroff(A_BOLD);
+}
+
 void CursesApp::printHome()
 {
-    auto [x, y] = this->getScreenSize();
-    
-    std::string message = fmt::format(" .:: {} ::. ", APP_TITLE);
-//    boost::algorithm::to_lower(message);
-    wmove(_window, 0, x - static_cast<int>(message.size()+3));
+    clear();
+    auto [x,y] = getScreenSize();
 
-    ColorScope cs(_window, COLOR_WHITE, COLOR_YELLOW, true);
-    cs.printXY(0, x - static_cast<int>(message.size()+3), message);
+    const std::string message = fmt::format(" :: {} :: ", APP_TITLE);
+    move(0, x - static_cast<int>(message.size()+3));
 
-    cs.reset(COLOR_YELLOW, COLOR_BLACK, false);
-    cs.drawHorizontalLine(10, 5, 20);
-    cs.drawHorizontalLine(10, 9, 20);
+    attron(COLOR_PAIR(APP_TITLE_TEXT));
+    addstr(message.c_str());
+    attroff(COLOR_PAIR(APP_TITLE_TEXT));
 
+    attron(COLOR_PAIR(FG_HIGHLIGHT));
+    attron(A_BOLD);
+    drawHorizontalLine(10, 20, 20);
+//    move(1, 10);
+//    hline(ACS_HLINE, 10);
+    attroff(COLOR_PAIR(FG_HIGHLIGHT));
+    attroff(A_BOLD);
 
-//    drawHorizontalLine(_window, 10, 5, 20);
-//    drawHorizontalLine(_window, 10, 9, 20);
-    wmove(_window, y - 1, x - 1);
+    move(y - 1, x - 1);
+    printBottomMenu();
+    refresh();
 }
+
+
+//void CursesApp::printHome()
+//{
+//    clear();
+
+//    auto [x, y] = this->getScreenSize();
+    
+//    std::string message = fmt::format(" .:: {} ::. ", APP_TITLE);
+////    boost::algorithm::to_lower(message);
+//    wmove(_window, 0, x - static_cast<int>(message.size()+3));
+
+
+
+
+////    ColorScope cs(_window, COLOR_WHITE, COLOR_YELLOW, true);
+////    cs.printXY(0, x - static_cast<int>(message.size()+3), message);
+
+////    cs.reset(COLOR_YELLOW, COLOR_BLACK, false);
+////    cs.drawHorizontalLine(10, 5, 20);
+////    cs.drawHorizontalLine(10, 9, 20);
+
+
+//////    drawHorizontalLine(_window, 10, 5, 20);
+//////    drawHorizontalLine(_window, 10, 9, 20);
+//    wmove(_window, y - 1, x - 1);
+//}
 
 } // namespace
