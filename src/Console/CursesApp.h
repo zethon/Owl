@@ -1,5 +1,5 @@
 #pragma once
-
+#include <tuple>
 #include <curses.h>
 
 namespace owl
@@ -13,6 +13,11 @@ public:
     CursesApp();
 
     void run();
+
+private:
+    std::tuple<int, int> getScreenSize() const;
+
+    void printHome();
 };
 
 } // namespace

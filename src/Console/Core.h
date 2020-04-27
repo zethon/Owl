@@ -8,9 +8,6 @@
 #define __STRINGIFY__(x)            #x
 #define __EXPAND__(x)               __STRINGIFY__(x)
 
-#define APP_NAME                    "Owl Console"
-#define APP_TITLE					APP_NAME " " OWL_VERSION
-
 #define ORGANZATION_DOMAIN          "owlclient.com"
 
 #ifdef Q_OS_MACX
@@ -24,6 +21,9 @@
 #define OWLCONSOLE_BUILD			0
 #define OWLCONSOLE_VERSION			__EXPAND__(OWLCONSOLE_MAJOR) "." __EXPAND__(OWLCONSOLE_MINOR) "." __EXPAND__(OWLCONSOLE_BUILD)
 #define OWLCONSOLE_BUILDTIMESTAMP	__DATE__ " " __TIME__
+
+#define APP_NAME                    "Owl Console"
+#define APP_TITLE					APP_NAME " " OWLCONSOLE_VERSION
 
 #define COPYRIGHT                   "Copyright (c) 2012-2019, " ORGANIZATION_NAME ". All Rights Reserved."
 #define DEFAULT_USER_AGENT			"Mozilla/5.0 Firefox/3.5.6 " APP_NAME "/" OWL_VERSION
