@@ -11,6 +11,7 @@ class CursesApp
 
 public:
     CursesApp();
+    ~CursesApp();
 
     void run();
 

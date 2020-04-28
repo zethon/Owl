@@ -269,33 +269,17 @@ CursesApp::CursesApp()
 
 }
 
+CursesApp::~CursesApp()
+{
+    endwin();
+}
+
 
 
 void printColors()
 {
-    int fg, bg;
-
-    /* initialize curses */
-
-//    initscr();
-//    keypad(stdscr, TRUE);
-//    cbreak();
-//    noecho();
-
-//    /* initialize colors */
-
-//    if (has_colors() == FALSE) {
-//        endwin();
-//        puts("Your terminal does not support color");
-//        exit(1);
-//    }
-
-//    start_color();
-//    init_colorpairs();
-
-    /* draw test pattern */
-
-    if ((LINES < 24) || (COLS < 80)) {
+    if ((LINES < 24) || (COLS < 80))
+    {
         endwin();
         puts("Your terminal needs to be at least 80x24");
         exit(2);
@@ -305,9 +289,9 @@ void printColors()
     mvaddstr(2, 0, "low intensity text colors (0-7)");
     mvaddstr(12, 0, "high intensity text colors (8-15)");
 
-    for (bg = 0; bg <= 7; bg++)
+    for (int bg = 0; bg <= 7; bg++)
     {
-        for (fg = 0; fg <= 7; fg++)
+        for (int fg = 0; fg <= 7; fg++)
         {
             setcolor(fg, bg);
             std::string message
@@ -317,7 +301,7 @@ void printColors()
             unsetcolor(fg, bg);
         }
 
-        for (fg = 8; fg <= 15; fg++)
+        for (int fg = 8; fg <= 15; fg++)
         {
             setcolor(fg, bg);
             std::string message
@@ -328,14 +312,10 @@ void printColors()
         }
     }
 
-    mvaddstr(LINES - 1, 0, "press any key to quit");
+    mvaddstr(LINES - 1, 0, "press any key");
 
     refresh();
-
     getch();
-//    endwin();
-
-//    exit(0);
 }
 
 void CursesApp::run()
@@ -365,12 +345,6 @@ void CursesApp::run()
             }
         }
     }
-
-//    printColors();
-//    printHome();
-//    getch();
-//    endwin();
-
 }
 
 std::tuple<int, int> CursesApp::getScreenSize() const
@@ -389,17 +363,6 @@ void CursesApp::printBottomMenu()
     move(y-1, 0);
 
     waddch(_window, 'X' | A_UNDERLINE | COLOR_PAIR(MENU_COLOR));
-//    attron(COLOR_PAIR(MENU_COLOR));
-//    attron(A_BOLD);
-
-//    const auto menu =
-//        fmt::format("{:<{}}", "[?]Help [Q]Quit [/]Prompt", std::get<0>(xy));
-
-//    addstr(menu.c_str());
-
-//    attroff(COLOR_PAIR(MENU_COLOR));
-//    attroff(A_BOLD);
-
 }
 
 void CursesApp::printHome()
