@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 
 #include <boost/algorithm/string.hpp>
@@ -73,6 +74,19 @@ short curs_color(int fg)
     }
 
     return 0;
+}
+
+[[maybe_unused]] void init_colorpairs(void)
+{
+    int fg, bg;
+    int colorpair;
+
+    for (bg = 0; bg <= 7; bg++) {
+        for (fg = 0; fg <= 7; fg++) {
+            colorpair = colornum(fg, bg);
+            init_pair(colorpair, curs_color(fg), curs_color(bg));
+        }
+    }
 }
 
 int is_bold(int fg)
@@ -209,26 +223,36 @@ CursesApp::CursesApp()
 {
     _window = initscr();
     curs_set(0); // hide cursor
+    keypad(stdscr, TRUE);
+    cbreak();
+    noecho();
 
     //signal(SIGWINCH, resizeHandler);
 
     if (!has_colors())
     {
-        return;
+        endwin();
+        printf("Your terminal does not support color\n");
+        exit(1);
     }
 
     start_color();
+    init_colorpairs();
 
 //    init_pair(NORMAL_TEXT, COLOR_WHITE, COLOR_BLACK);
 //    init_pair(BRIGHT_TEXT, COLOR_WHITE + 8, COLOR_BLACK);
 //    init_pair(YELLOW_TEXT, COLOR_YELLOW, COLOR_BLACK);
 //    init_pair(HIGHLIGHT_TEXT, COLOR_WHITE, COLOR_YELLOW);
 
-    init_color(666, 0, 0, 0);
+//    init_color(666, 0, 0, 0);
+//    init_color(777, 256, 0, 0);
 
-    init_pair(APP_TITLE_TEXT, COLOR_MAGENTA , COLOR_BLACK);
-    init_pair(FG_HIGHLIGHT, COLOR_YELLOW , COLOR_BLACK);
-    init_pair(MENU_COLOR, 666, COLOR_WHITE);
+//    init_pair(APP_TITLE_TEXT, COLOR_MAGENTA , COLOR_BLACK);
+//    init_pair(FG_HIGHLIGHT, COLOR_YELLOW , COLOR_BLACK);
+//    init_pair(MENU_COLOR, COLOR_YELLOW, COLOR_BLACK);
+
+//    clear();
+
 
 //    int fg, bg;
 //    int colorpair;
@@ -241,15 +265,112 @@ CursesApp::CursesApp()
 //    }
 
 
+
+
+}
+
+
+
+void printColors()
+{
+    int fg, bg;
+
+    /* initialize curses */
+
+//    initscr();
+//    keypad(stdscr, TRUE);
+//    cbreak();
+//    noecho();
+
+//    /* initialize colors */
+
+//    if (has_colors() == FALSE) {
+//        endwin();
+//        puts("Your terminal does not support color");
+//        exit(1);
+//    }
+
+//    start_color();
+//    init_colorpairs();
+
+    /* draw test pattern */
+
+    if ((LINES < 24) || (COLS < 80)) {
+        endwin();
+        puts("Your terminal needs to be at least 80x24");
+        exit(2);
+    }
+
+    mvaddstr(0, 35, "COLOR DEMO");
+    mvaddstr(2, 0, "low intensity text colors (0-7)");
+    mvaddstr(12, 0, "high intensity text colors (8-15)");
+
+    for (bg = 0; bg <= 7; bg++)
+    {
+        for (fg = 0; fg <= 7; fg++)
+        {
+            setcolor(fg, bg);
+            std::string message
+                = fmt::format("F:{},B:{}", fg, bg);
+            message = fmt::format("{:^{}}", message, 10);
+            mvaddstr(fg + 3, bg * 10, message.c_str());
+            unsetcolor(fg, bg);
+        }
+
+        for (fg = 8; fg <= 15; fg++)
+        {
+            setcolor(fg, bg);
+            std::string message
+                = fmt::format("F:{},B:{}", fg, bg);
+            message = fmt::format("{:^{}}", message, 10);
+            mvaddstr(fg + 5, bg * 10, message.c_str());
+            unsetcolor(fg, bg);
+        }
+    }
+
+    mvaddstr(LINES - 1, 0, "press any key to quit");
+
+    refresh();
+
+    getch();
+//    endwin();
+
+//    exit(0);
 }
 
 void CursesApp::run()
 {
-//    printw("Oh hi!");
+    bool done = false;
+
+    while (!done)
+    {
+        printHome();
+
+        auto ch = getch();
+        switch (ch)
+        {
+            case KEY_END:
+            {
+                clear();
+                printColors();
+                clear();
+                break;
+            }
+
+            case 'q':
+            case 'Q':
+            {
+                done = true;
+                break;
+            }
+        }
+    }
+
+//    printColors();
+//    printHome();
 //    getch();
-    printHome();
-    getch();
-    endwin();
+//    endwin();
+
 }
 
 std::tuple<int, int> CursesApp::getScreenSize() const
@@ -267,27 +388,28 @@ void CursesApp::printBottomMenu()
 
     move(y-1, 0);
 
-    attron(COLOR_PAIR(MENU_COLOR));
-    //attron(A_BOLD);
+    waddch(_window, 'X' | A_UNDERLINE | COLOR_PAIR(MENU_COLOR));
+//    attron(COLOR_PAIR(MENU_COLOR));
+//    attron(A_BOLD);
 
-    const auto menu =
-        fmt::format("{:<{}}", "[?]Help [q]Quit [/]Prompt", std::get<0>(xy));
+//    const auto menu =
+//        fmt::format("{:<{}}", "[?]Help [Q]Quit [/]Prompt", std::get<0>(xy));
 
-    addstr(menu.c_str());
+//    addstr(menu.c_str());
 
-    attroff(COLOR_PAIR(MENU_COLOR));
-    //attroff(A_BOLD);
+//    attroff(COLOR_PAIR(MENU_COLOR));
+//    attroff(A_BOLD);
+
 }
 
 void CursesApp::printHome()
 {
-    clear();
     auto [x,y] = getScreenSize();
 
-    //const std::string debugInfo =
-    //    fmt::format("X: {}, Y: {}, COLORS: {}", x, y, COLORS);
-    //move(0, 0);
-    //addstr(debugInfo.c_str());
+    const std::string debugInfo =
+        fmt::format("X: {}, Y: {}, COLORS: {}, COLOR_PAIRS: {}", x, y, COLORS, COLOR_PAIRS);
+    move(0, 0);
+    addstr(debugInfo.c_str());
 
     ColorScope cs{ _window, APP_TITLE_TEXT, true };
     const std::string message = fmt::format(" :: {} :: ", APP_TITLE);
@@ -296,49 +418,13 @@ void CursesApp::printHome()
 
     cs.reset(FG_HIGHLIGHT, true);
     cs.drawHorizontalLine(10, 20, 30);
-
-    //attron(A_BOLD);
-    //attron(COLOR_PAIR(APP_TITLE_TEXT));
-    //addstr(message.c_str());
-    //attroff(COLOR_PAIR(APP_TITLE_TEXT));
-
-    //attron(COLOR_PAIR(FG_HIGHLIGHT));
-    //
-    //drawHorizontalLine(10, 20, 20);
-    //attroff(COLOR_PAIR(FG_HIGHLIGHT));
-    //attroff(A_BOLD);
+    cs.reset();
 
     printBottomMenu();
+    refresh();
     move(y - 1, x - 1);
     
     refresh();
 }
-
-
-//void CursesApp::printHome()
-//{
-//    clear();
-
-//    auto [x, y] = this->getScreenSize();
-    
-//    std::string message = fmt::format(" .:: {} ::. ", APP_TITLE);
-////    boost::algorithm::to_lower(message);
-//    wmove(_window, 0, x - static_cast<int>(message.size()+3));
-
-
-
-
-////    ColorScope cs(_window, COLOR_WHITE, COLOR_YELLOW, true);
-////    cs.printXY(0, x - static_cast<int>(message.size()+3), message);
-
-////    cs.reset(COLOR_YELLOW, COLOR_BLACK, false);
-////    cs.drawHorizontalLine(10, 5, 20);
-////    cs.drawHorizontalLine(10, 9, 20);
-
-
-//////    drawHorizontalLine(_window, 10, 5, 20);
-//////    drawHorizontalLine(_window, 10, 9, 20);
-//    wmove(_window, y - 1, x - 1);
-//}
 
 } // namespace
