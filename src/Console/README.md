@@ -1,9 +1,19 @@
 # OwlConsole
 
+## Command-Line Options
+
+```
+Usage: owlconsole [options]
+
+
+```
+
 ## What is OwlConsole?
 OwlConsole is a terminal application that allows users to browse message boards through the command line. OwlConsole uses the same backend as Owl and therefore supports the same variety of message board software.
 
 ## How do I use it?
+
+OwlConsole supports two 
 
 OwlConsole creates a psuedo-filesystem hiearchy of the message board that allow users to navigate the message board by selecting folders and threads in much the same way one may selected folders and files in a filesystem console.
 

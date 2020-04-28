@@ -11,7 +11,7 @@
 namespace owl
 {
 
-constexpr auto APP_TITLE_TEXT = 1u;
+constexpr auto APP_TITLE_TEXT = 1l;
 constexpr auto FG_HIGHLIGHT = 2u;
 constexpr auto MENU_COLOR = 10u;
 //constexpr auto NORMAL_TEXT = 1u;
@@ -128,20 +128,19 @@ int is_bold(int fg)
 class ColorScope
 {
     WINDOW* _window = nullptr;
-    int     _fg = 0;
-    int     _bg = 0;
+    int     _colornum = 0;
     bool    _bold = false;
     bool    _reset = false;
 
 public:
-    ColorScope(WINDOW* window, int fg, int bg, bool bold)
-        : _window{window}, _fg{fg}, _bg{bg}, _bold{bold}
+    ColorScope(WINDOW* window, int colornum, bool bold)
+        : _window{ window }, _colornum{ colornum }, _bold{ bold }
     {
         turnOnAttributes();
     }
 
-    ColorScope(WINDOW* window, int fg, int bg)
-        : ColorScope(window, fg, bg, false)
+    ColorScope(WINDOW* window, int colornum)
+        : ColorScope(window, colornum, false)
     {}
 
     ~ColorScope()
@@ -149,20 +148,14 @@ public:
         turnOffAttributes();
     }
 
-    void reset(int fg, int bg, bool bold = false)
+    void reset(int colornum, bool bold = false)
     {
         turnOffAttributes();
 
-        _fg = fg;
-        _bg = bg;
+        _colornum = colornum;
         _bold = bold;
 
-        attron(COLOR_PAIR(colornum(_fg, _bg)));
-        if (is_bold(_fg) || _bold)
-        {
-            attron(A_BOLD);
-        }
-
+        turnOnAttributes();
         _reset = false;
     }
 
@@ -173,7 +166,7 @@ public:
 
     void print(const std::string_view& text)
     {
-        addstr(text.data());
+        waddstr(_window, text.data());
     }
 
     void printXY(int x, int y, const std::string_view& text)
@@ -183,7 +176,7 @@ public:
         getyx(_window, origy, origx);
 
         wmove(_window, y, x);
-        addstr(text.data());
+        waddstr(_window, text.data());
         wmove(_window, origy, origx);
     }
 
@@ -196,25 +189,16 @@ public:
 private:
     void turnOnAttributes()
     {
-        attron(COLOR_PAIR(colornum(_fg, _bg)));
-        if (is_bold(_fg) || _bold)
-        {
-            attron(A_BOLD);
-        }
-
+        wattron(_window, COLOR_PAIR(_colornum));
+        if (_bold) wattron(_window, A_BOLD);
         _reset = false;
     }
 
     void turnOffAttributes()
     {
         if (_reset) return;
-
-        attroff(COLOR_PAIR(colornum(_fg, _bg)));
-        if (is_bold(_fg) || _bold)
-        {
-            attroff(A_BOLD);
-        }
-
+        wattroff(_window, COLOR_PAIR(_colornum));
+        if (_bold) wattroff(_window, A_BOLD);
         _reset = true;
     }
 };
@@ -240,9 +224,11 @@ CursesApp::CursesApp()
 //    init_pair(YELLOW_TEXT, COLOR_YELLOW, COLOR_BLACK);
 //    init_pair(HIGHLIGHT_TEXT, COLOR_WHITE, COLOR_YELLOW);
 
+    init_color(666, 0, 0, 0);
+
     init_pair(APP_TITLE_TEXT, COLOR_MAGENTA , COLOR_BLACK);
     init_pair(FG_HIGHLIGHT, COLOR_YELLOW , COLOR_BLACK);
-    init_pair(MENU_COLOR, COLOR_BLACK, COLOR_CYAN);
+    init_pair(MENU_COLOR, 666, COLOR_WHITE);
 
 //    int fg, bg;
 //    int colorpair;
@@ -282,15 +268,15 @@ void CursesApp::printBottomMenu()
     move(y-1, 0);
 
     attron(COLOR_PAIR(MENU_COLOR));
-    attron(A_BOLD);
+    //attron(A_BOLD);
 
     const auto menu =
-        fmt::format("{:<{}}", "[?]Help [q]Quit [/]Prompt [g]Go", std::get<0>(xy));
+        fmt::format("{:<{}}", "[?]Help [q]Quit [/]Prompt", std::get<0>(xy));
 
     addstr(menu.c_str());
 
     attroff(COLOR_PAIR(MENU_COLOR));
-    attroff(A_BOLD);
+    //attroff(A_BOLD);
 }
 
 void CursesApp::printHome()
@@ -298,23 +284,33 @@ void CursesApp::printHome()
     clear();
     auto [x,y] = getScreenSize();
 
+    //const std::string debugInfo =
+    //    fmt::format("X: {}, Y: {}, COLORS: {}", x, y, COLORS);
+    //move(0, 0);
+    //addstr(debugInfo.c_str());
+
+    ColorScope cs{ _window, APP_TITLE_TEXT, true };
     const std::string message = fmt::format(" :: {} :: ", APP_TITLE);
-    move(0, x - static_cast<int>(message.size()+3));
+    cs.printXY(x - static_cast<int>(message.size() + 1), 0, message);
+    //move(0, x - static_cast<int>(message.size()+3));
 
-    attron(COLOR_PAIR(APP_TITLE_TEXT));
-    addstr(message.c_str());
-    attroff(COLOR_PAIR(APP_TITLE_TEXT));
+    cs.reset(FG_HIGHLIGHT, true);
+    cs.drawHorizontalLine(10, 20, 30);
 
-    attron(COLOR_PAIR(FG_HIGHLIGHT));
-    attron(A_BOLD);
-    drawHorizontalLine(10, 20, 20);
-//    move(1, 10);
-//    hline(ACS_HLINE, 10);
-    attroff(COLOR_PAIR(FG_HIGHLIGHT));
-    attroff(A_BOLD);
+    //attron(A_BOLD);
+    //attron(COLOR_PAIR(APP_TITLE_TEXT));
+    //addstr(message.c_str());
+    //attroff(COLOR_PAIR(APP_TITLE_TEXT));
 
-    move(y - 1, x - 1);
+    //attron(COLOR_PAIR(FG_HIGHLIGHT));
+    //
+    //drawHorizontalLine(10, 20, 20);
+    //attroff(COLOR_PAIR(FG_HIGHLIGHT));
+    //attroff(A_BOLD);
+
     printBottomMenu();
+    move(y - 1, x - 1);
+    
     refresh();
 }
 
