@@ -49,7 +49,9 @@ const ColorPairInfo DEFAULT_THEME[]
 {
     { "", 0, 0 }, // ncurses default (skipped)
     { "MenuBar", O_COLOR_BLACK, O_COLOR_CYAN },
-    { "WelcomeText", O_COLOR_MAGENTA, O_COLOR_BLACK }
+    { "WelcomeText", O_COLOR_MAGENTA, O_COLOR_BLACK },
+    { "Seperator", O_COLOR_YELLOW, O_COLOR_BLACK },
+    { "DebugInfo", O_COLOR_BLACK, O_COLOR_GREY },
 };
 
 ///* If an xterm is resized the contents on your text windows might be messed up.
@@ -81,7 +83,7 @@ int color_pair_num(std::string_view name)
             return name == info.name;
         });
 
-    if (it == std::end(DEFAULT_THEME)) return -1;
+    if (it == std::end(DEFAULT_THEME)) return 0;
     return static_cast<int>(std::distance(std::begin(DEFAULT_THEME), it));
 }
 
@@ -232,7 +234,7 @@ public:
         waddstr(_window, text.data());
     }
 
-    void printXY(int x, int y, const std::string_view& text)
+    void printXY(int x, int y, std::string_view text)
     {
         int origx = 0;
         int origy = 0;
@@ -356,7 +358,6 @@ void CursesApp::printBottomMenu()
 
     move(y-1, 0);
 
-    //waddch(_window, 'X' | A_UNDERLINE | COLOR_PAIR(MENU_COLOR));
     attron(COLOR_PAIR(color_pair_num("MenuBar")));
     const auto menu =
         fmt::format("{:<{}}", "[?]Help [q]Quit [/]Prompt", std::get<0>(xy));
@@ -368,24 +369,21 @@ void CursesApp::printHome()
 {
     auto [x,y] = getScreenSize();
 
-    //const std::string debugInfo =
-    //    fmt::format("X: {}, Y: {}, COLORS: {}, COLOR_PAIRS: {}", x, y, COLORS, COLOR_PAIRS);
-    //move(0, 0);
-    //addstr(debugInfo.c_str());
+    ColorScope cs{ _window, color_pair_num("WelcomeText") };
+    const std::string message = fmt::format(" :: {} :: ", APP_TITLE);
+    cs.printXY(x - static_cast<int>(message.size() + 1), 0, message);
 
-    //ColorScope cs{ _window, APP_TITLE_TEXT, true };
-    //const std::string message = fmt::format(" :: {} :: ", APP_TITLE);
-    //cs.printXY(x - static_cast<int>(message.size() + 1), 0, message);
-    ////move(0, x - static_cast<int>(message.size()+3));
+    const std::string debugInfo =
+        fmt::format("X: {}, Y: {}, COLORS: {}, COLOR_PAIRS: {}", x, y, COLORS, COLOR_PAIRS);
+    cs.reset(color_pair_num("DebugInfo"));
+    cs.printXY(0, 0, debugInfo);
 
-    //cs.reset(FG_HIGHLIGHT, true);
-    //cs.drawHorizontalLine(10, 20, 30);
-    //cs.reset();
+    cs.reset(color_pair_num("Seperator"));
+    cs.drawHorizontalLine(10, 20, 30);
+    cs.reset();
 
     printBottomMenu();
-    refresh();
     move(y - 1, x - 1);
-    
     refresh();
 }
 
