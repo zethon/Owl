@@ -1,7 +1,9 @@
 #include <iostream>
 #include <string>
+#include <map>
 
 #include <boost/algorithm/string.hpp>
+#include <boost/range/adaptor/indexed.hpp>
 
 #include <fmt/format.h>
 //#include <signal.h>
@@ -12,14 +14,43 @@
 namespace owl
 {
 
-constexpr auto APP_TITLE_TEXT = 1l;
-constexpr auto FG_HIGHLIGHT = 2u;
-constexpr auto MENU_COLOR = 10u;
-//constexpr auto NORMAL_TEXT = 1u;
-//constexpr auto BRIGHT_TEXT = 2u;
-//constexpr auto YELLOW_TEXT = 3u;
-//constexpr auto HIGHLIGHT_TEXT = 4u;
+constexpr int O_COLOR_BLACK = 0;
+constexpr int O_COLOR_BLUE = 1;
+constexpr int O_COLOR_GREEN = 2;
+constexpr int O_COLOR_CYAN = 3;
+constexpr int O_COLOR_RED = 4;
+constexpr int O_COLOR_MAGENTA = 5;
+constexpr int O_COLOR_YELLOW = 6;
+constexpr int O_COLOR_WHITE = 7;
+constexpr int O_COLOR_GREY = 8;
 
+using ColorMap = std::map<int, std::tuple<int, int, int>>;
+const ColorMap COLOR_CODES =
+{
+    { O_COLOR_BLACK,    { 0, 0, 0 } },
+    { O_COLOR_BLUE,     { 0, 0, 1000 } },
+    { O_COLOR_GREEN,    { 0, 1000, 0 } },
+    { O_COLOR_CYAN,     { 0, 1000, 1000 } },
+    { O_COLOR_RED,      { 1000, 0, 0 } },
+    { O_COLOR_MAGENTA,  { 1000, 0, 1000 } },
+    { O_COLOR_YELLOW,   { 1000, 1000, 0 } },
+    { O_COLOR_WHITE,    { 0, 0, 0 } },
+    { O_COLOR_GREY,     { 500, 500, 500 } },
+};
+
+struct ColorPairInfo
+{
+    std::string name;
+    int         fg;
+    int         bg;
+};
+
+const ColorPairInfo DEFAULT_THEME[]
+{
+    { "", 0, 0 }, // ncurses default (skipped)
+    { "MenuBar", O_COLOR_BLACK, O_COLOR_CYAN },
+    { "WelcomeText", O_COLOR_MAGENTA, O_COLOR_BLACK }
+};
 
 ///* If an xterm is resized the contents on your text windows might be messed up.
 //To handle this gracefully you should redraw all the stuff based on the new
@@ -39,6 +70,20 @@ constexpr auto MENU_COLOR = 10u;
 
 namespace
 {
+
+// not a great design but will do for now
+int color_pair_num(std::string_view name)
+{
+    const auto it = std::find_if(
+        std::begin(DEFAULT_THEME), std::end(DEFAULT_THEME),
+        [name](const ColorPairInfo& info)
+        {
+            return name == info.name;
+        });
+
+    if (it == std::end(DEFAULT_THEME)) return -1;
+    return static_cast<int>(std::distance(std::begin(DEFAULT_THEME), it));
+}
 
 int colornum(int fg, int bg)
 {
@@ -78,6 +123,10 @@ short curs_color(int fg)
 
 [[maybe_unused]] void init_colorpairs(void)
 {
+    init_color(COLOR_BLACK, 0, 0, 0);
+    init_color(3, 0, 1000, 1000);
+    init_color(6, 1000, 1000, 0);
+
     int fg, bg;
     int colorpair;
 
@@ -217,6 +266,25 @@ private:
     }
 };
 
+void init_color_scheme()
+{
+    start_color();
+
+    for (const auto& [code, rgb] : COLOR_CODES)
+    {
+        const auto& [r, g, b] = rgb;
+        init_color(code, r, g, b);
+    }
+
+    for (const auto& element : boost::adaptors::index(DEFAULT_THEME)) 
+    {
+        if (element.index() == 0) continue;
+        const auto& [name, fg, bg] = element.value();
+
+        init_pair(static_cast<int>(element.index()), fg, bg);
+    }
+}
+
 }
 
 CursesApp::CursesApp()
@@ -236,86 +304,12 @@ CursesApp::CursesApp()
         exit(1);
     }
 
-    start_color();
-    init_colorpairs();
-
-//    init_pair(NORMAL_TEXT, COLOR_WHITE, COLOR_BLACK);
-//    init_pair(BRIGHT_TEXT, COLOR_WHITE + 8, COLOR_BLACK);
-//    init_pair(YELLOW_TEXT, COLOR_YELLOW, COLOR_BLACK);
-//    init_pair(HIGHLIGHT_TEXT, COLOR_WHITE, COLOR_YELLOW);
-
-//    init_color(666, 0, 0, 0);
-//    init_color(777, 256, 0, 0);
-
-//    init_pair(APP_TITLE_TEXT, COLOR_MAGENTA , COLOR_BLACK);
-//    init_pair(FG_HIGHLIGHT, COLOR_YELLOW , COLOR_BLACK);
-//    init_pair(MENU_COLOR, COLOR_YELLOW, COLOR_BLACK);
-
-//    clear();
-
-
-//    int fg, bg;
-//    int colorpair;
-
-//    for (bg = 0; bg <= 7; bg++) {
-//        for (fg = 0; fg <= 7; fg++) {
-//            colorpair = colornum(fg, bg);
-//            init_pair(colorpair, curs_color(fg), curs_color(bg));
-//        }
-//    }
-
-
-
-
+    init_color_scheme();
 }
 
 CursesApp::~CursesApp()
 {
     endwin();
-}
-
-
-
-void printColors()
-{
-    if ((LINES < 24) || (COLS < 80))
-    {
-        endwin();
-        puts("Your terminal needs to be at least 80x24");
-        exit(2);
-    }
-
-    mvaddstr(0, 35, "COLOR DEMO");
-    mvaddstr(2, 0, "low intensity text colors (0-7)");
-    mvaddstr(12, 0, "high intensity text colors (8-15)");
-
-    for (int bg = 0; bg <= 7; bg++)
-    {
-        for (int fg = 0; fg <= 7; fg++)
-        {
-            setcolor(fg, bg);
-            std::string message
-                = fmt::format("F:{},B:{}", fg, bg);
-            message = fmt::format("{:^{}}", message, 10);
-            mvaddstr(fg + 3, bg * 10, message.c_str());
-            unsetcolor(fg, bg);
-        }
-
-        for (int fg = 8; fg <= 15; fg++)
-        {
-            setcolor(fg, bg);
-            std::string message
-                = fmt::format("F:{},B:{}", fg, bg);
-            message = fmt::format("{:^{}}", message, 10);
-            mvaddstr(fg + 5, bg * 10, message.c_str());
-            unsetcolor(fg, bg);
-        }
-    }
-
-    mvaddstr(LINES - 1, 0, "press any key");
-
-    refresh();
-    getch();
 }
 
 void CursesApp::run()
@@ -329,13 +323,13 @@ void CursesApp::run()
         auto ch = getch();
         switch (ch)
         {
-            case KEY_END:
-            {
-                clear();
-                printColors();
-                clear();
-                break;
-            }
+            //case KEY_END:
+            //{
+            //    clear();
+            //    printColors();
+            //    clear();
+            //    break;
+            //}
 
             case 'q':
             case 'Q':
@@ -362,26 +356,31 @@ void CursesApp::printBottomMenu()
 
     move(y-1, 0);
 
-    waddch(_window, 'X' | A_UNDERLINE | COLOR_PAIR(MENU_COLOR));
+    //waddch(_window, 'X' | A_UNDERLINE | COLOR_PAIR(MENU_COLOR));
+    attron(COLOR_PAIR(color_pair_num("MenuBar")));
+    const auto menu =
+        fmt::format("{:<{}}", "[?]Help [q]Quit [/]Prompt", std::get<0>(xy));
+    addstr(menu.c_str());
+    attroff(COLOR_PAIR(color_pair_num("MenuBar")));
 }
 
 void CursesApp::printHome()
 {
     auto [x,y] = getScreenSize();
 
-    const std::string debugInfo =
-        fmt::format("X: {}, Y: {}, COLORS: {}, COLOR_PAIRS: {}", x, y, COLORS, COLOR_PAIRS);
-    move(0, 0);
-    addstr(debugInfo.c_str());
+    //const std::string debugInfo =
+    //    fmt::format("X: {}, Y: {}, COLORS: {}, COLOR_PAIRS: {}", x, y, COLORS, COLOR_PAIRS);
+    //move(0, 0);
+    //addstr(debugInfo.c_str());
 
-    ColorScope cs{ _window, APP_TITLE_TEXT, true };
-    const std::string message = fmt::format(" :: {} :: ", APP_TITLE);
-    cs.printXY(x - static_cast<int>(message.size() + 1), 0, message);
-    //move(0, x - static_cast<int>(message.size()+3));
+    //ColorScope cs{ _window, APP_TITLE_TEXT, true };
+    //const std::string message = fmt::format(" :: {} :: ", APP_TITLE);
+    //cs.printXY(x - static_cast<int>(message.size() + 1), 0, message);
+    ////move(0, x - static_cast<int>(message.size()+3));
 
-    cs.reset(FG_HIGHLIGHT, true);
-    cs.drawHorizontalLine(10, 20, 30);
-    cs.reset();
+    //cs.reset(FG_HIGHLIGHT, true);
+    //cs.drawHorizontalLine(10, 20, 30);
+    //cs.reset();
 
     printBottomMenu();
     refresh();
