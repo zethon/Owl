@@ -50,25 +50,12 @@ const ColorPairInfo DEFAULT_THEME[]
     { "", 0, 0 }, // ncurses default (skipped)
     { "MenuBar", O_COLOR_BLACK, O_COLOR_CYAN },
     { "WelcomeText", O_COLOR_MAGENTA, O_COLOR_BLACK },
-    { "Seperator", O_COLOR_YELLOW, O_COLOR_BLACK },
+    { "BoxOutline", O_COLOR_YELLOW, O_COLOR_BLACK },
     { "DebugInfo", O_COLOR_BLACK, O_COLOR_GREY },
+    { "Warning", O_COLOR_BLACK, O_COLOR_YELLOW },
+    { "Error", O_COLOR_BLACK, O_COLOR_RED },
+    { "Prompt", O_COLOR_YELLOW, O_COLOR_BLUE },
 };
-
-///* If an xterm is resized the contents on your text windows might be messed up.
-//To handle this gracefully you should redraw all the stuff based on the new
-//height and width of the screen. When resizing happens, your program is sent
-//a SIGWINCH signal. You should catch this signal and do redrawing accordingly.
-//*/
-//void resizeHandler(int sig)
-//{
-//    int h, w;
-//
-//    // this simply doesn't update h&w under OSX when using terminal
-//    getmaxyx(stdscr, h, w);
-//    fprintf(stderr, "Resizing: (h= %d, w= %d )\n", h, w);
-//    fprintf(stderr, "Resizing: (LINES= %d, COLS= %d )\n", LINES, COLS);
-//    refresh();
-//}
 
 namespace
 {
@@ -83,64 +70,16 @@ int color_pair_num(std::string_view name)
             return name == info.name;
         });
 
-    if (it == std::end(DEFAULT_THEME)) return 0;
+    if (it == std::end(DEFAULT_THEME))
+    {
+        // TODO: warning?
+        return 0;
+    }
+
     return static_cast<int>(std::distance(std::begin(DEFAULT_THEME), it));
 }
 
-int colornum(int fg, int bg)
-{
-    int B, bbb, ffff;
-
-    B = 1 << 7;
-    bbb = (7 & bg) << 4;
-    ffff = 7 & fg;
-
-    return (B | bbb | ffff);
-}
-
-[[maybe_unused]]
-short curs_color(int fg)
-{
-    switch (7 & fg) {           /* RGB */
-    case 0:                     /* 000 */
-        return (COLOR_BLACK);
-    case 1:                     /* 001 */
-        return (COLOR_BLUE);
-    case 2:                     /* 010 */
-        return (COLOR_GREEN);
-    case 3:                     /* 011 */
-        return (COLOR_CYAN);
-    case 4:                     /* 100 */
-        return (COLOR_RED);
-    case 5:                     /* 101 */
-        return (COLOR_MAGENTA);
-    case 6:                     /* 110 */
-        return (COLOR_YELLOW);
-    case 7:                     /* 111 */
-        return (COLOR_WHITE);
-    }
-
-    return 0;
-}
-
-[[maybe_unused]] void init_colorpairs(void)
-{
-    init_color(COLOR_BLACK, 0, 0, 0);
-    init_color(3, 0, 1000, 1000);
-    init_color(6, 1000, 1000, 0);
-
-    int fg, bg;
-    int colorpair;
-
-    for (bg = 0; bg <= 7; bg++) {
-        for (fg = 0; fg <= 7; fg++) {
-            colorpair = colornum(fg, bg);
-            init_pair(colorpair, curs_color(fg), curs_color(bg));
-        }
-    }
-}
-
-int is_bold(int fg)
+[[maybe_unused]] int is_bold(int fg)
 {
     /* return the intensity bit */
 
@@ -148,46 +87,6 @@ int is_bold(int fg)
 
     i = 1 << 3;
     return (i & fg);
-}
-
-[[maybe_unused]] void drawHorizontalLine(int x, int y, int length)
-{
-    move(y, x);
-    for (int idx = 0; idx < length; idx++)
-    {
-        addch(ACS_HLINE);
-        move(y, x + idx);
-    }
-}
-
-[[maybe_unused]] void setcolor(int fg, int bg, bool bold = false)
-{
-    /* set the color pair (colornum) and bold/bright (A_BOLD) */
-
-    attron(COLOR_PAIR(colornum(fg, bg)));
-    if (is_bold(fg) || bold)
-    {
-        attron(A_BOLD);
-    }
-}
-
-[[maybe_unused]] void unsetcolor(int fg, int bg, bool bold = false)
-{
-    /* unset the color pair (colornum) and
-       bold/bright (A_BOLD) */
-
-    attroff(COLOR_PAIR(colornum(fg, bg)));
-    if (is_bold(fg) || bold)
-    {
-        attroff(A_BOLD);
-    }
-}
-
-[[maybe_unused]] void printText(int fg, int bg, const std::string_view& text)
-{
-    setcolor(fg, bg);
-    addstr(text.data());
-    unsetcolor(fg, bg);
 }
 
 class ColorScope
@@ -206,6 +105,22 @@ public:
 
     ColorScope(WINDOW* window, int colornum)
         : ColorScope(window, colornum, false)
+    {}
+
+    explicit ColorScope(int colornum)
+        : ColorScope(stdscr, colornum)
+    {}
+
+    ColorScope(WINDOW* window, std::string_view name, bool bold)
+        : ColorScope(window, color_pair_num(name), bold)
+    {}
+
+    ColorScope(WINDOW* window, std::string_view name)
+        : ColorScope(window, name, false)
+    {}
+
+    ColorScope(std::string_view name)
+        : ColorScope(stdscr, color_pair_num(name))
     {}
 
     ~ColorScope()
@@ -287,6 +202,28 @@ void init_color_scheme()
     }
 }
 
+void print_color_settings()
+{
+    clear();
+
+    constexpr int startX = 2;
+    int startY = 2;
+
+    for (const auto& element : boost::adaptors::index(DEFAULT_THEME))
+    {
+        if (element.index() == 0) continue;
+
+        move(startY + element.index(), startX);
+        const ColorPairInfo& info = element.value();
+        attron(COLOR_PAIR(element.index()));
+        addstr(fmt::format("{:^30}", info.name, 10).c_str());
+        attroff(COLOR_PAIR(element.index()));
+    }
+
+    refresh();
+    getch();
+}
+
 }
 
 CursesApp::CursesApp()
@@ -296,8 +233,6 @@ CursesApp::CursesApp()
     keypad(stdscr, TRUE);
     cbreak();
     noecho();
-
-    //signal(SIGWINCH, resizeHandler);
 
     if (!has_colors())
     {
@@ -325,13 +260,12 @@ void CursesApp::run()
         auto ch = getch();
         switch (ch)
         {
-            //case KEY_END:
-            //{
-            //    clear();
-            //    printColors();
-            //    clear();
-            //    break;
-            //}
+            case KEY_END:
+            {
+                print_color_settings();
+                clear();
+                break;
+            }
 
             case 'q':
             case 'Q':
@@ -360,7 +294,7 @@ void CursesApp::printBottomMenu()
 
     attron(COLOR_PAIR(color_pair_num("MenuBar")));
     const auto menu =
-        fmt::format("{:<{}}", "[?]Help [q]Quit [/]Prompt", std::get<0>(xy));
+        fmt::format("{:<{}}", "[?]Help [q]Quit [/]Prompt [u]Login", std::get<0>(xy));
     addstr(menu.c_str());
     attroff(COLOR_PAIR(color_pair_num("MenuBar")));
 }
@@ -369,7 +303,7 @@ void CursesApp::printHome()
 {
     auto [x,y] = getScreenSize();
 
-    ColorScope cs{ _window, color_pair_num("WelcomeText") };
+    ColorScope cs{ _window, color_pair_num("WelcomeText"), true };
     const std::string message = fmt::format(" :: {} :: ", APP_TITLE);
     cs.printXY(x - static_cast<int>(message.size() + 1), 0, message);
 
@@ -377,10 +311,23 @@ void CursesApp::printHome()
         fmt::format("X: {}, Y: {}, COLORS: {}, COLOR_PAIRS: {}", x, y, COLORS, COLOR_PAIRS);
     cs.reset(color_pair_num("DebugInfo"));
     cs.printXY(0, 0, debugInfo);
+//    cs.reset();
 
-    cs.reset(color_pair_num("Seperator"));
+//    cs.reset(color_pair_num("Seperator"));
+    {
+//        auto smallwin = newwin(2, 2, 5, 5);
+        auto win = newwin(2, 2, 5, 5);
+        ColorScope smallcs{ win, color_pair_num("BoxOutline") };
+        box(win, 0, 0);
+//        smallcs.printXY(2, 2, "Hi there!");
+    }
+//    move(10,20);
+//    box(_window, 0, 0);
+
+
+    cs.reset(color_pair_num("BoxOutline"));
     cs.drawHorizontalLine(10, 20, 30);
-    cs.reset();
+//    cs.reset();
 
     printBottomMenu();
     move(y - 1, x - 1);
