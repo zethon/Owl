@@ -7,6 +7,7 @@ INCLUDE_DIRECTORIES(
 SET (SOURCE_FILES 
     CommandHistory.cpp
     CursesApp.cpp
+    ColorScope.cpp
     main.cpp 
     OwlConsole.cpp
 )
@@ -20,6 +21,7 @@ SET (HEADER_FILES
     Core.h
     CommandHistory.h
     CursesApp.h
+    ColorScope.h
     ${MOC_HEADERS}
 )
 
