@@ -6,7 +6,6 @@
 #include <boost/range/adaptor/indexed.hpp>
 
 #include <fmt/format.h>
-//#include <signal.h>
 
 #include "Core.h"
 #include "CursesApp.h"
@@ -77,16 +76,6 @@ int color_pair_num(std::string_view name)
     }
 
     return static_cast<int>(std::distance(std::begin(DEFAULT_THEME), it));
-}
-
-[[maybe_unused]] int is_bold(int fg)
-{
-    /* return the intensity bit */
-
-    int i;
-
-    i = 1 << 3;
-    return (i & fg);
 }
 
 class ColorScope
@@ -213,11 +202,25 @@ void print_color_settings()
     {
         if (element.index() == 0) continue;
 
-        move(startY + element.index(), startX);
+        move(startY + static_cast<int>(element.index()), startX);
         const ColorPairInfo& info = element.value();
         attron(COLOR_PAIR(element.index()));
         addstr(fmt::format("{:^30}", info.name, 10).c_str());
         attroff(COLOR_PAIR(element.index()));
+    }
+
+    startY += static_cast<int>(std::size(DEFAULT_THEME) + 2);
+    for (const auto& element : boost::adaptors::index(DEFAULT_THEME))
+    {
+        if (element.index() == 0) continue;
+
+        move(startY + static_cast<int>(element.index()), startX);
+        const ColorPairInfo& info = element.value();
+        attron(COLOR_PAIR(element.index()));
+        attron(A_BOLD);
+        addstr(fmt::format("{:^30}", info.name, 10).c_str());
+        attroff(COLOR_PAIR(element.index()));
+        attroff(A_BOLD);
     }
 
     refresh();
@@ -313,7 +316,7 @@ void CursesApp::printHome()
     cs.printXY(0, 0, debugInfo);
 //    cs.reset();
 
-//    cs.reset(color_pair_num("Seperator"));
+    cs.reset(color_pair_num("Seperator"));
     {
 //        auto smallwin = newwin(2, 2, 5, 5);
         auto win = newwin(2, 2, 5, 5);

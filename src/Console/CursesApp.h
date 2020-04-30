@@ -19,6 +19,7 @@ private:
     std::tuple<int, int> getScreenSize() const;
 
     void printHome();
+    void printMainMenu();
     void printBottomMenu();
 };
 
