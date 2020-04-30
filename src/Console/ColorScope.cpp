@@ -69,4 +69,22 @@ void ColorScope::turnOffAttributes()
     _reset = true;
 }
 
+int color_pair(std::string_view name)
+{
+    const auto it = std::find_if(
+                std::begin(DEFAULT_THEME), std::end(DEFAULT_THEME),
+                [name](const ColorPairInfo& info)
+    {
+        return name == info.name;
+    });
+
+    if (it == std::end(DEFAULT_THEME))
+    {
+        // TODO: warning?
+        return 0;
+    }
+
+    return static_cast<int>(std::distance(std::begin(DEFAULT_THEME), it));
+}
+
 } // namespade

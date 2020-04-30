@@ -15,12 +15,14 @@ public:
 
     void run();
 
+    WINDOW* window() const { return _window; }
+
 private:
     std::tuple<int, int> getScreenSize() const;
 
     void printHome();
-    void printMainMenu();
     void printBottomMenu();
+    void doMainMenu();
 };
 
 } // namespace
