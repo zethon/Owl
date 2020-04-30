@@ -8,6 +8,7 @@ namespace owl
 class CursesApp
 {
     WINDOW* _window = nullptr;
+    bool _showdebuginfo = false;
 
 public:
     CursesApp();

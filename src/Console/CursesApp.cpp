@@ -100,7 +100,6 @@ CursesApp::~CursesApp()
 
 void CursesApp::run()
 {
-    printHome();
     doMainMenu();
 //    bool done = false;
 
@@ -145,7 +144,7 @@ void CursesApp::printBottomMenu()
 
     attron(COLOR_PAIR(color_pair("MenuBar")));
     const auto menu =
-        fmt::format("{:<{}}", "[?]Help [q]Quit [/]Prompt [u]Login", std::get<0>(xy));
+        fmt::format("{:<{}}", "[?]Help [q]Quit [+]New Board", std::get<0>(xy));
     addstr(menu.c_str());
     attroff(COLOR_PAIR(color_pair("MenuBar")));
 }
@@ -154,37 +153,32 @@ void CursesApp::printHome()
 {
     auto [x,y] = getScreenSize();
 
-    ColorScope cs{ _window, color_pair("WelcomeText"), true };
+    ColorScope cs{ _window, color_pair("WelcomeText") };
     const std::string message = fmt::format(" :: {} :: ", APP_TITLE);
     cs.printXY(x - static_cast<int>(message.size() + 1), 0, message);
 
-    const std::string debugInfo =
-        fmt::format("X: {}, Y: {}, COLORS: {}, COLOR_PAIRS: {}", x, y, COLORS, COLOR_PAIRS);
-    cs.reset(color_pair("DebugInfo"));
-    cs.printXY(0, 0, debugInfo);
-//    cs.reset();
-
-//    cs.reset(color_pair("Seperator"));
-//    {
-////        auto smallwin = newwin(2, 2, 5, 5);
-//        auto win = newwin(2, 2, 5, 5);
-//        ColorScope smallcs{ win, color_pair("BoxOutline") };
-//        box(win, 0, 0);
-////        smallcs.printXY(2, 2, "Hi there!");
-//    }
-//    move(10,20);
-//    box(_window, 0, 0);
-
-
-
-//    cs.reset(color_pair("BoxOutline"));
-//    cs.drawHorizontalLine(10, 20, 30);
-//    cs.reset();
-
     printBottomMenu();
-    move(y - 1, x - 1);
-//    refresh();
+
+    if (_showdebuginfo)
+    {
+        const std::string debugInfo =
+            fmt::format("X: {}, Y: {}, COLORS: {}, COLOR_PAIRS: {}", x, y, COLORS, COLOR_PAIRS);
+        cs.reset(color_pair("DebugInfo"));
+        cs.printXY(0, 0, debugInfo);
+    }
 }
+
+// Board Name, URL, username, last connected
+using MockData = std::tuple<std::string, std::string, std::string, std::string>;
+const MockData mockData[] =
+{
+    { "AMB", "anothermessageboard.com", "Max Power", "2020-04-30" },
+    { "AMB", "anothermessageboard.com", "AltUser", "2020-04-03" },
+    { "JUOT", "juot.net", "zethon", "2020-04-03" },
+    { "O&A Forums", "onaforums.net", "Hermano Joe", "2020-04-12" },
+    { "Reddit", "reddit.com", "qizxo", "2020-04-30" },
+    { "ShuttyBoard", "shittyboard.com/forums", "Wolosocu", "2020-03-24" }
+};
 
 void printMainMenu(const CursesApp& app, std::uint8_t selection)
 {
@@ -192,17 +186,6 @@ void printMainMenu(const CursesApp& app, std::uint8_t selection)
     int height = 0;
     getmaxyx(app.window(), height, width);
 
-    // Board Name, URL, username, last connected
-    using MockData = std::tuple<std::string, std::string, std::string, std::string>;
-    const MockData mockData[] =
-    {
-        { "AMB", "anothermessageboard.com", "Max Power", "2020-04-30" },
-        { "AMB", "anothermessageboard.com", "AltUser", "2020-04-03" },
-        { "JUOT", "juot.net", "zethon", "2020-04-03" },
-        { "O&A Forums", "onaforums.net", "Hermano Joe", "2020-04-12" },
-        { "Reddit", "reddit.com", "qizxo", "2020-04-30" },
-        { "ShuttyBoard", "shittyboard.com/forums", "Wolosocu", "2020-03-24" }
-    };
     const std::string newBoard = "Add new board";
 
     int startX = 10;
@@ -210,9 +193,19 @@ void printMainMenu(const CursesApp& app, std::uint8_t selection)
 
     ColorScope ui { app.window(), owl::color_pair("MenuItem") };
 
+    if (0 == selection)
+    {
+        ui.reset(owl::color_pair("MenuItemSelected"));
+    }
+
     ui.printXY(startX, startY++, newBoard);
 
-    for (const auto& element : boost::adaptors::index(mockData))
+    if (0 == selection)
+    {
+        ui.reset(owl::color_pair("MenuItem"));
+    }
+
+    for (const auto& element : boost::adaptors::index(mockData, 1))
     {
         const auto& [board, url, username, lastdate] = element.value();
 
@@ -239,26 +232,36 @@ void CursesApp::doMainMenu()
     bool done = false;
     while (!done)
     {
+        printHome();
         printMainMenu(*this, selection);
         auto ch = getch();
         switch (ch)
         {
             case KEY_DOWN:
             {
-                selection++;
+                if (selection < std::size(mockData)) selection++;
                 break;
             }
 
             case KEY_UP:
             {
-                selection--;
+                if (selection > 0) selection--;
                 break;
             }
+
             case 'Q':
             case 'q':
             {
                 done = true;
                 break;
+            }
+
+            case 'D':
+            case 'd':
+            {
+                _showdebuginfo = !_showdebuginfo;
+                clear();
+
             }
         }
     }
