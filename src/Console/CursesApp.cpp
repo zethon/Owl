@@ -101,30 +101,6 @@ CursesApp::~CursesApp()
 void CursesApp::run()
 {
     doMainMenu();
-//    bool done = false;
-
-//    while (!done)
-//    {
-//        printHome();
-
-//        auto ch = getch();
-//        switch (ch)
-//        {
-//            case KEY_END:
-//            {
-//                print_color_settings();
-//                clear();
-//                break;
-//            }
-
-//            case 'q':
-//            case 'Q':
-//            {
-//                done = true;
-//                break;
-//            }
-//        }
-//    }
 }
 
 std::tuple<int, int> CursesApp::getScreenSize() const
@@ -220,6 +196,20 @@ void printMainMenu(const CursesApp& app, std::uint8_t selection)
     }
 }
 
+void doInput()
+{
+    int width = 0;
+    int height = 0;
+    getmaxyx(stdscr, height, width);
+
+    echo();
+    cbreak();
+    curs_set(1);
+    move(height - 2, 0);
+
+    getch();
+}
+
 void CursesApp::doMainMenu()
 {
     std::uint8_t selection = 0;
@@ -263,6 +253,12 @@ void CursesApp::doMainMenu()
             {
                 _showdebuginfo = !_showdebuginfo;
                 clear();
+                break;
+            }
+
+            case KEY_HOME:
+            {
+                doInput();
                 break;
             }
         }
