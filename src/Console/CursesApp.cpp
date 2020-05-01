@@ -37,41 +37,41 @@ void init_color_scheme()
     }
 }
 
-//void print_color_settings()
-//{
-//    clear();
+void print_color_settings()
+{
+    clear();
 
-//    constexpr int startX = 2;
-//    int startY = 2;
+    constexpr int startX = 2;
+    int startY = 2;
 
-//    for (const auto& element : boost::adaptors::index(DEFAULT_THEME))
-//    {
-//        if (element.index() == 0) continue;
+    for (const auto& element : boost::adaptors::index(DEFAULT_THEME))
+    {
+        if (element.index() == 0) continue;
 
-//        move(startY + static_cast<int>(element.index()), startX);
-//        const ColorPairInfo& info = element.value();
-//        attron(COLOR_PAIR(element.index()));
-//        addstr(fmt::format("{:^30}", info.name, 10).c_str());
-//        attroff(COLOR_PAIR(element.index()));
-//    }
+        move(startY + static_cast<int>(element.index()), startX);
+        const ColorPairInfo& info = element.value();
+        attron(COLOR_PAIR(element.index()));
+        addstr(fmt::format("{:^30}", info.name, 10).c_str());
+        attroff(COLOR_PAIR(element.index()));
+    }
 
-//    startY += static_cast<int>(std::size(DEFAULT_THEME) + 2);
-//    for (const auto& element : boost::adaptors::index(DEFAULT_THEME))
-//    {
-//        if (element.index() == 0) continue;
+    startY += static_cast<int>(std::size(DEFAULT_THEME) + 2);
+    for (const auto& element : boost::adaptors::index(DEFAULT_THEME))
+    {
+        if (element.index() == 0) continue;
 
-//        move(startY + static_cast<int>(element.index()), startX);
-//        const ColorPairInfo& info = element.value();
-//        attron(COLOR_PAIR(element.index()));
-//        attron(A_BOLD);
-//        addstr(fmt::format("{:^30}", info.name, 10).c_str());
-//        attroff(COLOR_PAIR(element.index()));
-//        attroff(A_BOLD);
-//    }
+        move(startY + static_cast<int>(element.index()), startX);
+        const ColorPairInfo& info = element.value();
+        attron(COLOR_PAIR(element.index()));
+        attron(A_BOLD);
+        addstr(fmt::format("{:^30}", info.name, 10).c_str());
+        attroff(COLOR_PAIR(element.index()));
+        attroff(A_BOLD);
+    }
 
-//    refresh();
-//    getch();
-//}
+    refresh();
+    getch();
+}
 
 }
 
@@ -142,18 +142,18 @@ void CursesApp::printBottomMenu()
 
     move(y-1, 0);
 
-    attron(COLOR_PAIR(color_pair("MenuBar")));
+    attron(COLOR_PAIR(owl::color_pair("MenuBar")));
     const auto menu =
         fmt::format("{:<{}}", "[?]Help [q]Quit [+]New Board", std::get<0>(xy));
     addstr(menu.c_str());
-    attroff(COLOR_PAIR(color_pair("MenuBar")));
+    attroff(COLOR_PAIR(owl::color_pair("MenuBar")));
 }
 
 void CursesApp::printHome()
 {
     auto [x,y] = getScreenSize();
 
-    ColorScope cs{ _window, color_pair("WelcomeText") };
+    ColorScope cs{ _window, owl::color_pair("WelcomeText") };
     const std::string message = fmt::format(" :: {} :: ", APP_TITLE);
     cs.printXY(x - static_cast<int>(message.size() + 1), 0, message);
 
@@ -163,7 +163,7 @@ void CursesApp::printHome()
     {
         const std::string debugInfo =
             fmt::format("X: {}, Y: {}, COLORS: {}, COLOR_PAIRS: {}", x, y, COLORS, COLOR_PAIRS);
-        cs.reset(color_pair("DebugInfo"));
+        cs.reset(owl::color_pair("DebugInfo"));
         cs.printXY(0, 0, debugInfo);
     }
 }
@@ -187,47 +187,42 @@ void printMainMenu(const CursesApp& app, std::uint8_t selection)
     getmaxyx(app.window(), height, width);
 
     const std::string newBoard = "Add new board";
+    const std::string header =
+        fmt::format("{:<15} {:<30} {:<15} {:20}",
+            "Board", "URL", "Username", "Last Login");
 
-    int startX = 10;
-    int startY = 3;
+    int startX = static_cast<int>((width / 2) - header.size() / 2);
+    int startY = 5;
 
-    ColorScope ui { app.window(), owl::color_pair("MenuItem") };
+    ColorScope ui { app.window(), "MenuItem" };
 
     if (0 == selection)
     {
-        ui.reset(owl::color_pair("MenuItemSelected"));
+        ui.reset("MenuItemSelected");
     }
 
     ui.printXY(startX, startY++, newBoard);
+    startY++;
 
-    if (0 == selection)
-    {
-        ui.reset(owl::color_pair("MenuItem"));
-    }
+    ui.reset("MenuHeader");
+    ui.printXY(startX, startY++, header);
 
     for (const auto& element : boost::adaptors::index(mockData, 1))
     {
         const auto& [board, url, username, lastdate] = element.value();
+        std::string selectionStyle{ "MenuItem" };
+        if (element.index() == selection) selectionStyle = "MenuItemSelected";
+        ui.reset(selectionStyle);
 
-        if (element.index() == selection)
-        {
-            ui.reset(owl::color_pair("MenuItemSelected"));
-        }
-
-        const auto line = fmt::format("{} {} {} {}", board, url, username, lastdate);
+        auto line = fmt::format("{:<15} {:<30} {:<15} {:<20}", board, url, username, lastdate);
+        boost::algorithm::trim(line);
         ui.printXY(startX, startY++, line.c_str());
-
-        if (element.index() == selection)
-        {
-            ui.reset(owl::color_pair("MenuItem"));
-        }
     }
 }
 
 void CursesApp::doMainMenu()
 {
     std::uint8_t selection = 0;
-    ColorScope ui { _window, owl::color_pair("MenuItem") };
 
     bool done = false;
     while (!done)
@@ -249,6 +244,13 @@ void CursesApp::doMainMenu()
                 break;
             }
 
+            case KEY_END:
+            {
+                print_color_settings();
+                clear();
+                break;
+            }
+
             case 'Q':
             case 'q':
             {
@@ -261,7 +263,7 @@ void CursesApp::doMainMenu()
             {
                 _showdebuginfo = !_showdebuginfo;
                 clear();
-
+                break;
             }
         }
     }

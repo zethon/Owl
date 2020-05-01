@@ -11,7 +11,6 @@
 namespace owl
 {
 
-// not a great design but will do for now
 int color_pair(std::string_view name);
 
 constexpr int O_COLOR_BLACK = 0;
@@ -55,8 +54,10 @@ const ColorPairInfo DEFAULT_THEME[]
     { "Warning", O_COLOR_BLACK, O_COLOR_YELLOW },
     { "Error", O_COLOR_BLACK, O_COLOR_RED },
     { "Prompt", O_COLOR_YELLOW, O_COLOR_BLUE },
+
     { "MenuItem", O_COLOR_GREY, O_COLOR_BLACK },
-    { "MenuItemSelected", O_COLOR_YELLOW, O_COLOR_BLACK },
+    { "MenuItemSelected", O_COLOR_YELLOW, O_COLOR_BLUE },
+    { "MenuHeader", O_COLOR_YELLOW, O_COLOR_BLACK },
 };
 
 class ColorScope
@@ -78,7 +79,7 @@ public:
     {}
 
     ColorScope(WINDOW* window, std::string_view name, bool bold)
-        : ColorScope(window, color_pair(name), bold)
+        : ColorScope(window, owl::color_pair(name), bold)
     {}
 
     ColorScope(WINDOW* window, std::string_view name)
@@ -86,11 +87,12 @@ public:
     {}
 
     ColorScope(std::string_view name)
-        : ColorScope(stdscr, color_pair(name))
+        : ColorScope(stdscr, owl::color_pair(name))
     {}
 
     ~ColorScope();
 
+    void reset(std::string_view name, bool bold = false);
     void reset(int colornum, bool bold = false);
     void reset();
 

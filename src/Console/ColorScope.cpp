@@ -5,6 +5,24 @@
 namespace owl
 {
 
+int color_pair(std::string_view name)
+{
+    const auto it = std::find_if(
+        std::begin(DEFAULT_THEME), std::end(DEFAULT_THEME),
+        [name](const ColorPairInfo& info)
+        {
+            return name == info.name;
+        });
+
+    if (it == std::end(DEFAULT_THEME))
+    {
+        // TODO: warning?
+        return 0;
+    }
+
+    return static_cast<int>(std::distance(std::begin(DEFAULT_THEME), it));
+}
+
 ColorScope::ColorScope(WINDOW* window, int colornum, bool bold)
     : _window{ window }, _colornum{ colornum }, _bold{ bold }
 {
@@ -14,6 +32,11 @@ ColorScope::ColorScope(WINDOW* window, int colornum, bool bold)
 ColorScope::~ColorScope()
 {
     turnOffAttributes();
+}
+
+void ColorScope::reset(std::string_view name, bool bold)
+{
+    reset(owl::color_pair(name));
 }
 
 void ColorScope::reset(int colornum, bool bold)
@@ -67,24 +90,6 @@ void ColorScope::turnOffAttributes()
     wattroff(_window, COLOR_PAIR(_colornum));
     if (_bold) wattroff(_window, A_BOLD);
     _reset = true;
-}
-
-int color_pair(std::string_view name)
-{
-    const auto it = std::find_if(
-                std::begin(DEFAULT_THEME), std::end(DEFAULT_THEME),
-                [name](const ColorPairInfo& info)
-    {
-        return name == info.name;
-    });
-
-    if (it == std::end(DEFAULT_THEME))
-    {
-        // TODO: warning?
-        return 0;
-    }
-
-    return static_cast<int>(std::distance(std::begin(DEFAULT_THEME), it));
 }
 
 } // namespade
