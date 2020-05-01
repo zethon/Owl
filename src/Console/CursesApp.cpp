@@ -7,6 +7,8 @@
 
 #include <fmt/format.h>
 
+#include "Curses/Textbox.h"
+
 #include "Core.h"
 #include "ColorScope.h"
 
@@ -196,19 +198,29 @@ void printMainMenu(const CursesApp& app, std::uint8_t selection)
     }
 }
 
-void doInput()
-{
-    int width = 0;
-    int height = 0;
-    getmaxyx(stdscr, height, width);
+//void promptInput(int x, int y, std::string_view prompt)
+//{
+//    int startX = x;
 
-    echo();
-    cbreak();
-    curs_set(1);
-    move(height - 2, 0);
+//    owl::ColorScope ui { "Prompt" };
+//    ui.printXY(startX, y, prompt);
+//    startX += prompt.size();
 
-    getch();
-}
+//    auto win = newwin(1, 20, y, startX);
+//    azc::Textbox input(win);
+
+////    azc::Textbox text
+
+////    int width = 0;
+////    int height = 0;
+////    getmaxyx(stdscr, height, width);
+
+////    echo();
+////    cbreak();
+////    curs_set(1);
+////    move(height - 2, 0);
+
+//}
 
 void CursesApp::doMainMenu()
 {
@@ -220,7 +232,7 @@ void CursesApp::doMainMenu()
         printHome();
         printMainMenu(*this, selection);
         auto ch = getch();
-        switch (ch)
+        switch (std::tolower(ch))
         {
             case KEY_DOWN:
             {
@@ -241,14 +253,12 @@ void CursesApp::doMainMenu()
                 break;
             }
 
-            case 'Q':
             case 'q':
             {
                 done = true;
                 break;
             }
 
-            case 'D':
             case 'd':
             {
                 _showdebuginfo = !_showdebuginfo;
@@ -256,11 +266,11 @@ void CursesApp::doMainMenu()
                 break;
             }
 
-            case KEY_HOME:
-            {
-                doInput();
-                break;
-            }
+//            case 'i':
+//            {
+//                promptInput(5, 5, "username: " );
+//                break;
+//            }
         }
     }
 }

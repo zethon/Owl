@@ -10,6 +10,8 @@ SET (SOURCE_FILES
     ColorScope.cpp
     main.cpp 
     OwlConsole.cpp
+
+    Curses/Textbox.cpp
 )
 
 SET (MOC_HEADERS 
@@ -18,11 +20,14 @@ SET (MOC_HEADERS
 )
 
 SET (HEADER_FILES
+    ${MOC_HEADERS}
+
     Core.h
     CommandHistory.h
     CursesApp.h
     ColorScope.h
-    ${MOC_HEADERS}
+
+    Curses/Textbox.cpp
 )
 
 if (WIN32)
