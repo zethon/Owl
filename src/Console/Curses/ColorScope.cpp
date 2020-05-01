@@ -36,7 +36,7 @@ ColorScope::~ColorScope()
 
 void ColorScope::reset(std::string_view name, bool bold)
 {
-    reset(owl::color_pair(name));
+    reset(owl::color_pair(name), bold);
 }
 
 void ColorScope::reset(int colornum, bool bold)

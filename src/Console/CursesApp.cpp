@@ -8,10 +8,9 @@
 #include <fmt/format.h>
 
 #include "Curses/Textbox.h"
+#include "Curses/ColorScope.h"
 
 #include "Core.h"
-#include "ColorScope.h"
-
 #include "CursesApp.h"
 
 namespace owl

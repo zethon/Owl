@@ -7,10 +7,10 @@ INCLUDE_DIRECTORIES(
 SET (SOURCE_FILES 
     CommandHistory.cpp
     CursesApp.cpp
-    ColorScope.cpp
     main.cpp 
     OwlConsole.cpp
 
+    Curses/ColorScope.cpp
     Curses/Textbox.cpp
 )
 
@@ -25,9 +25,9 @@ SET (HEADER_FILES
     Core.h
     CommandHistory.h
     CursesApp.h
-    ColorScope.h
 
-    Curses/Textbox.cpp
+    Curses/ColorScope.h
+    Curses/Textbox.h
 )
 
 if (WIN32)
