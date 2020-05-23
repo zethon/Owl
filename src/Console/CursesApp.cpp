@@ -7,7 +7,6 @@
 
 #include <fmt/format.h>
 
-#include "Curses/Textbox.h"
 #include "Curses/ColorScope.h"
 
 #include "Core.h"
@@ -15,6 +14,38 @@
 
 namespace owl
 {
+
+class LineInput
+{
+    WINDOW          _window;
+    int     _x = 0;
+    int     _y = 0;
+    int     _width = 0;
+    
+    std::uint32_t   _maxlen = 255;
+
+
+public:
+    LineInput(WINDOW window, int x, int y, int width)
+        : _window{ window },
+          _x{ x },
+          _y{ y },
+          _width{ width }
+    {
+        int screenW = 0;
+        int screenH = 0;
+//        getmaxyx(_window, screenH, screenW);
+
+        if (width > 0)
+        {
+
+        }
+        else
+        {
+
+        }
+    }
+};
 
 namespace
 {
@@ -159,6 +190,8 @@ const MockData mockData[] =
 
 void printMainMenu(const CursesApp& app, std::uint8_t selection)
 {
+    PARSERMGR->init(false);
+
     int width = 0;
     int height = 0;
     getmaxyx(app.window(), height, width);
