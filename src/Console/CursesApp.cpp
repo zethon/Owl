@@ -7,6 +7,12 @@
 
 #include <fmt/format.h>
 
+// Qt declares a 'timeout' function, but NCurses does too!
+// If we include the Qt (Owl) header first, then we can
+// avoid a conflict
+#include "../src/Parsers/ParserManager.h"
+
+// see note above about 'timeout'
 #include "Curses/ColorScope.h"
 
 #include "Core.h"
@@ -15,37 +21,36 @@
 namespace owl
 {
 
-class LineInput
-{
-    WINDOW          _window;
-    int     _x = 0;
-    int     _y = 0;
-    int     _width = 0;
-    
-    std::uint32_t   _maxlen = 255;
+// class LineInput
+// {
+//     WINDOW          _window;
+//     int             _x = 0;
+//     int             _y = 0;
+//     int             _width = 0;
+//     std::uint32_t   _maxlen = 255;
 
 
-public:
-    LineInput(WINDOW window, int x, int y, int width)
-        : _window{ window },
-          _x{ x },
-          _y{ y },
-          _width{ width }
-    {
-        int screenW = 0;
-        int screenH = 0;
-//        getmaxyx(_window, screenH, screenW);
+// public:
+//     LineInput(WINDOW window, int x, int y, int width)
+//         : _window{ window },
+//           _x{ x },
+//           _y{ y },
+//           _width{ width }
+//     {
+//         int screenW = 0;
+//         int screenH = 0;
+// //        getmaxyx(_window, screenH, screenW);
 
-        if (width > 0)
-        {
+//         if (width > 0)
+//         {
 
-        }
-        else
-        {
+//         }
+//         else
+//         {
 
-        }
-    }
-};
+//         }
+//     }
+// };
 
 namespace
 {
