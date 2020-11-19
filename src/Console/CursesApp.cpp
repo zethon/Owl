@@ -269,7 +269,7 @@ void CursesApp::doMainMenu()
         printHome();
         printMainMenu(*this, selection);
         auto ch = getch();
-        switch (std::tolower(ch))
+        switch (std::tolower(ch, std::locale()))
         {
             case KEY_DOWN:
             {
