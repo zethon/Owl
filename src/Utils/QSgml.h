@@ -25,7 +25,7 @@ under certain conditions.
 #define QSGML_H
 
 #include <QString>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QList>
 #include <QFile>
 #include <QDir>
@@ -74,12 +74,12 @@ public:
    void getElementsByName(QString Name,QList<QSgmlTag*> *Elements);
    void getElementsByName(QString Name,QString AtrName,QList<QSgmlTag*> *Elements);
    void getElementsByName(QString Name,QString AtrName,QString AtrValue,QList<QSgmlTag*> *Elements);
-   void getElementsByName(QString Name,QString AtrName,const QRegExp& atrExp,QList<QSgmlTag*> *Elements);
+   void getElementsByName(QString Name,QString AtrName,const QRegularExpression& atrExp,QList<QSgmlTag*> *Elements);
 
    QList<QSgmlTag*> getElementsByName(QString Name);
    QList<QSgmlTag*> getElementsByName(QString Name,QString AtrName);
    QList<QSgmlTag*> getElementsByName(QString Name,QString AtrName,QString AtrValue);
-   QList<QSgmlTag*> getElementsByName(QString Name,QString AtrName,const QRegExp& atrExp);
+   QList<QSgmlTag*> getElementsByName(QString Name,QString AtrName,const QRegularExpression& atrExp);
 
    void getElementsByAtribute(QString AtrName,QList<QSgmlTag*> *Elements);
    void getElementsByAtribute(QString AtrName,QString AtrValue,QList<QSgmlTag*> *Elements);

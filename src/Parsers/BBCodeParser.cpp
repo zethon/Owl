@@ -413,7 +413,7 @@ QString BBRegExParser::handleQuoteWithValues(const QString &original)
 //            if (!_tokens.empty() && _tokens.front().getType() == TT_CLOSEBRACKET)
 //            {
 //                // the token after the text is a ], so let's see if this is a valid tag name
-//                QRegExp regex("^[A-Za-z][A-Za-z0-9]*$");
+//                QRegularExpression regex("^[A-Za-z][A-Za-z0-9]*$");
 //                if (regex.exactMatch(tagName))
 //                {
 //                    // pop the ]

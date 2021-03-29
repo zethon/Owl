@@ -107,7 +107,7 @@ private:
     static BoardManagerPtr _instance;
 
     BoardList _boardList;
-	QMutex _mutex;
+	QRecursiveMutex _mutex;
     
     std::string                         _databaseFilename;
     std::shared_ptr<spdlog::logger>     _logger;

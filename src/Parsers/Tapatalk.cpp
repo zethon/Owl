@@ -19,7 +19,6 @@ Tapatalk4x::Tapatalk4x(const QString& baseUrl)
 	  _bUseSha1(false),
       _apiLevel(3),
       _forumMapInitialized(false),
-      _mutex(QMutex::Recursive),
       _logger(owl::initializeLogger("Tapatalk4x"))
 {
 	_options->add("boardware", "tapatalk");
@@ -104,7 +103,7 @@ QVariant Tapatalk4x::doLogin(const LoginInfo& info)
     if (data.size() > 0)
     {
         XRVariant response2(data);
-        if (!response2.canConvert(QVariant::Map))
+        if (!response2.canConvert<QVariantMap>())
         {
             OWL_THROW_EXCEPTION(Exception("Cannot convert 'login' response to QVariant::Map"));
         }
@@ -158,7 +157,7 @@ QVariant Tapatalk4x::doGetBoardwareInfo()
     const QString data = uploadString(strPostData);
 
     XRVariant response(data);
-    if (!response.canConvert(QVariant::Map))
+    if (!response.canConvert<QVariantMap>())
 	{
         OWL_THROW_EXCEPTION(Exception("Cannot convert 'get_config' response to QVariant::Map"));
 	}
@@ -211,7 +210,8 @@ QVariant Tapatalk4x::doTestParser(const QString& html)
 	if (xmlDoc.setContent(html))
 	{
 		XRVariant infoVar(html);
-		if (infoVar.canConvert(QVariant::Map) && infoVar.toMap().contains("version"))
+		if (infoVar.canConvert<QVariantMap>()
+            && infoVar.toMap().contains("version"))
 		{
 			auto infoMap = infoVar.toMap();
 			if (!infoMap.value("version").toString().isEmpty())
@@ -296,13 +296,13 @@ QVariant Tapatalk4x::doThreadList(ForumPtr forumInfo, int)
     QString data = uploadString(strPostData);
 	XRVariant responseData(data);
 
-	if (!responseData.canConvert(QVariant::Map))
+	if (!responseData.canConvert<QVariantMap>())
 	{
         OWL_THROW_EXCEPTION(Exception("Cannot convert 'get_topic' response to QVariant::Map"));
 	}
 
 	auto responseMap = responseData.toMap();
-	if (responseMap.contains("topics") && responseMap["topics"].canConvert(QVariant::List))
+	if (responseMap.contains("topics") && responseMap["topics"].canConvert<QVariantList>())
 	{
 		auto topicList = responseMap["topics"].toList();
 		for (auto topic : topicList)
@@ -341,13 +341,13 @@ QVariant Tapatalk4x::doThreadList(ForumPtr forumInfo, int)
 
 	XRVariant responseData2(data);
 
-	if (!responseData2.canConvert(QVariant::Map))
+	if (!responseData2.canConvert<QVariantMap>())
 	{
         OWL_THROW_EXCEPTION(Exception("Cannot convert 'get_topic' response to QVariant::Map"));
 	}
 
 	auto responseMap2 = responseData2.toMap();
-	if (responseMap2.contains("topics") && responseMap2["topics"].canConvert(QVariant::List))
+	if (responseMap2.contains("topics") && responseMap2["topics"].canConvert<QVariantList>())
 	{
 		auto topicList = responseMap2["topics"].toList();
 		for (auto topic : topicList)
@@ -405,7 +405,7 @@ QVariant Tapatalk4x::doPostList(ThreadPtr threadInfo, int)
     const QString data = uploadString(strPostData);
 	XRVariant responseData(data);
 
-	if (!responseData.canConvert(QVariant::Map))
+	if (!responseData.canConvert<QVariantMap>())
 	{
         OWL_THROW_EXCEPTION(Exception("Cannot convert 'get_thread_by_unread' response to QVariant::Map"));
 	}
@@ -445,7 +445,7 @@ QVariant Tapatalk4x::doPostList(ThreadPtr threadInfo, int)
 	threadInfo->setFirstUnreadPost(PostPtr());
 	threadInfo->getPosts().clear();	
 	
-	if (responseMap.contains("posts") && responseMap["posts"].canConvert(QVariant::List))
+	if (responseMap.contains("posts") && responseMap["posts"].canConvert<QVariantList>())
 	{
 		auto iCount = 1 + ((iCurrentPage - 1) * iPerPage);
 		auto topicList = responseMap["posts"].toList();
@@ -503,13 +503,13 @@ QVariant Tapatalk4x::doPostList1(ThreadPtr threadInfo, int)
     const QString data = uploadString(strPostData);
 	XRVariant responseData(data);
 
-	if (!responseData.canConvert(QVariant::Map))
+	if (!responseData.canConvert<QVariantMap>())
 	{
         OWL_THROW_EXCEPTION(Exception("Cannot convert 'get_thread' response to QVariant::Map"));
 	}
 
 	auto responseMap = responseData.toMap();
-	if (responseMap.contains("posts") && responseMap["posts"].canConvert(QVariant::List))
+	if (responseMap.contains("posts") && responseMap["posts"].canConvert<QVariantList>())
 	{
 		auto topicList = responseMap["posts"].toList();
 		for (auto topic : topicList)
@@ -578,7 +578,7 @@ QVariant Tapatalk4x::doSubmitNewThread(ThreadPtr threadInfo)
     const QString data = uploadString(strNewThreadData);
 	XRVariant response(data);
 
-	if (!response.canConvert(QVariant::Map))
+	if (!response.canConvert<QVariantMap>())
 	{
         OWL_THROW_EXCEPTION(Exception("Cannot convert 'new_topic' response to QVariant::Map"));
 	}
@@ -633,7 +633,7 @@ QVariant Tapatalk4x::doSubmitNewPost(PostPtr postInfo)
     const QString data = uploadString(strNewPostData);
 	XRVariant response(data);
 
-	if (!response.canConvert(QVariant::Map))
+	if (!response.canConvert<QVariantMap>())
 	{
         OWL_THROW_EXCEPTION(Exception("Cannot convert 'reply_post' response to QVariant::Map"));
 	}
@@ -687,7 +687,7 @@ QVariant Tapatalk4x::doMarkForumRead(ForumPtr forumInfo)
     const QString data = uploadString(strPostData);
 	XRVariant response(data);
 
-	if (!response.canConvert(QVariant::Map))
+	if (!response.canConvert<QVariantMap>())
 	{
         OWL_THROW_EXCEPTION(Exception("Cannot parse response for 'doMarkForumRead'"));
 	}
@@ -722,7 +722,7 @@ QVariant Tapatalk4x::doGetUnreadForums()
     const QString data = uploadString(strPostData);
 	XRVariant response(data);
 
-	if (!response.canConvert(QVariant::Map))
+	if (!response.canConvert<QVariantMap>())
 	{
         OWL_THROW_EXCEPTION(Exception("Cannot convert response for 'get_unread_topic' to QVariant::Map"));
 	}	
@@ -730,7 +730,7 @@ QVariant Tapatalk4x::doGetUnreadForums()
 	auto map = response.toMap();
 	if (map.contains("topics"))
 	{
-		if (!map["topics"].canConvert(QVariant::List))
+		if (!map["topics"].canConvert<QVariantList>())
 		{
             OWL_THROW_EXCEPTION(Exception("Cannot convert response for 'get_unread_topic.topics' to QVariant::List"));
 		}
@@ -738,7 +738,7 @@ QVariant Tapatalk4x::doGetUnreadForums()
 		auto topicList = map["topics"].toList();
 		for (auto topic : topicList)
 		{
-			if (!topic.canConvert(QVariant::Map))
+			if (!topic.canConvert<QVariantMap>())
 			{
                 OWL_THROW_EXCEPTION(Exception("Cannot convert response for 'get_unread_topic.topics.topic' to QVariant::Map"));
 			}
@@ -793,7 +793,7 @@ QString Tapatalk4x::getPostQuote(PostPtr postinfo)
     const QString data = uploadString(strPostData);
     XRVariant responseData(data);
 
-    if (responseData.canConvert(QVariant::Map))
+    if (responseData.canConvert<QVariantMap>())
     {
         const auto responsemap = responseData.toMap();
         if (responsemap.find("post_content") != responsemap.end())
@@ -819,7 +819,7 @@ QString Tapatalk4x::getPostQuote(PostPtr postinfo)
 
 void Tapatalk4x::walkForum( QVariant* variant )
 {
-	if (variant->canConvert(QVariant::List))
+	if (variant->canConvert<QVariantList>())
 	{
 		auto iDisplayOrder = 0;
 		auto rootList = variant->toList();
@@ -945,7 +945,7 @@ owl::ForumPtr Tapatalk4x::makeForumObject( QVariant* variant )
 {
 	ForumPtr newForum;
 
-	if (variant->canConvert(QVariant::Map))
+	if (variant->canConvert<QVariantMap>())
 	{
 		auto forumMap = variant->toMap();
 
@@ -978,7 +978,7 @@ owl::ThreadPtr Tapatalk4x::makeThreadObject( QVariant* variant )
 {
 	ThreadPtr newThread;
 
-	if (variant->canConvert(QVariant::Map))
+	if (variant->canConvert<QVariantMap>())
 	{
 		auto topicMap = variant->toMap();
 		
@@ -1030,7 +1030,7 @@ owl::PostPtr Tapatalk4x::makePostObject( QVariant* variant )
 {
 	PostPtr newPost;
 
-	if (variant->canConvert(QVariant::Map))
+	if (variant->canConvert<QVariantMap>())
 	{
 		auto postMap = variant->toMap();
 
@@ -1043,7 +1043,7 @@ owl::PostPtr Tapatalk4x::makePostObject( QVariant* variant )
 		if (unixTime > 0)
 		{
 			QDateTime dateTime;
-			dateTime.setTime_t(unixTime);
+			dateTime.setSecsSinceEpoch(unixTime);
 			QString strTime = dateTime.toString("MM-dd-yyyy hh:mm AP");
 			newPost->setDatelineString(strTime);
 			newPost->setDateTime(dateTime);
@@ -1060,10 +1060,9 @@ void Tapatalk4x::getRootId(QString data)
 		return;
 	}
 
-	QString strId(-1);
 	XRVariant response(data);
 
-	if (!response.canConvert(QVariant::List))
+	if (!response.canConvert<QVariantList>())
 	{
         _logger->error("Failed to get root ID. The response could not be converted to a List.");
 		return;
@@ -1079,7 +1078,7 @@ void Tapatalk4x::getRootId(QString data)
 	// get the first child forum to determin the parentId which will 
 	// give us the rootId
 	XRVariant firstChild = rootForumMap.at(0);
-	if (!firstChild.canConvert(QVariant::Map))
+	if (!firstChild.canConvert<QVariantMap>())
 	{
         _logger->error("Failed to get root ID. First item in List could not be converted to Map.");
 		return;
@@ -1108,7 +1107,7 @@ void Tapatalk4x::loadConfig()
         const QString data = uploadString(strPostData);
 		XRVariant response(data);
 
-		if (!response.canConvert(QVariant::Map))
+		if (!response.canConvert<QVariantMap>())
 		{
             OWL_THROW_EXCEPTION(Exception("Cannot convert 'get_config' response to QVariant::Map"));
 		}
@@ -1166,8 +1165,8 @@ QString Tapatalk4x::getForumName()
 				{
 					QList<QSgmlTag*> tempList;
 
-					QRegExp vbr("\\s+\\-\\s*Powered\\s+by\\s+vBulletin");
-					vbr.setCaseSensitivity(Qt::CaseInsensitive);
+					QRegularExpression vbr("\\s+\\-\\s*Powered\\s+by\\s+vBulletin");
+					vbr.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
 
 					pageDoc.getElementsByName("img", "alt", vbr, &tempList);
 					if (tempList.size() > 0)

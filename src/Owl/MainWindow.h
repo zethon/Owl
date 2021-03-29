@@ -54,7 +54,7 @@ class ImageOverlay : public QWidget
 {
     void newParent();
 
-    const QRegExp imageDef = QRegExp("data:image/[a-z]+;base64,", Qt::CaseInsensitive);
+    const QRegularExpression imageDef = QRegularExpression("data:image/[a-z]+;base64,", QRegularExpression::CaseInsensitiveOption);
 
 public:
     ImageOverlay(QWidget * parent = nullptr)
@@ -62,7 +62,6 @@ public:
           _closeBtn{this},
           _imgLabel{this},
           _layout{this}
-
     {
         setAttribute(Qt::WA_NoSystemBackground);
         newParent();

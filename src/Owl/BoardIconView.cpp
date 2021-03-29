@@ -146,7 +146,7 @@ QImage overlayImages(const QImage& baseImage, const QImage& overlaidImg)
 void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     QVariant decrole = index.data(Qt::DecorationRole);
-    if (decrole.type() != QVariant::Icon)
+    if (decrole.metaType().id() != QMetaType::QIcon)
     {
         QStyledItemDelegate::paint(painter, option, index);
         return;
@@ -383,7 +383,7 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
 
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setSpacing(0);
-    layout->setMargin(0);
+    // layout->setMargin(0);
 
     layout->addSpacing(TOP_PADDING);
     layout->addWidget(_listView);

@@ -193,7 +193,7 @@ QSize ForumViewDelegate::sizeHint(const QStyleOptionViewItem& option, const QMod
 //* ForumView
 //********************************
 
-void ForumListControl::enterEvent(QEvent *event)
+void ForumListControl::enterEvent(QEnterEvent *event)
 {
     QListView::enterEvent(event);
     this->verticalScrollBar()->setVisible(true);
@@ -250,7 +250,7 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     QFont font;
     font.setPointSize(BOARDNAMEFONT);
     font.setBold(true);
-    font.setWeight(75);
+    font.setWeight(QFont::Bold);
     _boardLabel->setFont(font);
     _boardLabel->setStyleSheet("QLabel { color : white; }");
 
@@ -275,7 +275,7 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
 
     QVBoxLayout* layout = new QVBoxLayout();
     layout->setSpacing(0);
-    layout->setMargin(0);
+    // layout->setMargin(0);
     layout->addSpacing(TOP_PADDING);
     layout->addLayout(boardNameLayout);
     layout->addLayout(userLayout);
@@ -284,7 +284,7 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
 
     QHBoxLayout* rootLayout = new QHBoxLayout();
     rootLayout->setSpacing(0);
-    rootLayout->setMargin(0);
+    // rootLayout->setMargin(0);
     rootLayout->addSpacing(LEFT_PADDING);
     rootLayout->addLayout(layout);
 

@@ -904,7 +904,7 @@ void ConsoleApp::parseCommand(const QString& cmdLn)
     //}
 
     // split the line by white space
-    auto parts = cmdLn.trimmed().split(QRegExp("\\s"));
+    auto parts = cmdLn.trimmed().split(QRegularExpression("\\s"));
     
     if (parts.size() > 0)
     {

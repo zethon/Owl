@@ -1,4 +1,5 @@
 #include <QDesktopServices>
+#include <QRegularExpression>
 
 #include "Exception.h"
 
@@ -97,7 +98,7 @@ const QString sanitizeUrl(const QString& urlStr)
 
 		if (!path.isEmpty())
 		{
-			QRegExp file("[^/]+\\.[^\\.]*$");
+			QRegularExpression file("[^/]+\\.[^\\.]*$");
 			path = path.replace(file, "");
 
 			urlObj.setPath(path);
@@ -121,7 +122,7 @@ const QString sanitizeUrl(const QString& urlStr)
 int randomInteger(int low, int high)
 {
     // Random number between low and high
-    return qrand() % ((high + 1) - low) + low;
+    return  QRandomGenerator::global()->bounded(low, high);
 }
 
 QString previewText(const QString& original, uint maxLen)

@@ -18,13 +18,18 @@ Currently the conan repos support:
 * macOS - apple-clang 10
 * Windows - Visual Studio 15 2017
 
+### Windows
+
+### Mac 
+
+### Ubuntu
+
+
+
 ## Website
 
 * [http://www.owlclient.com](http://www.owlclient.com)<br/>
 
-## Twitter
-
-Follow us on Twitter: [https://twitter.com/owlclient](https://twitter.com/owlclient)
 
 <!-- footnotes -->
 [travis-img]: https://travis-ci.org/zethon/Owl.svg?branch=master

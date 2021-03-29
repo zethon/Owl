@@ -18,7 +18,7 @@ set (HEADER_FILES
     ${MOC_HEADERS}
 )
 
-qt5_wrap_cpp(MOC_SOURCE_FILES ${MOC_HEADERS})
+# qt5_wrap_cpp(MOC_SOURCE_FILES ${MOC_HEADERS})
 
 set(DEPENDENCY_LIST
     Parsers
@@ -33,9 +33,9 @@ add_library(Data STATIC
 
 target_link_libraries(Data
     ${CONAN_LIBS}
-    Qt5::Concurrent
-    Qt5::Core
-    Qt5::Gui
-    Qt5::Sql
-    Qt5::Xml
+    # Qt5::Concurrent
+    # Qt5::Core
+    # Qt5::Gui
+    # Qt5::Sql
+    # Qt5::Xml
 )

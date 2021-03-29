@@ -64,7 +64,7 @@ QString Xenforo::getPostQuote(PostPtr post)
 
         if (doc.parse(data))
         {
-            const auto textareanode = doc.DocTag->getFirstElementByName("textarea", "name", QRegExp{"^message$"});
+            const auto textareanode = doc.DocTag->getFirstElementByName("textarea", "name", QRegularExpression{"^message$"});
             if (textareanode)
             {
                 retval = QString("%1\n\n").arg(doc.getText(textareanode));
@@ -100,9 +100,9 @@ QVariant Xenforo::doGetUnreadForums()
     QSgml doc;
     if (doc.parse(data))
     {
-        for (QSgmlTag* linode : doc.DocTag->getElementsByName("li", "class", QRegExp{"unread"}))
+        for (QSgmlTag* linode : doc.DocTag->getElementsByName("li", "class", QRegularExpression{"unread"}))
         {
-            const auto forumlinknode = linode->getFirstElementByName("a", "class", QRegExp{"forumLink"});
+            const auto forumlinknode = linode->getFirstElementByName("a", "class", QRegularExpression{"forumLink"});
             if (forumlinknode)
             {
                 const auto forumId = forumlinknode->getArgValue("href");
@@ -137,8 +137,8 @@ QVariant Xenforo::doMarkForumRead(ForumPtr forumInfo)
     QSgml doc;
     if (doc.parse(predata))
     {
-        const auto datenode = doc.DocTag->getFirstElementByName("input", "name", QRegExp{"^date$"});
-        const auto tokennode = doc.DocTag->getFirstElementByName("input", "name", QRegExp{"^_xfToken$"});
+        const auto datenode = doc.DocTag->getFirstElementByName("input", "name", QRegularExpression{"^date$"});
+        const auto tokennode = doc.DocTag->getFirstElementByName("input", "name", QRegularExpression{"^_xfToken$"});
 
         if (datenode && tokennode)
         {
@@ -201,7 +201,7 @@ QVariant Xenforo::doLogin(const LoginInfo& loginInfo)
         // NOTE: To confirm a successful login we look for a <a class="LogOut"> element that provides
         // us with the hash we want in order to logout, which is why we save the link in a class
         // variable.
-        const auto logoutnodes = parseDoc.getElementsByName("a", "class", QRegExp{"LogOut"});
+        const auto logoutnodes = parseDoc.getElementsByName("a", "class", QRegularExpression{"LogOut"});
 
         if (logoutnodes.size() > 0)
         {
@@ -305,7 +305,7 @@ QVariant Xenforo::doThreadList(ForumPtr forumInfo, int options)
 
     if (url.endsWith("page-1"))
     {
-        url.replace(QRegExp{"page\\-1$"}, QString());
+        url.replace(QRegularExpression{"page\\-1$"}, QString());
     }
 
     uint requestOptions = 0;
@@ -319,16 +319,16 @@ QVariant Xenforo::doThreadList(ForumPtr forumInfo, int options)
     QSgml doc;
     if (doc.parse(data))
     {
-        const auto listItems = doc.getElementsByName("li", "class", QRegExp{"discussionListItem"});
+        const auto listItems = doc.getElementsByName("li", "class", QRegularExpression{"discussionListItem"});
         for (QSgmlTag* liChild : listItems)
         {
-            auto titleInfo = liChild->getFirstElementByName("a", "class", QRegExp{"PreviewTooltip"});
-            auto authorInfo = liChild->getFirstElementByName("a", "class", QRegExp{"username"});
-            QSgmlTag* lastPostDiv = liChild->getFirstElementByName("div", "class", QRegExp{"lastPost"});
+            auto titleInfo = liChild->getFirstElementByName("a", "class", QRegularExpression{"PreviewTooltip"});
+            auto authorInfo = liChild->getFirstElementByName("a", "class", QRegularExpression{"username"});
+            QSgmlTag* lastPostDiv = liChild->getFirstElementByName("div", "class", QRegularExpression{"lastPost"});
 
             if (titleInfo && authorInfo && lastPostDiv)
             {
-                const auto lastAuthorNode = lastPostDiv->getFirstElementByName("a", "class", QRegExp{"username"});
+                const auto lastAuthorNode = lastPostDiv->getFirstElementByName("a", "class", QRegularExpression{"username"});
                 if (lastAuthorNode)
                 {
                     bool bHasUnread = false;
@@ -337,7 +337,7 @@ QVariant Xenforo::doThreadList(ForumPtr forumInfo, int options)
                     if (strId.endsWith("/unread"))
                     {
                         bHasUnread = true;
-                        strId = strId.replace(QRegExp{"/unread$"}, QString());
+                        strId = strId.replace(QRegularExpression{"/unread$"}, QString());
                     }
 
                     ThreadPtr newthread = std::make_shared<Thread>(strId);
@@ -351,10 +351,10 @@ QVariant Xenforo::doThreadList(ForumPtr forumInfo, int options)
                     lastpost->setAuthor(doc.getText(lastAuthorNode));
 
                     // try to get the user's avatar
-                    QSgmlTag* avatarEl = liChild->getFirstElementByName("div","class",QRegExp{"posterAvatar"});
+                    QSgmlTag* avatarEl = liChild->getFirstElementByName("div","class",QRegularExpression{"posterAvatar"});
                     if (avatarEl)
                     {
-                        QSgmlTag* imgEl = avatarEl->getFirstElementByName("img","src",QRegExp{});
+                        QSgmlTag* imgEl = avatarEl->getFirstElementByName("img","src",QRegularExpression{});
                         if (imgEl)
                         {
                             const QString src = imgEl->getArgValue("src");
@@ -384,17 +384,17 @@ QVariant Xenforo::doThreadList(ForumPtr forumInfo, int options)
 
                     newthread->setLastPost(lastpost);
 
-                    QSgmlTag* subTitle = liChild->getFirstElementByName("h4", "class", QRegExp{"subtitle"});
+                    QSgmlTag* subTitle = liChild->getFirstElementByName("h4", "class", QRegularExpression{"subtitle"});
                     if (subTitle)
                     {
                         newthread->setPreviewText(doc.getText(subTitle));
                     }
 
                     // get the number of replies
-                    const auto repliesnode = liChild->getFirstElementByName("div", "class", QRegExp{"stats"});
+                    const auto repliesnode = liChild->getFirstElementByName("div", "class", QRegularExpression{"stats"});
                     if (repliesnode)
                     {
-                        const auto dlclass = repliesnode->getFirstElementByName("dl", "class", QRegExp {"major"});
+                        const auto dlclass = repliesnode->getFirstElementByName("dl", "class", QRegularExpression {"major"});
                         if (dlclass && dlclass->Children.size() > 1 && dlclass->Children.at(1)->Name == "dd")
                         {
                             bool bok = false;
@@ -431,7 +431,7 @@ QVariant Xenforo::doThreadList(ForumPtr forumInfo, int options)
             }
         }
 
-        const auto pagenav = doc.getElementsByName("div", "class", QRegExp{"PageNav"});
+        const auto pagenav = doc.getElementsByName("div", "class", QRegularExpression{"PageNav"});
         if (pagenav.size() > 0)
         {
             bool ok;
@@ -478,7 +478,7 @@ QVariant Xenforo::doGetPostList(ThreadPtr threadInfo, ParserBase::PostListOption
         }
         else if (listOption == PostListOptions::FIRST_POST)
         {
-            strId = strId.replace(QRegExp{"/unread"}, QString());
+            strId = strId.replace(QRegularExpression{"/unread"}, QString());
 
             if (strId.endsWith("/"))
             {
@@ -524,7 +524,7 @@ QVariant Xenforo::doGetPostList(ThreadPtr threadInfo, ParserBase::PostListOption
             }
         }
 
-        const auto pagenav = doc.getElementsByName("div", "class", QRegExp{"PageNav"});
+        const auto pagenav = doc.getElementsByName("div", "class", QRegularExpression{"PageNav"});
         if (pagenav.size() > 0)
         {
             bool ok;
@@ -544,7 +544,7 @@ QVariant Xenforo::doGetPostList(ThreadPtr threadInfo, ParserBase::PostListOption
         int index = ((threadInfo->getPageNumber() - 1) * threadInfo->getPerPage()) + 1;
 
         // <li id="post-1352017"
-        const auto linodes = doc.getElementsByName("li", "id", QRegExp{"post\\-\\d+"});
+        const auto linodes = doc.getElementsByName("li", "id", QRegularExpression{"post\\-\\d+"});
         for (const auto node : linodes)
         {
             // NOTE: XenForo postIDs are formatted like "post-XXX", however this can't
@@ -561,7 +561,7 @@ QVariant Xenforo::doGetPostList(ThreadPtr threadInfo, ParserBase::PostListOption
             newpost->setAuthor(strAuthor);
             newpost->setParent(threadInfo);
 
-            const auto textnode = node->getFirstElementByName("blockquote", "class", QRegExp{"messageText"});
+            const auto textnode = node->getFirstElementByName("blockquote", "class", QRegularExpression{"messageText"});
             if (textnode)
             {
                 const auto rawtext = extractMessageText(doc.getInnerHtml(textnode));
@@ -580,10 +580,10 @@ QVariant Xenforo::doGetPostList(ThreadPtr threadInfo, ParserBase::PostListOption
                 }
 
                 // extract the user avatar
-                QSgmlTag* avatarEl = node->getFirstElementByName("div","class",QRegExp{"avatarHolder"});
+                QSgmlTag* avatarEl = node->getFirstElementByName("div","class",QRegularExpression{"avatarHolder"});
                 if (avatarEl)
                 {
-                    QSgmlTag* imgEl = avatarEl->getFirstElementByName("img","src",QRegExp{});
+                    QSgmlTag* imgEl = avatarEl->getFirstElementByName("img","src",QRegularExpression{});
                     if (imgEl)
                     {
                         const QString src = imgEl->getArgValue("src");
@@ -622,7 +622,7 @@ QVariant Xenforo::doSubmitNewThread(ThreadPtr threadInfo)
 
     // need to grab the create thread form to get the _xfToken value to use
     QString strId = { threadInfo->getParent()->getId() };
-    strId = strId.replace(QRegExp{"/unread$"}, QString());
+    strId = strId.replace(QRegularExpression{"/unread$"}, QString());
 
     const QString createurl = QString("%1/%2/create-thread")
         .arg(this->getBaseUrl())
@@ -633,7 +633,7 @@ QVariant Xenforo::doSubmitNewThread(ThreadPtr threadInfo)
     QSgml createDoc;
     if (createDoc.parse(data))
     {
-        const auto tokennode = createDoc.DocTag->getFirstElementByName("input", "name", QRegExp{"_xfToken"});
+        const auto tokennode = createDoc.DocTag->getFirstElementByName("input", "name", QRegularExpression{"_xfToken"});
         if (tokennode && !tokennode->getArgValue("value").isEmpty())
         {
             StringMap params;
@@ -664,7 +664,7 @@ QVariant Xenforo::doSubmitNewThread(ThreadPtr threadInfo)
 
             if (replydoc.parse(replyStr))
             {
-                const auto permalinknode = replydoc.DocTag->getFirstElementByName("a", "title", QRegExp{"Permalink"});
+                const auto permalinknode = replydoc.DocTag->getFirstElementByName("a", "title", QRegularExpression{"Permalink"});
                 if (permalinknode && !permalinknode->getArgValue("href").isEmpty())
                 {
                     retval = std::make_shared<Thread>(permalinknode->getArgValue("href"));
@@ -682,7 +682,7 @@ QVariant Xenforo::doSubmitNewPost(PostPtr postInfo)
 
     // need to grab the create thread form to get the _xfToken value to use
     QString strId = { postInfo->getParent()->getId() };
-    strId = strId.replace(QRegExp{"/unread$"}, QString());
+    strId = strId.replace(QRegularExpression{"/unread$"}, QString());
 
     const QString createurl = QString("%1/%2/reply")
         .arg(this->getBaseUrl())
@@ -693,7 +693,7 @@ QVariant Xenforo::doSubmitNewPost(PostPtr postInfo)
     QSgml createDoc;
     if (createDoc.parse(data))
     {
-        const auto tokennode = createDoc.DocTag->getFirstElementByName("input", "name", QRegExp{"_xfToken"});
+        const auto tokennode = createDoc.DocTag->getFirstElementByName("input", "name", QRegularExpression{"_xfToken"});
         if (tokennode && !tokennode->getArgValue("value").isEmpty())
         {
             StringMap params;
@@ -717,7 +717,7 @@ QVariant Xenforo::doSubmitNewPost(PostPtr postInfo)
                 // NOTE: There's no real way to discern the postID of the post we just submitted from the rest of the posts
                 // on the page. What we do instead is get a list of all the posts on reponse and assume that the last one is
                 // the post we just submitted. This should work *most* of the time.
-                const QList<QSgmlTag*> linodes = replyDoc.getElementsByName("li", "id", QRegExp{"post\\-\\d+"});
+                const QList<QSgmlTag*> linodes = replyDoc.getElementsByName("li", "id", QRegularExpression{"post\\-\\d+"});
                 if (linodes.size() > 0)
                 {
                     // As noted above, the postID needs to be numeric. It probably isn't too important here but
@@ -752,7 +752,7 @@ ForumList Xenforo::getRootForumPrivate()
         OWL_THROW_EXCEPTION(Exception("bad parsing"));
     }
 
-    const auto tags = parseDoc.getElementsByName("li", "class", QRegExp{"level_1"});
+    const auto tags = parseDoc.getElementsByName("li", "class", QRegularExpression{"level_1"});
     if (tags.size())
     {
         QString strId;
@@ -767,10 +767,10 @@ ForumList Xenforo::getRootForumPrivate()
             newforum.reset();
 
             // luckily it seems that all of xenforo's 4 types of "nodes" all are labeled with this
-            const auto nodeTitle = t->getFirstElementByName("h3", "class", QRegExp{"nodeTitle"});
+            const auto nodeTitle = t->getFirstElementByName("h3", "class", QRegularExpression{"nodeTitle"});
             if (nodeTitle)
             {
-                const auto alink = nodeTitle->getFirstElementByName("a", "href", QRegExp());
+                const auto alink = nodeTitle->getFirstElementByName("a", "href", QRegularExpression());
                 if (alink)
                 {
                     strId = alink->getArgValue("href");
@@ -809,7 +809,7 @@ ForumList Xenforo::getRootForumPrivate()
 
 ForumList Xenforo::getForumsPrivate(const QString &id)
 {
-    const QRegExp classNode { "node[\\s\\\"]+" };
+    const QRegularExpression classNode { "node[\\s\\\"]+" };
     ForumList retval;
 
     // the id could be something like ".#general", but this causes problems in the webclient
@@ -841,7 +841,7 @@ ForumList Xenforo::getForumsPrivate(const QString &id)
             {
                 // ok, now the <ol class="nodeList"> elementwill have all this forum's children info as
                 // direct children
-                QSgmlTag* nodelistEl = linode->getFirstElementByName("ol", "class", QRegExp{"nodeList"});
+                QSgmlTag* nodelistEl = linode->getFirstElementByName("ol", "class", QRegularExpression{"nodeList"});
                 if (nodelistEl)
                 {
                     auto iDisplayOrder = 1u;
@@ -894,7 +894,7 @@ ForumList Xenforo::getForumsPrivate(const QString &id)
     }
     else
     {
-        const QRegExp nodeListRx { "nodeList" };
+        const QRegularExpression nodeListRx { "nodeList" };
         const auto nodeList = parseDoc.getElementsByName("ol", "class", nodeListRx);
 
         // NOTE: no error if the size equal 0 because that is indicative of there being no subforums
@@ -1031,7 +1031,7 @@ Forum::ForumType getForumType(const QString &strClass)
 
 QDateTime parseDateTime(QSgmlTag* lastPostDiv, QSgml* doc)
 {
-    QSgmlTag* timeNode = lastPostDiv->getFirstElementByName("abbr", "class", QRegExp{"DateTime"});
+    QSgmlTag* timeNode = lastPostDiv->getFirstElementByName("abbr", "class", QRegularExpression{"DateTime"});
     if (timeNode)
     {
         bool ok = false;
@@ -1040,12 +1040,12 @@ QDateTime parseDateTime(QSgmlTag* lastPostDiv, QSgml* doc)
 
         if (ok)
         {
-            return QDateTime::fromTime_t(epochTime);
+            return QDateTime::fromSecsSinceEpoch(epochTime);
         }
     }
     else
     {
-        timeNode = lastPostDiv->getFirstElementByName("span", "class", QRegExp{"DateTime"});
+        timeNode = lastPostDiv->getFirstElementByName("span", "class", QRegularExpression{"DateTime"});
         if (timeNode)
         {
             QString timeStamp = timeNode->getArgValue("title");
@@ -1059,9 +1059,7 @@ QDateTime parseDateTime(QSgmlTag* lastPostDiv, QSgml* doc)
             {
                 QDateTime dt;
 
-                std::vector<Qt::DateFormat> formats { Qt::TextDate, Qt::ISODate, Qt::SystemLocaleShortDate,
-                    Qt::SystemLocaleLongDate, Qt::DefaultLocaleShortDate, Qt::DefaultLocaleLongDate,
-                    Qt::SystemLocaleDate, Qt::LocaleDate, Qt::LocalDate, Qt::RFC2822Date};
+                std::vector<Qt::DateFormat> formats { Qt::TextDate, Qt::ISODate, Qt::ISODateWithMs, Qt::RFC2822Date };
 
                 for (const auto dte : formats)
                 {
@@ -1111,14 +1109,14 @@ QString extractMessageText(const QString &rawtext)
                 && child->getArgValue("class").contains("bbCodeQuote"))
             {
                 // if there's a quote, get the author
-                QSgmlTag* bbcodequote = child->getFirstElementByName("div", "class", QRegExp{"bbCodeQuote"});
+                QSgmlTag* bbcodequote = child->getFirstElementByName("div", "class", QRegularExpression{"bbCodeQuote"});
                 if (bbcodequote)
                 {
                     quoteAuthor = bbcodequote->getArgValue("data-author");
                 }
 
                 // if there's a quote, get the quote text
-                const auto quotetextNode = child->getFirstElementByName("div", "class", QRegExp{"quote"});
+                const auto quotetextNode = child->getFirstElementByName("div", "class", QRegularExpression{"quote"});
                 if (quotetextNode)
                 {
                     quoteText = doc.getText(quotetextNode);
@@ -1152,7 +1150,7 @@ QString extractMessageText(const QString &rawtext)
                      && child->Name == "img")
             {
                 // NOTE: we are recreating the <img> tag so that our resizing code will handle it
-                const auto srcnode = child->getFirstElementByName("img", "src", QRegExp());
+                const auto srcnode = child->getFirstElementByName("img", "src", QRegularExpression());
                 if (srcnode && !srcnode->getArgValue("src").isEmpty())
                 {
                     postText += QString("<img src=\"%1\" onload=\"NcodeImageResizer.createOn(this);\" />")

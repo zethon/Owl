@@ -33,7 +33,7 @@ set (HEADER_FILES
     ${MOC_HEADERS}
 )
 
-qt5_wrap_cpp(MOC_SOURCE_FILES ${MOC_HEADERS})
+# qt5_wrap_cpp(MOC_SOURCE_FILES ${MOC_HEADERS})
 
 add_library(Utils STATIC
     ${SOURCE_FILES}
@@ -43,9 +43,4 @@ add_library(Utils STATIC
 
 target_link_libraries(Utils
     ${CONAN_LIBS}
-    Qt5::Concurrent
-    Qt5::Core
-    Qt5::Network
-    Qt5::Widgets
-    Qt5::Xml
 )

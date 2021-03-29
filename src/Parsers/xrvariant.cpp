@@ -146,47 +146,42 @@ void XRVariant::fromDomElement(QDomElement& xrv)
     }
 }
 
-bool XRVariant::isXmlRpcType(const QVariant& qv)
+bool XRVariant::isXmlRpcType(const QVariant &qv)
 {
-	
-  if( (qv.type() == QVariant::String) ||
-      (qv.type() == QVariant::Int) ||
-      (qv.type() == QVariant::Bool) ||
-      (qv.type() == QVariant::Double) ||
-      (qv.type() == QVariant::DateTime) ||
-      (qv.type() == QVariant::ByteArray) )
-  {
-    return true;
-  }
-  else if( qv.type() == QVariant::List ) 
-  {
-    bool all_good = true;
-	auto list = qv.toList();
-	for (QVariant v : list)
-	{
-		all_good = all_good && isXmlRpcType(v);
-
-	}
-
-	return all_good;
-  }
-  else if( qv.type() == QVariant::Map ) 
-  {
-    bool all_good = true;
-    //QMapIterator<QString,QVariant> it;
-	auto list = qv.toMap();
-	QMapIterator<QString, QVariant> mi(list);
-
-    //for( it = qv.mapBegin(); it != qv.mapEnd(); it++) 
-	while (mi.hasNext())
-	{
-		mi.next();
-		all_good = all_good && isXmlRpcType( mi.value() );
+    if ((qv.canConvert<QString>()) ||
+        (qv.canConvert<int>()) ||
+        (qv.canConvert<bool>()) ||
+        (qv.canConvert<double>()) ||
+        (qv.canConvert<QDateTime>()) ||
+        (qv.canConvert<QByteArray>()))
+    {
+        return true;
     }
-    return all_good;
-  }
-  
-  return false;
+    else if (qv.canConvert<QVariantList>())
+    {
+        bool all_good = true;
+        for (const QVariant& v : qv.toList())
+        {
+            all_good = all_good && isXmlRpcType(v);
+        }
+
+        return all_good;
+    }
+    else if (qv.canConvert<QVariantMap>())
+    {
+        bool all_good = true;
+        auto list = qv.toMap();
+        QMapIterator<QString, QVariant> mi(list);
+        while (mi.hasNext())
+        {
+            mi.next();
+            all_good = all_good && isXmlRpcType(mi.value());
+        }
+
+        return all_good;
+    }
+
+    return false;
 }
 
 XRVariant XRVariant::structFromDomElement(QDomElement& qde)
@@ -235,35 +230,39 @@ QDomElement XRVariant::toDomElement(QDomDocument& doc) const
 	QDomElement type_el;
 	QDomText t;
 
-	QVariant::Type this_type = type();
-
-	if( this_type == QVariant::String) 
+	if (const auto this_type = metaType().id(); this_type == QMetaType::QString) 
 	{
 		type_el = doc.createElement("string");
 		t = doc.createTextNode(toString());
 		type_el.appendChild(t);
 	}
-	else if( this_type == QVariant::Int || this_type == QVariant::UInt) {
+	else if (this_type == QMetaType::Int || this_type == QMetaType::UInt) 
+    {
 		type_el = doc.createElement("int");
 		t = doc.createTextNode(toString());
 		type_el.appendChild(t);
 	}
-	else if( this_type == QVariant::Bool ) {
+	else if (this_type == QMetaType::Bool) 
+    {
 		type_el = doc.createElement("boolean");
-		if( toBool() ) {
+		if(toBool()) 
+        {
 			t = doc.createTextNode("1");
 		}
-		else {
+		else 
+        {
 			t = doc.createTextNode("0");
 		}
 		type_el.appendChild(t);
 	}
-	else if( this_type == QVariant::Double ) {
+	else if (this_type == QMetaType::Double) 
+    {
 		type_el = doc.createElement("double");
 		t = doc.createTextNode(toString());
 		type_el.appendChild(t);
 	}
-	else if( this_type == QVariant::DateTime ) {
+	else if (this_type == QMetaType::QDateTime) 
+    {
 		type_el = doc.createElement("dateTime.iso8601");
 
 		/* QT has ISODate type, but since XML-RPC requires
@@ -274,7 +273,8 @@ QDomElement XRVariant::toDomElement(QDomDocument& doc) const
 		t = doc.createTextNode( tmps_date );
 		type_el.appendChild(t);
 	}
-	else if( this_type == QVariant::Date ) {
+	else if (this_type == QMetaType::QDate)
+    {
 		type_el = doc.createElement("dateTime.iso8601");
 
 		/*
@@ -286,12 +286,14 @@ QDomElement XRVariant::toDomElement(QDomDocument& doc) const
 		t = doc.createTextNode( tmps_date );
 		type_el.appendChild(t);
 	}
-	else if( this_type == QVariant::ByteArray ) {
+	else if (this_type == QMetaType::QByteArray) 
+    {
 		type_el = doc.createElement("base64");
 		t = doc.createTextNode( XRBase64::encode( toByteArray() ));
 		type_el.appendChild(t);
 	}
-	else if( this_type == QVariant::List || this_type == QVariant::StringList) 
+	// else if (this_type == QMetaType::QList || this_type == QMetaType::QStringList) 
+    else if (this_type == QMetaType::QStringList) 
 	{
 		//type_el = doc.createElement("array");
 		//QDomElement data_el = doc.createElement("data");
@@ -303,7 +305,7 @@ QDomElement XRVariant::toDomElement(QDomDocument& doc) const
 		//	data_el.appendChild( XRVariant(*it).toDomElement(doc) );
 		//}
 	}
-	else if( this_type == QVariant::Map ) 
+	else if (this_type == QMetaType::QVariantMap) 
 	{
 		//type_el = doc.createElement("struct");
 		//QMapConstIterator<QString,QVariant> it;

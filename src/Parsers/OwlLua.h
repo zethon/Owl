@@ -71,7 +71,7 @@ public:
 
 private:
 	static QSgml* checkSgml(lua_State* L, int index = 1);
-    static QRegExp* checkRegExp(lua_State* L, int index = 1);
+    static QRegularExpression* checkRegExp(lua_State* L, int index = 1);
     static WebClient* checkWebClient(lua_State* L, int index = 1);
 };
 

@@ -227,7 +227,7 @@ void QSgml::MoveChildren(QSgmlTag *Source, QSgmlTag *Dest)
 void QSgml::HandleCdata(QString SgmlString,QSgmlTag* &pLastTag,int &iStart,int &iEnd,int &iPos)
 {
    QString sDummy;
-   QRegExp qNoWhitSpace("(\\S)");
+   QRegularExpression qNoWhitSpace("(\\S)");
    QSgmlTag *pTag;
 
    iStart = iEnd+1;
@@ -415,7 +415,7 @@ void QSgml::getElementsByName(QString Name,QString AtrName,QString AtrValue,QLis
    }
 }
 
-void QSgml::getElementsByName(QString Name,QString AtrName, const QRegExp& atrExp, QList<QSgmlTag*> *Elements)
+void QSgml::getElementsByName(QString Name,QString AtrName, const QRegularExpression& atrExp, QList<QSgmlTag*> *Elements)
 {
    QSgmlTag *Tag = DocTag;
 
@@ -423,7 +423,7 @@ void QSgml::getElementsByName(QString Name,QString AtrName, const QRegExp& atrEx
    while( Tag->Type!=QSgmlTag::eVirtualEndTag )
    {
       if((Tag->Name==Name) && (Tag->hasAttribute(AtrName) ==true ) &&
-		  (atrExp.indexIn(Tag->Attributes.value(AtrName)) != -1))
+		  (atrExp.match(Tag->Attributes.value(AtrName)).hasMatch()))
       {
          Elements->append(Tag);
       }
@@ -452,7 +452,7 @@ QList<QSgmlTag *> QSgml::getElementsByName(QString Name, QString AtrName, QStrin
     return retval;
 }
 
-QList<QSgmlTag *> QSgml::getElementsByName(QString Name, QString AtrName, const QRegExp &atrExp)
+QList<QSgmlTag *> QSgml::getElementsByName(QString Name, QString AtrName, const QRegularExpression &atrExp)
 {
     QList<QSgmlTag*> retval;
     getElementsByName(Name,AtrName,atrExp,&retval);

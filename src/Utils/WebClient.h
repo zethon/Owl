@@ -1,11 +1,11 @@
 // Owl - www.owlclient.com
 // Copyright (c) 2012-2019, Adalid Claure <aclaure@gmail.com>
-
 #pragma once
 #include <mutex>
-#include "StringMap.h"
 
 #include <curl/curl.h>
+
+#include "StringMap.h"
 
 namespace spdlog
 {
@@ -135,7 +135,7 @@ private:
     std::string         _buffer;                                // buffer for response text
     char                _errbuf[CURL_ERROR_SIZE];               // detailed error buffer
     StringMap           _headers;                               // map of headers that get set before requests and unset after
-    QTextCodec*         _textCodec;                             // TODO: learn more about this
+    // QTextCodec*         _textCodec;                             // TODO: learn more about this
     QString             _lastUrl;                               // realized url from the last successful request
     QString             _contentType = "application/x-www-form-urlencoded";
 

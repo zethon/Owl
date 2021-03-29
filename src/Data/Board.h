@@ -266,7 +266,7 @@ public:
     
 	QString getCSSText();
 
-	void addCSSItem(const QString&, CSSProperties, bool bAppend = true);
+	void addCSSItem(const QString&, const CSSProperties&, bool bAppend = true);
 	void addCSSItem(const QString&, const QString&, const QString&, bool bAppend = true);
 
 	void setBackgroundColor(const QString& strColor);

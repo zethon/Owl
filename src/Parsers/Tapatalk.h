@@ -166,7 +166,7 @@ private:
     LoginInfo               _loginInfo;
     QDateTime               _lastLogin;
 
-	QMutex					_mutex;
+	QRecursiveMutex         _mutex;
 
     std::shared_ptr<spdlog::logger>  _logger;
 };

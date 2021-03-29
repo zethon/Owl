@@ -6,15 +6,17 @@
 # Building: 
 #   $ conan install .. --build missing -s build_type=(Debug|Release)
 
-from conans import ConanFile, CMake
+from conans import ConanFile
 
 class OwlConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
 
     requires = (
-        "boost/1.71.0@conan/stable",
-        "libcurl/7.66.0@bincrafters/stable",
-        "spdlog/1.2.1@bincrafters/stable",
+        ("openssl/1.1.1i", "override"),
+        "qt/6.0.2",
+        "boost/1.74.0",
+        "libcurl/7.66.0",
+        "spdlog/1.8.1",
         "libhunspell/1.7.0@owl/stable",
         "tidy-html5/5.7.28@owl/stable",
         "luadist/5.2.3@owl/stable",
@@ -24,6 +26,14 @@ class OwlConan(ConanFile):
     generators = "cmake"
 
     default_options = {
+        "qt:shared": True,
+        "qt:with_sqlite3":False,
+        "qt:with_mysql":False,
+        "qt:with_pq":False,
+        "qt:with_odbc":False,
+        "qt:qt5compat":True,
+        "qt:qtquickcontrols2":True,
+        "qt:qtsvg":True,
         "boost:shared":False,
         "boost:without_test":False,
         "boost:without_filesystem":False,
@@ -33,7 +43,7 @@ class OwlConan(ConanFile):
         "boost:without_wave":True,
         "boost:without_container":True,
         "boost:without_contract":True,
-        "boost:without_exception":True,
+        "boost:without_nowide":True,
         "boost:without_graph":True,
         "boost:without_iostreams":True,
         "boost:without_locale":True,

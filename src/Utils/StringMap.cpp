@@ -1,8 +1,10 @@
 // Owl - www.owlclient.com
 // Copyright (c) 2012-2019, Adalid Claure <aclaure@gmail.com>
 
-#include "StringMap.h"
 #include <QMetaType>
+#include <QRegularExpression>
+
+#include "StringMap.h"
 
 namespace owl
 {
@@ -21,7 +23,7 @@ void StringMap::parse(const QString& options, const QChar seperator)
 
     for (auto param : list)
     {
-        param = param.trimmed().remove(QRegExp("^\\-"));
+        param = param.trimmed().remove(QRegularExpression("^\\-"));
 
         if (param.contains('='))
         {

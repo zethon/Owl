@@ -99,31 +99,41 @@ SET_SOURCE_FILES_PROPERTIES(
 ADD_EXECUTABLE(Owl ${GUI_TYPE} 
     ${SOURCE_FILES}
     ${HEADER_FILES}
+    ${UI_FILES}
     ${RESOURCE_FILES}
     ${QML_FILES}
     ${QRC_SOURCE_FILES}
 )
 
-set(QT_MODULE_LIST
-    Qt5::Concurrent
-    Qt5::Core
-    Qt5::Network
-    Qt5::Quick
-    Qt5::QuickWidgets
-    Qt5::Sql
-    Qt5::UiTools
-    Qt5::WebEngine
-    Qt5::WebEngineWidgets
-    Qt5::Widgets
-    Qt5::Xml
-    Qt5::XmlPatterns
-)
+set_property(TARGET Owl PROPERTY AUTOMOC ON)
 
-if (APPLE)
-    list(APPEND QT_MODULE_LIST 
-        Qt5::MacExtras
-    )
-endif (APPLE)
+# set_target_properties(Owl
+#    PROPERTIES
+#      CMAKE_INCLUDE_CURRENT_DIR ON
+#      CMAKE_AUTOMOC ON
+#      CMAKE_AUTOUIC ON
+#      CMAKE_AUTORCC ON)
+
+# set(QT_MODULE_LIST
+#     Qt5::Concurrent
+#     Qt5::Core
+#     Qt5::Network
+#     Qt5::Quick
+#     Qt5::QuickWidgets
+#     Qt5::Sql
+#     Qt5::UiTools
+#     Qt5::WebEngine
+#     Qt5::WebEngineWidgets
+#     Qt5::Widgets
+#     Qt5::Xml
+#     Qt5::XmlPatterns
+# )
+
+# if (APPLE)
+#     list(APPEND QT_MODULE_LIST 
+#         Qt5::MacExtras
+#     )
+# endif (APPLE)
     
 SET(DEPENDENCY_LIST 
     Data

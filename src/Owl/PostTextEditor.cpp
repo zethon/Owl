@@ -4,6 +4,7 @@
 #include <QtCore>
 #include <QtGui>
 #include <QMenu>
+
 #include "Data/Board.h"
 #include <Parsers/ParserBase.h>
 #include <Utils/Settings.h>
@@ -166,7 +167,7 @@ owl::SpellCheckerPtr SpellChecker::instance()
 
 const QString SpellChecker::GetCustomDictionaryName()
 {
-    return QDir(QStandardPaths::writableLocation(QStandardPaths::DataLocation)).absoluteFilePath("owl.dict");
+    return QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).absoluteFilePath("owl.dict");
 }
 
 void SpellChecker::init()
@@ -221,7 +222,7 @@ void EditorHighlighter::highlightBlock(const QString &textBlock)
     {
         // get the position of the cursor in the current block
         auto positionInBlock = _currentCursor.positionInBlock();
-        QStringList wordList = textBlock.split(QRegExp("\\W+"), QString::SkipEmptyParts);
+        QStringList wordList = textBlock.split(QRegularExpression("\\W+"), Qt::SkipEmptyParts);
         int index = 0;
 
         for (QString word : wordList)
@@ -232,11 +233,13 @@ void EditorHighlighter::highlightBlock(const QString &textBlock)
 
             // test positionInBlock, if this word contains the cursor then we don't want to bother
             // checking it since the user could still be typing`
-            if ((positionInBlock < index || positionInBlock > (index + wordLength))
-                    && _charsOnly.exactMatch(word)
-                    && !_spellChecker->isCorrect(word))
+            if (const auto match = _charsOnly.match(word); 
+                match.hasMatch() 
+                && (positionInBlock < index || positionInBlock > (index + wordLength)) 
+                && !_spellChecker->isCorrect(word))
             {
-                setFormat(index, wordLength, _spellFormat);
+                OWL_THROW_EXCEPTION(owl::NotImplementedException("Implement me!"));
+                // setFormat(index, wordLength, _spellFormat);
             }
 
             index += word.length();
@@ -298,21 +301,24 @@ void SpellCheckEdit::showContextMenu(const QPoint& pos)
 
     if (spellChecker)
     {
-        const QRegExp charsOnly("[A-Za-z]*");
+        const QRegularExpression charsOnly{QRegularExpression::anchoredPattern("[A-Za-z]*")};
+
         QTextCursor cursor = cursorForPosition(pos);
         cursor.select(QTextCursor::WordUnderCursor);
         const QString selectedText { cursor.selectedText() };
 
-        if (cursor.hasSelection()
+
+        if (auto match = charsOnly.match(selectedText);
+            cursor.hasSelection()
             && !spellChecker->isCorrect(selectedText)
-            && charsOnly.exactMatch(selectedText))
+            && match.hasMatch())
         {
             int cursorPosition = cursor.position();
             auto suggestionList = spellChecker->suggestions(selectedText);
             auto newMenu = new QMenu(this);
 
             // add the suggestions
-            for (auto i = 0; i < std::min(suggestionList.size(), 5); i++)
+            for (auto i = 0; i < std::min(suggestionList.size(), 5ll); i++)
             {
                 QAction* action = newMenu->addAction(suggestionList.at(i));
 

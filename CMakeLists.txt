@@ -4,18 +4,21 @@
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 project(Owl)
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 
+# INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+# INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
+
 # initialize conan libs
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup(NO_OUTPUT_DIRS KEEP_RPATHS)
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
 # Add our own custom CMake modules
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake)
@@ -128,28 +131,28 @@ if (APPLE)
     set(CMAKE_MACOSX_RPATH 1)
 endif(APPLE)
 
-#############################################
-# find QT
+# #############################################
+# # find QT
 
-find_package(Qt5Concurrent REQUIRED)
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Gui REQUIRED)
-find_package(Qt5Network REQUIRED)
-find_package(Qt5Sql REQUIRED)
-find_package(Qt5UiTools REQUIRED)
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5Xml REQUIRED)
-find_package(Qt5XmlPatterns REQUIRED)
-find_package(Qt5Test REQUIRED)
-find_package(Qt5Qml REQUIRED)
-find_package(Qt5Quick REQUIRED)
-find_package(Qt5QuickWidgets REQUIRED)
-find_package(Qt5WebEngine REQUIRED)
-find_package(Qt5WebEngineWidgets REQUIRED)
-
-if (APPLE)
-    find_package(Qt5MacExtras REQUIRED)
-endif (APPLE)
+# find_package(Qt5Concurrent REQUIRED)
+# find_package(Qt5Core REQUIRED)
+# find_package(Qt5Gui REQUIRED)
+# find_package(Qt5Network REQUIRED)
+# find_package(Qt5Sql REQUIRED)
+# find_package(Qt5UiTools REQUIRED)
+# find_package(Qt5Widgets REQUIRED)
+# find_package(Qt5Xml REQUIRED)
+# find_package(Qt5XmlPatterns REQUIRED)
+# find_package(Qt5Test REQUIRED)
+# find_package(Qt5Qml REQUIRED)
+# find_package(Qt5Quick REQUIRED)
+# find_package(Qt5QuickWidgets REQUIRED)
+# find_package(Qt5WebEngine REQUIRED)
+# find_package(Qt5WebEngineWidgets REQUIRED)
+#
+# if (APPLE)
+#     find_package(Qt5MacExtras REQUIRED)
+# endif (APPLE)
 
 # TODO: move the version information into a dedicated
 # file *just* for versioning information

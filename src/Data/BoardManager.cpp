@@ -17,8 +17,7 @@ namespace owl
 {
 
 BoardManager::BoardManager()
-    : _mutex(QMutex::Recursive),
-    _logger(owl::initializeLogger("BoardManager"))
+    : _logger(owl::initializeLogger("BoardManager"))
 
 {}	
 

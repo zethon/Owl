@@ -401,14 +401,14 @@ WebClient* OwlLua::checkWebClient(lua_State* L, int index/* = 1*/)
 }
 
 /////////////////////////////////////////////////////////////////////
-// QRegExp methods
+// QRegularExpression methods
 /////////////////////////////////////////////////////////////////////
 
 int OwlLua::newRegEx(lua_State* L)
 {
 	QString strPattern;
 	bool bCheckCase = false;
-    std::size_t size = sizeof(QRegExp*);
+    std::size_t size = sizeof(QRegularExpression*);
 
 	if (lua_isboolean(L, -1))
 	{
@@ -420,10 +420,11 @@ int OwlLua::newRegEx(lua_State* L)
 		strPattern = luaL_checkstring(L, -1);		
 	}
 
-	Qt::CaseSensitivity sen = bCheckCase ? Qt::CaseSensitive : Qt::CaseInsensitive;
+    QRegularExpression::PatternOption options = QRegularExpression::NoPatternOption;
+    if (!bCheckCase) options = QRegularExpression::CaseInsensitiveOption;
 
-    QRegExp** data = static_cast<QRegExp**>(lua_newuserdata(L, size));
-	*data = new QRegExp(strPattern, sen);
+    QRegularExpression** data = static_cast<QRegularExpression**>(lua_newuserdata(L, size));
+	*data = new QRegularExpression(strPattern, options);
 
 	luaL_setmetatable(L, "Owl.regexp");
 
@@ -432,58 +433,58 @@ int OwlLua::newRegEx(lua_State* L)
 
 int OwlLua::RegExIndexIn(lua_State* L)
 {
-	QRegExp* exp = checkRegExp(L);
+	// QRegularExpression* exp = checkRegExp(L);
 
-	if (lua_isnumber(L, -1))
-	{
-		QString searchStr(luaL_checkstring(L, -2));
-		lua_pushnumber(L, exp->indexIn(searchStr, luaL_checkint(L, -1)));
-	}
-	else
-	{
-		QString searchStr(luaL_checkstring(L, -1));
-		lua_pushnumber(L, exp->indexIn(searchStr));
-	}
+	// if (lua_isnumber(L, -1))
+	// {
+	// 	QString searchStr(luaL_checkstring(L, -2));
+	// 	lua_pushnumber(L, exp->indexIn(searchStr, luaL_checkint(L, -1)));
+	// }
+	// else
+	// {
+	// 	QString searchStr(luaL_checkstring(L, -1));
+	// 	lua_pushnumber(L, exp->indexIn(searchStr));
+	// }
 
 	return 1;
 }
 
 int OwlLua::RegExCap(lua_State* L)
 {
-	QRegExp* exp = checkRegExp(L);
+	// QRegularExpression* exp = checkRegExp(L);
 
-	if (lua_isnumber(L, -1))
-	{
-        int iIdx = lua_tonumber(L, -1);
+	// if (lua_isnumber(L, -1))
+	// {
+    //     int iIdx = lua_tonumber(L, -1);
 		
-		if (iIdx > 0 && iIdx >= exp->captureCount())
-		{
-			lua_pushstring(L, exp->cap(iIdx).toLatin1());
-		}
-	}
+	// 	if (iIdx > 0 && iIdx >= exp->captureCount())
+	// 	{
+	// 		lua_pushstring(L, exp->cap(iIdx).toLatin1());
+	// 	}
+	// }
 
 	return 1;
 }
     
 int OwlLua::RegExMatchedLength(lua_State* L)
 {
-	QRegExp* exp = checkRegExp(L);
-    lua_pushnumber(L, exp->matchedLength());
+	// QRegularExpression* exp = checkRegExp(L);
+    // lua_pushnumber(L, exp->matchedLength());
 
     return 1;    
 }
 
 int OwlLua::RegExDestructor(lua_State* L)
 {
-	QRegExp* regex = checkRegExp(L);
+	QRegularExpression* regex = checkRegExp(L);
 	delete regex;
 
 	return 0;
 }
 
-QRegExp* OwlLua::checkRegExp(lua_State* L, int index)
+QRegularExpression* OwlLua::checkRegExp(lua_State* L, int index)
 {
-    auto temp = static_cast<QRegExp**>(luaL_checkudata(L, index, "Owl.regexp"));
+    auto temp = static_cast<QRegularExpression**>(luaL_checkudata(L, index, "Owl.regexp"));
     return *temp;
 }
 
@@ -555,11 +556,11 @@ int OwlLua::SgmlGetElementsByName(lua_State* L)
 		{
 			// local reg = regexp.new("sid=([a-zA-Z0-9]+)")
 			// local tags = doc:getElementsByName("meta", "name", reg)
-			QRegExp* reg = checkRegExp(L,-1);
+			QRegularExpression* reg = checkRegExp(L,-1);
 
             if (reg != nullptr)
 			{
-				exp->getElementsByName(element, attribute,(const QRegExp&)*reg, &tags);
+				exp->getElementsByName(element, attribute,(const QRegularExpression&)*reg, &tags);
 			}
 		}
 		else 

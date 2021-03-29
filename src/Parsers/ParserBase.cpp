@@ -91,7 +91,7 @@ void ParserBase::loginAsync(LoginInfo& info)
 	{
 		QObject::connect(&_watcher, SIGNAL(finished()), this, SLOT(loginSlot()));
 		_future = QtConcurrent::run(std::function<QVariant(void)>(
-			[this, info]
+			[this, info]() -> QVariant
 			{
 				return doLogin(info);
 			}));
@@ -154,7 +154,11 @@ void ParserBase::logoutAsync(LoginInfo&)
 	if (!_future.isRunning())
 	{
 		connect(&_watcher, SIGNAL(finished()), this, SLOT(logoutSlot()));
-		_future = QtConcurrent::run(this, &ParserBase::doLogout);
+        _future = QtConcurrent::run(
+            [this]() -> QVariant
+            {
+                return this->doLogout();
+            });
 		_watcher.setFuture(_future);
 	}
 	else
@@ -207,7 +211,11 @@ void ParserBase::getBoardwareInfoAsync()
 	if (!_future.isRunning())
 	{
 		connect(&_watcher, SIGNAL(finished()), this, SLOT(boardInfoSlot()));
-		_future = QtConcurrent::run(this, &ParserBase::doGetBoardwareInfo);
+        _future = QtConcurrent::run(
+            [this]() -> QVariant
+            {
+                return this->doGetBoardwareInfo();
+            });
 		_watcher.setFuture(_future);
 	}
 	else
@@ -259,7 +267,11 @@ void ParserBase::getForumListAsync(const QString& id)
 	if (!_future.isRunning())
 	{
 		connect(&_watcher, SIGNAL(finished()), this, SLOT(getForumListSlot()));
-		_future = QtConcurrent::run(this, &ParserBase::doGetForumList, (const QString&)(id));
+        _future = QtConcurrent::run(
+            [this, id]() -> QVariant
+            {
+                return this->doGetForumList(id);
+            });
 		_watcher.setFuture(_future);
 	}
 	else
@@ -314,7 +326,11 @@ void ParserBase::getUnreadForumsAsync()
 	if (!_future.isRunning())
 	{
 		connect(&_watcher, SIGNAL(finished()), this, SLOT(getUnreadForumsSlot()));
-		_future = QtConcurrent::run(this, &ParserBase::doGetUnreadForums);
+        _future = QtConcurrent::run(
+            [this]() -> QVariant
+            {
+                return this->doGetUnreadForums();
+            });
 		_watcher.setFuture(_future);
 	}
 	else
@@ -381,7 +397,11 @@ void ParserBase::getThreadListAsync(ForumPtr forumInfo, int options)
     }
 
     connect(&_watcher, SIGNAL(finished()), this, SLOT(getThreadListSlot()));
-    _future = QtConcurrent::run(this, &ParserBase::doThreadList, (ForumPtr)(forumInfo),(int)(options));
+    _future = QtConcurrent::run(
+        [this, forumInfo, options]() -> QVariant
+        {
+            return this->doThreadList(forumInfo, options);
+        });
     _watcher.setFuture(_future);
 }
 
@@ -450,7 +470,11 @@ void ParserBase::getPostsAsync(ThreadPtr t, PostListOptions listOption, int webO
         }
     });
 
-    _future = QtConcurrent::run(this, &ParserBase::doGetPostList, (ThreadPtr)(t), (PostListOptions)listOption, (int)webOptions);
+    _future = QtConcurrent::run(
+        [this, t, listOption, webOptions]() -> QVariant
+        {
+            return this->doGetPostList(t, listOption, webOptions);
+        });
     
     _watcher.setFuture(_future);
 }
@@ -465,7 +489,11 @@ void ParserBase::markForumReadAsync(ForumPtr forumInfo)
 	if (!_future.isRunning())
 	{
 		connect(&_watcher, SIGNAL(finished()), this, SLOT(markForumReadSlot()));
-		_future = QtConcurrent::run(this, &ParserBase::doMarkForumRead,(ForumPtr)(forumInfo));
+        _future = QtConcurrent::run(
+            [this, forumInfo]() -> QVariant
+            {
+                return this->doMarkForumRead(forumInfo);
+            });
 		_watcher.setFuture(_future);
 	}
 	else
@@ -531,7 +559,12 @@ void ParserBase::submitNewThreadAsync(ThreadPtr threadInfo)
             }
         });
 
-        _future = QtConcurrent::run(this, &ParserBase::doSubmitNewThread, (ThreadPtr)(threadInfo));
+        _future = QtConcurrent::run(
+            [this, threadInfo]() -> QVariant
+            {
+                return this->doSubmitNewThread(threadInfo);
+            });
+        
         _watcher.setFuture(_future);
     }
     else
@@ -568,7 +601,11 @@ void ParserBase::submitNewPostAsync(PostPtr postInfo)
 			}
 		});
 
-		_future = QtConcurrent::run(this, &ParserBase::doSubmitNewPost, (PostPtr)(postInfo));
+        _future = QtConcurrent::run(
+            [this, postInfo]() -> QVariant
+            {
+                return this->doSubmitNewPost(postInfo);
+            });
 		_watcher.setFuture(_future);
 	}
 	else
@@ -759,7 +796,12 @@ void ParserBase::getEncryptionSettingsAsync()
 	if (!_future.isRunning())
 	{
 		connect(&_watcher, SIGNAL(finished()), this, SLOT(getEncryptionSettingsSlot()));
-		_future = QtConcurrent::run(this, &ParserBase::doGetEncryptionSettings);
+        _future = QtConcurrent::run(
+            [this]() -> QVariant
+            {
+                return this->doGetEncryptionSettings();
+            });
+        
 		_watcher.setFuture(_future);
 	}
 	else

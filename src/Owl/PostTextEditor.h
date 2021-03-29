@@ -3,6 +3,7 @@
 #include <QtCore>
 #include <QtGui>
 #include <QPlainTextEdit>
+#include <QtCore5Compat/QTextCodec>
 
 class Hunspell;
 typedef std::shared_ptr<Hunspell> HunspellPtr;
@@ -118,7 +119,7 @@ protected:
 private:
     SpellCheckerPtr _spellChecker;
 
-    const QRegExp   _charsOnly;
+    const QRegularExpression   _charsOnly;
     QTextCharFormat _spellFormat;
     QTextCursor     _currentCursor;
 };

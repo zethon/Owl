@@ -12,7 +12,7 @@ ClickableLabel::ClickableLabel(QWidget* parent)
 
 void ClickableLabel::mouseReleaseEvent(QMouseEvent* event)
 {
-    const auto mousePt = event->localPos().toPoint();
+    const auto mousePt = event->position().toPoint();
 
     if (rect().contains(mousePt))
     {

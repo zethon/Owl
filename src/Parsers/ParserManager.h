@@ -64,7 +64,13 @@ public:
 	QHash<QString, ParserInfo> getParsers()
     {
         auto parser = _nativeParsers;
-        return parser.unite(_luaTypes);
+        QHashIterator<QString, ParserInfo> it(_luaTypes);
+        while (it.hasNext())
+        {
+            parser.insert(it.key(), it.value());
+        }
+        
+        return parser;
     }
 
 protected:

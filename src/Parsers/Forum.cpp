@@ -49,14 +49,14 @@ QString Post::getPrettyTimestamp(const DateTimeFormatOptions& options)
             else
             {
                 Qt::DateFormat format = Qt::TextDate;
-                if (options.dateFormat == "short")
-                {
-                    format = Qt::SystemLocaleShortDate;
-                }
-                else if (options.dateFormat == "long")
-                {
-                    format = Qt::SystemLocaleLongDate;
-                }
+                // if (options.dateFormat == "short")
+                // {
+                //     format = Qt::SystemLocaleShortDate;
+                // }
+                // else if (options.dateFormat == "long")
+                // {
+                //     format = Qt::SystemLocaleLongDate;
+                // }
 
                 day = datetime.date().toString(format);
             }

@@ -245,7 +245,7 @@ public:
 	const QString& getText() const { return _strText; }
 	QString toPlainText() 
 	{
-		return _strText.remove(QRegExp("<[^>]*>"));
+		return _strText.remove(QRegularExpression("<[^>]*>"));
 	}
 	
 	void setIndex(int var) { _iIndex = var; }

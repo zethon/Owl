@@ -104,7 +104,7 @@ void QSgmlTag::SetNameAttributes(const QString &InnerTag)
       {
          sDummy = AllAtr.left(EndName);
 
-         StartName = sDummy.lastIndexOf(QRegExp("[ \r\n\t]"));
+         StartName = sDummy.lastIndexOf(QRegularExpression("[ \r\n\t]"));
          AtrString = AllAtr.left(StartName);
 
          AttrName = AllAtr.mid(StartName,EndName-StartName).trimmed();
@@ -259,7 +259,7 @@ QString QSgmlTag::getArgValue(QString Key)
 
 void QSgmlTag::getElementsByName(const QString& Name, 
 	const QString& AtrName, 
-	const QRegExp& atrExp, 
+	const QRegularExpression& atrExp, 
 	QList<QSgmlTag*> *Elements)
 {
    QSgmlTag *Tag = this;
@@ -268,7 +268,7 @@ void QSgmlTag::getElementsByName(const QString& Name,
    while( Tag->Type!=QSgmlTag::eVirtualEndTag )
    {
       if((Tag->Name==Name) && (Tag->hasAttribute(AtrName) ==true ) &&
-		  (atrExp.indexIn(Tag->Attributes.value(AtrName)) != -1))
+		  (atrExp.match(Tag->Attributes.value(AtrName)).hasMatch()))
       {
          Elements->append(Tag);
       }
@@ -278,7 +278,7 @@ void QSgmlTag::getElementsByName(const QString& Name,
 
 QList<QSgmlTag*> QSgmlTag::getElementsByName(const QString& Name,
     const QString& AtrName,
-    const QRegExp& atrExp)
+    const QRegularExpression& atrExp)
 {
     QList<QSgmlTag*> retval;
     this->getElementsByName(Name, AtrName, atrExp, &retval);
@@ -287,7 +287,7 @@ QList<QSgmlTag*> QSgmlTag::getElementsByName(const QString& Name,
 
 QSgmlTag* QSgmlTag::getFirstElementByName(const QString& Name, 
 	const QString& AtrName, 
-	const QRegExp& atrExp)
+	const QRegularExpression& atrExp)
 {
 	QSgmlTag* ret = nullptr;
 	QList<QSgmlTag*> list;

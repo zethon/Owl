@@ -42,7 +42,7 @@ WebClient::WebClient()
 
     if (_curl)
     {
-        _textCodec = QTextCodec::codecForName("Windows-1251");
+        // _textCodec = QTextCodec::codecForName("Windows-1251");
 
         // setup the _cur object
         initCurlSettings();

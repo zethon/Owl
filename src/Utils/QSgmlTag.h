@@ -24,6 +24,7 @@ under certain conditions.
 #ifndef QSGMLTAG_CPP
 #define QSGMLTAG_CPP
 
+#include <QRegularExpression>
 #include <QHash>
 
 class QSgmlTag
@@ -82,18 +83,18 @@ public:
 	void getElementsByName(
 		const QString& Name, 
 		const QString& AtrName, 
-		const QRegExp& atrExp, 
+		const QRegularExpression& atrExp, 
 		QList<QSgmlTag*> *Elements);
 
     QList<QSgmlTag*> getElementsByName(
         const QString& Name,
         const QString& AtrName,
-        const QRegExp& atrExp);
+        const QRegularExpression& atrExp);
 
 	QSgmlTag* getFirstElementByName(
 		const QString& Name, 
 		const QString& AtrName, 
-		const QRegExp& atrExp);
+		const QRegularExpression& atrExp);
 
    QSgmlTag* addChild(QString InnerTag, TagType eType);
 
