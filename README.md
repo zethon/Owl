@@ -47,6 +47,7 @@ Follow us on Twitter: [https://twitter.com/owlclient](https://twitter.com/owlcli
 * v0.7.0 released - 2014-09-27
 * v0.5.0 initial release - 2014-09-22
 
+<!--
 ## History
 
 Owl was originally developed by Adalid Claure (aclaure@gmail.com). The program was originally released a closed sourced project in 2014. Many of the icons were created by Robert Burnham (burntham77@gmail.com) and the original vBulletin encryptor plugin was written by Joe DiBiasi (joedibiasi@gmail.com).
@@ -54,3 +55,4 @@ Owl was originally developed by Adalid Claure (aclaure@gmail.com). The program w
 The source was released on GitHub in January 2016 with the hope that other people would contribute to the application and make it better.
 
 Owl is named in the spirit of the popular OSX email client, Sparrow, from which many UX ideas were taken.
+-->
