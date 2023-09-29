@@ -72,7 +72,6 @@ conan_cmake_install(PATH_OR_REFERENCE .
                     SETTINGS ${settings})
 
 # Add our own custom CMake modules
-# list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 
 # configure optional projects

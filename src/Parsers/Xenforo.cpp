@@ -610,8 +610,9 @@ QVariant Xenforo::doGetPostList(ThreadPtr threadInfo, ParserBase::PostListOption
         }
     }
 
-    threadInfo->getPosts().clear();
-    threadInfo->getPosts().append(retval);
+    auto& posts = threadInfo->getPosts();
+    posts.clear();
+    posts.insert(posts.end(), retval.begin(), retval.end());
 
     return QVariant::fromValue(threadInfo);
 }
