@@ -104,8 +104,6 @@ string(APPEND CMAKE_CXX_FLAGS_MINSIZEREL " -DRELEASE")
 #     $<$<CONFIG:<MinSizeRel>:-DRELEASE>
 # )
 
-# unset(Q_DECL_UNUSED CACHE)
-
 if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
 
     add_compile_options(
@@ -135,7 +133,6 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
 
         # disabled errors/warnings
         -Wno-error=date-time
-        # -Wno-error=deprecated-declarations
     )
 endif()
 
@@ -189,7 +186,6 @@ endif(APPLE)
 
 find_package(Boost COMPONENTS filesystem REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
-# target_link_libraries(${Boost_LIBRARIES})
 
 find_package(fmt REQUIRED)
 include_directories(${fmt_INCLUDE_DIRS})
