@@ -9,11 +9,11 @@
 
 #include "PaginationWidget.h"
 
-#ifdef Q_OS_WIN
+// #ifdef Q_OS_WIN
     #define ELLIPSIS    "..."
-#else
-    #define ELLIPSIS    u8"\u2026"
-#endif
+// #else
+//     #define ELLIPSIS    u8"\u2026"
+// #endif
 
 
 namespace owl

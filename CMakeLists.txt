@@ -8,17 +8,72 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 
 # initialize conan libs
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup(NO_OUTPUT_DIRS KEEP_RPATHS)
+include(CMake/conan.cmake)
+conan_cmake_configure(REQUIRES
+    boost/1.77.0
+    libcurl/8.2.1
+    fmt/8.0.1
+    spdlog/1.9.2
+    lua/5.4.3
+    tidy-html5/5.8.0
+    hunspell/1.7.2
+    
+    BASIC_SETUP CMAKE_TARGETS
+    GENERATORS 
+        cmake 
+        cmake_find_package 
+        cmake_paths
+        # cmake_find_package_multi
+    BUILD missing
+    OPTIONS 
+        boost:shared=False
+        boost:without_test=False
+        boost:without_filesystem=False
+        boost:without_stacktrace=False
+        boost:without_system=False
+        boost:without_math=True
+        boost:without_wave=True
+        boost:without_container=False
+        boost:without_contract=True
+        boost:without_exception=False
+        boost:without_graph=True
+        boost:without_iostreams=True
+        boost:without_locale=True
+        boost:without_log=True
+        boost:without_program_options=True
+        boost:without_random=True
+        boost:without_regex=True
+        boost:without_mpi=True
+        boost:without_serialization=True
+        boost:without_coroutine=True
+        boost:without_fiber=True
+        boost:without_context=True
+        boost:without_timer=True
+        boost:without_thread=True
+        boost:without_chrono=True
+        boost:without_date_time=True
+        boost:without_atomic=False
+        boost:without_graph_parallel=True
+        boost:without_python=True
+        boost:without_type_erasure=True
+    )
+
+conan_cmake_autodetect(settings)
+
+conan_cmake_install(PATH_OR_REFERENCE .
+                    BUILD missing
+                    REMOTE conancenter
+                    SETTINGS ${settings})
 
 # Add our own custom CMake modules
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake)
+# list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 
 # configure optional projects
 option(BUILD_GUI "Build Owl GUI (default ON)" ON)
@@ -33,6 +88,7 @@ add_definitions(
     -DBOOST_TEST_NO_LIB
     -DBOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
     -D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
+    -DSPDLOG_FMT_EXTERNAL=1
 )
 
 # Add this definition for release since we cannot rely on 
@@ -47,6 +103,8 @@ string(APPEND CMAKE_CXX_FLAGS_MINSIZEREL " -DRELEASE")
 #     $<$<CONFIG:Release>:-DRELEASE>
 #     $<$<CONFIG:<MinSizeRel>:-DRELEASE>
 # )
+
+# unset(Q_DECL_UNUSED CACHE)
 
 if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
 
@@ -77,6 +135,7 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
 
         # disabled errors/warnings
         -Wno-error=date-time
+        # -Wno-error=deprecated-declarations
     )
 endif()
 
@@ -127,6 +186,28 @@ endif(MSVC)
 if (APPLE)
     set(CMAKE_MACOSX_RPATH 1)
 endif(APPLE)
+
+find_package(Boost COMPONENTS filesystem REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
+# target_link_libraries(${Boost_LIBRARIES})
+
+find_package(fmt REQUIRED)
+include_directories(${fmt_INCLUDE_DIRS})
+
+find_package(spdlog REQUIRED)
+include_directories(${spdlog_INCLUDE_DIRS})
+
+find_package(lua REQUIRED)
+include_directories(${lua_INCLUDE_DIRS})
+
+find_package(tidy-html5 REQUIRED)
+include_directories(${tidy-html5_INCLUDE_DIRS})
+
+find_package(hunspell REQUIRED)
+include_directories(${hunspell_INCLUDE_DIRS})
+
+find_package(CURL REQUIRED)
+include_directories(${CURL_INCLUDE_DIRS})
 
 #############################################
 # find QT

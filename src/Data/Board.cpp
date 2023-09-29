@@ -702,7 +702,8 @@ void BoardItemDoc::addCSSItem(const QString& itemName, CSSProperties properties,
 	// that alreayd exists. if so, overwrite it with our new value
 	if (existingProps.size() > 0)
 	{
-		for (auto key : properties.uniqueKeys())
+		// for (auto key : properties.uniqueKeys())
+		for (auto key : properties.keys())
 		{
 			if (existingProps.contains(key))
 			{
@@ -759,7 +760,8 @@ QString BoardItemDoc::getCSSText()
 		{
 			retstr.append(QString("%1 { ").arg(itemName));
 			
-			for (auto key : properties.uniqueKeys())
+			// for (auto key : properties.uniqueKeys())
+			for (auto key : properties.keys())
 			{
 				retstr.append(QString("%1:%2; ").arg(key).arg(properties[key]));
 			}

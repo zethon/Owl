@@ -2,7 +2,7 @@
 #include <mutex>
 #include <setjmp.h>
 #include <QtCore>
-#include <lua/lua.hpp>
+#include <lua.hpp>
 #include "../Utils/DateTimeParser.h"
 #include "../Utils/StringMap.h"
 #include "ParserBase.h"

@@ -1059,9 +1059,10 @@ QDateTime parseDateTime(QSgmlTag* lastPostDiv, QSgml* doc)
             {
                 QDateTime dt;
 
-                std::vector<Qt::DateFormat> formats { Qt::TextDate, Qt::ISODate, Qt::SystemLocaleShortDate,
-                    Qt::SystemLocaleLongDate, Qt::DefaultLocaleShortDate, Qt::DefaultLocaleLongDate,
-                    Qt::SystemLocaleDate, Qt::LocaleDate, Qt::LocalDate, Qt::RFC2822Date};
+                // std::vector<Qt::DateFormat> formats { Qt::TextDate, Qt::ISODate, Qt::ISODateWithMs,
+                //     Qt::SystemLocaleLongDate, Qt::DefaultLocaleShortDate, Qt::DefaultLocaleLongDate,
+                //     Qt::SystemLocaleDate, Qt::LocaleDate, Qt::LocalDate, Qt::RFC2822Date};
+                std::vector<Qt::DateFormat> formats { Qt::TextDate, Qt::ISODate, Qt::ISODateWithMs };
 
                 for (const auto dte : formats)
                 {

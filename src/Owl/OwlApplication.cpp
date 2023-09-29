@@ -341,7 +341,7 @@ void OwlApplication::initializeLogger()
 
     // log startup info
     logger->info("Starting {} version {} built {}", APP_NAME, OWL_VERSION, OWL_VERSION_DATE_TIME);
-    logger->info("Logging initialized to level '{}'", spdlog::level::to_c_str(configLevel));
+    logger->info("Logging initialized to level '{}'", spdlog::level::to_string_view(configLevel));
 
     if (settings.read("logs.file.enabled").toBool())
     {
