@@ -9,12 +9,7 @@
 
 #include "PaginationWidget.h"
 
-// #ifdef Q_OS_WIN
-    #define ELLIPSIS    "..."
-// #else
-//     #define ELLIPSIS    u8"\u2026"
-// #endif
-
+#define ELLIPSIS    "..."
 
 namespace owl
 {

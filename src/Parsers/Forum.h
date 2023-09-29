@@ -308,7 +308,7 @@ public:
 	void setSticky(bool var) { _bSticky = var; }
 	bool isSticky() const { return _bSticky; }
 
-    std::vector<std::shared_ptr<Post> >& getPosts() { return _posts; }
+    owl::PostList& getPosts() { return _posts; }
 
     void pushTag(const QString& tag) { _tags.push_back(tag); }
     TagList getTags() { return _tags; }
@@ -322,9 +322,9 @@ private:
     bool        _bSticky;
     uint        _iReplyCount = 0;
 
-    std::vector<std::shared_ptr<Post> > _posts;
-    std::shared_ptr<Post>			_lastPost;
-    std::shared_ptr<Post>			_firstUnread;
+    owl::PostList   _posts;
+    owl::PostPtr    _lastPost;
+    owl::PostPtr    _firstUnread;
 };
 
 class Forum : public BoardItem 

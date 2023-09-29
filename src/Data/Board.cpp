@@ -1,8 +1,6 @@
 // Owl - www.owlclient.com
 // Copyright (c) 2012-2019, Adalid Claure <aclaure@gmail.com>
 
-#include <utility>
-
 #include <boost/functional/hash.hpp>
 
 #include <Utils/Settings.h>
