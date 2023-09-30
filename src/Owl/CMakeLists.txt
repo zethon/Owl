@@ -134,8 +134,6 @@ SET(DEPENDENCY_LIST
 TARGET_LINK_LIBRARIES(Owl
     PUBLIC
     PRIVATE
-        ${CONAN_TARGETS}
-        ${CONAN_LIBS}
         ${QT_MODULE_LIST}
         ${DEPENDENCY_LIST}
         Boost::filesystem
