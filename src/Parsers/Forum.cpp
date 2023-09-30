@@ -51,7 +51,7 @@ QString Post::getPrettyTimestamp(const DateTimeFormatOptions& options)
                 Qt::DateFormat format = Qt::TextDate;
                 if (options.dateFormat == "short")
                 {
-                    format = Qt::ISODateWithMs;
+                    format = Qt::ISODate;
                 }
                 else if (options.dateFormat == "long")
                 {
@@ -61,7 +61,7 @@ QString Post::getPrettyTimestamp(const DateTimeFormatOptions& options)
                 day = datetime.date().toString(format);
             }
 
-            retval = QString("%1 %2").arg(day).arg(time);
+            retval = QString("%1 %2").arg(day, time);
         }
     }
     else

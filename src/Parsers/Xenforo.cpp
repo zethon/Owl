@@ -656,8 +656,7 @@ QVariant Xenforo::doSubmitNewThread(ThreadPtr threadInfo)
             params.add("tags",s);
 
              QString addurl = QString("%1/%2/add-thread")
-                .arg(this->getBaseUrl())
-                .arg(strId);
+                .arg(this->getBaseUrl(), strId);
 
             const QString replyStr = _webclient.UploadString(addurl, params.encode());
 
@@ -707,8 +706,7 @@ QVariant Xenforo::doSubmitNewPost(PostPtr postInfo)
             params.add("message",s);
 
             QString addurl = QString("%1/%2/add-reply")
-               .arg(this->getBaseUrl())
-               .arg(strId);
+               .arg(this->getBaseUrl(), strId);
 
             const QString replyStr = _webclient.UploadString(addurl, params.encode());
 
@@ -1059,11 +1057,8 @@ QDateTime parseDateTime(QSgmlTag* lastPostDiv, QSgml* doc)
             if (!timeStamp.isEmpty())
             {
                 QDateTime dt;
-
-                // std::vector<Qt::DateFormat> formats { Qt::TextDate, Qt::ISODate, Qt::ISODateWithMs,
-                //     Qt::SystemLocaleLongDate, Qt::DefaultLocaleShortDate, Qt::DefaultLocaleLongDate,
-                //     Qt::SystemLocaleDate, Qt::LocaleDate, Qt::LocalDate, Qt::RFC2822Date};
-                std::vector<Qt::DateFormat> formats { Qt::TextDate, Qt::ISODate, Qt::ISODateWithMs };
+                std::vector<Qt::DateFormat> formats {
+                    Qt::TextDate, Qt::ISODate, Qt::ISODateWithMs, Qt::RFC2822Date };
 
                 for (const auto dte : formats)
                 {
@@ -1076,7 +1071,7 @@ QDateTime parseDateTime(QSgmlTag* lastPostDiv, QSgml* doc)
 
                 // if we're here, there's still no valid date, so let's try a couple formats manually
                 const std::vector<QString> vformats = { "MMM d, yyyy 'at' h:mm AP",  "MMM dd, yyyy 'at' hh:mm AP", "MMM dd, yyyy" };
-                for (const auto dtf : vformats)
+                for (const auto& dtf : vformats)
                 {
                     dt = QDateTime::fromString(timeStamp, dtf);
                     if (dt.isValid())
@@ -1129,8 +1124,7 @@ QString extractMessageText(const QString &rawtext)
                 if (!quoteAuthor.isEmpty() && !quoteText.isEmpty())
                 {
                     postText += QString("<blockquote><b>%1</b> wrote:<br/><br/>%2</blockquote>")
-                        .arg(quoteAuthor)
-                        .arg(quoteText);
+                        .arg(quoteAuthor, quoteText);
                 }
             }
             else if (child->Type == QSgmlTag::eStartTag

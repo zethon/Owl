@@ -571,7 +571,6 @@ void Board::doUpdateHash(ForumPtr parent)
     }
 
 	ForumList childList = parent->getForums();
-
     for (ForumPtr& child : childList)
 	{
 		doUpdateHash(child);
