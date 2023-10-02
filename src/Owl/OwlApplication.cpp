@@ -168,9 +168,6 @@ OwlApplication::OwlApplication(int& argc, char **argv[])
 
     // process any command line options
     initCommandLine();
-
-    // initialize default logger
-    initConsoleAppender();
 }
 
 OwlApplication::~OwlApplication()
@@ -359,18 +356,6 @@ void OwlApplication::initializeLogger()
     logger->debug("Operating System: {}", QSysInfo::prettyProductName().toStdString());
     logger->debug("Current working directory: {}", QDir::currentPath().toStdString());
     logger->info("Settings file '{}'", _settingsFile->filePath().toStdString());
-}
-
-void OwlApplication::initConsoleAppender()
-{
-    // create the root logger
-    spdlog::stdout_color_mt("Owl");
-
-#ifdef RELEASE
-    spdlog::set_level(spdlog::level::off);
-#else
-    spdlog::set_level(spdlog::level::trace);
-#endif
 }
 
 } // namespace owl

@@ -25,7 +25,6 @@ public:
 
 private:
     void initCommandLine();
-    void initConsoleAppender();
     void initializeLogger();
 
     QString                 _jsonConfig;
