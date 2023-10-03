@@ -1,7 +1,6 @@
 // Owl - www.owlclient.com
 // Copyright (c) 2012-2019, Adalid Claure <aclaure@gmail.com>
 
-#include <QDataStream>
 #include <boost/functional/hash.hpp>
 
 #include <Utils/Settings.h>
@@ -371,7 +370,7 @@ void Board::crawlSubForum(ForumPtr parent, ForumIdList* dupList /*= nullptr*/, b
 	ForumList forums = _parser->getForumList(parent->getId());
 	parent->getForums().clear();
 
-    for (ForumPtr forum : forums)
+    for (ForumPtr& forum : forums)
 	{
 		forum->setBoard(shared_from_this());
 		parent->addChild(forum);
@@ -402,7 +401,7 @@ void Board::crawlRoot(bool bThrow /*= true*/)
 		_root = Forum::createRootForum(_parser->getRootForumId());
 		ForumList list = _parser->getForumList(_root->getId());
 
-		for(ForumPtr forum : list)
+		for(ForumPtr& forum : list)
 		{
 			try
 			{
@@ -463,9 +462,8 @@ ForumPtr Board::getRootStructure(bool bThrow /* = true */)
 
 	try
 	{
-		ForumList list = _parser->getForumList(root->getId());
-        
-        for (ForumPtr forum : list)
+        ForumList list = _parser->getForumList(root->getId());
+        for (ForumPtr& forum : list)
 		{
 			try
 			{
@@ -573,8 +571,7 @@ void Board::doUpdateHash(ForumPtr parent)
     }
 
 	ForumList childList = parent->getForums();
-
-    for (ForumPtr child : childList)
+    for (ForumPtr& child : childList)
 	{
 		doUpdateHash(child);
 	}
@@ -702,7 +699,8 @@ void BoardItemDoc::addCSSItem(const QString& itemName, CSSProperties properties,
 	// that alreayd exists. if so, overwrite it with our new value
 	if (existingProps.size() > 0)
 	{
-		for (auto key : properties.uniqueKeys())
+        const auto constKeys = properties.keys();
+        for (const auto& key : constKeys)
 		{
 			if (existingProps.contains(key))
 			{
@@ -743,7 +741,7 @@ void BoardItemDoc::reloadStyleSheet()
 	addResource(QTextDocument::StyleSheetResource, QUrl("localdata:://format.css"), css);
 }
 
-QString BoardItemDoc::getCSSText()
+QString BoardItemDoc::getCSSText() const
 {
     QString retstr;
 	QHashIterator<QString, CSSProperties> it(_cssdoc);
@@ -758,10 +756,11 @@ QString BoardItemDoc::getCSSText()
 		if (properties.size() > 0)
 		{
 			retstr.append(QString("%1 { ").arg(itemName));
-			
-			for (auto key : properties.uniqueKeys())
+
+            const auto constKeys = properties.keys();
+            for (const auto& key : constKeys)
 			{
-				retstr.append(QString("%1:%2; ").arg(key).arg(properties[key]));
+				retstr.append(QString("%1:%2; ").arg(key, properties[key]));
 			}
 
 			retstr.append("}\n");
@@ -775,7 +774,8 @@ void BoardItemDoc::reloadHtml()
 {
     QString strHtml(_template);
     
-    for (const auto& s : _dictionary.keys())
+    const auto constRef = _dictionary.keys();
+    for (const auto& s : constRef)
     {
         strHtml = strHtml.replace(s, _dictionary[s]);
     }

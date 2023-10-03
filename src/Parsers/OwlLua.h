@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <lua/lua.hpp>
+#include <lua.hpp>
 
 class QSgml;
 

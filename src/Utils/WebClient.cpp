@@ -35,8 +35,8 @@ CURLcode curlGlobalInit()
 WebClient::WebClient()
     : _logger(owl::initializeLogger("WebClient"))
 {
-    static CURLcode __global = curlGlobalInit();
-    Q_UNUSED(__global)
+    static CURLcode _global = curlGlobalInit();
+    Q_UNUSED(_global)
 
     _curl = curl_easy_init();
 
@@ -44,7 +44,7 @@ WebClient::WebClient()
     {
         _textCodec = QTextCodec::codecForName("Windows-1251");
 
-        // setup the _cur object
+        // setup the _curl object
         initCurlSettings();
     }
     else

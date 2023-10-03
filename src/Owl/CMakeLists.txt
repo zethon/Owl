@@ -131,10 +131,17 @@ SET(DEPENDENCY_LIST
     Utils
 )
 
-TARGET_LINK_LIBRARIES(Owl 
-    ${CONAN_LIBS}
-    ${QT_MODULE_LIST}
-    ${DEPENDENCY_LIST}
+TARGET_LINK_LIBRARIES(Owl
+    PUBLIC
+    PRIVATE
+        ${QT_MODULE_LIST}
+        ${DEPENDENCY_LIST}
+        Boost::filesystem
+        spdlog::spdlog
+        lua::lua
+        hunspell::hunspell
+        tidy-html5::tidy-html5
+        CURL::libcurl
 )
 
 if(WIN32 AND MSVC)

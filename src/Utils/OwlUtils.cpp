@@ -118,12 +118,6 @@ const QString sanitizeUrl(const QString& urlStr)
 	return retUrl;
 }
 
-int randomInteger(int low, int high)
-{
-    // Random number between low and high
-    return qrand() % ((high + 1) - low) + low;
-}
-
 QString previewText(const QString& original, uint maxLen)
 {
     QString retval { original };
