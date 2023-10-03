@@ -168,9 +168,6 @@ OwlApplication::OwlApplication(int& argc, char **argv[])
 
     // process any command line options
     initCommandLine();
-
-    // initialize default logger
-    initConsoleAppender();
 }
 
 OwlApplication::~OwlApplication()
@@ -341,7 +338,7 @@ void OwlApplication::initializeLogger()
 
     // log startup info
     logger->info("Starting {} version {} built {}", APP_NAME, OWL_VERSION, OWL_VERSION_DATE_TIME);
-    logger->info("Logging initialized to level '{}'", spdlog::level::to_c_str(configLevel));
+    logger->info("Logging initialized to level '{}'", spdlog::level::to_string_view(configLevel));
 
     if (settings.read("logs.file.enabled").toBool())
     {
@@ -359,18 +356,6 @@ void OwlApplication::initializeLogger()
     logger->debug("Operating System: {}", QSysInfo::prettyProductName().toStdString());
     logger->debug("Current working directory: {}", QDir::currentPath().toStdString());
     logger->info("Settings file '{}'", _settingsFile->filePath().toStdString());
-}
-
-void OwlApplication::initConsoleAppender()
-{
-    // create the root logger
-    spdlog::stdout_color_mt("Owl");
-
-#ifdef RELEASE
-    spdlog::set_level(spdlog::level::off);
-#else
-    spdlog::set_level(spdlog::level::trace);
-#endif
 }
 
 } // namespace owl

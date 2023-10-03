@@ -221,7 +221,7 @@ void EditorHighlighter::highlightBlock(const QString &textBlock)
     {
         // get the position of the cursor in the current block
         auto positionInBlock = _currentCursor.positionInBlock();
-        QStringList wordList = textBlock.split(QRegExp("\\W+"), QString::SkipEmptyParts);
+        QStringList wordList = textBlock.split(QRegExp("\\W+"), Qt::SkipEmptyParts);
         int index = 0;
 
         for (QString word : wordList)

@@ -682,7 +682,7 @@ void PreferencesDlg::renderGeneralSettings()
 
         if (itemText == "long")
         {
-            itemText = exampleDT.date().toString(Qt::SystemLocaleLongDate);
+            itemText = exampleDT.date().toString(Qt::ISODateWithMs);
             if (dateSetting == "long")
             {
                 dateFormatCB->setCurrentIndex(idx);
@@ -690,7 +690,7 @@ void PreferencesDlg::renderGeneralSettings()
         }
         else if (itemText == "short")
         {
-            itemText = exampleDT.date().toString(Qt::SystemLocaleShortDate);
+            itemText = exampleDT.date().toString(Qt::ISODateWithMs);
             if (dateSetting == "short")
             {
                 dateFormatCB->setCurrentIndex(idx);

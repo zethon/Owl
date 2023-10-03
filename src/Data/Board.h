@@ -264,7 +264,7 @@ public:
 	typedef QHash<QString, QString> CSSProperties;
 	typedef QHash<QString, CSSProperties> CSSDoc;
     
-	QString getCSSText();
+	QString getCSSText() const;
 
 	void addCSSItem(const QString&, CSSProperties, bool bAppend = true);
 	void addCSSItem(const QString&, const QString&, const QString&, bool bAppend = true);

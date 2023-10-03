@@ -47,6 +47,14 @@ public:
         : _message(msg)
     {}
 
+    Exception(const std::string& msg)
+        : _message(QString::fromStdString(msg))
+    {}
+
+    Exception(const char* msg)
+        : _message(QString::fromLatin1(msg))
+    {}
+
     Exception(const Exception& other)
         : boost::exception(other),
           QException(other),

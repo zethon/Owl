@@ -22,7 +22,7 @@ typedef std::shared_ptr<BoardItemList> BoardItemListPtr;
     
 class Post;
 typedef std::shared_ptr<Post> PostPtr;
-typedef QList<owl::PostPtr> PostList;
+typedef std::vector<owl::PostPtr> PostList;
 
 class Thread;
 typedef std::shared_ptr<Thread> ThreadPtr;
@@ -311,7 +311,7 @@ public:
     void setOpen(bool var) { _isOpen = var; }
     bool open() const { return _isOpen;  }
 
-    QList<std::shared_ptr<Post> >& getPosts() { return _posts; }
+    owl::PostList& getPosts() { return _posts; }
 
     void pushTag(const QString& tag) { _tags.push_back(tag); }
     TagList getTags() { return _tags; }
@@ -325,10 +325,10 @@ private:
     bool        _isOpen = true;
     bool        _bSticky;
     uint        _iReplyCount = 0;
-	
-    QList<std::shared_ptr<Post> >   _posts;
-    std::shared_ptr<Post>			_lastPost;
-    std::shared_ptr<Post>			_firstUnread;
+
+    owl::PostList   _posts;
+    owl::PostPtr    _lastPost;
+    owl::PostPtr    _firstUnread;
 };
 
 class Forum : public BoardItem 

@@ -470,8 +470,9 @@ QVariant Tapatalk4x::doPostList(ThreadPtr threadInfo, int)
 		}
 	}
 
-	threadInfo->getPosts().clear();
-	threadInfo->getPosts().append(retval);
+    auto& posts = threadInfo->getPosts();
+    posts.clear();
+    posts.insert(posts.end(), retval.begin(), retval.end());
 	threadInfo->setPageCount(iPageCount);
 	
 	return QVariant::fromValue(threadInfo);
@@ -531,8 +532,9 @@ QVariant Tapatalk4x::doPostList1(ThreadPtr threadInfo, int)
 
 	int iPageCount = ceil(((double)iTotalTopics) / ((double)threadInfo->getPerPage()));
 
-	threadInfo->getPosts().clear();
-	threadInfo->getPosts().append(retval);
+    auto& posts = threadInfo->getPosts();
+	posts.clear();
+    posts.insert(posts.end(), retval.begin(), retval.end());
 	threadInfo->setPageCount(iPageCount);
 	
 	return QVariant::fromValue(threadInfo);

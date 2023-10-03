@@ -437,7 +437,7 @@ int OwlLua::RegExIndexIn(lua_State* L)
 	if (lua_isnumber(L, -1))
 	{
 		QString searchStr(luaL_checkstring(L, -2));
-		lua_pushnumber(L, exp->indexIn(searchStr, luaL_checkint(L, -1)));
+		lua_pushnumber(L, exp->indexIn(searchStr, luaL_checkinteger(L, -1)));
 	}
 	else
 	{

@@ -711,8 +711,9 @@ QVariant LuaParserBase::doGetPostList(ThreadPtr threadInfo, PostListOptions list
 
 	lua_pop(L, 1);
 
-	threadInfo->getPosts().clear();
-	threadInfo->getPosts().append(retval);
+    auto& postlist = threadInfo->getPosts();
+	postlist.clear();
+    postlist.insert(postlist.end(), retval.begin(), retval.end());
 
 	return QVariant::fromValue(threadInfo);
 }
