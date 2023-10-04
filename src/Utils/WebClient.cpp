@@ -78,7 +78,7 @@ void WebClient::addSendCookie(const QString &key, const QString &value)
 {
     Lock lock(_curlMutex);
 
-    const QString data = QString("%1=%2").arg(key).arg(value);
+    const QString data = QString("%1=%2").arg(key, value);
     curl_easy_setopt(_curl, CURLOPT_COOKIE, data.toLatin1().data());
 }
 
@@ -289,7 +289,7 @@ WebClient::ReplyPtr WebClient::doRequest(const QString& url,
         if (bThrowOnFail)
         {
             // TODO: Add more details to this exception, like below:
-            OWL_THROW_EXCEPTION(owl::WebException(errorText, url, status));
+            OWL_THROW_EXCEPTION(owl::WebException(errorText, url, static_cast<std::int32_t>(status)));
         }
 
         return nullptr;
@@ -303,7 +303,7 @@ WebClient::ReplyPtr WebClient::doRequest(const QString& url,
     auto retval = std::make_shared<Reply>(status);
     retval->setFinalUrl(finalUrl);
 
-    if (status == 200)
+    if (status == 200l)
     {
         if (!(options & Options::NOTIDY))
         {
@@ -324,7 +324,7 @@ WebClient::ReplyPtr WebClient::doRequest(const QString& url,
         _logger->debug(errorText.toStdString());
         if (bThrowOnFail)
         {
-            OWL_THROW_EXCEPTION(owl::WebException(errorText, url, status));
+            OWL_THROW_EXCEPTION(owl::WebException(errorText, url, static_cast<std::int32_t>(status)));
         }
         else
         {
@@ -348,8 +348,7 @@ curl_slist* WebClient::setHeaders()
     for (const auto& kv : _headers)
     {
         const QString header = QString("%1: %2")
-            .arg(kv.first)
-            .arg(kv.second);
+            .arg(kv.first, kv.second);
 
         headers = curl_slist_append(headers, header.toLatin1().data());
     }

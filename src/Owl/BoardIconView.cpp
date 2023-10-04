@@ -11,10 +11,7 @@
 #include <QMessageBox>
 
 #include  <Utils/OwlLogger.h>
-
 #include "Data/BoardManager.h"
-#include "Utils/Exception.h"
-
 #include "BoardIconView.h"
 
 constexpr auto ICONSCALEWIDTH = 128;
@@ -289,16 +286,16 @@ BoardIconModel::BoardIconModel(QObject *parent)
 {
     owl::BoardManager* manager = owl::BoardManager::instance().get();
 
-    QObject::connect(manager, &BoardManager::onBeginAddBoard,
+    QObject::connect(manager, &BoardManager::onBeginAddBoard, this,
         [this](int first) { beginInsertRows(QModelIndex{}, first, first); });
 
-    QObject::connect(manager, &BoardManager::onEndAddBoard,
+    QObject::connect(manager, &BoardManager::onEndAddBoard, this,
         [this]() { endInsertRows(); });
 
-    QObject::connect(manager, &BoardManager::onBeginRemoveBoard,
+    QObject::connect(manager, &BoardManager::onBeginRemoveBoard, this,
         [this](int first) { beginRemoveRows(QModelIndex{}, first, first); });
 
-    QObject::connect(manager, &BoardManager::onEndRemoveBoard,
+    QObject::connect(manager, &BoardManager::onEndRemoveBoard, this,
         [this]() { endRemoveRows(); });
 }
 
@@ -411,13 +408,13 @@ void BoardIconView::initListView()
     _listView->setItemDelegate(new BoardIconViewDelegate);
     _listView->setModel(new owl::BoardIconModel(this));
 
-    QObject::connect(_listView, &QWidget::customContextMenuRequested,
+    QObject::connect(_listView, &QWidget::customContextMenuRequested, this,
         [this](const QPoint &pos)
         {
             this->doContextMenu(pos);
         });
 
-    QObject::connect(_listView, &QAbstractItemView::clicked,
+    QObject::connect(_listView, &QAbstractItemView::clicked, this,
         [this](const QModelIndex& index)
         {
             if (index.data(ICONTYPE_ROLE).value<IconType>() == IconType::BOARDICON)
@@ -437,7 +434,7 @@ void BoardIconView::initListView()
             }
         });
 
-    QObject::connect(_listView, &QAbstractItemView::doubleClicked,
+    QObject::connect(_listView, &QAbstractItemView::doubleClicked, this,
         [this](const QModelIndex &index)
         {
             if (index.data(ICONTYPE_ROLE).value<IconType>() == IconType::BOARDICON)
@@ -466,10 +463,10 @@ void BoardIconView::doContextMenu(const QPoint &pos)
         {
             QAction* action = menu->addAction(tr("Connect"));
             action->setToolTip(tr("Connect"));
-            QObject::connect(action, &QAction::triggered,
+            QObject::connect(action, &QAction::triggered, this,
                 [this, boardVar]()
                 {
-                    onConnectBoard(boardVar.value<BoardWeakPtr>());
+                    Q_EMIT onConnectBoard(boardVar.value<BoardWeakPtr>());
                 });
 
             menu->addSeparator();
@@ -482,20 +479,20 @@ void BoardIconView::doContextMenu(const QPoint &pos)
             action->setIconVisibleInMenu(false);
 #endif
 
-            connect(action, &QAction::triggered,
+            connect(action, &QAction::triggered, this,
                 [this, boardVar]()
                 {
-                    onMarkBoardRead(boardVar.value<BoardWeakPtr>());
+                    Q_EMIT onMarkBoardRead(boardVar.value<BoardWeakPtr>());
                 });
         }
 
         {
             QAction* action = menu->addAction(tr("Copy Board Address"));
             action->setToolTip(tr("Copy Board Address"));
-            connect(action, &QAction::triggered,
+            connect(action, &QAction::triggered, this,
                 [this, boardVar]()
                 {
-                    onCopyBoardAddress(boardVar.value<BoardWeakPtr>());
+                    Q_EMIT onCopyBoardAddress(boardVar.value<BoardWeakPtr>());
                 });
         }
 
@@ -506,10 +503,10 @@ void BoardIconView::doContextMenu(const QPoint &pos)
             action->setIconVisibleInMenu(false);
 #endif
 
-            connect(action, &QAction::triggered,
+            connect(action, &QAction::triggered, this,
                 [this, boardVar]()
                 {
-                    onOpenBoardInBrowser(boardVar.value<BoardWeakPtr>());
+                    Q_EMIT onOpenBoardInBrowser(boardVar.value<BoardWeakPtr>());
                 });
         }
 
@@ -521,20 +518,19 @@ void BoardIconView::doContextMenu(const QPoint &pos)
             action->setIconVisibleInMenu(false);
 #endif
 
-            QObject::connect(action, &QAction::triggered,
+            QObject::connect(action, &QAction::triggered, this,
                 [this, boardVar]()
                 {
-                    onEditBoard(boardVar.value<BoardWeakPtr>());
+                    Q_EMIT onEditBoard(boardVar.value<BoardWeakPtr>());
                 });
         }
 
         {
             QAction* action = menu->addAction(tr("Delete"));
-            QObject::connect(action, &QAction::triggered,
+            QObject::connect(action, &QAction::triggered, this,
                 [this, boardVar]()
                 {
                     this->requestBoardDelete(boardVar.value<BoardWeakPtr>());
-
                 });
         }
 
@@ -562,7 +558,7 @@ void BoardIconView::requestBoardDelete(BoardWeakPtr boardWeak)
 
         if (messageBox.exec() == QMessageBox::Yes)
         {
-            onDeleteBoard(boardWeak);
+            Q_EMIT onDeleteBoard(boardWeak);
         }
     }
 }
