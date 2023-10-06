@@ -12,6 +12,8 @@ Item
     property int smallTextSize: 11
     property int osTextSizeModifier: 5
 
+    property string previewTextColor: "#151515"
+
     signal stickyDisplayChanged
 
     Component.onCompleted:
@@ -108,7 +110,9 @@ Item
             highlightMoveVelocity: 100
             flickableDirection: Flickable.VerticalFlick
 
-            highlight: Rectangle { color: "#e4ebf1" }
+//            highlight: Rectangle { color: "#e4ebf1" }
+//            highlight: Rectangle { color: "yellow" }
+//            property string highlightColor: "green"
 
             delegate: Item
             {
@@ -141,7 +145,6 @@ Item
                     id: delegateFillRect
                     anchors.top: parent.top
                     width: parent.width
-                    color: "red"
                     border.color: "black"
                     border.width: 5
 
@@ -153,6 +156,7 @@ Item
                         height: threadListDelegate.height-spacerRect.height
                         width: threadListDelegate.avatarRectWidth
                         visible: threadListSettings.read("threadlist.avatars.visible") && model.modelData.iconUrl.length > 0
+                        color: parent.color
 
                         Image
                         {
@@ -213,6 +217,7 @@ Item
                         anchors.left: avatarRect.right
                         height: threadListDelegate.height-spacerRect.height
                         width: threadListDelegate.width-avatarRect.width
+                        color: parent.color
 
                         Text
                         {
@@ -268,7 +273,7 @@ Item
                             text: previewText
                             wrapMode: Text.Wrap
                             font.pointSize: 10 + rootItem.osTextSizeModifier;
-                            color: "grey"
+                            color: previewTextColor
                         }
 
                         Text
@@ -304,6 +309,16 @@ Item
                     anchors.fill: parent
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
 
+                    onEntered:
+                    {
+                        delegateFillRect.color = "#F4F4F4"
+                    }
+
+                    onExited:
+                    {
+                        delegateFillRect.color = "white"
+                    }
+
                     onClicked:
                     {
                         if (mouse.button === Qt.LeftButton)
@@ -325,7 +340,7 @@ Item
                         }
                     }
                 }
-            } // Item
+            } // delegate: Item
         }
     }
 }

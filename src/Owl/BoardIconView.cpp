@@ -17,7 +17,7 @@
 constexpr auto ICONSCALEWIDTH = 128;
 constexpr auto ICONSCALEHEIGHT = 128;
 
-constexpr auto LISTICONWIDTH = 64;
+constexpr auto LISTICONWIDTH = 164;
 constexpr auto LISTICONHEIGHT = 64;
 
 constexpr auto DEFAULT_HOVER = "darkgrey";
@@ -41,25 +41,31 @@ constexpr auto INDICATOR_UNREAD = "#ADFF2F";
     constexpr auto ICONDISPLAYHEIGHT = 40;
 #endif
 
+using namespace std::literals;
+
 namespace owl
 {
+
+static const auto BG_COLOR = "#DEDFDF";
 
 // TODO: The "hover" and "select" styles don't really work
 // right in `QStyledItemDelegate::paint()` unless the properties
 // are defined here, even though they're ignored. Investigate
 // this more to find out why
-static const char* itemStyleSheet = R"(
+// @NOTE: The `QWidget` in this style sets the color of the area behind
+//        the system-buttons (i.e. minimize, close, etc) on Mac
+const auto itemStyleSheet = fmt::format(R"(
 QListView
-{
-    background: #181F26;
+{{
+    background: {};
     border-style: none;
-}
+}}
 
-QListView::item::selected{}
-QListView::item::hover{}
-)";
+QListView::item::selected{{ }}
+QListView::item::hover{{ }}
+)", BG_COLOR);
 
-constexpr const char* contextMenuStyle = R"(
+constexpr std::string_view contextMenuStyle = R"(
 QMenu
 {
     background-color: #FFFFFF;
@@ -375,7 +381,7 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
     : QWidget(parent),
       _logger { owl::initializeLogger("BoardIconView") }
 {
-    parent->setStyleSheet("QWidget { background-color: #181F26; }");
+    parent->setStyleSheet((fmt::format("QWidget{{ background-color: {}; }}", BG_COLOR)).data());
     initListView();
 
     QVBoxLayout* layout = new QVBoxLayout;
@@ -398,7 +404,7 @@ void BoardIconView::initListView()
     _listView->setWrapping(false);
     _listView->setAttribute(Qt::WA_MacShowFocusRect, false);
     _listView->setMovement(QListView::Movement::Static);
-    _listView->setStyleSheet(QString::fromLatin1(itemStyleSheet));
+    _listView->setStyleSheet(QString::fromLatin1(itemStyleSheet.data()));
     _listView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     _listView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     _listView->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -457,7 +463,7 @@ void BoardIconView::doContextMenu(const QPoint &pos)
     {
         BoardPtr boardPtr = boardVar.value<BoardWeakPtr>().lock();
         QMenu* menu = new QMenu(this);
-        menu->setStyleSheet(contextMenuStyle);
+        menu->setStyleSheet(contextMenuStyle.data());
 
         if (boardPtr->getStatus() == BoardStatus::OFFLINE)
         {
