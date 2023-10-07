@@ -207,7 +207,7 @@ private Q_SLOTS:
 	void expandThreadMenuPressed();
 
 	// SLOTS related to the PostView pane
-	void newPostBtnClicked();
+//	void newPostBtnClicked();
 	void expandPostMenuPressed();
     void postPageNumberEnterPressed();
 	void postFirstPageBtnClicked();
