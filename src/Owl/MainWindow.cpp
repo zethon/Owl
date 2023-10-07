@@ -128,7 +128,6 @@ void MainWindow::onLoaded()
     updateSelectedForum();
     updateSelectedThread();
 
-    createSignals();
     createLinkMessages();
 
     createMenus();
@@ -537,7 +536,7 @@ void MainWindow::getPostsHandler(BoardPtr board, ThreadPtr thread)
 
     QMutexLocker lock(&_updateMutex);
 
-    stopPostsLoading();
+//    stopPostsLoading();
 
     if (thread->getPosts().size() > 0)
     {
@@ -554,7 +553,7 @@ void MainWindow::getThreadsHandler(BoardPtr /*b*/, ForumPtr forum)
 {
     QMutexLocker lock(&_updateMutex);
 
-    stopThreadLoading();
+//    stopThreadLoading();
 
 //    if (forum->getThreads().size() > 0)
 //    {
@@ -1228,113 +1227,6 @@ void MainWindow::createStatusBar()
     QMainWindow::statusBar()->setMaximumHeight(20);
 }
 
-void MainWindow::createSignals()
-{
-//    QObject::connect(actionExit, SIGNAL(triggered()), this, SLOT(close()));
-////    QObject::connect(threadListWidget, &owl::ThreadListWidget::threadLoading, [this]()
-//    {
-//        startPostsLoading();
-////        newPostBtn->setEnabled(false);
-//    });
-
-//    auto gotoPrevPage = [this]()
-//    {
-//        auto thread = this->threadListWidget->getCurrentThread().lock();
-//        if (thread)
-//        {
-//            navigateToPostListPage(thread, (thread->getPageNumber() - 1));
-//        }
-//    };
-
-//    QObject::connect(postPrevPageBtn, &QPushButton::clicked, gotoPrevPage);
-
-//    auto gotoNextPage = [=]()
-//    {
-//        auto thread = this->threadListWidget->getCurrentThread().lock();
-//        if (thread)
-//        {
-//            navigateToPostListPage(thread, (thread->getPageNumber() + 1));
-//        }
-//    };
-
-//    QObject::connect(postNextPageBtn, &QPushButton::clicked, gotoNextPage);
-
-//    auto gotoFirstPage = [=]()
-//    {
-//        auto thread = this->threadListWidget->getCurrentThread().lock();
-//        if (thread)
-//        {
-//            navigateToPostListPage(thread, 1);
-//        }
-//    };
-
-//    QObject::connect(postFirstPageBtn, &QPushButton::clicked, gotoFirstPage);
-
-//    auto gotoLastPage = [=]()
-//    {
-//        auto thread = this->threadListWidget->getCurrentThread().lock();
-//        if (thread)
-//        {
-//            navigateToPostListPage(thread, thread->getPageCount());
-//        }
-//    };
-
-//    QObject::connect(postLastPageBtn, &QPushButton::clicked, gotoLastPage);
-    
-//    // items in the postNavFrame
-//    QObject::connect(expandAllBtn, &QPushButton::clicked, [this]()
-//     {
-//         postsWebView->expandAll();
-//     });
-    
-//    QObject::connect(collapseAllBtn, &QPushButton::clicked, [this]()
-//     {
-////         postsWebView->collapseAll();
-//     });
-
-//    QObject::connect(postsWebView, &PostListWebView::quotePost,
-//        [this](ThreadPtr thread, uint index)
-//        {
-//            const BoardPtr board = thread->getBoard().lock();
-//            if (board)
-//            {
-//                NewThreadDlg* dlg = new NewThreadDlg(thread, this);
-//                const auto strQuote = board->getPostQuote(thread->getPosts().at(static_cast<int>(index)));
-//                dlg->setQuoteText(strQuote);
-//                dlg->setModal(false);
-//                dlg->show();
-//            }
-//        });
-
-//    QObject::connect(postsWebView, &PostListWebView::replyPost,
-//        [this](ThreadPtr thread, uint index)
-//        {
-//            Q_UNUSED(index);
-//            NewThreadDlg* dlg = new NewThreadDlg(thread, this);
-//            dlg->setModal(false);
-//            dlg->show();
-//        });
-
-//    QObject::connect(postsWebView, &PostListWebView::showImageFromString,
-//        [this](const QString& base64)
-//        {
-//            _imageOverlay.setImageFromBase64(base64);
-//            _imageOverlay.show();
-//        });
-
-//    QObject::connect(postsWebView, &PostListWebView::showImageFromArray,
-//        [this](const QByteArray& base64)
-//        {
-//            _imageOverlay.setImageFromBase64(base64);
-//            _imageOverlay.show();
-//        });
-}
-
-void MainWindow::expandPostMenuPressed()
-{
-    postNavFrame->setVisible(!postNavFrame->isVisible());
-}
-
 void MainWindow::navigateToPostListPage(ThreadPtr thread, int iPageNumber)
 {
     auto board = thread->getBoard().lock();
@@ -1350,77 +1242,11 @@ void MainWindow::navigateToPostListPage(ThreadPtr thread, int iPageNumber)
             iPageNumber = 1;
         }
         
-        startPostsLoading();
+//        startPostsLoading();
         thread->setPageNumber(iPageNumber);
         board->requestPostList(thread, ParserEnums::REQUEST_DEFAULT, true);
 //        postPageNumEdit->setText(QString::number(iPageNumber));
     }
-}
-
-void MainWindow::postPageNumberEnterPressed()
-{
-////    ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
-    
-//    if (thread && thread->getPageNumber())
-//    {
-////        QString strText(postPageNumEdit->text());
-////        bool bOk = false;
-////        int iPageNumber = strText.toInt(&bOk);
-        
-////        if (bOk)
-////        {
-////            navigateToPostListPage(thread, iPageNumber);
-////        }
-////        else
-////        {
-////            postPageNumEdit->setText(QString::number(thread->getPageNumber()));
-////        }
-//    }
-}
-
-void MainWindow::postFirstPageBtnClicked()
-{
-//    ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
-    
-//    if (thread)
-//    {
-//        navigateToPostListPage(thread, 1);
-//    }
-}
-
-void MainWindow::postPrevPageBtnClicked()
-{
-//    ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
-
-//    if (thread)
-//    {
-//        navigateToPostListPage(thread, (thread->getPageNumber() - 1));
-//    }
-}
-
-void MainWindow::postNextPageBtnClicked()
-{
-//    ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
-
-//    if (thread)
-//    {
-//        navigateToPostListPage(thread, (thread->getPageNumber() + 1));
-//    }
-}
-
-void MainWindow::postLastPageBtnClicked()
-{
-//    ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
-
-//    if (thread)
-//    {
-//        navigateToPostListPage(thread, thread->getPageCount());
-//    }
-}
-
-void MainWindow::expandThreadMenuPressed()
-{
-//    threadNavFrame->setVisible(!threadNavFrame->isVisible());
 }
     
 void MainWindow::navigateToThreadListPage(ForumPtr forum, int iPageNumber)
@@ -1438,7 +1264,7 @@ void MainWindow::navigateToThreadListPage(ForumPtr forum, int iPageNumber)
             iPageNumber = 1;
         }
 
-        startThreadLoading();
+//        startThreadLoading();
 //        threadPageNumEdit->setText(QString::number(iPageNumber));
         forum->setPageNumber(iPageNumber);
         board->requestThreadList(forum);
@@ -1826,49 +1652,9 @@ void MainWindow::writeWindowSettings()
     settings.setValue("statusBarGeometry", QMainWindow::statusBar()->saveGeometry());
     settings.setValue("statusBarVisible", _statusBarVisibile);
     settings.setValue("postsPanePosition", _postsPanePosition);
-//    settings.setValue("showStickies", threadListWidget->showStickies());
     settings.setValue("showMenuBar", menuBar()->isVisible());
-
-    // TODO: hide servicesTree?
-    // settings.setValue("servicePaneVisibility", servicesTree->isVisible());
 }
                                                              
-void MainWindow::startThreadLoading()
-{
-//    threadNavFrame->setEnabled(false);
-//    threadPageNav->setEnabled(false);
-
-//    threadLoadingImg->show();
-//    threadLoadingImg->movie()->start();
-//    currentForumLbl->setText("Loading...");
-}
-
-void MainWindow::stopThreadLoading()
-{
-//    threadNavFrame->setEnabled(true);
-//    threadPageNav->setEnabled(true);
-
-//    threadLoadingImg->hide();
-//    threadLoadingImg->movie()->stop();
-//    currentForumLbl->setText("");
-}
-
-void MainWindow::startPostsLoading()
-{
-//    postNavFrame->setEnabled(false);
-//    postsLoadingImg->show();
-//    postsLoadingImg->movie()->start();
-//    currentThreadLabel->setText("Loading...");
-}
-
-void MainWindow::stopPostsLoading()
-{
-//    postNavFrame->setEnabled(true);
-//    postsLoadingImg->hide();
-//    postsLoadingImg->movie()->stop();
-//    currentThreadLabel->setText("");
-}
-
 void MainWindow::onDisplayOrderChanged(BoardPtr b, int iDirection)
 {	
     QMutexLocker locker(&_updateMutex);
