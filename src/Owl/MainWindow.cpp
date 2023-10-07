@@ -1420,7 +1420,7 @@ void MainWindow::postLastPageBtnClicked()
 
 void MainWindow::expandThreadMenuPressed()
 {
-    threadNavFrame->setVisible(!threadNavFrame->isVisible());
+//    threadNavFrame->setVisible(!threadNavFrame->isVisible());
 }
     
 void MainWindow::navigateToThreadListPage(ForumPtr forum, int iPageNumber)
@@ -1627,56 +1627,11 @@ void MainWindow::createThreadPanel()
 
     QObject::connect(threadListWidget2, &ForumView::onForumListLoaded,
         [this]() { contentView->doShowLogo(); });
-
-    // the "New Thread" button is disabled on startup
-//    newThreadBtn->setEnabled(false);
-
-//    // set up the menu's expand-button
-//    auto moreMenuPressed = [this]
-//    {
-//        threadNavFrame->setVisible(!threadNavFrame->isVisible());
-//        line->setVisible(threadNavFrame->isVisible());
-//    };
-
-//    QObject::connect(threadMenuMoreBtn, &QPushButton::clicked, moreMenuPressed);
-//    QObject::connect(currentForumLbl, &ClickableLabel::clicked, moreMenuPressed);
-
-//    QObject::connect(stickyButton, &QToolButton::clicked,
-//        [this](bool checked)
-//        {
-////            this->threadListWidget->setShowStickies(checked);
-////            this->threadListWidget->refreshThreadDisplay();
-
-//            if (checked)
-//            {
-////                stickyButton->setToolTip(tr("Click to hide sticky threads"));
-//            }
-//            else
-//            {
-////                stickyButton->setToolTip(tr("Click to show sticky threads"));
-//            }
-//        });
 }
 
 void MainWindow::createPostPanel()
 {
-    // the "New Post" button is disabled by default
-//    newPostBtn->setEnabled(false);
-
-    // set up the menu's expand button
-//    auto moreMenuPressed = [this]
-//    {
-//            postNavFrame->setVisible(!postNavFrame->isVisible());
-//            line_2->setVisible(postNavFrame->isVisible());
-//    };
-
-//    QObject::connect(postMenuMoreBtn, &QPushButton::clicked, moreMenuPressed);
-//    QObject::connect(currentThreadLabel, &ClickableLabel::clicked, moreMenuPressed);
-
-    // set up the rest of the view's connections
-//    QObject::connect(postPageNumEdit, SIGNAL(returnPressed()), this, SLOT(postPageNumberEnterPressed()));
-//    QObject::connect(newPostBtn, SIGNAL(clicked()), this, SLOT(newPostBtnClicked()));
-
+    // @TODO: Is this still needed?
     QObject::connect(postViewDockWidget, &QDockWidget::visibilityChanged, 
         [this](bool bVisible)
     {
@@ -1849,17 +1804,6 @@ void MainWindow::readWindowSettings()
         _statusBarVisibile = settings.value("statusBarVisible").toBool();
         _postsPanePosition = settings.value("postsPanePosition").toUInt();
 
-////        threadListWidget->setShowStickies(settings.value("showStickies").toBool());
-//        stickyButton->setChecked(settings.value("showStickies").toBool());
-//        if (settings.value("showStickies").toBool())
-//        {
-//            stickyButton->setToolTip(tr("Click to hide sticky threads"));
-//        }
-//        else
-//        {
-//            stickyButton->setToolTip(tr("Click to hide sticky threads"));
-//        }
-
         menuBar()->setVisible(settings.value("showMenuBar").toBool());
     }
     else
@@ -1891,7 +1835,7 @@ void MainWindow::writeWindowSettings()
                                                              
 void MainWindow::startThreadLoading()
 {
-    threadNavFrame->setEnabled(false);
+//    threadNavFrame->setEnabled(false);
 //    threadPageNav->setEnabled(false);
 
 //    threadLoadingImg->show();
@@ -1901,7 +1845,7 @@ void MainWindow::startThreadLoading()
 
 void MainWindow::stopThreadLoading()
 {
-    threadNavFrame->setEnabled(true);
+//    threadNavFrame->setEnabled(true);
 //    threadPageNav->setEnabled(true);
 
 //    threadLoadingImg->hide();
@@ -1911,7 +1855,7 @@ void MainWindow::stopThreadLoading()
 
 void MainWindow::startPostsLoading()
 {
-    postNavFrame->setEnabled(false);
+//    postNavFrame->setEnabled(false);
 //    postsLoadingImg->show();
 //    postsLoadingImg->movie()->start();
 //    currentThreadLabel->setText("Loading...");
@@ -1919,7 +1863,7 @@ void MainWindow::startPostsLoading()
 
 void MainWindow::stopPostsLoading()
 {
-    postNavFrame->setEnabled(true);
+//    postNavFrame->setEnabled(true);
 //    postsLoadingImg->hide();
 //    postsLoadingImg->movie()->stop();
 //    currentThreadLabel->setText("");
