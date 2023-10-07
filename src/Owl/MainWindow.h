@@ -203,17 +203,7 @@ private Q_SLOTS:
 	void onNewBoard();
 
     void onLinkActivated(const QString &urlStr);
-    
-	void expandThreadMenuPressed();
 
-	// SLOTS related to the PostView pane
-//	void newPostBtnClicked();
-	void expandPostMenuPressed();
-    void postPageNumberEnterPressed();
-	void postFirstPageBtnClicked();
-	void postPrevPageBtnClicked();
-	void postNextPageBtnClicked();
-	void postLastPageBtnClicked();
 
 	void onBoardToolbarItemClicked(QAction*);
 	//void rightScrollButtonClicked();
@@ -248,7 +238,6 @@ private:
     void createLinkMessages();
     void createMenus();
     void createStatusBar();
-    void createSignals();
     void createBoardPanel();
     void createThreadPanel();
     void createPostPanel();
@@ -258,11 +247,8 @@ private:
 
     void connectBoard(BoardPtr board);
 
-    void startThreadLoading();
-    void stopThreadLoading();
-
-    void startPostsLoading();
-    void stopPostsLoading();
+//    void startThreadLoading();
+//    void stopThreadLoading();
 
     void createDebugMenu();
 
