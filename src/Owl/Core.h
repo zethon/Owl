@@ -29,4 +29,4 @@
 #define OWL_VERSION					__EXPAND__(OWL_VERSION_MAJOR) "." __EXPAND__(OWL_VERSION_MINOR) "." __EXPAND__(OWL_VERSION_PATCH)
 #define OWL_VERSION_DATE_TIME		__DATE__ " " __TIME__
 
-#define COPYRIGHT                   "Copyright (c) 2012-2019 " ORGANIZATION_NAME ". All Rights Reserved."
+#define COPYRIGHT                   "Copyright (c) 2012-2023 " ORGANIZATION_NAME ". All Rights Reserved."

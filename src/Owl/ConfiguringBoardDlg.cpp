@@ -183,7 +183,7 @@ owl::StringMap ConfiguringBoardDlg::autoConfigure()
 	// try Tapatalk parser first
     for (const auto& protocol : protocols)
     {
-        for (QString path : FORUMPATHS)
+        for (const QString& path : FORUMPATHS)
         {
             QUrl tempUrl { baseUrl };
             tempUrl.setScheme(protocol);
@@ -241,8 +241,6 @@ owl::StringMap ConfiguringBoardDlg::autoConfigure()
 
 	if (!bFound && bKeepTrying)
 	{
-        QString html;
-
 		// loop through each parser testing each url until we run 
 		// out or find a compatible parser
 
@@ -279,7 +277,7 @@ owl::StringMap ConfiguringBoardDlg::autoConfigure()
                 if (reply && reply->text().size() > 0)
                 {
                     QString html = reply->text();
-                    for (QString parserName : parsers)
+                    for (const QString& parserName : parsers)
                     {
                         _logger->debug("Trying parser {} at Url: {}", parserName.toStdString(), testUrl.toStdString());
                         ParserBasePtr p = ParserManager::instance()->createParser(parserName, testUrl);
@@ -361,8 +359,7 @@ owl::StringMap ConfiguringBoardDlg::createBoard(const QString& parserName, const
 	StringMap boardwareInfo = parser->getBoardwareInfo();
 
 	statusLbl->setText(QString(tr("Detected %1 version %2. Attempting login."))
-		.arg(boardwareInfo.getText("boardware"))
-		.arg(boardwareInfo.getText("version")));
+		.arg(boardwareInfo.getText("boardware"), boardwareInfo.getText("version")));
 
     _logger->info("Attempting login of new board");
 	LoginInfo loginInfo(_username, _password);
@@ -580,8 +577,7 @@ StringMap ConfiguringBoardDlg::manualTapatalkConfigure()
         {
             // catch any errors since we might be testing a bad url
             const QString error = QString("Could not request URL '%1' because: %2")
-                .arg(testUrl)
-                .arg(wx.message());
+                .arg(testUrl, wx.message());
 
             _logger->debug(error.toStdString());
         }
@@ -592,8 +588,7 @@ StringMap ConfiguringBoardDlg::manualTapatalkConfigure()
         for (const QString& path : FORUMPATHS)
         {
             QString testUrl = QString("%1/%2")
-                .arg(_targetUrl.toString())
-                .arg(path);
+                .arg(_targetUrl.toString(), path);
 
             try
             {
@@ -612,8 +607,7 @@ StringMap ConfiguringBoardDlg::manualTapatalkConfigure()
             {
                 // catch any errors since we might be testing a bad url
                 const QString error = QString("Could not request URL '%1' because: %2")
-                    .arg(testUrl)
-                    .arg(wx.message());
+                    .arg(testUrl, wx.message());
 
                 _logger->debug(error.toStdString());
             }

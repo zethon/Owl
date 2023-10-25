@@ -12,7 +12,7 @@ QuickAddDlg::QuickAddDlg(QWidget* parent)
 	: QDialog(parent)
 {
 	setupUi(this);
-    
+    setStyleSheet("background-color:white;");
     setFixedSize(this->width(),this->height());
 
 #ifdef Q_WS_WIN
@@ -50,7 +50,7 @@ QuickAddDlg::QuickAddDlg(QWidget* parent)
     this->parserCombo->insertItem(0, tr("Auto-detect"), QString("#AUTODETECT"));
     this->parserCombo->setCurrentIndex(0);
 
-	guestCB->setVisible(false);	
+	guestCB->setVisible(false);
 }
 
 void QuickAddDlg::accept()

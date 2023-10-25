@@ -8,7 +8,6 @@
 #include "Data/BoardManager.h"
 #include "NewThreadDlg.h"
 #include "AspectRatioPixmapLabel.h"
-#include "PostListWidget.h"
 #include "ui_MainWindow.h"
 
 #include <spdlog/spdlog.h>
@@ -69,10 +68,7 @@ public:
 
         setAttribute(Qt::WA_TranslucentBackground);
         _closeBtn.setText(tr("Close"));
-        QObject::connect(&_closeBtn, &QPushButton::clicked, [this]()
-        {
-            this->hide();
-        });
+        QObject::connect(&_closeBtn, &QPushButton::clicked, this, [this]() { this->hide(); });
 
         _layout.addWidget(&_closeBtn, 0, 0, Qt::AlignRight);
         _layout.addWidget(&_imgLabel, 1, 0, 1, 1, Qt::AlignCenter);
