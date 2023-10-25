@@ -16,6 +16,7 @@ static const char* GLOBAL_LOGGER = "Owl";
     if (!root)
     {
         root = spdlog::stdout_color_mt(owl::GLOBAL_LOGGER);
+        spdlog::drop(owl::GLOBAL_LOGGER);
         spdlog::register_logger(root);
 
 #ifdef RELEASE
