@@ -10,6 +10,9 @@
 #include <QMenu>
 #include <QMessageBox>
 
+#include "ZFontIcon/ZFontIcon.h"
+#include "ZFontIcon/ZFont_fa5.h"
+
 #include  <Utils/OwlLogger.h>
 #include "Data/BoardManager.h"
 #include "BoardIconView.h"
@@ -363,7 +366,7 @@ QVariant BoardIconModel::data(const QModelIndex& index, int role) const
         switch (role)
         {
             case Qt::DecorationRole:
-                return QVariant { QIcon("://icons/add-board-512.png") };
+                return QVariant { QIcon(ZFontIcon::icon(Fa5::FAMILY, Fa5::fa_plus_circle)) };
 
             case ICONTYPE_ROLE:
                 return QVariant::fromValue(IconType::ADDICON);

@@ -227,6 +227,11 @@ if (APPLE)
     find_package(Qt5MacExtras REQUIRED)
 endif (APPLE)
 
+# create the ZFontIcon library
+include_directories(ZFontIcon)
+add_library(ZFontIcon STATIC ZFontIcon/ZFontIcon/ZFontIcon.cpp)
+target_link_libraries(ZFontIcon Qt5::Core Qt5::Gui Qt5::Widgets)
+
 # TODO: move the version information into a dedicated
 # file *just* for versioning information
 file(READ "src/Owl/Core.h" filecontent)
