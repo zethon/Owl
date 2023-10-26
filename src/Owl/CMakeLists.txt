@@ -142,6 +142,7 @@ TARGET_LINK_LIBRARIES(Owl
         hunspell::hunspell
         tidy-html5::tidy-html5
         CURL::libcurl
+        ZFontIcon
 )
 
 if(WIN32 AND MSVC)

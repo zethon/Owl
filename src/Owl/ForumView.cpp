@@ -4,6 +4,10 @@
 
 #include <fmt/compile.h>
 
+#include "ZFontIcon/ZFontIcon.h"
+#include "ZFontIcon/ZFont_fa5.h"
+#include "ZFontIcon/ZFont_fa4.h"
+
 #include  <Utils/OwlLogger.h>
 
 #include "Data/Board.h"
@@ -22,8 +26,8 @@
 #elif defined(Q_OS_MAC)
     #define BOARDNAMEFONT       20
     #define USERNAMEFONT        15
-    #define TREEFONTSIZE        16
-    #define TREEITEMHEIGHT      28
+    #define TREEFONTSIZE        14
+    #define TREEITEMHEIGHT      38
     #define TREECATHEIGHT       48
     #define TOP_PADDING         23
     #define LEFT_PADDING        6
@@ -101,6 +105,12 @@ namespace owl
 //* ForumViewDelegate
 //********************************
 
+ForumViewDelegate::ForumViewDelegate()
+{
+    _forumUnreadIcon = QIcon(ZFontIcon::icon(Fa4::FAMILY, Fa4::fa_commenting, QColor{120,120,120}, 0.85));
+    _forumReadIcon = QIcon(ZFontIcon::icon(Fa4::FAMILY, Fa4::fa_commenting_o));
+}
+
 void ForumViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     QStyleOptionViewItem styledOption{option};
@@ -113,7 +123,7 @@ void ForumViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
         QFont font{ option.font };
         font.setBold(true);
         font.setCapitalization(QFont::Capitalization::AllUppercase);
-        font.setPointSize(font.pointSize() * 0.75f);
+        font.setPointSize(font.pointSize() * 0.925f);
         painter->setPen(QPen(QColor(SUB_COLOR.data())));
 
         QRect textRect { option.rect };
@@ -128,6 +138,8 @@ void ForumViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
     }
     else
     {
+        static int x = 0;
+        x--;
         painter->save();
 
         // draw the background first
@@ -160,19 +172,44 @@ void ForumViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
         // draw the image centered
         QRect workingRect{ option.rect };
         workingRect.adjust(5, yAdjust, 0, 0);
-        painter->drawImage(QPoint(workingRect.x(), workingRect.y()), image);
+//        painter->drawImage(QPoint(workingRect.x(), workingRect.y()), image);
+
+        const QIcon* board_icon;
+        if (item->hasUnread())
+        {
+            board_icon = &_forumUnreadIcon;
+        }
+        else
+        {
+            board_icon = &_forumReadIcon;
+        }
+
+        const QPixmap board_map = board_icon->pixmap(QSize{24, 24});
+        painter->drawPixmap(QPoint(workingRect.x() - 5, workingRect.y() - 7), board_map);
+
+//        QRect iconRect { workingRect };
+//        iconRect.adjust(0,0, -64, 0);
+
+
+////        const auto board_icon_size = workingRect.size();
+//        const QIcon board_icon = QIcon(ZFontIcon::icon(Fa5::FAMILY, Fa5::fa_plus_circle));
+////        qDebug() << "QIcon: " << board_icon
+//        qDebug() << "Rect: " << workingRect;
+//        board_icon.paint(painter, workingRect, Qt::AlignLeft);
+////        painter->drawPixmap(QPoint(workingRect.x(), workingRect.y()), board_icon);
         
         if (item->hasUnread())
         {
             QFont newfont { option.font };
             newfont.setBold(true);
             painter->setFont(newfont);
+            painter->setPen(QColor{"black"});
         }
         else
         {
             painter->setFont(option.font);
+            painter->setPen(QColor(FORUM_COLOR.data()));
         }
-        painter->setPen(QColor(FORUM_COLOR.data()));
 
         // now adjust for the text
         workingRect = option.rect;
