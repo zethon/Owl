@@ -309,7 +309,7 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     _boardLabel->setStyleSheet(fmt::format("QLabel{{ color : {}; }}", HEADER_COLOR).data());
 
     QHBoxLayout* boardNameLayout = new QHBoxLayout();
-    boardNameLayout->addSpacing(5);
+    boardNameLayout->addSpacing(0);
     boardNameLayout->addWidget(_boardLabel);
 
     QHBoxLayout* userLayout = new QHBoxLayout();

@@ -674,7 +674,7 @@ void MainWindow::updateSelectedForum(ForumPtr f)
 // updates the UI
 void MainWindow::updateSelectedThread(ThreadPtr t)
 {
-    postNavFrame->setEnabled(t != nullptr);
+    // postNavFrame->setEnabled(t != nullptr);
 
     if (t != nullptr)
     {
