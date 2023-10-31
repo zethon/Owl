@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>MainWindow</class>
-
-
-
  <widget class="QMainWindow" name="MainWindow">
   <property name="geometry">
    <rect>
@@ -28,10 +25,6 @@
     width: 0px;
 }</string>
   </property>
-  
-  
-  
-  
   <widget class="QWidget" name="centralwidgetMain">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <property name="spacing">
@@ -86,13 +79,7 @@
      </widget>
     </item>
     <item>
-     <widget class="owl::ForumView" name="threadListWidget2" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
+     <widget class="QFrame" name="firstpageFrame">
       <property name="minimumSize">
        <size>
         <width>250</width>
@@ -105,57 +92,81 @@
         <height>16777215</height>
        </size>
       </property>
-      <property name="acceptDrops">
-       <bool>false</bool>
-      </property>
       <property name="styleSheet">
-       <string notr="true">QWidget
-  {
-    background: #594157;
-  }
-  </string>
+       <string notr="true"/>
       </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="owl::ForumView" name="threadListWidget2" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>250</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>250</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="acceptDrops">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
-
-
     <item>
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <property name="spacing">
-         <number>0</number>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>1</number>
+      </property>
+      <item>
+       <widget class="owl::ContentView" name="contentView" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
-        <property name="topMargin">
-         <number>1</number>
+        <property name="acceptDrops">
+         <bool>false</bool>
         </property>
-        <item>
-         <widget class="owl::ContentView" name="contentView" native="true">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="acceptDrops">
-           <bool>false</bool>
-          </property>
-          <property name="styleSheet">
-           <string notr="true"/>
-          </property>
-         </widget>
-        </item>
-
-       </layout>
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
+       </widget>
       </item>
+     </layout>
+    </item>
    </layout>
   </widget>
-
-
-
-
-
-
-
-
   <widget class="QToolBar" name="appToolBar">
    <property name="windowTitle">
     <string>Standard</string>
@@ -356,13 +367,6 @@
    </property>
   </action>
  </widget>
-
-
-
-
-
-
-
  <customwidgets>
   <customwidget>
    <class>owl::BoardIconView</class>
