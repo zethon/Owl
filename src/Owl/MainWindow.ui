@@ -25,9 +25,6 @@
     width: 0px;
 }</string>
   </property>
-
-
-  
   <widget class="QWidget" name="mainWindowWidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <property name="spacing">
@@ -45,9 +42,8 @@
     <property name="bottomMargin">
      <number>0</number>
     </property>
-
     <item>
-     <widget class="owl::BoardIconView" name="boardIconPanel" native="true">
+     <widget class="owl::BoardIconView" name="connectionView" native="true">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>0</horstretch>
@@ -84,7 +80,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QFrame" name="firstpageFrame">
+     <widget class="QFrame" name="navigationFrame">
       <property name="minimumSize">
        <size>
         <width>250</width>
@@ -144,10 +140,8 @@
       </layout>
      </widget>
     </item>
-
-
     <item>
-     <widget class="QFrame" name="firstpageFrame2">
+     <widget class="QFrame" name="contentFrame">
       <property name="styleSheet">
        <string notr="true">QWidget { background: cyan; }</string>
       </property>
@@ -155,8 +149,17 @@
        <property name="spacing">
         <number>0</number>
        </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
        <property name="topMargin">
-        <number>2</number>
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
        </property>
        <item>
         <widget class="owl::ContentView" name="contentView" native="true">
@@ -177,12 +180,8 @@
       </layout>
      </widget>
     </item>
-
    </layout>
   </widget>
-  
-  
-  
   <widget class="QToolBar" name="appToolBar">
    <property name="windowTitle">
     <string>Standard</string>
