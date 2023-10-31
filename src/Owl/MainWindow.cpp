@@ -27,8 +27,8 @@
     #define BOARDICONWIDGETWIDTH         70
     #define CENTRALWIDGETWIDTH          275
 #elif defined(Q_OS_MAC)
-    #define BOARDICONWIDGETWIDTH         70
-    #define CENTRALWIDGETWIDTH          250
+    // #define BOARDICONWIDGETWIDTH         70
+    // #define CENTRALWIDGETWIDTH          250
 #else
     #define BOARDICONWIDGETWIDTH         70
     #define CENTRALWIDGETWIDTH          250
@@ -88,10 +88,10 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
     initializeTitleBar(this);
     toggleOldControls(false);
 
-    this->boardIconDockWidget->setMaximumWidth(BOARDICONWIDGETWIDTH);
-    this->boardIconDockWidget->setMinimumWidth(BOARDICONWIDGETWIDTH);
-    this->centralWidget()->setMaximumWidth(CENTRALWIDGETWIDTH);
-    this->centralWidget()->setMinimumWidth(CENTRALWIDGETWIDTH);
+    // this->boardIconDockWidget->setMaximumWidth(BOARDICONWIDGETWIDTH);
+    // this->boardIconDockWidget->setMinimumWidth(BOARDICONWIDGETWIDTH);
+    // this->centralWidget()->setMaximumWidth(CENTRALWIDGETWIDTH);
+    // this->centralWidget()->setMinimumWidth(CENTRALWIDGETWIDTH);
 
     // TODO: move this to the OwlApplication class
     readWindowSettings();
@@ -105,8 +105,8 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
     appToolBar->setVisible(false);
     
     // create a blank title bar for the post view dock
-    postViewDockWidget->setTitleBarWidget(new QWidget(postViewDockWidget));
-    boardIconDockWidget->setTitleBarWidget(new QWidget(boardIconDockWidget));
+    // postViewDockWidget->setTitleBarWidget(new QWidget(postViewDockWidget));
+    // boardIconDockWidget->setTitleBarWidget(new QWidget(boardIconDockWidget));
     
     QTimer::singleShot(0, this, SLOT(onLoaded()));
 }
@@ -990,13 +990,13 @@ void MainWindow::createMenus()
                 _actions.postPaneRight->setCheckable(true);
                 QObject::connect(_actions.postPaneRight, &QAction::triggered, [this]()
                 {
-                    if (!postViewDockWidget->isVisible())
-                    {
-                        postViewDockWidget->setTitleBarWidget(new QWidget(this));
-                        postViewDockWidget->setVisible(true);
-                    }
+                    // if (!postViewDockWidget->isVisible())
+                    // {
+                    //     // postViewDockWidget->setTitleBarWidget(new QWidget(this));
+                    //     postViewDockWidget->setVisible(true);
+                    // }
 
-                    addDockWidget(Qt::DockWidgetArea::RightDockWidgetArea, postViewDockWidget);
+                    // addDockWidget(Qt::DockWidgetArea::RightDockWidgetArea, postViewDockWidget);
                     this->_actions.postPaneRight->setChecked(true);
                     this->_actions.postPaneBelow->setChecked(false);
                     this->_actions.postPaneHidden->setChecked(false);
@@ -1009,13 +1009,13 @@ void MainWindow::createMenus()
                 _actions.postPaneBelow->setCheckable(true);
                 QObject::connect(_actions.postPaneBelow, &QAction::triggered, [this]()
                 {
-                    if (!postViewDockWidget->isVisible())
-                    {
-                        postViewDockWidget->setTitleBarWidget(new QWidget(this));
-                        postViewDockWidget->setVisible(true);
-                    }
+                    // if (!postViewDockWidget->isVisible())
+                    // {
+                    //     // postViewDockWidget->setTitleBarWidget(new QWidget(this));
+                    //     postViewDockWidget->setVisible(true);
+                    // }
 
-                    addDockWidget(Qt::DockWidgetArea::BottomDockWidgetArea, postViewDockWidget);
+                    // addDockWidget(Qt::DockWidgetArea::BottomDockWidgetArea, postViewDockWidget);
                     this->_actions.postPaneRight->setChecked(false);
                     this->_actions.postPaneBelow->setChecked(true);
                     this->_actions.postPaneHidden->setChecked(false);
@@ -1028,7 +1028,7 @@ void MainWindow::createMenus()
                 _actions.postPaneHidden->setCheckable(true);
                 QObject::connect(_actions.postPaneHidden, &QAction::triggered, [this]()
                 {
-                    postViewDockWidget->setVisible(false);
+                    // postViewDockWidget->setVisible(false);
                     _actions.postPaneRight->setChecked(false);
                     _actions.postPaneBelow->setChecked(false);
                     _actions.postPaneHidden->setChecked(true);
@@ -1457,12 +1457,12 @@ void MainWindow::createThreadPanel()
 
 void MainWindow::createPostPanel()
 {
-    // @TODO: Is this still needed?
-    QObject::connect(postViewDockWidget, &QDockWidget::visibilityChanged, 
-        [this](bool bVisible)
-    {
-        this->_actions.postPaneHidden->setChecked(!bVisible);
-    });
+    // // @TODO: Is this still needed?
+    // QObject::connect(postViewDockWidget, &QDockWidget::visibilityChanged, 
+    //     [this](bool bVisible)
+    // {
+    //     this->_actions.postPaneHidden->setChecked(!bVisible);
+    // });
 }
 
 // Invoked from the board toolbar when user clicks 'Open in Browser'
