@@ -42,6 +42,7 @@
     <property name="bottomMargin">
      <number>0</number>
     </property>
+    
     <item>
      <widget class="owl::BoardIconView" name="connectionView" native="true">
       <property name="sizePolicy">
@@ -79,6 +80,7 @@
       </property>
      </widget>
     </item>
+    
     <item>
      <widget class="QFrame" name="navigationFrame">
       <property name="minimumSize">
@@ -113,7 +115,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="owl::ForumView" name="threadListWidget2" native="true">
+        <widget class="owl::ForumView" name="forumNavigationView" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -140,6 +142,7 @@
       </layout>
      </widget>
     </item>
+    
     <item>
      <widget class="QFrame" name="contentFrame">
       <property name="styleSheet">
@@ -162,7 +165,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="owl::ContentView" name="contentView" native="true">
+        <widget class="owl::ContentView" name="forumContentView" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -180,6 +183,8 @@
       </layout>
      </widget>
     </item>
+
+
    </layout>
   </widget>
   <widget class="QToolBar" name="appToolBar">

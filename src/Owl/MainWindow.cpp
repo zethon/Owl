@@ -561,7 +561,7 @@ void MainWindow::getThreadsHandler(BoardPtr /*b*/, ForumPtr forum)
 //    }
 
     updateSelectedForum(forum);
-    contentView->doShowListOfThreads(forum);
+    forumContentView->doShowListOfThreads(forum);
 }
 
 // SLOT: handles the SIGNAL from a Board object. Called when the board responds 
@@ -1327,8 +1327,8 @@ void MainWindow::createBoardPanel()
     QObject::connect(connectionView, &BoardIconView::onBoardClicked,
         [this](owl::BoardWeakPtr bwp)
         {
-            contentView->doShowLoading(bwp);
-            threadListWidget2->doBoardClicked(bwp);
+            forumContentView->doShowLoading(bwp);
+            forumNavigationView->doBoardClicked(bwp);
         });
 
     QObject::connect(connectionView, &BoardIconView::onEditBoard,
@@ -1439,20 +1439,20 @@ void MainWindow::createBoardPanel()
     
 void MainWindow::createThreadPanel()
 {
-    QObject::connect(threadListWidget2, &ForumView::onForumClicked,
+    QObject::connect(forumNavigationView, &ForumView::onForumClicked,
         [this](owl::ForumPtr forum)
         {
             BoardPtr board = forum->getBoard().lock();
             if (board && board->getStatus() == BoardStatus::ONLINE)
             {
-                contentView->doShowLoading(board);
+                forumContentView->doShowLoading(board);
                 board->requestThreadList(forum);
                 board->setLastForumId(forum->getId().toInt());
             }
         });
 
-    QObject::connect(threadListWidget2, &ForumView::onForumListLoaded,
-        [this]() { contentView->doShowLogo(); });
+    QObject::connect(forumNavigationView, &ForumView::onForumListLoaded,
+        [this]() { forumContentView->doShowLogo(); });
 }
 
 void MainWindow::createPostPanel()
