@@ -8,7 +8,6 @@
 #include "Data/BoardManager.h"
 #include "NewThreadDlg.h"
 #include "AspectRatioPixmapLabel.h"
-#include "PostListWidget.h"
 #include "ui_MainWindow.h"
 
 #include <spdlog/spdlog.h>
@@ -69,10 +68,7 @@ public:
 
         setAttribute(Qt::WA_TranslucentBackground);
         _closeBtn.setText(tr("Close"));
-        QObject::connect(&_closeBtn, &QPushButton::clicked, [this]()
-        {
-            this->hide();
-        });
+        QObject::connect(&_closeBtn, &QPushButton::clicked, this, [this]() { this->hide(); });
 
         _layout.addWidget(&_closeBtn, 0, 0, Qt::AlignRight);
         _layout.addWidget(&_imgLabel, 1, 0, 1, 1, Qt::AlignCenter);
@@ -203,17 +199,7 @@ private Q_SLOTS:
 	void onNewBoard();
 
     void onLinkActivated(const QString &urlStr);
-    
-	void expandThreadMenuPressed();
 
-	// SLOTS related to the PostView pane
-	void newPostBtnClicked();
-	void expandPostMenuPressed();
-    void postPageNumberEnterPressed();
-	void postFirstPageBtnClicked();
-	void postPrevPageBtnClicked();
-	void postNextPageBtnClicked();
-	void postLastPageBtnClicked();
 
 	void onBoardToolbarItemClicked(QAction*);
 	//void rightScrollButtonClicked();
@@ -248,7 +234,6 @@ private:
     void createLinkMessages();
     void createMenus();
     void createStatusBar();
-    void createSignals();
     void createBoardPanel();
     void createThreadPanel();
     void createPostPanel();
@@ -258,11 +243,8 @@ private:
 
     void connectBoard(BoardPtr board);
 
-    void startThreadLoading();
-    void stopThreadLoading();
-
-    void startPostsLoading();
-    void stopPostsLoading();
+//    void startThreadLoading();
+//    void stopThreadLoading();
 
     void createDebugMenu();
 
@@ -312,7 +294,6 @@ private:
     ImageOverlay    _imageOverlay;
 
     std::shared_ptr<spdlog::logger>  _logger;
-    void toggleOldControls(bool toggle);
 };
 
 class BoardMenu : public QMenu

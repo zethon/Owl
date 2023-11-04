@@ -2,6 +2,12 @@
 #include <QLabel>
 #include <QScrollBar>
 
+#include <fmt/compile.h>
+
+#include "ZFontIcon/ZFontIcon.h"
+#include "ZFontIcon/ZFont_fa5.h"
+#include "ZFontIcon/ZFont_fa4.h"
+
 #include  <Utils/OwlLogger.h>
 
 #include "Data/Board.h"
@@ -20,8 +26,8 @@
 #elif defined(Q_OS_MAC)
     #define BOARDNAMEFONT       20
     #define USERNAMEFONT        15
-    #define TREEFONTSIZE        16
-    #define TREEITEMHEIGHT      28
+    #define TREEFONTSIZE        14
+    #define TREEITEMHEIGHT      38
     #define TREECATHEIGHT       48
     #define TOP_PADDING         23
     #define LEFT_PADDING        6
@@ -35,48 +41,62 @@
     #define LEFT_PADDING        2
 #endif
 
-static const char* strListStyleSheet = R"(
+using namespace std::literals;
+
+static const auto BG_COLOR =            "#F3F3F4"sv;
+static const auto HEADER_COLOR =        "#5c5e66"sv;
+static const auto USERNAME_COLOR =      "#5c5e66"sv;
+static const auto SUB_COLOR =           "#6d6f77"sv;
+static const auto FORUM_COLOR =         "#5c5e66"sv;
+static const auto HOVER_COLOR=          "#e0e1e5"sv;
+static const auto SELECTED_COLOR=       "#d7d9dc"sv;
+
+const auto strListStyleSheet = fmt::format(R"x(
 QListView
-{
-    background: #303E4B;
+{{
+    background: {};
     border-style: none;
-}
+}}
 
 QListView::item::selected
-{
-    background: #587B7F;
-}
+{{
+    background: yellow;
+}}
 
 QListView::item::hover
-{
-    background: #222222;
-}
-)";
+{{
+    background: blue;
+}}
+)x", BG_COLOR);
 
-static const char* strListViewScrollStyle = R"(
-QScrollBar:vertical {
+const auto strListViewScrollStyle = fmt::format(R"(
+QScrollBar:vertical
+{{
     border: 0px;
-    background: #303E4B;
+    background: {};
     width: 5px;
     margin: 0px 0px 0px 0px;
-}
+}}
+
 QScrollBar::handle:vertical
-{
+{{
     background: darkgrey;
-}
+}}
+
 QScrollBar::add-line:vertical
-{
+{{
     height: 0px;
     subcontrol-position: bottom;
     subcontrol-origin: margin;
-}
+}}
+
 QScrollBar::sub-line:vertical
-{
+{{
     height: 0 px;
     subcontrol-position: top;
     subcontrol-origin: margin;
-}
-)";
+}}
+)", BG_COLOR);
 
 namespace owl
 {
@@ -84,6 +104,12 @@ namespace owl
 //********************************
 //* ForumViewDelegate
 //********************************
+
+ForumViewDelegate::ForumViewDelegate()
+{
+    _forumUnreadIcon = QIcon(ZFontIcon::icon(Fa4::FAMILY, Fa4::fa_commenting, QColor{120,120,120}, 0.85));
+    _forumReadIcon = QIcon(ZFontIcon::icon(Fa4::FAMILY, Fa4::fa_commenting_o));
+}
 
 void ForumViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
@@ -95,8 +121,10 @@ void ForumViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
         painter->save();
         
         QFont font{ option.font };
-        font.setCapitalization(QFont::Capitalization::Capitalize);
-        painter->setPen(QPen(Qt::white));
+        font.setBold(true);
+        font.setCapitalization(QFont::Capitalization::AllUppercase);
+        font.setPointSize(font.pointSize() * 0.925f);
+        painter->setPen(QPen(QColor(SUB_COLOR.data())));
 
         QRect textRect { option.rect };
         textRect.adjust(5, 1, 0, -7);
@@ -110,17 +138,19 @@ void ForumViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
     }
     else
     {
+        static int x = 0;
+        x--;
         painter->save();
 
         // draw the background first
-        QColor bgColor("#303E4B");
+        QColor bgColor(BG_COLOR.data());
         if (option.state & QStyle::State_Selected)
         {
-            bgColor = QColor("#587B7F");
+            bgColor = QColor(SELECTED_COLOR.data());
         }
         else if (option.state & QStyle::State_MouseOver)
         {
-            bgColor = QColor("#6B818C");
+            bgColor = QColor(HOVER_COLOR.data());
         }
         painter->fillRect(option.rect, bgColor);
 
@@ -142,19 +172,43 @@ void ForumViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
         // draw the image centered
         QRect workingRect{ option.rect };
         workingRect.adjust(5, yAdjust, 0, 0);
-        painter->drawImage(QPoint(workingRect.x(), workingRect.y()), image);
+//        painter->drawImage(QPoint(workingRect.x(), workingRect.y()), image);
+
+        const QIcon* board_icon;
+        if (item->hasUnread())
+        {
+            board_icon = &_forumUnreadIcon;
+        }
+        else
+        {
+            board_icon = &_forumReadIcon;
+        }
+
+        const QPixmap board_map = board_icon->pixmap(QSize{24, 24});
+        painter->drawPixmap(QPoint(workingRect.x() - 5, workingRect.y() - 7), board_map);
+
+//        QRect iconRect { workingRect };
+//        iconRect.adjust(0,0, -64, 0);
+
+
+////        const auto board_icon_size = workingRect.size();
+//        const QIcon board_icon = QIcon(ZFontIcon::icon(Fa5::FAMILY, Fa5::fa_plus_circle));
+////        qDebug() << "QIcon: " << board_icon
+//        qDebug() << "Rect: " << workingRect;
+//        board_icon.paint(painter, workingRect, Qt::AlignLeft);
+////        painter->drawPixmap(QPoint(workingRect.x(), workingRect.y()), board_icon);
         
         if (item->hasUnread())
         {
             QFont newfont { option.font };
             newfont.setBold(true);
             painter->setFont(newfont);
-            painter->setPen(QColor("#FFFFFF"));
+            painter->setPen(QColor{"black"});
         }
         else
         {
             painter->setFont(option.font);
-            painter->setPen(QColor("#A5A5A5"));
+            painter->setPen(QColor(FORUM_COLOR.data()));
         }
 
         // now adjust for the text
@@ -213,11 +267,11 @@ void ForumListControl::leaveEvent(QEvent *event)
 void ForumView::initListView()
 {
     _listView = new ForumListControl(this);
-    _listView->setStyleSheet(strListStyleSheet);
+    _listView->setStyleSheet(strListStyleSheet.data());
     _listView->setAttribute(Qt::WA_MacShowFocusRect, false);
     _listView->setFont(QFont(_listView->font().family(), TREEFONTSIZE));
     _listView->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    _listView->verticalScrollBar()->setStyleSheet(strListViewScrollStyle);
+    _listView->verticalScrollBar()->setStyleSheet(strListViewScrollStyle.data());
     _listView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     _listView->setItemDelegate(new ForumViewDelegate);
 
@@ -241,8 +295,8 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     // down below we set the `layout` margin to 5, which means that the
     // parent's color gets drawn in that margin area, so we have to set
     // the parent's color to match
-    parent->setStyleSheet("QWidget { background-color: #303E4B; }");
-    setStyleSheet("QWidget { background-color: #303E4B; border: none; }");
+    parent->setStyleSheet((fmt::format("QWidget{{ background-color: {}; }}", BG_COLOR)).data());
+    setStyleSheet((fmt::format("QWidget{{ background-color: {}; border: none; }}", BG_COLOR)).data());
 
     initListView();
 
@@ -252,10 +306,10 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     font.setBold(true);
     font.setWeight(75);
     _boardLabel->setFont(font);
-    _boardLabel->setStyleSheet("QLabel { color : white; }");
+    _boardLabel->setStyleSheet(fmt::format("QLabel{{ color : {}; }}", HEADER_COLOR).data());
 
     QHBoxLayout* boardNameLayout = new QHBoxLayout();
-    boardNameLayout->addSpacing(5);
+    boardNameLayout->addSpacing(0);
     boardNameLayout->addWidget(_boardLabel);
 
     QHBoxLayout* userLayout = new QHBoxLayout();
@@ -264,7 +318,7 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     font.setPointSize(USERNAMEFONT);
     font.setBold(false);
     _userLabel->setFont(font);
-    _userLabel->setStyleSheet("QLabel { color : lightgray; }");
+    _userLabel->setStyleSheet(fmt::format("QLabel{{ color : {}; }}", USERNAME_COLOR).data());
 
     _userImgLabel = new QLabel(this);
     _userImgLabel->setMaximumHeight(64);

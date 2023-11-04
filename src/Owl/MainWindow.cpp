@@ -27,8 +27,8 @@
     #define BOARDICONWIDGETWIDTH         70
     #define CENTRALWIDGETWIDTH          275
 #elif defined(Q_OS_MAC)
-    #define BOARDICONWIDGETWIDTH         70
-    #define CENTRALWIDGETWIDTH          250
+    // #define BOARDICONWIDGETWIDTH         70
+    // #define CENTRALWIDGETWIDTH          250
 #else
     #define BOARDICONWIDGETWIDTH         70
     #define CENTRALWIDGETWIDTH          250
@@ -86,12 +86,11 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
     setDockNestingEnabled(true);
 
     initializeTitleBar(this);
-    toggleOldControls(false);
 
-    this->boardIconDockWidget->setMaximumWidth(BOARDICONWIDGETWIDTH);
-    this->boardIconDockWidget->setMinimumWidth(BOARDICONWIDGETWIDTH);
-    this->centralWidget()->setMaximumWidth(CENTRALWIDGETWIDTH);
-    this->centralWidget()->setMinimumWidth(CENTRALWIDGETWIDTH);
+    // this->boardIconDockWidget->setMaximumWidth(BOARDICONWIDGETWIDTH);
+    // this->boardIconDockWidget->setMinimumWidth(BOARDICONWIDGETWIDTH);
+    // this->centralWidget()->setMaximumWidth(CENTRALWIDGETWIDTH);
+    // this->centralWidget()->setMinimumWidth(CENTRALWIDGETWIDTH);
 
     // TODO: move this to the OwlApplication class
     readWindowSettings();
@@ -105,8 +104,8 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
     appToolBar->setVisible(false);
     
     // create a blank title bar for the post view dock
-    postViewDockWidget->setTitleBarWidget(new QWidget(postViewDockWidget));
-    boardIconDockWidget->setTitleBarWidget(new QWidget(boardIconDockWidget));
+    // postViewDockWidget->setTitleBarWidget(new QWidget(postViewDockWidget));
+    // boardIconDockWidget->setTitleBarWidget(new QWidget(boardIconDockWidget));
     
     QTimer::singleShot(0, this, SLOT(onLoaded()));
 }
@@ -119,16 +118,15 @@ void MainWindow::onLoaded()
     createThreadPanel();
     createPostPanel();
 
-    threadLoadingImg->setMovie(new QMovie(":/images/loading_small.gif", QByteArray(), this));
-    threadLoadingImg->hide();
+//    threadLoadingImg->setMovie(new QMovie(":/images/loading_small.gif", QByteArray(), this));
+//    threadLoadingImg->hide();
 
-    postsLoadingImg->setMovie(new QMovie(":/images/loading_small.gif", QByteArray(), this));
-    postsLoadingImg->hide();
+//    postsLoadingImg->setMovie(new QMovie(":/images/loading_small.gif", QByteArray(), this));
+//    postsLoadingImg->hide();
 
     updateSelectedForum();
     updateSelectedThread();
 
-    createSignals();
     createLinkMessages();
 
     createMenus();
@@ -164,7 +162,7 @@ void MainWindow::onLoaded()
             OWL_THROW_EXCEPTION(Exception("Unknown PostsPane position"));
     }
 
-    postsWebView->resetView();
+//    postsWebView->resetView();
     _bDoneLoading = true;
 }
 
@@ -336,17 +334,17 @@ void MainWindow::openPreferences()
             }
         });
 
-    QObject::connect(&dlg, &PreferencesDlg::reloadThreadPanel, this,
-        [this]()
-        {
-            this->threadListWidget->reload();
-        }, Qt::DirectConnection);
+//    QObject::connect(&dlg, &PreferencesDlg::reloadThreadPanel, this,
+//        [this]()
+//        {
+//            this->threadListWidget->reload();
+//        }, Qt::DirectConnection);
 
-    QObject::connect(&dlg, &PreferencesDlg::reloadPostPanel, this,
-        [this]()
-        {
-            this->postsWebView->reloadView();
-        }, Qt::DirectConnection);
+//    QObject::connect(&dlg, &PreferencesDlg::reloadPostPanel, this,
+//        [this]()
+//        {
+//            this->postsWebView->reloadView();
+//        }, Qt::DirectConnection);
 
     dlg.exec();
 }
@@ -537,11 +535,11 @@ void MainWindow::getPostsHandler(BoardPtr board, ThreadPtr thread)
 
     QMutexLocker lock(&_updateMutex);
 
-    stopPostsLoading();
+//    stopPostsLoading();
 
     if (thread->getPosts().size() > 0)
     {
-        postsWebView->showPosts(thread);
+//        postsWebView->showPosts(thread);
         updateSelectedThread(thread);
     }
     else
@@ -554,15 +552,15 @@ void MainWindow::getThreadsHandler(BoardPtr /*b*/, ForumPtr forum)
 {
     QMutexLocker lock(&_updateMutex);
 
-    stopThreadLoading();
+//    stopThreadLoading();
 
-    if (forum->getThreads().size() > 0)
-    {
-        threadListWidget->setThreadList(forum->getThreads());
-    }
+//    if (forum->getThreads().size() > 0)
+//    {
+//        threadListWidget->setThreadList(forum->getThreads());
+//    }
 
     updateSelectedForum(forum);
-    contentView->doShowListOfThreads(forum);
+    forumContentView->doShowListOfThreads(forum);
 }
 
 // SLOT: handles the SIGNAL from a Board object. Called when the board responds 
@@ -572,7 +570,7 @@ void MainWindow::getThreadsHandler(BoardPtr /*b*/, ForumPtr forum)
 void MainWindow::getUnreadForumsEvent(BoardPtr board, ForumList list)
 {
     _logger->debug("unread forum list retrieved for '{}' with {} forums", board->readableHash(), list.size());
-    boardIconPanel->update();
+    connectionView->update();
 }
 
 void MainWindow::onNewBoard()
@@ -654,20 +652,20 @@ void MainWindow::newThreadHandler(BoardPtr board, ThreadPtr thread)
 
 void MainWindow::updateSelectedForum(ForumPtr f)
 {
-    threadNavFrame->setEnabled(f != nullptr);
-    postsWebView->resetView();
+//    threadNavFrame->setEnabled(f != nullptr);
+//    postsWebView->resetView();
 
     if (f != nullptr)
     {
-        newThreadBtn->setEnabled(f->getForumType() == Forum::FORUM);
-        threadPageNumEdit->setText(QString::number(f->getPageNumber()));
-        threadPageNumLbl->setText(QString::number(f->getPageCount()));
-        this->currentForumLbl->setText(f->getName());
+//        newThreadBtn->setEnabled(f->getForumType() == Forum::FORUM);
+//        threadPageNumEdit->setText(QString::number(f->getPageNumber()));
+//        threadPageNumLbl->setText(QString::number(f->getPageCount()));
+//        this->currentForumLbl->setText(f->getName());
     }
     else
     {
-        newThreadBtn->setEnabled(false);
-        this->currentForumLbl->setText(QString());
+//        newThreadBtn->setEnabled(false);
+//        this->currentForumLbl->setText(QString());
     }
 }
 
@@ -675,16 +673,16 @@ void MainWindow::updateSelectedForum(ForumPtr f)
 // updates the UI
 void MainWindow::updateSelectedThread(ThreadPtr t)
 {
-    postNavFrame->setEnabled(t != nullptr);
+    // postNavFrame->setEnabled(t != nullptr);
 
     if (t != nullptr)
     {
-        newPostBtn->setEnabled(true);
+//        newPostBtn->setEnabled(true);
 
-        postPageNumEdit->setText(QString::number(t->getPageNumber()));
-        postPageNumLbl->setText(QString::number(t->getPageCount()));
+//        postPageNumEdit->setText(QString::number(t->getPageNumber()));
+//        postPageNumLbl->setText(QString::number(t->getPageCount()));
 
-        currentThreadLabel->setText(t->getTitle());
+//        currentThreadLabel->setText(t->getTitle());
 
         if (t->hasUnread() && t->getPageNumber() == t->getPageCount())
         {
@@ -711,8 +709,8 @@ void MainWindow::updateSelectedThread(ThreadPtr t)
     else
     {
 //		postsWebView->setThreadSelected(false);
-        newPostBtn->setEnabled(false);
-        currentThreadLabel->setText(QString());
+//        newPostBtn->setEnabled(false);
+//        currentThreadLabel->setText(QString());
     }
 }
 
@@ -737,21 +735,6 @@ void MainWindow::onLinkActivated(const QString &urlStr)
             _logger->warn("unknown url.path '{}' in url '{}'", url.path().toStdString(), urlStr.toStdString());
         }
     }
-}
-
-void MainWindow::toggleOldControls(bool doshow)
-{
-    currentForumFrame->setVisible(doshow);
-    threadNavFrame->setVisible(doshow);
-    threadListWidget->setVisible(doshow);
-    line->setVisible(doshow);
-    line_3->setVisible(doshow);
-
-    currentThreadFrame->setVisible(doshow);
-    postsWebView->setVisible(doshow);
-    postNavFrame->setVisible(doshow);
-    line_2->setVisible(doshow);
-    line_4->setVisible(doshow);
 }
 
 void MainWindow::createDebugMenu()
@@ -809,17 +792,6 @@ void MainWindow::createDebugMenu()
     }
 
     debugMenu->addSeparator();
-
-    {
-        QAction* action = debugMenu->addAction("&Toggle Old View");
-        action->setShortcut(QKeySequence("Ctrl+Shift+1"));
-        QObject::connect(action, &QAction::triggered,
-            [this]()
-            {
-                bool toggle = !currentForumFrame->isVisible();
-                toggleOldControls(toggle);
-            });
-    }
 }
 
 void MainWindow::createMenus()
@@ -927,7 +899,7 @@ void MainWindow::createMenus()
              auto activeWindow = QApplication::activeWindow();
              auto widget = activeWindow->focusWidget();
 
-             if (widget == boardIconPanel)
+             if (widget == connectionView)
              {
                  undo->setEnabled(false);
                  redo->setEnabled(false);
@@ -968,9 +940,9 @@ void MainWindow::createMenus()
             auto boardPaneMenu = viewMenu->addAction("Hide Boards Pane");
             QObject::connect(boardPaneMenu, &QAction::triggered, [this,boardPaneMenu]()
             {
-                boardIconPanel->setVisible(!boardIconPanel->isVisible());
+                connectionView->setVisible(!connectionView->isVisible());
                 
-                if (boardIconPanel->isVisible())
+                if (connectionView->isVisible())
                 {
                     boardPaneMenu->setText(tr("Hide Boards Pane"));
                 }
@@ -991,13 +963,13 @@ void MainWindow::createMenus()
                 _actions.postPaneRight->setCheckable(true);
                 QObject::connect(_actions.postPaneRight, &QAction::triggered, [this]()
                 {
-                    if (!postViewDockWidget->isVisible())
-                    {
-                        postViewDockWidget->setTitleBarWidget(new QWidget(this));
-                        postViewDockWidget->setVisible(true);
-                    }
+                    // if (!postViewDockWidget->isVisible())
+                    // {
+                    //     // postViewDockWidget->setTitleBarWidget(new QWidget(this));
+                    //     postViewDockWidget->setVisible(true);
+                    // }
 
-                    addDockWidget(Qt::DockWidgetArea::RightDockWidgetArea, postViewDockWidget);
+                    // addDockWidget(Qt::DockWidgetArea::RightDockWidgetArea, postViewDockWidget);
                     this->_actions.postPaneRight->setChecked(true);
                     this->_actions.postPaneBelow->setChecked(false);
                     this->_actions.postPaneHidden->setChecked(false);
@@ -1010,13 +982,13 @@ void MainWindow::createMenus()
                 _actions.postPaneBelow->setCheckable(true);
                 QObject::connect(_actions.postPaneBelow, &QAction::triggered, [this]()
                 {
-                    if (!postViewDockWidget->isVisible())
-                    {
-                        postViewDockWidget->setTitleBarWidget(new QWidget(this));
-                        postViewDockWidget->setVisible(true);
-                    }
+                    // if (!postViewDockWidget->isVisible())
+                    // {
+                    //     // postViewDockWidget->setTitleBarWidget(new QWidget(this));
+                    //     postViewDockWidget->setVisible(true);
+                    // }
 
-                    addDockWidget(Qt::DockWidgetArea::BottomDockWidgetArea, postViewDockWidget);
+                    // addDockWidget(Qt::DockWidgetArea::BottomDockWidgetArea, postViewDockWidget);
                     this->_actions.postPaneRight->setChecked(false);
                     this->_actions.postPaneBelow->setChecked(true);
                     this->_actions.postPaneHidden->setChecked(false);
@@ -1029,7 +1001,7 @@ void MainWindow::createMenus()
                 _actions.postPaneHidden->setCheckable(true);
                 QObject::connect(_actions.postPaneHidden, &QAction::triggered, [this]()
                 {
-                    postViewDockWidget->setVisible(false);
+                    // postViewDockWidget->setVisible(false);
                     _actions.postPaneRight->setChecked(false);
                     _actions.postPaneBelow->setChecked(false);
                     _actions.postPaneHidden->setChecked(true);
@@ -1228,113 +1200,6 @@ void MainWindow::createStatusBar()
     QMainWindow::statusBar()->setMaximumHeight(20);
 }
 
-void MainWindow::createSignals()
-{
-    QObject::connect(actionExit, SIGNAL(triggered()), this, SLOT(close()));
-    QObject::connect(threadListWidget, &owl::ThreadListWidget::threadLoading, [this]()
-    {
-        startPostsLoading();
-        newPostBtn->setEnabled(false);
-    });
-
-    auto gotoPrevPage = [this]()
-    {
-        auto thread = this->threadListWidget->getCurrentThread().lock();
-        if (thread)
-        {
-            navigateToPostListPage(thread, (thread->getPageNumber() - 1));
-        }
-    };
-
-    QObject::connect(postPrevPageBtn, &QPushButton::clicked, gotoPrevPage);
-
-    auto gotoNextPage = [=]()
-    {
-        auto thread = this->threadListWidget->getCurrentThread().lock();
-        if (thread)
-        {
-            navigateToPostListPage(thread, (thread->getPageNumber() + 1));
-        }
-    };
-
-    QObject::connect(postNextPageBtn, &QPushButton::clicked, gotoNextPage);
-
-    auto gotoFirstPage = [=]()
-    {
-        auto thread = this->threadListWidget->getCurrentThread().lock();
-        if (thread)
-        {
-            navigateToPostListPage(thread, 1);
-        }
-    };
-
-    QObject::connect(postFirstPageBtn, &QPushButton::clicked, gotoFirstPage);
-
-    auto gotoLastPage = [=]()
-    {
-        auto thread = this->threadListWidget->getCurrentThread().lock();
-        if (thread)
-        {
-            navigateToPostListPage(thread, thread->getPageCount());
-        }
-    };
-
-    QObject::connect(postLastPageBtn, &QPushButton::clicked, gotoLastPage);
-    
-    // items in the postNavFrame
-    QObject::connect(expandAllBtn, &QPushButton::clicked, [this]()
-     {
-         postsWebView->expandAll();
-     });
-    
-    QObject::connect(collapseAllBtn, &QPushButton::clicked, [this]()
-     {
-         postsWebView->collapseAll();
-     });
-
-    QObject::connect(postsWebView, &PostListWebView::quotePost,
-        [this](ThreadPtr thread, uint index)
-        {
-            const BoardPtr board = thread->getBoard().lock();
-            if (board)
-            {
-                NewThreadDlg* dlg = new NewThreadDlg(thread, this);
-                const auto strQuote = board->getPostQuote(thread->getPosts().at(static_cast<int>(index)));
-                dlg->setQuoteText(strQuote);
-                dlg->setModal(false);
-                dlg->show();
-            }
-        });
-
-    QObject::connect(postsWebView, &PostListWebView::replyPost,
-        [this](ThreadPtr thread, uint index)
-        {
-            Q_UNUSED(index);
-            NewThreadDlg* dlg = new NewThreadDlg(thread, this);
-            dlg->setModal(false);
-            dlg->show();
-        });
-
-    QObject::connect(postsWebView, &PostListWebView::showImageFromString,
-        [this](const QString& base64)
-        {
-            _imageOverlay.setImageFromBase64(base64);
-            _imageOverlay.show();
-        });
-
-    QObject::connect(postsWebView, &PostListWebView::showImageFromArray,
-        [this](const QByteArray& base64)
-        {
-            _imageOverlay.setImageFromBase64(base64);
-            _imageOverlay.show();
-        });
-}
-
-void MainWindow::expandPostMenuPressed()
-{
-    postNavFrame->setVisible(!postNavFrame->isVisible());
-}
-
 void MainWindow::navigateToPostListPage(ThreadPtr thread, int iPageNumber)
 {
     auto board = thread->getBoard().lock();
@@ -1350,77 +1215,11 @@ void MainWindow::navigateToPostListPage(ThreadPtr thread, int iPageNumber)
             iPageNumber = 1;
         }
         
-        startPostsLoading();
+//        startPostsLoading();
         thread->setPageNumber(iPageNumber);
         board->requestPostList(thread, ParserEnums::REQUEST_DEFAULT, true);
-        postPageNumEdit->setText(QString::number(iPageNumber));
+//        postPageNumEdit->setText(QString::number(iPageNumber));
     }
-}
-
-void MainWindow::postPageNumberEnterPressed()
-{
-    ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
-    
-    if (thread && thread->getPageNumber())
-    {
-        QString strText(postPageNumEdit->text());
-        bool bOk = false;
-        int iPageNumber = strText.toInt(&bOk);
-        
-        if (bOk)
-        {
-            navigateToPostListPage(thread, iPageNumber);
-        }
-        else
-        {
-            postPageNumEdit->setText(QString::number(thread->getPageNumber()));
-        }
-    }
-}
-
-void MainWindow::postFirstPageBtnClicked()
-{
-    ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
-    
-    if (thread)
-    {
-        navigateToPostListPage(thread, 1);
-    }
-}
-
-void MainWindow::postPrevPageBtnClicked()
-{
-    ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
-
-    if (thread)
-    {
-        navigateToPostListPage(thread, (thread->getPageNumber() - 1));
-    }
-}
-
-void MainWindow::postNextPageBtnClicked()
-{
-    ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
-
-    if (thread)
-    {
-        navigateToPostListPage(thread, (thread->getPageNumber() + 1));
-    }
-}
-
-void MainWindow::postLastPageBtnClicked()
-{
-    ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
-
-    if (thread)
-    {
-        navigateToPostListPage(thread, thread->getPageCount());
-    }
-}
-
-void MainWindow::expandThreadMenuPressed()
-{
-    threadNavFrame->setVisible(!threadNavFrame->isVisible());
 }
     
 void MainWindow::navigateToThreadListPage(ForumPtr forum, int iPageNumber)
@@ -1438,23 +1237,23 @@ void MainWindow::navigateToThreadListPage(ForumPtr forum, int iPageNumber)
             iPageNumber = 1;
         }
 
-        startThreadLoading();
-        threadPageNumEdit->setText(QString::number(iPageNumber));
+//        startThreadLoading();
+//        threadPageNumEdit->setText(QString::number(iPageNumber));
         forum->setPageNumber(iPageNumber);
         board->requestThreadList(forum);
     }
 }
 
-void MainWindow::newPostBtnClicked()
-{
-    auto threadPtr = this->threadListWidget->getCurrentThread().lock();
-    if (threadPtr)
-    {
-        NewThreadDlg* dlg = new NewThreadDlg(threadPtr, this);
-        dlg->setModal(false);
-        dlg->show();
-    }
-}
+//void MainWindow::newPostBtnClicked()
+//{
+//    auto threadPtr = this->threadListWidget->getCurrentThread().lock();
+//    if (threadPtr)
+//    {
+//        NewThreadDlg* dlg = new NewThreadDlg(threadPtr, this);
+//        dlg->setModal(false);
+//        dlg->show();
+//    }
+//}
 
 // event sent from Board object notifying the UI that a new post
 // has been successfully posted
@@ -1462,20 +1261,20 @@ void MainWindow::newPostHandler(BoardPtr b, PostPtr p)
 {
     if (p)
     {
-        ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
+//        ThreadPtr thread = this->threadListWidget->getCurrentThread().lock();
 
-        if (thread && thread == p->getParent())
-        {
-            this->startPostsLoading();
-            this->newPostBtn->setEnabled(false);
-            b->requestPostList(thread, ParserEnums::REQUEST_NOCACHE);
-        }
-        else
-        {
-            Q_ASSERT(p->getParent() != nullptr);
-            QString msg = QString("New post successfully sent in thread '%1'").arg(p->getParent()->getTitle());
-            QMainWindow::statusBar()->showMessage(msg, 5000);
-        }
+//        if (thread && thread == p->getParent())
+//        {
+//            this->startPostsLoading();
+////            this->newPostBtn->setEnabled(false);
+//            b->requestPostList(thread, ParserEnums::REQUEST_NOCACHE);
+//        }
+//        else
+//        {
+//            Q_ASSERT(p->getParent() != nullptr);
+//            QString msg = QString("New post successfully sent in thread '%1'").arg(p->getParent()->getTitle());
+//            QMainWindow::statusBar()->showMessage(msg, 5000);
+//        }
     }
     else
     {
@@ -1495,17 +1294,17 @@ void MainWindow::createBoardPanel()
 {
     // NEW
 #ifdef Q_OS_MACX
-    boardIconPanel->setAttribute(Qt::WA_MacShowFocusRect, 0);
+    connectionView->setAttribute(Qt::WA_MacShowFocusRect, 0);
 #endif
 
-    QObject::connect(boardIconPanel, &BoardIconView::onBoardClicked,
+    QObject::connect(connectionView, &BoardIconView::onBoardClicked,
         [this](owl::BoardWeakPtr bwp)
         {
-            contentView->doShowLoading(bwp);
-            threadListWidget2->doBoardClicked(bwp);
+            forumContentView->doShowLoading(bwp);
+            forumNavigationView->doBoardClicked(bwp);
         });
 
-    QObject::connect(boardIconPanel, &BoardIconView::onEditBoard,
+    QObject::connect(connectionView, &BoardIconView::onEditBoard,
         [this](owl::BoardWeakPtr boardWeakPtr)
         {
             auto boardPtr = boardWeakPtr.lock();
@@ -1542,7 +1341,7 @@ void MainWindow::createBoardPanel()
             dlg->open();
         });
 
-    QObject::connect(boardIconPanel, &BoardIconView::onAddNewBoard,
+    QObject::connect(connectionView, &BoardIconView::onAddNewBoard,
         [this]()
         {
             QuickAddDlg* addDlg = new QuickAddDlg(this);
@@ -1561,7 +1360,7 @@ void MainWindow::createBoardPanel()
             addDlg->open();
         });
 
-    QObject::connect(boardIconPanel, &BoardIconView::onDeleteBoard,
+    QObject::connect(connectionView, &BoardIconView::onDeleteBoard,
         [this](owl::BoardWeakPtr bwp)
         {
             BoardPtr board = bwp.lock();
@@ -1599,7 +1398,7 @@ void MainWindow::createBoardPanel()
             }
         });
 
-    QObject::connect(boardIconPanel, &BoardIconView::onConnectBoard,
+    QObject::connect(connectionView, &BoardIconView::onConnectBoard,
         [this](owl::BoardWeakPtr bwp)
         {
             BoardPtr board = bwp.lock();
@@ -1613,75 +1412,30 @@ void MainWindow::createBoardPanel()
     
 void MainWindow::createThreadPanel()
 {
-    QObject::connect(threadListWidget2, &ForumView::onForumClicked,
+    QObject::connect(forumNavigationView, &ForumView::onForumClicked,
         [this](owl::ForumPtr forum)
         {
             BoardPtr board = forum->getBoard().lock();
             if (board && board->getStatus() == BoardStatus::ONLINE)
             {
-                contentView->doShowLoading(board);
+                forumContentView->doShowLoading(board);
                 board->requestThreadList(forum);
                 board->setLastForumId(forum->getId().toInt());
             }
         });
 
-    QObject::connect(threadListWidget2, &ForumView::onForumListLoaded,
-        [this]() { contentView->doShowLogo(); });
-
-    // the "New Thread" button is disabled on startup
-    newThreadBtn->setEnabled(false);
-
-    // set up the menu's expand-button
-    auto moreMenuPressed = [this]
-    {
-        threadNavFrame->setVisible(!threadNavFrame->isVisible());
-        line->setVisible(threadNavFrame->isVisible());
-    };
-
-    QObject::connect(threadMenuMoreBtn, &QPushButton::clicked, moreMenuPressed);
-    QObject::connect(currentForumLbl, &ClickableLabel::clicked, moreMenuPressed);
-
-    QObject::connect(stickyButton, &QToolButton::clicked,
-        [this](bool checked)
-        {
-            this->threadListWidget->setShowStickies(checked);
-            this->threadListWidget->refreshThreadDisplay();
-
-            if (checked)
-            {
-                stickyButton->setToolTip(tr("Click to hide sticky threads"));
-            }
-            else
-            {
-                stickyButton->setToolTip(tr("Click to show sticky threads"));
-            }
-        });
+    QObject::connect(forumNavigationView, &ForumView::onForumListLoaded,
+        [this]() { forumContentView->doShowLogo(); });
 }
 
 void MainWindow::createPostPanel()
 {
-    // the "New Post" button is disabled by default
-    newPostBtn->setEnabled(false);
-
-    // set up the menu's expand button
-    auto moreMenuPressed = [this]
-    {
-            postNavFrame->setVisible(!postNavFrame->isVisible());
-            line_2->setVisible(postNavFrame->isVisible());
-    };
-
-    QObject::connect(postMenuMoreBtn, &QPushButton::clicked, moreMenuPressed);
-    QObject::connect(currentThreadLabel, &ClickableLabel::clicked, moreMenuPressed);
-
-    // set up the rest of the view's connections
-    QObject::connect(postPageNumEdit, SIGNAL(returnPressed()), this, SLOT(postPageNumberEnterPressed()));
-    QObject::connect(newPostBtn, SIGNAL(clicked()), this, SLOT(newPostBtnClicked()));
-
-    QObject::connect(postViewDockWidget, &QDockWidget::visibilityChanged, 
-        [this](bool bVisible)
-    {
-        this->_actions.postPaneHidden->setChecked(!bVisible);
-    });
+    // // @TODO: Is this still needed?
+    // QObject::connect(postViewDockWidget, &QDockWidget::visibilityChanged, 
+    //     [this](bool bVisible)
+    // {
+    //     this->_actions.postPaneHidden->setChecked(!bVisible);
+    // });
 }
 
 // Invoked from the board toolbar when user clicks 'Open in Browser'
@@ -1849,17 +1603,6 @@ void MainWindow::readWindowSettings()
         _statusBarVisibile = settings.value("statusBarVisible").toBool();
         _postsPanePosition = settings.value("postsPanePosition").toUInt();
 
-        threadListWidget->setShowStickies(settings.value("showStickies").toBool());
-        stickyButton->setChecked(settings.value("showStickies").toBool());
-        if (settings.value("showStickies").toBool())
-        {
-            stickyButton->setToolTip(tr("Click to hide sticky threads"));
-        }
-        else
-        {
-            stickyButton->setToolTip(tr("Click to hide sticky threads"));
-        }
-
         menuBar()->setVisible(settings.value("showMenuBar").toBool());
     }
     else
@@ -1882,49 +1625,9 @@ void MainWindow::writeWindowSettings()
     settings.setValue("statusBarGeometry", QMainWindow::statusBar()->saveGeometry());
     settings.setValue("statusBarVisible", _statusBarVisibile);
     settings.setValue("postsPanePosition", _postsPanePosition);
-    settings.setValue("showStickies", threadListWidget->showStickies());
     settings.setValue("showMenuBar", menuBar()->isVisible());
-
-    // TODO: hide servicesTree?
-    // settings.setValue("servicePaneVisibility", servicesTree->isVisible());
 }
                                                              
-void MainWindow::startThreadLoading()
-{
-    threadNavFrame->setEnabled(false);
-//    threadPageNav->setEnabled(false);
-
-    threadLoadingImg->show();
-    threadLoadingImg->movie()->start();
-    currentForumLbl->setText("Loading...");
-}
-
-void MainWindow::stopThreadLoading()
-{
-    threadNavFrame->setEnabled(true);
-//    threadPageNav->setEnabled(true);
-
-    threadLoadingImg->hide();
-    threadLoadingImg->movie()->stop();
-    currentForumLbl->setText("");
-}
-
-void MainWindow::startPostsLoading()
-{
-    postNavFrame->setEnabled(false);
-    postsLoadingImg->show();
-    postsLoadingImg->movie()->start();
-    currentThreadLabel->setText("Loading...");
-}
-
-void MainWindow::stopPostsLoading()
-{
-    postNavFrame->setEnabled(true);
-    postsLoadingImg->hide();
-    postsLoadingImg->movie()->stop();
-    currentThreadLabel->setText("");
-}
-
 void MainWindow::onDisplayOrderChanged(BoardPtr b, int iDirection)
 {	
     QMutexLocker locker(&_updateMutex);

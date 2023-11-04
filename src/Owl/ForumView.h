@@ -33,10 +33,15 @@ class ForumViewDelegate : public QStyledItemDelegate
 {
 public:
     using QStyledItemDelegate::QStyledItemDelegate;
+    ForumViewDelegate();
     ~ForumViewDelegate() = default;
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
+
+private:
+    QIcon _forumUnreadIcon;
+    QIcon _forumReadIcon;
 };
 
 class ForumListControl : public QListView

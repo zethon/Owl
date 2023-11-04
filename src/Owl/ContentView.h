@@ -11,10 +11,10 @@ namespace spdlog
     class logger;
 }
 
-#define LOGO_VIEW           0
-#define THREADLIST_VIEW     1
-#define POSTLIST_VIEW       2
-#define LOADING_VIEW        3
+constexpr auto LOGO_VIEW       = 0;
+constexpr auto THREADLIST_VIEW = 1;
+constexpr auto POSTLIST_VIEW   = 2;
+constexpr auto LOADING_VIEW    = 3;
 
 namespace owl
 {
@@ -22,6 +22,7 @@ namespace owl
 class PaginationWidget;
 class ThreadListWidget;
 class PostListWebView;
+class BoardIconView;
 
 class Board;
 using BoardWeakPtr = std::weak_ptr<Board>;

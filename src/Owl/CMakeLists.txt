@@ -142,6 +142,7 @@ TARGET_LINK_LIBRARIES(Owl
         hunspell::hunspell
         tidy-html5::tidy-html5
         CURL::libcurl
+        ZFontIcon
 )
 
 if(WIN32 AND MSVC)
@@ -170,7 +171,7 @@ if (APPLE)
     # see: http://stackoverflow.com/questions/13420117/how-to-get-a-path-of-the-app-bundle-in-a-cmake-script-to-supply-it-to-the-fixup
     if("${CMAKE_GENERATOR}" MATCHES "Xcode")
             set(DEST_BIN_PATH 
-                ${CMAKE_BINARY_DIR}/src/\${CONFIGURATION}/Owl.app/Contents/Resources)
+                ${CMAKE_BINARY_DIR}/src/Owl/\${CONFIGURATION}/Owl.app/Contents/Resources)
     elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
             set(DEST_BIN_PATH 
                 ${CMAKE_BINARY_DIR}/src/Owl/Owl.app/Contents/Resources)
