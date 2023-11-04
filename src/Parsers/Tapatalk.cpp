@@ -991,7 +991,6 @@ owl::ThreadPtr Tapatalk4x::makeThreadObject( QVariant* variant )
 		newThread->setHasUnread(topicMap["new_post"].toBool());
         newThread->setIconUrl(topicMap["icon_url"].toString());
         newThread->setViews(topicMap["view_number"].toUInt());
-        newThread->setOpen(!topicMap["is_closed"].toBool());
 
 		// construct the last post
 		// TODO: need to figure out how to get the LAST postId in the thread
