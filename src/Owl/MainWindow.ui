@@ -42,7 +42,6 @@
     <property name="bottomMargin">
      <number>0</number>
     </property>
-    
     <item>
      <widget class="owl::BoardIconView" name="connectionView" native="true">
       <property name="sizePolicy">
@@ -80,111 +79,130 @@
       </property>
      </widget>
     </item>
-    
     <item>
-     <widget class="QFrame" name="navigationFrame">
-      <property name="minimumSize">
-       <size>
-        <width>250</width>
-        <height>0</height>
-       </size>
+     <widget class="QStackedWidget" name="forumTopStack">
+      <property name="currentIndex">
+       <number>0</number>
       </property>
-      <property name="maximumSize">
-       <size>
-        <width>250</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">QFrame { background: yellow; }</string>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="owl::ForumView" name="forumNavigationView" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>250</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>250</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="acceptDrops">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-      </layout>
+      <widget class="QFrame" name="contentFrame2222">
+       <layout class="QHBoxLayout" name="forumTopLayout">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QFrame" name="navigationFrame">
+          <property name="minimumSize">
+           <size>
+            <width>250</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>250</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QFrame { background: yellow; }</string>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="owl::ForumView" name="forumNavigationView" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>250</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>250</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="acceptDrops">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="contentFrame">
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="owl::ContentView" name="forumContentView" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="acceptDrops">
+              <bool>false</bool>
+             </property>
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
-    
-    <item>
-     <widget class="QFrame" name="contentFrame">
-      <property name="styleSheet">
-       <string notr="true">QWidget { background: cyan; }</string>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="owl::ContentView" name="forumContentView" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="acceptDrops">
-          <bool>false</bool>
-         </property>
-         <property name="styleSheet">
-          <string notr="true"/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-
-
    </layout>
   </widget>
   <widget class="QToolBar" name="appToolBar">

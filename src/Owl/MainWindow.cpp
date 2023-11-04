@@ -86,7 +86,6 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
     setDockNestingEnabled(true);
 
     initializeTitleBar(this);
-    toggleOldControls(false);
 
     // this->boardIconDockWidget->setMaximumWidth(BOARDICONWIDGETWIDTH);
     // this->boardIconDockWidget->setMinimumWidth(BOARDICONWIDGETWIDTH);
@@ -738,21 +737,6 @@ void MainWindow::onLinkActivated(const QString &urlStr)
     }
 }
 
-void MainWindow::toggleOldControls(bool doshow)
-{
-//    currentForumFrame->setVisible(doshow);
-//    threadNavFrame->setVisible(doshow);
-//    threadListWidget->setVisible(doshow);
-//    line->setVisible(doshow);
-//    line_3->setVisible(doshow);
-
-//    currentThreadFrame->setVisible(doshow);
-//    postsWebView->setVisible(doshow);
-//    postNavFrame->setVisible(doshow);
-//    line_2->setVisible(doshow);
-//    line_4->setVisible(doshow);
-}
-
 void MainWindow::createDebugMenu()
 {
     QMenu* debugMenu = this->menuBar()->addMenu("&Debug");
@@ -808,17 +792,6 @@ void MainWindow::createDebugMenu()
     }
 
     debugMenu->addSeparator();
-
-    {
-        QAction* action = debugMenu->addAction("&Toggle Old View");
-        action->setShortcut(QKeySequence("Ctrl+Shift+1"));
-        QObject::connect(action, &QAction::triggered,
-            [this]()
-            {
-//                bool toggle = !currentForumFrame->isVisible();
-//                toggleOldControls(toggle);
-            });
-    }
 }
 
 void MainWindow::createMenus()
