@@ -84,7 +84,7 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QFrame" name="contentFrame2222">
+      <widget class="QFrame" name="forumTopFrame">
        <layout class="QHBoxLayout" name="forumTopLayout">
         <property name="spacing">
          <number>0</number>
@@ -164,6 +164,9 @@
         </item>
         <item>
          <widget class="QFrame" name="contentFrame">
+          <property name="styleSheet">
+           <string notr="true">QFrame { background: red; }</string>
+          </property>
           <layout class="QVBoxLayout" name="verticalLayout">
            <property name="spacing">
             <number>0</number>
