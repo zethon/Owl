@@ -1,5 +1,5 @@
 // Owl - www.owlclient.com
-// Copyright (c) 2012-2019, Adalid Claure <aclaure@gmail.com>
+// Copyright (c) 2012-2023, Adalid Claure <aclaure@gmail.com>
 
 #include <QFile>
 #include <QSqlDriver>
