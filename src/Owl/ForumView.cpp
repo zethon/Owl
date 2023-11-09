@@ -47,9 +47,11 @@ static const auto BG_COLOR =            "#F3F3F4"sv;
 static const auto HEADER_COLOR =        "#5c5e66"sv;
 static const auto USERNAME_COLOR =      "#5c5e66"sv;
 static const auto SUB_COLOR =           "#6d6f77"sv;
-static const auto FORUM_COLOR =         "#5c5e66"sv;
 static const auto HOVER_COLOR=          "#e0e1e5"sv;
 static const auto SELECTED_COLOR=       "#d7d9dc"sv;
+
+static const auto FORUM_COLOR           = "#5c5e66"sv;
+static const auto FORUM_UNREAD_COLOR    = "#333333"sv;
 
 const auto strListStyleSheet = fmt::format(R"x(
 QListView
@@ -107,8 +109,8 @@ namespace owl
 
 ForumViewDelegate::ForumViewDelegate()
 {
-    _forumUnreadIcon = QIcon(ZFontIcon::icon(Fa4::FAMILY, Fa4::fa_commenting, QColor{120,120,120}, 0.85));
-    _forumReadIcon = QIcon(ZFontIcon::icon(Fa4::FAMILY, Fa4::fa_commenting_o));
+    _forumUnreadIcon = QIcon(ZFontIcon::icon(Fa4::FAMILY, Fa4::fa_hashtag, QColor{FORUM_UNREAD_COLOR.data()}, 0.85));
+    _forumReadIcon = QIcon(ZFontIcon::icon(Fa4::FAMILY, Fa4::fa_hashtag, QColor{FORUM_COLOR.data()}, 0.85));
 }
 
 void ForumViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
@@ -138,8 +140,6 @@ void ForumViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
     }
     else
     {
-        static int x = 0;
-        x--;
         painter->save();
 
         // draw the background first
@@ -187,23 +187,12 @@ void ForumViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
         const QPixmap board_map = board_icon->pixmap(QSize{24, 24});
         painter->drawPixmap(QPoint(workingRect.x() - 5, workingRect.y() - 7), board_map);
 
-//        QRect iconRect { workingRect };
-//        iconRect.adjust(0,0, -64, 0);
-
-
-////        const auto board_icon_size = workingRect.size();
-//        const QIcon board_icon = QIcon(ZFontIcon::icon(Fa5::FAMILY, Fa5::fa_plus_circle));
-////        qDebug() << "QIcon: " << board_icon
-//        qDebug() << "Rect: " << workingRect;
-//        board_icon.paint(painter, workingRect, Qt::AlignLeft);
-////        painter->drawPixmap(QPoint(workingRect.x(), workingRect.y()), board_icon);
-        
         if (item->hasUnread())
         {
             QFont newfont { option.font };
             newfont.setBold(true);
             painter->setFont(newfont);
-            painter->setPen(QColor{"black"});
+            painter->setPen(QColor{FORUM_UNREAD_COLOR.data()});
         }
         else
         {

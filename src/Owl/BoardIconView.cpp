@@ -327,14 +327,15 @@ QModelIndex BoardIconModel::index(int row, int column, const QModelIndex& parent
 int BoardIconModel::rowCount(const QModelIndex& parent) const
 {
     if (parent.column() > 0) return 0;
-    return static_cast<int>(_boardManager->getBoardCount() + 1);
+    return static_cast<int>(_boardManager->getBoardCount() + 2);
 }
 
 QVariant BoardIconModel::data(const QModelIndex& index, int role) const
 {
     if (!index.isValid()) return QVariant{};
 
-    if (index.row() < static_cast<int>(_boardManager->getBoardCount()))
+    if (const int boardCount = static_cast<int>(_boardManager->getBoardCount());
+            index.row() < boardCount)
     {
         switch (role)
         {
@@ -361,7 +362,7 @@ QVariant BoardIconModel::data(const QModelIndex& index, int role) const
             }
         }
     }
-    else
+    else if (index.row() == boardCount)
     {
         switch (role)
         {
@@ -370,6 +371,17 @@ QVariant BoardIconModel::data(const QModelIndex& index, int role) const
 
             case ICONTYPE_ROLE:
                 return QVariant::fromValue(IconType::ADDICON);
+        }
+    }
+    else
+    {
+        switch (role)
+        {
+            case Qt::DecorationRole:
+                return QVariant { QIcon(ZFontIcon::icon(Fa5::FAMILY, Fa5::fa_globe)) };
+
+            case ICONTYPE_ROLE:
+                return QVariant::fromValue(IconType::WEBICON);
         }
     }
 
@@ -436,10 +448,13 @@ void BoardIconView::initListView()
                     Q_EMIT onBoardClicked(weakBoard);
                 }
             }
-            else
+            else if (index.data(ICONTYPE_ROLE).value<IconType>() == IconType::ADDICON)
             {
-                Q_ASSERT(index.data(ICONTYPE_ROLE).value<IconType>() == IconType::ADDICON);
                 Q_EMIT onAddNewBoard();
+            }
+            else if (index.data(ICONTYPE_ROLE).value<IconType>() == IconType::WEBICON)
+            {
+                Q_EMIT onAddNewWebBrowser();
             }
         });
 

@@ -27,7 +27,7 @@ using SpdLogPtr = std::shared_ptr<spdlog::logger>;
 
 enum class IconType
 {
-    ADDICON, BOARDICON
+    ADDICON, BOARDICON, WEBICON
 };
 
 }
@@ -72,6 +72,7 @@ public:
 
 Q_SIGNALS:
     void onAddNewBoard();
+    void onAddNewWebBrowser();
     void onBoardClicked(owl::BoardWeakPtr);
     void onBoardDoubleClicked(owl::BoardWeakPtr);
     void onConnectBoard(owl::BoardWeakPtr);

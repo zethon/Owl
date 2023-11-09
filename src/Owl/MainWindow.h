@@ -49,120 +49,6 @@ private:
     bool _bDoCheck;
 };
 
-class ImageOverlay : public QWidget
-{
-    void newParent();
-
-    const QRegExp imageDef = QRegExp("data:image/[a-z]+;base64,", Qt::CaseInsensitive);
-
-public:
-    ImageOverlay(QWidget * parent = nullptr)
-        : QWidget{parent},
-          _closeBtn{this},
-          _imgLabel{this},
-          _layout{this}
-
-    {
-        setAttribute(Qt::WA_NoSystemBackground);
-        newParent();
-
-        setAttribute(Qt::WA_TranslucentBackground);
-        _closeBtn.setText(tr("Close"));
-        QObject::connect(&_closeBtn, &QPushButton::clicked, this, [this]() { this->hide(); });
-
-        _layout.addWidget(&_closeBtn, 0, 0, Qt::AlignRight);
-        _layout.addWidget(&_imgLabel, 1, 0, 1, 1, Qt::AlignCenter);
-
-        _imgLabel.setStyleSheet("QLabel { border: 2px solid white; background-color: white; }");
-        _imgLabel.setScaledContents(true);
-
-        setLayout(&_layout);
-        QWidget::setVisible(false);
-    }
-
-    void setImageFromBase64(const QString& base64)
-    {
-        QString temp { base64 };
-        QByteArray by = QByteArray::fromBase64(temp.remove(imageDef).toUtf8());
-        setImageFromBase64(by);
-    }
-
-    void setImageFromBase64(const QByteArray& array)
-    {
-        auto pixmap = QPixmap::fromImage(QImage::fromData(array));
-        _imgLabel.setPixmap(pixmap);
-    }
-
-protected:
-    void paintEvent(QPaintEvent *) override
-    {
-        QPainter p{this};
-        p.fillRect(rect(), {0, 0, 0, 190});
-    }
-
-    //! Catches resize and child events from the parent widget
-    bool eventFilter(QObject * obj, QEvent * ev) override
-    {
-        if (obj == parent())
-        {
-            if (ev->type() == QEvent::Resize)
-            {
-                resize(static_cast<QResizeEvent*>(ev)->size());
-            }
-            else if (ev->type() == QEvent::ChildAdded)
-            {
-                raise();
-            }
-        }
-
-        if (ev->type() == QEvent::KeyRelease)
-        {
-            QKeyEvent* keyEvent = static_cast<QKeyEvent*>(ev);
-            if (keyEvent->key() == Qt::Key_Escape)
-            {
-                this->hide();
-            }
-        }
-
-        return QWidget::eventFilter(obj, ev);
-    }
-
-    void mouseReleaseEvent(QMouseEvent* e) override
-    {
-        Q_UNUSED(e);
-        this->hide();
-    }
-
-    //! Tracks parent widget changes
-    bool event(QEvent* ev) override
-    {
-        if (ev->type() == QEvent::ParentAboutToChange)
-        {
-            if (parent())
-            {
-                parent()->removeEventFilter(this);
-            }
-        }
-        else if (ev->type() == QEvent::ParentChange)
-        {
-            newParent();
-        }
-
-        return QWidget::event(ev);
-    }
-
-    void hideEvent(QHideEvent *event) override
-    {
-        _imgLabel.resize(0,0);
-        QWidget::hideEvent(event);
-    }
-
-private:
-    QPushButton                 _closeBtn;
-    AspectRatioPixmapLabel      _imgLabel;
-    QGridLayout                 _layout;
-};
-
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
     Q_OBJECT
@@ -291,7 +177,6 @@ private:
     uint            _postsPanePosition = PANERIGHT;
 
     SplashScreen*   _splash = nullptr;
-    ImageOverlay    _imageOverlay;
 
     std::shared_ptr<spdlog::logger>  _logger;
 };
