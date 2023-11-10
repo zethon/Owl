@@ -54,18 +54,6 @@ class MainWindow : public QMainWindow, public Ui::MainWindow
     Q_OBJECT
 
 public:
-    struct MenuActions
-    {
-        QAction* showToolbar;
-        QAction* showBoardbar;
-        QAction* showStatusBar;
-        
-        QAction* postPaneRight;
-        QAction* postPaneBelow;
-        QAction* postPaneFloat;
-        QAction* postPaneHidden;
-    };
-    
     MainWindow(SplashScreen *splash, QWidget *parent = nullptr);
     virtual ~MainWindow() = default;
 
@@ -81,15 +69,9 @@ private Q_SLOTS:
 	void onLoaded();
 	void loadBoards();
 
-//	void onPreferences();
 	void onNewBoard();
 
     void onLinkActivated(const QString &urlStr);
-
-
-	void onBoardToolbarItemClicked(QAction*);
-	//void rightScrollButtonClicked();
-	//void leftScrollButtonClicked();
 
 	void onNewBoardAdded(BoardPtr);
 	
@@ -111,10 +93,7 @@ private Q_SLOTS:
 	void onBoardDelete();
 	void onBoardDelete(BoardPtr);
 
-	void onCopyUrl();
-    
     void onForumStructureChanged(BoardPtr);
-	void onDisplayOrderChanged(BoardPtr, int);
 
 private:
     void createLinkMessages();
@@ -122,15 +101,11 @@ private:
     void createStatusBar();
     void createBoardPanel();
     void createThreadPanel();
-    void createPostPanel();
 
     void readWindowSettings();
     void writeWindowSettings();
 
     void connectBoard(BoardPtr board);
-
-//    void startThreadLoading();
-//    void stopThreadLoading();
 
     void createDebugMenu();
 
@@ -164,8 +139,6 @@ private:
     // map of threads for each board
     WorkerMap       _workerMap;
 
-
-    MenuActions     _actions;
     QWidget*        _postPaneTitleBar = nullptr;
     bool            _bDoneLoading = false;
     bool			_bInitialized = false;
