@@ -387,13 +387,13 @@ void MainWindow::onNewBoardAdded(BoardPtr board)
 
 void MainWindow::connectBoard(BoardPtr board)
 {
-    connect(board.get(), SIGNAL(onLogin(BoardPtr, StringMap)),this, SLOT(loginEvent(BoardPtr, StringMap)));
-    connect(board.get(), SIGNAL(onGetThreads(BoardPtr, ForumPtr)), this, SLOT(getThreadsHandler(BoardPtr, ForumPtr)));
-    connect(board.get(), SIGNAL(onGetPosts(BoardPtr, ThreadPtr)), this, SLOT(getPostsHandler(BoardPtr, ThreadPtr)));
-    connect(board.get(), SIGNAL(onGetUnreadForums(BoardPtr, ForumList)), this, SLOT(getUnreadForumsEvent(BoardPtr, ForumList)));
-    connect(board.get(), SIGNAL(onMarkedForumRead(BoardPtr, ForumPtr)), this, SLOT(markForumReadHandler(BoardPtr, ForumPtr)));
-    connect(board.get(), SIGNAL(onNewThread(BoardPtr, ThreadPtr)), this, SLOT(newThreadHandler(BoardPtr, ThreadPtr)));
-    connect(board.get(), SIGNAL(onNewPost(BoardPtr, PostPtr)), this, SLOT(newPostHandler(BoardPtr, PostPtr)));
+    QObject::connect(board.get(), SIGNAL(onLogin(BoardPtr, StringMap)),this, SLOT(loginEvent(BoardPtr, StringMap)));
+    QObject::connect(board.get(), SIGNAL(onGetThreads(BoardPtr, ForumPtr)), this, SLOT(getThreadsHandler(BoardPtr, ForumPtr)));
+    QObject::connect(board.get(), SIGNAL(onGetPosts(BoardPtr, ThreadPtr)), this, SLOT(getPostsHandler(BoardPtr, ThreadPtr)));
+    QObject::connect(board.get(), SIGNAL(onGetUnreadForums(BoardPtr, ForumList)), this, SLOT(getUnreadForumsEvent(BoardPtr, ForumList)));
+    QObject::connect(board.get(), SIGNAL(onMarkedForumRead(BoardPtr, ForumPtr)), this, SLOT(markForumReadHandler(BoardPtr, ForumPtr)));
+    QObject::connect(board.get(), SIGNAL(onNewThread(BoardPtr, ThreadPtr)), this, SLOT(newThreadHandler(BoardPtr, ThreadPtr)));
+    QObject::connect(board.get(), SIGNAL(onNewPost(BoardPtr, PostPtr)), this, SLOT(newPostHandler(BoardPtr, PostPtr)));
 
     QObject::connect(board.get(), &Board::onRequestError, this,
         [this](const Exception& ex)
