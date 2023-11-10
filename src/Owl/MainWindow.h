@@ -22,12 +22,7 @@ class ErrorReportDlg;
 class QuickAddDlg;
 
 // uint - DB Id
-typedef QHash<std::size_t, QThreadEx*> WorkerMap;
-
-typedef QList<QPair<QString, QString> > UrlQueryItems;
-
-typedef std::function<void (const UrlQueryItems&)> LinkHandler;
-typedef QMap<QString, LinkHandler> LinkMessageMap;
+using WorkerMap = QHash<std::size_t, QThreadEx*>;
 
 class SplashScreen : public QSplashScreen
 {
@@ -97,10 +92,6 @@ private:
     void createDebugMenu();
 
     void updateSelectedThread(ThreadPtr thread = ThreadPtr());
-    void updateSelectedForum(ForumPtr forum = ForumPtr());
-
-    void navigateToThreadListPage(ForumPtr forum, int iPageNumber);
-    void navigateToPostListPage(ThreadPtr thread, int iPageNumber);
 
     bool initBoard(const BoardPtr& b);
     void openPreferences();
@@ -115,34 +106,6 @@ private:
     WorkerMap       _workerMap;
     SplashScreen*   _splash = nullptr;
     std::shared_ptr<spdlog::logger>  _logger;
-};
-
-class BoardMenu : public QMenu
-{
-    Q_OBJECT
-
-public:
-    BoardMenu(BoardWeakPtr b, MainWindow* parent = nullptr)
-        : QMenu(parent), _board(b)
-    {
-        connect(this, SIGNAL(aboutToShow()), this, SLOT(onAboutToShow()));
-        createMenu();
-    }
-
-    virtual ~BoardMenu() = default;
-
-Q_SIGNALS:
-    void boardInfoSaved(const BoardPtr board, const StringMap& oldValues);
-
-private Q_SLOTS:
-
-    void onAboutToShow();
-
-private:
-    void createMenu();
-
-    BoardWeakPtr			_board;
-    BoardStatus      _lastStatus = BoardStatus::OFFLINE;
 };
 
 } //namespace owl

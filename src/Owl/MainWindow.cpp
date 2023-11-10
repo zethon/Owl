@@ -92,7 +92,6 @@ void MainWindow::onLoaded()
     createBoardPanel();
     createThreadPanel();
 
-    updateSelectedForum();
     updateSelectedThread();
 
     createMenus();
@@ -134,9 +133,6 @@ void MainWindow::loadBoards()
 
 bool MainWindow::initBoard(const BoardPtr& b)
 {
-    // const uint boardIconWidth = 32;
-    // const uint boardIconHeight = 32;
-    
     QString boardItemTemplate = owl::getResourceHtmlFile("boardItem.html");
     Q_ASSERT(!boardItemTemplate.isEmpty());
     
@@ -193,7 +189,7 @@ void MainWindow::openPreferences()
         });
 
     QObject::connect(dlg, &QDialog::finished, [dlg](int) { dlg->deleteLater(); });
-    dlg->setWindowFlags(dlg->windowFlags() | Qt::Popup);
+    // dlg->setWindowFlags(dlg->windowFlags() | Qt::Popup);
     dlg->open();
 }
 
@@ -333,11 +329,8 @@ void MainWindow::getPostsHandler(BoardPtr board, ThreadPtr thread)
 
     QMutexLocker lock(&_updateMutex);
 
-//    stopPostsLoading();
-
     if (thread->getPosts().size() > 0)
     {
-//        postsWebView->showPosts(thread);
         updateSelectedThread(thread);
     }
     else
@@ -349,15 +342,6 @@ void MainWindow::getPostsHandler(BoardPtr board, ThreadPtr thread)
 void MainWindow::getThreadsHandler(BoardPtr /*b*/, ForumPtr forum)
 {
     QMutexLocker lock(&_updateMutex);
-
-//    stopThreadLoading();
-
-//    if (forum->getThreads().size() > 0)
-//    {
-//        threadListWidget->setThreadList(forum->getThreads());
-//    }
-
-    updateSelectedForum(forum);
     forumContentView->doShowListOfThreads(forum);
 }
 
@@ -398,7 +382,7 @@ void MainWindow::onNewBoard()
 void MainWindow::onNewBoardAdded(BoardPtr board)
 {
     _logger->info("new board '{}' added", board->readableHash());
-    // TODO: initialize login here?
+    this->initBoard(board);
 }
 
 void MainWindow::connectBoard(BoardPtr board)
@@ -447,31 +431,10 @@ void MainWindow::newThreadHandler(BoardPtr board, ThreadPtr thread)
 //    QMainWindow::statusBar()->showMessage("New thread sent", 5000);
 }
 
-void MainWindow::updateSelectedForum(ForumPtr f)
-{
-//    threadNavFrame->setEnabled(f != nullptr);
-//    postsWebView->resetView();
-
-    if (f != nullptr)
-    {
-//        newThreadBtn->setEnabled(f->getForumType() == Forum::FORUM);
-//        threadPageNumEdit->setText(QString::number(f->getPageNumber()));
-//        threadPageNumLbl->setText(QString::number(f->getPageCount()));
-//        this->currentForumLbl->setText(f->getName());
-    }
-    else
-    {
-//        newThreadBtn->setEnabled(false);
-//        this->currentForumLbl->setText(QString());
-    }
-}
-
 // called from theadslist double-click handler and
 // updates the UI
 void MainWindow::updateSelectedThread(ThreadPtr t)
 {
-    // postNavFrame->setEnabled(t != nullptr);
-
     if (t != nullptr)
     {
 //        newPostBtn->setEnabled(true);
@@ -757,14 +720,14 @@ void MainWindow::createMenus()
         }
 
         {
-            QAction* action = helpMenu->addAction(tr("&Owl on Twitter"));
+            QAction* action = helpMenu->addAction(tr("Github"));
             QObject::connect(action, &QAction::triggered, this,
-                [this]()
-                {
-                    QUrl url("http://www.twitter.com/OwlClient");
-                    _logger->trace("Launching browser: {}", url.toString().toStdString());
-                    QDesktopServices::openUrl(url);
-                });
+            [this]()
+            {
+                QUrl url("https://github.com/zethon/Owl");
+                _logger->trace("Launching browser: {}", url.toString().toStdString());
+                QDesktopServices::openUrl(url);
+            });
         }
 
         {
@@ -772,7 +735,7 @@ void MainWindow::createMenus()
             QObject::connect(action, &QAction::triggered, this,
                 [this]()
                 {
-                    QUrl url("http://bugs.owlclient.com");
+                    QUrl url("https://github.com/zethon/Owl/issues");
                     _logger->trace("Launching browser: {}", url.toString().toStdString());
                     QDesktopServices::openUrl(url);
 
@@ -819,61 +782,17 @@ void MainWindow::createMenus()
             QObject::connect(action, &QAction::triggered, this,
                 [this]()
                 {
-                    AboutDlg about(this);
-                    about.exec();
+                    auto about = new AboutDlg(this);
+                    QObject::connect(about, &QDialog::finished, [about](int) { about->deleteLater(); });
+                    about->open();
                 });
         }
     }
 
 #ifndef RELEASE
-    // Debug Menu
     createDebugMenu();
 #endif
 
-}
-
-void MainWindow::navigateToPostListPage(ThreadPtr thread, int iPageNumber)
-{
-    auto board = thread->getBoard().lock();
-
-    if (board && iPageNumber != thread->getPageNumber())
-    {
-        if (iPageNumber > thread->getPageCount())
-        {
-            iPageNumber = thread->getPageCount();
-        }
-        else if (iPageNumber < 1)
-        {
-            iPageNumber = 1;
-        }
-        
-//        startPostsLoading();
-        thread->setPageNumber(iPageNumber);
-        board->requestPostList(thread, ParserEnums::REQUEST_DEFAULT, true);
-//        postPageNumEdit->setText(QString::number(iPageNumber));
-    }
-}
-    
-void MainWindow::navigateToThreadListPage(ForumPtr forum, int iPageNumber)
-{
-    auto board = forum->getBoard().lock();
-
-    if (board && iPageNumber != forum->getPageNumber())
-    {
-        if (iPageNumber > forum->getPageCount())
-        {
-            iPageNumber = forum->getPageCount();
-        }
-        else if (iPageNumber < 1)
-        {
-            iPageNumber = 1;
-        }
-
-//        startThreadLoading();
-//        threadPageNumEdit->setText(QString::number(iPageNumber));
-        forum->setPageNumber(iPageNumber);
-        board->requestThreadList(forum);
-    }
 }
 
 // event sent from Board object notifying the UI that a new post
@@ -1083,9 +1002,7 @@ void MainWindow::onBoardDelete(BoardPtr b)
     if (BOARDMANAGER->getBoardCount() == 0)
     {
         update();
-        updateSelectedForum(ForumPtr());
         updateSelectedThread(ThreadPtr());
-
         setWindowTitle(QStringLiteral(APP_NAME));
     }
 
@@ -1148,159 +1065,6 @@ void MainWindow::writeWindowSettings()
     settings.setValue("state", saveState());
     settings.setValue("statusBarGeometry", QMainWindow::statusBar()->saveGeometry());
     settings.setValue("showMenuBar", menuBar()->isVisible());
-}
-
-void BoardMenu::onAboutToShow()
-{
-    if (const auto board = _board.lock();
-        board && board->getStatus() != _lastStatus)
-    {
-        createMenu();
-    }
-}
-
-void BoardMenu::createMenu()
-{
-    MainWindow* parent = qobject_cast<MainWindow*>(this->parent());
-
-    clear();
-
-    const auto board = _board.lock();
-    if (!board) OWL_THROW_EXCEPTION(Exception("Board object is null"));
-
-    if (board->getStatus() == BoardStatus::ONLINE)
-    {
-        QAction* refresh = addAction(QIcon(":/icons/refresh.png"), tr("Refresh"));
-        refresh->setToolTip(tr("Refresh"));
-#ifdef Q_OS_MACX
-        refresh->setIconVisibleInMenu(false);
-#endif
-        QObject::connect(refresh, &QAction::triggered, this,
-            [this]()
-            {
-                auto board = _board.lock();
-                if (board)
-                {
-                    board->updateUnread();
-                }
-            });
-    }
-    else
-    {
-        QAction* action = addAction(tr("Connect"));
-        action->setToolTip(tr("Connect"));
-        QObject::connect(action, &QAction::triggered, this,
-            [this]()
-            {
-                auto board = _board.lock();
-
-                if (board)
-                {
-                    board->login();
-                }
-            });
-    }
-
-    addSeparator();
-
-    {
-        QAction* action = addAction(tr("Copy Board Address"));
-        action->setToolTip(tr("Copy Board Address"));
-        QObject::connect(action, &QAction::triggered, this,
-            [this]()
-            {
-                if (const auto board = _board.lock(); board)
-                {
-                    auto url = board->getUrl();
-                    qApp->clipboard()->setText(url);
-                }
-            });
-    }
-
-    {
-        QAction* action = addAction(QIcon(":/icons/link.png"), tr("Open in Browser"));
-        action->setToolTip(tr("Open in Browser"));
-#ifdef Q_OS_MACX
-        action->setIconVisibleInMenu(false);
-#endif
-
-        QObject::connect(action, &QAction::triggered, this,
-            [=,this]()
-            {
-                if (auto board = _board.lock(); board)
-                {
-                    auto url = board->getUrl();
-                    QDesktopServices::openUrl(url);
-                }
-            });
-    }
-
-    addSeparator();
-
-    if (board->getStatus() == BoardStatus::ONLINE)
-    {
-        QAction* action = addAction(QIcon(":/icons/markforumread.png"), tr("Mark All Forums Read"));
-        action->setToolTip(tr("Mark All Forums Read"));
-#ifdef Q_OS_MACX
-        action->setIconVisibleInMenu(false);
-#endif
-
-        connect(action, &QAction::triggered, this,
-            [=,this]()
-            {
-                if (const auto board = _board.lock(); board)
-                {
-                    board->markForumRead(board->getRoot());
-                }
-            });
-    }
-
-    {
-        QAction* action = addAction(QIcon(":/icons/settings.png"), tr("Settings"));
-#ifdef Q_OS_MACX
-        action->setIconVisibleInMenu(false);
-#endif
-
-        QObject::connect(action, &QAction::triggered, this,
-            [=,this]()
-            {
-                try
-                {
-                    if (const auto board = _board.lock(); !board)
-                    {
-                        OWL_THROW_EXCEPTION(WebException("Invalid board handle"));
-                    }
-
-                    EditBoardDlg* pDlg = new EditBoardDlg(board, parent);
-                    QObject::connect(pDlg, SIGNAL(boardSavedEvent(const BoardPtr, const StringMap&)), this, SIGNAL(boardInfoSaved(const BoardPtr, const StringMap&)));
-                    pDlg->open();
-                }
-                catch (const owl::Exception& owlex)
-                {
-                    std::stringstream str;
-                    str << "There was an error opening the settings dialog: " << owlex.message().toStdString();
-                    QMessageBox::warning(nullptr, APP_TITLE, QString::fromStdString(str.str()));
-                }
-                catch (const std::exception& ex)
-                {
-                    std::stringstream str;
-                    str << "There was an error opening the settings dialog: " << ex.what();
-                    QMessageBox::warning(nullptr, APP_TITLE, QString::fromStdString(str.str()));
-                }
-            });
-    }
-
-    addSeparator();
-
-    {
-        QAction* action = addAction(QIcon(":/icons/delete.png"), tr("Delete"));
-        action->setData(QVariant::fromValue(_board));
-#ifdef Q_OS_MACX
-        action->setIconVisibleInMenu(false);
-#endif
-
-        QObject::connect(action, SIGNAL(triggered()), parent, SLOT(onBoardDelete()));
-    }
 }
 
 } // namespace owl
