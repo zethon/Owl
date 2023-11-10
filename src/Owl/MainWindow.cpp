@@ -15,6 +15,8 @@
 #include "Core.h"
 #include "MainWindow.h"
 #include "BoardUpdateWorker.h"
+#include "PostTextEditor.h"
+#include "NewThreadDlg.h"
 
 #ifdef Q_OS_WIN
 #include "windows.h"
@@ -70,7 +72,6 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
       _logger(owl::initializeLogger("MainWindow"))
 {
     setupUi(this);
-    setDockNestingEnabled(true);
 
     initializeTitleBar(this);
 
@@ -79,7 +80,8 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
     
     // initialize the dictionaries
     SPELLCHECKER->init();
-    
+
+    QMainWindow::statusBar()->hide();
     QTimer::singleShot(0, this, SLOT(onLoaded()));
 }
 
@@ -93,13 +95,7 @@ void MainWindow::onLoaded()
     updateSelectedForum();
     updateSelectedThread();
 
-    createLinkMessages();
-
     createMenus();
-    createStatusBar();
-
-//    postsWebView->resetView();
-    _bDoneLoading = true;
 }
 
 void MainWindow::loadBoards()
@@ -138,8 +134,8 @@ void MainWindow::loadBoards()
 
 bool MainWindow::initBoard(const BoardPtr& b)
 {
-    const uint boardIconWidth = 32;
-    const uint boardIconHeight = 32;
+    // const uint boardIconWidth = 32;
+    // const uint boardIconHeight = 32;
     
     QString boardItemTemplate = owl::getResourceHtmlFile("boardItem.html");
     Q_ASSERT(!boardItemTemplate.isEmpty());
@@ -155,39 +151,6 @@ bool MainWindow::initBoard(const BoardPtr& b)
 
             b->setParser(parser);
             connectBoard(b);
-
-            // add the board to the _boardToolBar
-            QByteArray buffer(b->getFavIcon().toLatin1());
-            QImage image = QImage::fromData(QByteArray::fromBase64(buffer));
-
-            // calculate the scaling factor based on wanting a 32x32 image
-            qreal iXScale = static_cast<qreal>(boardIconWidth) / static_cast<qreal>(image.width());
-            qreal iYScale = static_cast<qreal>(boardIconHeight) / static_cast<qreal>(image.height());
-
-            // only scale the image if it's not the right size
-            if (owl::numericEquals<double>(iXScale, qreal(1.0)) || owl::numericEquals<double>(iYScale, qreal(1.0)))
-            {
-                QTransform transform;
-                transform.scale(iXScale, iYScale);
-                image = image.transformed(transform, Qt::SmoothTransformation);
-            }
-
-            QIcon icon(QPixmap::fromImage(image));
-            QString toolTip = QString("%1@%2").arg(b->getUsername(), b->getName());
-
-            // set the toolbar action
-            BoardMenu* boardMenu = new BoardMenu(BoardWeakPtr(b), this);
-            QObject::connect(boardMenu, &BoardMenu::boardInfoSaved, this,
-                [this](BoardPtr b, StringMap)
-                {
-                    _logger->trace("onBoardInfoSaved({}:{})",
-                        b->getDBId(), b->getName().toStdString());
-
-                    auto doc = b->getBoardItemDocument();
-                    doc->setOrAddVar("%BOARDNAME%", b->getName());
-                    doc->setOrAddVar("%BOARDUSERNAME%", b->getUsername());
-                    doc->reloadHtml();
-                });
 
             // lastly start thr worker thread
             _workerMap.insert(b->hash(), new QThreadEx());
@@ -232,36 +195,6 @@ void MainWindow::openPreferences()
     QObject::connect(dlg, &QDialog::finished, [dlg](int) { dlg->deleteLater(); });
     dlg->setWindowFlags(dlg->windowFlags() | Qt::Popup);
     dlg->open();
-}
-
-bool MainWindow::event(QEvent *event)
-{
-    QMainWindow::event(event);
-    if (event->type() == QEvent::Show && !_bInitialized)
-    {
-        // servicePaneVisibility
-        _bInitialized = true;
-
-        auto timer = new QTimer(this);
-        timer->setSingleShot(true);
-
-        // connect(timer, &QTimer::timeout, this,
-        //     [this]()
-        //     {
-        //         if (this->boardToolbar->isVisible())
-        //         {
-        //             _actions.showBoardbar->setText("Hide Boards Toolbar");
-        //         }
-        //         else
-        //         {
-        //             _actions.showBoardbar->setText("Show Boards Toolbar");
-        //         }
-        //     });
-
-        timer->start(0);
-    }
-
-    return true;
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -579,29 +512,6 @@ void MainWindow::updateSelectedThread(ThreadPtr t)
     }
 }
 
-void MainWindow::onLinkActivated(const QString &urlStr)
-{
-    // TODO: test, this function changed a lot going from Qt4 -> Qt5
-    QUrl url(urlStr);
-    QUrlQuery str(urlStr);
-
-    if (url.scheme() == "owl")
-    {
-        // paths come through as '/boardconfig' so strip off the '/'
-        QString path(url.path().remove(0,1));
-        
-        if (_linkMessageMap.contains(path))
-        {
-            _linkMessageMap.value(path)(str.queryItems());
-            
-        }
-        else
-        {
-            _logger->warn("unknown url.path '{}' in url '{}'", url.path().toStdString(), urlStr.toStdString());
-        }
-    }
-}
-
 void MainWindow::createDebugMenu()
 {
     QMenu* debugMenu = this->menuBar()->addMenu("&Debug");
@@ -802,43 +712,6 @@ void MainWindow::createMenus()
                     }
                 });
         }
-        
-        viewMenu->addSeparator();
-        {
-            {
-                QAction* action = viewMenu->addAction("Show Status Bar");
-                action->setToolTip("Toggle the display of the status bar");
-                QObject::connect(action, &QAction::triggered, this,
-                                 [this,action]()
-                                 {
-                                     if (QMainWindow::statusBar()->isVisible())
-                                     {
-                                         QMainWindow::statusBar()->hide();
-                                         action->setText(tr("Show Status Bar"));
-                                     }
-                                     else
-                                     {
-                                         QMainWindow::statusBar()->show();
-                                         action->setText(tr("Hide Status Bar"));
-                                     }
-
-                                     _statusBarVisibile = !_statusBarVisibile;
-                                     action->setChecked(QMainWindow::statusBar()->isVisible());
-                                 });
-
-                if (_statusBarVisibile)
-                {
-                    QMainWindow::statusBar()->show();
-                    action->setText(tr("Hide Status Bar"));
-                }
-                else
-                {
-                    QMainWindow::statusBar()->hide();
-                    action->setText(tr("Show Status Bar"));
-                }
-
-            }
-        }
     }
     
     // Help Menu
@@ -959,24 +832,6 @@ void MainWindow::createMenus()
 
 }
 
-void MainWindow::createStatusBar()
-{
-    QToolButton* bvbtn = new QToolButton(this);
-    bvbtn->setIcon(QIcon(":/icons/boardview-expand-button.png"));
-    bvbtn->setAutoRaise(true);
-    bvbtn->setStyleSheet("QToolButton { background-color: transparent; } QToolButton:hover { background-color: #D0D0D0; border-radius: 2px; }");
-
-    QObject::connect(bvbtn, &QToolButton::clicked, this,
-        [this](bool)
-        {
-            // TODO: need to toggle the visibility of the `BoardIconView`
-            _logger->trace("Toggling visibility of boards view");
-        });
-
-    QMainWindow::statusBar()->addWidget(bvbtn);
-    QMainWindow::statusBar()->setMaximumHeight(20);
-}
-
 void MainWindow::navigateToPostListPage(ThreadPtr thread, int iPageNumber)
 {
     auto board = thread->getBoard().lock();
@@ -1049,11 +904,6 @@ void MainWindow::newPostHandler(BoardPtr b, PostPtr p)
 
         QMainWindow::statusBar()->showMessage("New post saved", 5000);
     }
-}
-
-void MainWindow::createLinkMessages()
-{
-    _linkMessageMap.insert("boardconfig", std::bind(&MainWindow::onNewBoard, this));
 }
 
 void MainWindow::createBoardPanel()
@@ -1188,7 +1038,7 @@ void MainWindow::onOpenBrowserToolbar()
         if (!url.isEmpty())
         {
             QDesktopServices::openUrl(url);
-        }	
+        }
     }
 }
 
@@ -1214,7 +1064,6 @@ void MainWindow::onBoardDelete()
 
         if (messageBox->exec() == QMessageBox::Yes)
         {
-//			onBoardDelete(b);
             QMetaObject::invokeMethod(this, "onBoardDelete", Q_ARG(BoardPtr, b));
         }
     }
@@ -1279,9 +1128,6 @@ void MainWindow::readWindowSettings()
         const auto statusBarGeometry = settings.value("statusBarGeometry").value<QByteArray>();
         QMainWindow::statusBar()->restoreGeometry(statusBarGeometry);
 
-        _statusBarVisibile = settings.value("statusBarVisible").toBool();
-        _postsPanePosition = settings.value("postsPanePosition").toUInt();
-
         menuBar()->setVisible(settings.value("showMenuBar").toBool());
     }
     else
@@ -1301,17 +1147,13 @@ void MainWindow::writeWindowSettings()
     settings.setValue("geometry",saveGeometry());
     settings.setValue("state", saveState());
     settings.setValue("statusBarGeometry", QMainWindow::statusBar()->saveGeometry());
-    settings.setValue("statusBarVisible", _statusBarVisibile);
-    settings.setValue("postsPanePosition", _postsPanePosition);
     settings.setValue("showMenuBar", menuBar()->isVisible());
 }
 
 void BoardMenu::onAboutToShow()
 {
-    // make things a little faster
-    auto board = _board.lock();
-
-    if (board && board->getStatus() != _lastStatus)
+    if (const auto board = _board.lock();
+        board && board->getStatus() != _lastStatus)
     {
         createMenu();
     }

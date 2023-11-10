@@ -6,15 +6,9 @@
 #include <Utils/Exception.h>
 #include <Utils/QThreadEx.h>
 #include "Data/BoardManager.h"
-#include "NewThreadDlg.h"
-#include "AspectRatioPixmapLabel.h"
 #include "ui_MainWindow.h"
 
 #include <spdlog/spdlog.h>
-
-#define PANERIGHT   0
-#define PANEBOTTOM  1
-#define PANEHIDDEN  2
 
 namespace Ui
 {
@@ -61,18 +55,13 @@ public:
 
 protected:
 
-    virtual bool event(QEvent* event) override;
     virtual void closeEvent(QCloseEvent* event) override;
     virtual bool nativeEvent(const QByteArray& eventType, void* message, long* result) override;
 
 private Q_SLOTS:
 	void onLoaded();
 	void loadBoards();
-
 	void onNewBoard();
-
-    void onLinkActivated(const QString &urlStr);
-
 	void onNewBoardAdded(BoardPtr);
 	
 	// handlers
@@ -96,9 +85,7 @@ private Q_SLOTS:
     void onForumStructureChanged(BoardPtr);
 
 private:
-    void createLinkMessages();
     void createMenus();
-    void createStatusBar();
     void createBoardPanel();
     void createThreadPanel();
 
@@ -118,39 +105,15 @@ private:
     bool initBoard(const BoardPtr& b);
     void openPreferences();
 
-    QMenu* _boardToolBarCtxMenu = nullptr;
-
-    LinkMessageMap _linkMessageMap;
-
     QuickAddDlg*            _quickAddDlg = nullptr;
-    ErrorReportDlg*         _errorReportDlg = nullptr;				// only one error at a time?
-    QList<NewThreadDlg*>    _newThreadDialogs;
-
-    QAction* _loginButton = nullptr;
-
-    // last item selected on board/service view
-    QStandardItem* _svcTreeLastItem = nullptr;
-
-    BoardPtr _toolBarSelectedBoard;
+    ErrorReportDlg*         _errorReportDlg = nullptr; // only one error at a time?
 
     // TODO: ensure this is a good model for mutexes
     QMutex _updateMutex;
 
     // map of threads for each board
     WorkerMap       _workerMap;
-
-    QWidget*        _postPaneTitleBar = nullptr;
-    bool            _bDoneLoading = false;
-    bool			_bInitialized = false;
-
-    QSize           _servicesTreeLastSize;
-
-    // MainWindow UI Settings that need class members
-    bool            _statusBarVisibile = false;
-    uint            _postsPanePosition = PANERIGHT;
-
     SplashScreen*   _splash = nullptr;
-
     std::shared_ptr<spdlog::logger>  _logger;
 };
 
