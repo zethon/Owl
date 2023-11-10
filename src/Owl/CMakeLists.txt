@@ -1,11 +1,9 @@
 SET (SOURCE_FILES
     AboutDlg.cpp
-    AspectRatioPixmapLabel.cpp
     BoardIconView.cpp
     BoardTreeView.cpp
     BoardsModel.cpp
     BoardUpdateWorker.cpp
-    ClickableLabel.cpp
     ConfiguringBoardDlg.cpp
     ContentView.cpp
     EditBoardDlg.cpp
@@ -26,12 +24,10 @@ SET (SOURCE_FILES
 
 SET (MOC_HEADERS
     AboutDlg.h
-    AspectRatioPixmapLabel.h
     BoardsModel.h
     BoardIconView.h
     BoardTreeView.h
     BoardUpdateWorker.h
-    ClickableLabel.h
     ConfiguringBoardDlg.h
     ContentView.h
     EditBoardDlg.h

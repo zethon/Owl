@@ -73,7 +73,6 @@ private Q_SLOTS:
     void newPostHandler(BoardPtr, PostPtr);
 
 	// toolbar drop down menu
-	void onOpenBrowserToolbar();
 	void onBoardDelete();
 	void onBoardDelete(BoardPtr);
 

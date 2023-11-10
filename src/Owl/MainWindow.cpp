@@ -784,6 +784,7 @@ void MainWindow::createMenus()
                 {
                     auto about = new AboutDlg(this);
                     QObject::connect(about, &QDialog::finished, [about](int) { about->deleteLater(); });
+                    about->resize(this->size());
                     about->open();
                 });
         }
@@ -928,37 +929,6 @@ void MainWindow::createThreadPanel()
 
     QObject::connect(forumNavigationView, &ForumView::onForumListLoaded, this,
         [this]() { forumContentView->doShowLogo(); });
-}
-
-// Invoked from the board toolbar when user clicks 'Open in Browser'
-void MainWindow::onOpenBrowserToolbar()
-{
-    QAction* caller = qobject_cast<QAction*>(sender());
-
-    if (caller != nullptr)
-    {
-        QString url;
-
-        if (caller->data().canConvert<BoardWeakPtr>())
-        {
-            BoardPtr b = caller->data().value<BoardWeakPtr>().lock();
-            url = b->getUrl();
-        }
-        else if (caller->data().canConvert<ForumPtr>())
-        {
-            ForumPtr f = caller->data().value<ForumPtr>();
-            auto board = f->getBoard().lock();
-            if (board)
-            {
-                url = board->getParser()->getItemUrl(f);
-            }
-        }
-
-        if (!url.isEmpty())
-        {
-            QDesktopServices::openUrl(url);
-        }
-    }
 }
 
 void MainWindow::onBoardDelete()
