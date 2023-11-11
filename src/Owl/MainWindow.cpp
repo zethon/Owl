@@ -88,12 +88,9 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
 void MainWindow::onLoaded()
 {
     loadBoards();
-
     createBoardPanel();
     createThreadPanel();
-
     updateSelectedThread();
-
     createMenus();
 }
 
@@ -910,6 +907,15 @@ void MainWindow::createBoardPanel()
                 _logger->info("Connecting board {}", board->getName().toStdString());
                 board->login();
             }
+        });
+
+    QObject::connect(connectionView, &BoardIconView::onAddNewWebBrowser, this,
+        [this]()
+        {
+            WebViewer* viewer = new WebViewer(this);
+            auto x = forumTopStack->addWidget(viewer);
+            forumTopStack->setCurrentIndex(x);
+            forumTopStack->repaint();
         });
 }
     

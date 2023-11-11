@@ -74,7 +74,7 @@ LoadingView::LoadingView(QWidget *parent)
     movieLbl->setMovie(working);
     working->start();
 
-    QVBoxLayout* layout = new QVBoxLayout();
+    QVBoxLayout* layout = new QVBoxLayout(this);
 
     layout->addSpacerItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
     layout->addWidget(_iconLbl);
