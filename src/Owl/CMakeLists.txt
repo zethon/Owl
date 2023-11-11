@@ -20,6 +20,7 @@ SET (SOURCE_FILES
     PostListWidget.cpp
     QuickAddDlg.cpp
     ThreadListWidget.cpp
+    WebBrowser.cpp
 )
 
 SET (MOC_HEADERS
@@ -43,6 +44,7 @@ SET (MOC_HEADERS
     PreferencesDlg.h
     QuickAddDlg.h
     ThreadListWidget.h
+    WebBrowser.h
 )
 
 SET (UI_SOURCES
@@ -98,6 +100,7 @@ ADD_EXECUTABLE(Owl ${GUI_TYPE}
     ${RESOURCE_FILES}
     ${QML_FILES}
     ${QRC_SOURCE_FILES}
+    WebBrowser.h WebBrowser.cpp
 )
 
 set(QT_MODULE_LIST

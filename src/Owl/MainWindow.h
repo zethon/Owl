@@ -40,46 +40,6 @@ private:
     bool _bDoCheck;
 };
 
-class WebViewer : public QWidget
-{
-public:
-    explicit WebViewer(QWidget* parent = nullptr)
-        : QWidget(parent)
-    {
-        QVBoxLayout* mainLayout = new QVBoxLayout(this);
-        mainLayout->setSpacing(0);
-        mainLayout->setContentsMargins(0, 0, 0, 0);
-
-        auto addressFrame = new QFrame(this);
-        addressFrame->setMaximumSize(QSize(16777215, 60));
-        addressFrame->setFrameShape(QFrame::StyledPanel);
-        addressFrame->setFrameShadow(QFrame::Raised);
-        auto horizontalLayout = new QHBoxLayout(addressFrame);
-        horizontalLayout->setSpacing(0);
-        horizontalLayout->setContentsMargins(0, 0, 0, 0);
-        auto lineEdit = new QLineEdit(addressFrame);
-        horizontalLayout->addWidget(lineEdit);
-        auto pushButton = new QPushButton(addressFrame);
-        horizontalLayout->addWidget(pushButton);
-        mainLayout->addWidget(addressFrame);
-
-        auto browserFrame = new QFrame(this);
-        browserFrame->setFrameShape(QFrame::StyledPanel);
-        browserFrame->setFrameShadow(QFrame::Raised);
-        auto verticalLayout = new QVBoxLayout(browserFrame);
-        auto webEngineView = new QWebEngineView(browserFrame);
-        webEngineView->setUrl(QUrl(QString::fromUtf8("https://amb.dog")));
-        verticalLayout->addWidget(webEngineView);
-        verticalLayout->setSpacing(0);
-        verticalLayout->setContentsMargins(0, 0, 0, 0);
-
-        mainLayout->addWidget(browserFrame);
-
-        this->setLayout(mainLayout);
-    }
-
-};
-
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
     Q_OBJECT
@@ -88,10 +48,10 @@ public:
     MainWindow(SplashScreen *splash, QWidget *parent = nullptr);
     virtual ~MainWindow() = default;
 
+    // @TODO: is this needed for Windows?
     void showMenuBar(bool visible) const;
 
 protected:
-
     virtual void closeEvent(QCloseEvent* event) override;
     virtual bool nativeEvent(const QByteArray& eventType, void* message, long* result) override;
 

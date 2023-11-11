@@ -7,6 +7,7 @@
 #include <Utils/Settings.h>
 #include <Utils/OwlUtils.h>
 #include <Utils/OwlLogger.h>
+
 #include "AboutDlg.h"
 #include "EditBoardDlg.h"
 #include "ErrorReportDlg.h"
@@ -17,6 +18,7 @@
 #include "BoardUpdateWorker.h"
 #include "PostTextEditor.h"
 #include "NewThreadDlg.h"
+#include "WebBrowser.h"
 
 #ifdef Q_OS_WIN
 #include "windows.h"
@@ -83,6 +85,8 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
 
     QMainWindow::statusBar()->hide();
     QTimer::singleShot(0, this, SLOT(onLoaded()));
+
+    forumTopStack->addWidget(new OwlWebBrowser(this));
 }
 
 void MainWindow::onLoaded()
@@ -384,7 +388,7 @@ void MainWindow::onNewBoardAdded(BoardPtr board)
 
 void MainWindow::connectBoard(BoardPtr board)
 {
-    QObject::connect(board.get(), SIGNAL(onLogin(BoardPtr, StringMap)),this, SLOT(loginEvent(BoardPtr, StringMap)));
+    QObject::connect(board.get(), SIGNAL(onLogin(BoardPtr, StringMap)), this, SLOT(loginEvent(BoardPtr, StringMap)));
     QObject::connect(board.get(), SIGNAL(onGetThreads(BoardPtr, ForumPtr)), this, SLOT(getThreadsHandler(BoardPtr, ForumPtr)));
     QObject::connect(board.get(), SIGNAL(onGetPosts(BoardPtr, ThreadPtr)), this, SLOT(getPostsHandler(BoardPtr, ThreadPtr)));
     QObject::connect(board.get(), SIGNAL(onGetUnreadForums(BoardPtr, ForumList)), this, SLOT(getUnreadForumsEvent(BoardPtr, ForumList)));
@@ -912,10 +916,18 @@ void MainWindow::createBoardPanel()
     QObject::connect(connectionView, &BoardIconView::onAddNewWebBrowser, this,
         [this]()
         {
-            WebViewer* viewer = new WebViewer(this);
-            auto x = forumTopStack->addWidget(viewer);
-            forumTopStack->setCurrentIndex(x);
-            forumTopStack->repaint();
+            if (forumTopStack->currentIndex() == 0)
+            {
+                forumTopStack->setCurrentIndex(1);
+            }
+            else
+            {
+                forumTopStack->setCurrentIndex(0);
+            }
+            // WebViewer* viewer = new WebViewer(this);
+            // auto x = forumTopStack->addWidget(viewer);
+            // forumTopStack->setCurrentIndex(x);
+            // forumTopStack->repaint();
         });
 }
     
