@@ -377,6 +377,10 @@ QVariant BoardIconModel::data(const QModelIndex& index, int role) const
     {
         switch (role)
         {
+            case Qt::ToolTipRole:
+                qDebug() << "wewewew";
+            break;
+
             case Qt::DecorationRole:
                 return QVariant { QIcon(ZFontIcon::icon(Fa5::FAMILY, Fa5::fa_globe)) };
 

@@ -19,6 +19,7 @@
 #include "PostTextEditor.h"
 #include "NewThreadDlg.h"
 #include "WebBrowser.h"
+#include "ForumConnectionFrame.h"
 
 #ifdef Q_OS_WIN
 #include "windows.h"
@@ -91,11 +92,11 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
 
 void MainWindow::onLoaded()
 {
-    loadBoards();
     createBoardPanel();
     createThreadPanel();
     updateSelectedThread();
     createMenus();
+    loadBoards();
 }
 
 void MainWindow::loadBoards()
@@ -111,12 +112,13 @@ void MainWindow::loadBoards()
         const auto& list = BOARDMANAGER->getBoardList();
         for (const BoardPtr& b : list)
         {
-            if (initBoard(b) && b->isAutoLogin())
+            if (initBoard(b)/* && b->isAutoLogin()*/)
             {
                 _logger->debug("Starting automatic login for board '{}' with user '{}'",
                     b->readableHash(), b->getUsername().toStdString());
 
                 b->login();
+                forumTopStack->addWidget(new ForumConnectionFrame(b, this));
             }
             else
             {
@@ -254,73 +256,73 @@ void MainWindow::onForumStructureChanged(BoardPtr b)
 
 void MainWindow::loginEvent(BoardPtr b, const StringMap& sp)
 {
-    auto doc = b->getBoardItemDocument();
-    QString msg;
+    // auto doc = b->getBoardItemDocument();
+    // QString msg;
 
-    _logger->debug("Board '{}' login result with user '{}' was {}",
-        b->getName().toStdString(),
-        b->getUsername().toStdString(),
-        sp.getBool("success") ? "successful" : "unsuccessful");
+    // _logger->debug("Board '{}' login result with user '{}' was {}",
+    //     b->getName().toStdString(),
+    //     b->getUsername().toStdString(),
+    //     sp.getBool("success") ? "successful" : "unsuccessful");
     
-    if (sp.getBool("success"))
-    {
-        if (_workerMap.contains(b->hash()))
-        {
-            QThreadEx* workerThread = _workerMap.value(b->hash());
+    // if (sp.getBool("success"))
+    // {
+    //     if (_workerMap.contains(b->hash()))
+    //     {
+    //         QThreadEx* workerThread = _workerMap.value(b->hash());
             
-            const QString threadName = QString("%1:%2:%3")
-                .arg(b->getName(), b->getServiceUrl()).arg(b->hash());
-            workerThread->setObjectName(threadName);
+    //         const QString threadName = QString("%1:%2:%3")
+    //             .arg(b->getName(), b->getServiceUrl()).arg(b->hash());
+    //         workerThread->setObjectName(threadName);
 
-            BoardUpdateWorker* pWorker = new BoardUpdateWorker(b);
-            pWorker->moveToThread(workerThread);
+    //         BoardUpdateWorker* pWorker = new BoardUpdateWorker(b);
+    //         pWorker->moveToThread(workerThread);
 
-            QObject::connect(pWorker, &BoardUpdateWorker::onForumStructureChanged, this,
-                [this](BoardPtr board)
-                {
-                    QMetaObject::invokeMethod(this, "onForumStructureChanged", Q_ARG(owl::BoardPtr, board));
-                });
+    //         QObject::connect(pWorker, &BoardUpdateWorker::onForumStructureChanged, this,
+    //             [this](BoardPtr board)
+    //             {
+    //                 QMetaObject::invokeMethod(this, "onForumStructureChanged", Q_ARG(owl::BoardPtr, board));
+    //             });
 
-            QObject::connect(workerThread, &QThread::started, this,
-                [pWorker]()
-                {
-                    QMetaObject::invokeMethod(pWorker, "doWork");
-                });
+    //         QObject::connect(workerThread, &QThread::started, this,
+    //             [pWorker]()
+    //             {
+    //                 QMetaObject::invokeMethod(pWorker, "doWork");
+    //             });
 
-            QObject::connect(workerThread, &QThread::finished, this,
-                [workerThread, pWorker]()
-                {
-                    pWorker->setIsDone(true);
-                    pWorker->deleteLater();
-                    workerThread->deleteLater();
-                });
+    //         QObject::connect(workerThread, &QThread::finished, this,
+    //             [workerThread, pWorker]()
+    //             {
+    //                 pWorker->setIsDone(true);
+    //                 pWorker->deleteLater();
+    //                 workerThread->deleteLater();
+    //             });
 
-            workerThread->start();
-        }
+    //         workerThread->start();
+    //     }
 
-        msg = QString(tr("User %1 signed on %2"))
-            .arg(b->getUsername(), b->getName());
+    //     msg = QString(tr("User %1 signed on %2"))
+    //         .arg(b->getUsername(), b->getName());
 
-        _logger->info(msg.toStdString());
-    }
-    else
-    {
-        msg = QString(tr("User %1 could not sign on to '%2'"))
-            .arg(b->getUsername(), b->getName());
+    //     _logger->info(msg.toStdString());
+    // }
+    // else
+    // {
+    //     msg = QString(tr("User %1 could not sign on to '%2'"))
+    //         .arg(b->getUsername(), b->getName());
 
-        if (sp.has("error"))
-        {
-            msg += " because '" + sp.getText("error") + "'.";
-        }
-        else
-        {
-            msg += ".";
-        }
+    //     if (sp.has("error"))
+    //     {
+    //         msg += " because '" + sp.getText("error") + "'.";
+    //     }
+    //     else
+    //     {
+    //         msg += ".";
+    //     }
 
-        _logger->info(msg.toStdString());
-    }
+    //     _logger->info(msg.toStdString());
+    // }
 
-    QMainWindow::statusBar()->showMessage(msg, 5000);
+    // QMainWindow::statusBar()->showMessage(msg, 5000);
 }
 
 // invoked when a request for posts has returned
@@ -388,8 +390,11 @@ void MainWindow::onNewBoardAdded(BoardPtr board)
 
 void MainWindow::connectBoard(BoardPtr board)
 {
-    QObject::connect(board.get(), SIGNAL(onLogin(BoardPtr, StringMap)), this, SLOT(loginEvent(BoardPtr, StringMap)));
+    // implemented in ForumConnectionFrame
     QObject::connect(board.get(), SIGNAL(onGetThreads(BoardPtr, ForumPtr)), this, SLOT(getThreadsHandler(BoardPtr, ForumPtr)));
+
+    // NOT implemented in ForumConnectionFrame
+    QObject::connect(board.get(), SIGNAL(onLogin(BoardPtr, StringMap)), this, SLOT(loginEvent(BoardPtr, StringMap)));
     QObject::connect(board.get(), SIGNAL(onGetPosts(BoardPtr, ThreadPtr)), this, SLOT(getPostsHandler(BoardPtr, ThreadPtr)));
     QObject::connect(board.get(), SIGNAL(onGetUnreadForums(BoardPtr, ForumList)), this, SLOT(getUnreadForumsEvent(BoardPtr, ForumList)));
     QObject::connect(board.get(), SIGNAL(onMarkedForumRead(BoardPtr, ForumPtr)), this, SLOT(markForumReadHandler(BoardPtr, ForumPtr)));
@@ -436,44 +441,44 @@ void MainWindow::newThreadHandler(BoardPtr board, ThreadPtr thread)
 // updates the UI
 void MainWindow::updateSelectedThread(ThreadPtr t)
 {
-    if (t != nullptr)
-    {
-//        newPostBtn->setEnabled(true);
+//     if (t != nullptr)
+//     {
+// //        newPostBtn->setEnabled(true);
 
-//        postPageNumEdit->setText(QString::number(t->getPageNumber()));
-//        postPageNumLbl->setText(QString::number(t->getPageCount()));
+// //        postPageNumEdit->setText(QString::number(t->getPageNumber()));
+// //        postPageNumLbl->setText(QString::number(t->getPageCount()));
 
-//        currentThreadLabel->setText(t->getTitle());
+// //        currentThreadLabel->setText(t->getTitle());
 
-        if (t->hasUnread() && t->getPageNumber() == t->getPageCount())
-        {
-            t->setHasUnread(false);
+//         if (t->hasUnread() && t->getPageNumber() == t->getPageCount())
+//         {
+//             t->setHasUnread(false);
 
-            bool bForumHasUnread = false;
-            ForumPtr parent = t->getParent()->upCast<ForumPtr>();
-            const auto& threads = parent->getThreads();
-            for (const auto& th : threads)
-            {
-                if (th->hasUnread())
-                {
-                    bForumHasUnread = true;
-                }
-            }
+//             bool bForumHasUnread = false;
+//             ForumPtr parent = t->getParent()->upCast<ForumPtr>();
+//             const auto& threads = parent->getThreads();
+//             for (const auto& th : threads)
+//             {
+//                 if (th->hasUnread())
+//                 {
+//                     bForumHasUnread = true;
+//                 }
+//             }
 
-            if (!bForumHasUnread)
-            {
-//                servicesTree->markForumRead(parent);
-            }
+//             if (!bForumHasUnread)
+//             {
+// //                servicesTree->markForumRead(parent);
+//             }
 
-            update();
-        }
-    }
-    else
-    {
-//		postsWebView->setThreadSelected(false);
-//        newPostBtn->setEnabled(false);
-//        currentThreadLabel->setText(QString());
-    }
+//             update();
+//         }
+//     }
+//     else
+//     {
+// //		postsWebView->setThreadSelected(false);
+// //        newPostBtn->setEnabled(false);
+// //        currentThreadLabel->setText(QString());
+//     }
 }
 
 void MainWindow::createDebugMenu()
@@ -860,25 +865,6 @@ void MainWindow::createBoardPanel()
             dlg->open();
         });
 
-    QObject::connect(connectionView, &BoardIconView::onAddNewBoard, this,
-        [this]()
-        {
-            QuickAddDlg* addDlg = new QuickAddDlg(this);
-            connect(addDlg, SIGNAL(newBoardAddedEvent(BoardPtr)), this, SLOT(onNewBoardAdded(BoardPtr)));
-
-            connect(addDlg, &QuickAddDlg::newBoardAddedEvent, this,
-                [this](BoardPtr board)
-                {
-                    if (this->initBoard(board))
-                    {
-//                        board->login();
-                    }
-                });
-
-            QObject::connect(addDlg, &QDialog::finished, [addDlg](int) { addDlg->deleteLater(); });
-            addDlg->open();
-        });
-
     QObject::connect(connectionView, &BoardIconView::onDeleteBoard, this,
         [this](owl::BoardWeakPtr bwp)
         {
@@ -913,21 +899,48 @@ void MainWindow::createBoardPanel()
             }
         });
 
-    QObject::connect(connectionView, &BoardIconView::onAddNewWebBrowser, this,
+    QObject::connect(connectionView, &BoardIconView::onAddNewBoard, this,
         [this]()
         {
-            if (forumTopStack->currentIndex() == 0)
+            auto x = forumTopStack->currentIndex();
+            if (x == 0)
             {
-                forumTopStack->setCurrentIndex(1);
+                x = forumTopStack->count() - 1;
             }
             else
             {
-                forumTopStack->setCurrentIndex(0);
+                x--;
             }
-            // WebViewer* viewer = new WebViewer(this);
-            // auto x = forumTopStack->addWidget(viewer);
-            // forumTopStack->setCurrentIndex(x);
-            // forumTopStack->repaint();
+            forumTopStack->setCurrentIndex(x);
+            // QuickAddDlg* addDlg = new QuickAddDlg(this);
+            // connect(addDlg, SIGNAL(newBoardAddedEvent(BoardPtr)), this, SLOT(onNewBoardAdded(BoardPtr)));
+
+            // connect(addDlg, &QuickAddDlg::newBoardAddedEvent, this,
+            //      [this](BoardPtr board)
+            //      {
+            //          if (this->initBoard(board))
+            //          {
+            //              //                        board->login();
+            //          }
+            //      });
+
+            // QObject::connect(addDlg, &QDialog::finished, [addDlg](int) { addDlg->deleteLater(); });
+            // addDlg->open();
+        });
+
+    QObject::connect(connectionView, &BoardIconView::onAddNewWebBrowser, this,
+        [this]()
+        {
+             auto x = forumTopStack->currentIndex();
+            if (x+1 == forumTopStack->count())
+             {
+                 x = 0;
+             }
+             else
+             {
+                 x++;
+             }
+             forumTopStack->setCurrentIndex(x);
         });
 }
     
@@ -946,7 +959,10 @@ void MainWindow::createThreadPanel()
         });
 
     QObject::connect(forumNavigationView, &ForumView::onForumListLoaded, this,
-        [this]() { forumContentView->doShowLogo(); });
+        [this]()
+        {
+            forumContentView->doShowLogo();
+        });
 }
 
 void MainWindow::onBoardDelete()
