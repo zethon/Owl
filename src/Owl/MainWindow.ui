@@ -25,6 +25,8 @@
     width: 0px;
 }</string>
   </property>
+
+
   <widget class="QWidget" name="mainWindowWidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <property name="spacing">
@@ -80,7 +82,8 @@
     </item>
     <item>
      <widget class="QStackedWidget" name="forumTopStack">
-      <property name="currentIndex">
+      
+      <!-- <property name="currentIndex">
        <number>0</number>
       </property>
       <widget class="QFrame" name="forumTopFrame">
@@ -202,11 +205,15 @@
          </widget>
         </item>
        </layout>
-      </widget>
+      </widget> -->
+
      </widget>
     </item>
    </layout>
   </widget>
+
+
+
   <action name="action_Refresh">
    <property name="text">
     <string>&amp;Refresh</string>

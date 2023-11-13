@@ -345,7 +345,7 @@ void MainWindow::getPostsHandler(BoardPtr board, ThreadPtr thread)
 void MainWindow::getThreadsHandler(BoardPtr /*b*/, ForumPtr forum)
 {
     QMutexLocker lock(&_updateMutex);
-    forumContentView->doShowListOfThreads(forum);
+    // forumContentView->doShowListOfThreads(forum);
 }
 
 // SLOT: handles the SIGNAL from a Board object. Called when the board responds 
@@ -842,8 +842,8 @@ void MainWindow::createBoardPanel()
     QObject::connect(connectionView, &BoardIconView::onBoardClicked, this,
         [this](owl::BoardWeakPtr bwp)
         {
-            forumContentView->doShowLoading(bwp);
-            forumNavigationView->doBoardClicked(bwp);
+            // forumContentView->doShowLoading(bwp);
+            // forumNavigationView->doBoardClicked(bwp);
         });
 
     QObject::connect(connectionView, &BoardIconView::onEditBoard, this,
@@ -946,23 +946,23 @@ void MainWindow::createBoardPanel()
     
 void MainWindow::createThreadPanel()
 {
-    QObject::connect(forumNavigationView, &ForumView::onForumClicked, this,
-        [this](owl::ForumPtr forum)
-        {
-            BoardPtr board = forum->getBoard().lock();
-            if (board && board->getStatus() == BoardStatus::ONLINE)
-            {
-                forumContentView->doShowLoading(board);
-                board->requestThreadList(forum);
-                board->setLastForumId(forum->getId().toInt());
-            }
-        });
+    // QObject::connect(forumNavigationView, &ForumView::onForumClicked, this,
+    //     [this](owl::ForumPtr forum)
+    //     {
+    //         BoardPtr board = forum->getBoard().lock();
+    //         if (board && board->getStatus() == BoardStatus::ONLINE)
+    //         {
+    //             forumContentView->doShowLoading(board);
+    //             board->requestThreadList(forum);
+    //             board->setLastForumId(forum->getId().toInt());
+    //         }
+    //     });
 
-    QObject::connect(forumNavigationView, &ForumView::onForumListLoaded, this,
-        [this]()
-        {
-            forumContentView->doShowLogo();
-        });
+    // QObject::connect(forumNavigationView, &ForumView::onForumListLoaded, this,
+    //     [this]()
+    //     {
+    //         forumContentView->doShowLogo();
+    //     });
 }
 
 void MainWindow::onBoardDelete()
