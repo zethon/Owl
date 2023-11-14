@@ -201,17 +201,6 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
             p.end();
         }
 
-        if (option.state & QStyle::State_Selected)
-        {
-            QPen pen(QBrush(QColor(DEFAULT_SELECTED)), 3.25);
-            painter->setPen(pen);
-            painter->setRenderHint(QPainter::Antialiasing, true);
-
-            QRect tempRect{ iconRect };
-            tempRect.adjust(-5,-5,5,5);
-            painter->drawRoundedRect(tempRect, 10.0, 10.0);
-        }
-
         painter->drawImage(iconRect, boardImg);
 
         constexpr std::double_t cirlceSize = 6.75;
@@ -264,6 +253,17 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
         const QIcon icon { decrole.value<QIcon>() };
         const QPixmap pixmap { icon.pixmap(ICONDISPLAYWIDTH, ICONDISPLAYHEIGHT) };
         painter->drawPixmap(iconRect, pixmap);
+    }
+
+    if (option.state & QStyle::State_Selected)
+    {
+        QPen pen(QBrush(QColor(DEFAULT_SELECTED)), 3.25);
+        painter->setPen(pen);
+        painter->setRenderHint(QPainter::Antialiasing, true);
+
+        QRect tempRect{ iconRect };
+        tempRect.adjust(-5,-5,5,5);
+        painter->drawRoundedRect(tempRect, 10.0, 10.0);
     }
 
     if ((option.state & QStyle::State_MouseOver)
@@ -458,6 +458,7 @@ void BoardIconView::initListView()
             }
             else if (index.data(ICONTYPE_ROLE).value<IconType>() == IconType::WEBICON)
             {
+                _rawBoardPtr = nullptr;
                 Q_EMIT onAddNewWebBrowser();
             }
         });

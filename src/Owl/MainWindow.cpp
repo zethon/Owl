@@ -86,8 +86,6 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
 
     QMainWindow::statusBar()->hide();
     QTimer::singleShot(0, this, SLOT(onLoaded()));
-
-    forumTopStack->addWidget(new OwlWebBrowser(this));
 }
 
 void MainWindow::onLoaded()
@@ -132,6 +130,8 @@ void MainWindow::loadBoards()
             QMainWindow::statusBar()->showMessage(msg, 5000); 
         }
     }
+
+    forumTopStack->addWidget(new OwlWebBrowser(this));
 }
 
 bool MainWindow::initBoard(const BoardPtr& b)
@@ -842,8 +842,21 @@ void MainWindow::createBoardPanel()
     QObject::connect(connectionView, &BoardIconView::onBoardClicked, this,
         [this](owl::BoardWeakPtr bwp)
         {
-            // forumContentView->doShowLoading(bwp);
-            // forumNavigationView->doBoardClicked(bwp);
+            auto needle = bwp.lock();
+            if (nullptr == needle) return;
+            auto count = forumTopStack->count();
+            for (auto x = 0; x < count; x++)
+            {
+                auto widget = forumTopStack->widget(x);
+                auto forumConFrame = dynamic_cast<owl::ForumConnectionFrame*>(widget);
+
+                if (nullptr == forumConFrame) continue;
+                if (auto board = forumConFrame->board().lock();
+                    nullptr == board || board->hash() != needle->hash()) continue;
+
+                forumTopStack->setCurrentIndex(x);
+                break;
+            }
         });
 
     QObject::connect(connectionView, &BoardIconView::onEditBoard, this,
@@ -902,45 +915,26 @@ void MainWindow::createBoardPanel()
     QObject::connect(connectionView, &BoardIconView::onAddNewBoard, this,
         [this]()
         {
-            auto x = forumTopStack->currentIndex();
-            if (x == 0)
-            {
-                x = forumTopStack->count() - 1;
-            }
-            else
-            {
-                x--;
-            }
-            forumTopStack->setCurrentIndex(x);
-            // QuickAddDlg* addDlg = new QuickAddDlg(this);
-            // connect(addDlg, SIGNAL(newBoardAddedEvent(BoardPtr)), this, SLOT(onNewBoardAdded(BoardPtr)));
+            QuickAddDlg* addDlg = new QuickAddDlg(this);
+            connect(addDlg, SIGNAL(newBoardAddedEvent(BoardPtr)), this, SLOT(onNewBoardAdded(BoardPtr)));
 
-            // connect(addDlg, &QuickAddDlg::newBoardAddedEvent, this,
-            //      [this](BoardPtr board)
-            //      {
-            //          if (this->initBoard(board))
-            //          {
-            //              //                        board->login();
-            //          }
-            //      });
+            connect(addDlg, &QuickAddDlg::newBoardAddedEvent, this,
+                 [this](BoardPtr board)
+                 {
+                     if (this->initBoard(board))
+                     {
+                         //                        board->login();
+                     }
+                 });
 
-            // QObject::connect(addDlg, &QDialog::finished, [addDlg](int) { addDlg->deleteLater(); });
-            // addDlg->open();
+            QObject::connect(addDlg, &QDialog::finished, [addDlg](int) { addDlg->deleteLater(); });
+            addDlg->open();
         });
 
     QObject::connect(connectionView, &BoardIconView::onAddNewWebBrowser, this,
         [this]()
         {
-             auto x = forumTopStack->currentIndex();
-            if (x+1 == forumTopStack->count())
-             {
-                 x = 0;
-             }
-             else
-             {
-                 x++;
-             }
-             forumTopStack->setCurrentIndex(x);
+            forumTopStack->setCurrentIndex(BOARDMANAGER->getBoardCount());
         });
 }
     
