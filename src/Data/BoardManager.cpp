@@ -451,9 +451,9 @@ bool BoardManager::createBoard(BoardPtr board)
 
 	query.prepare("INSERT INTO boards "
 		"(enabled, autologin, name, url, parser, "
-		"serviceUrl, username, password, icon, lastupdate) "
+		"serviceUrl, username, password, icon, lastupdate, uuid) "
 		"VALUES (:enabled, :autologin, :name, :url, :parser, :serviceurl, "
-		":username, :password, :icon, :lastupdate)");
+		":username, :password, :icon, :lastupdate, :uuid)");
 
 	query.bindValue(":enabled", board->isEnabled() ? "1" : "0");
 	query.bindValue(":autologin", board->isAutoLogin() ? "1" : "0");
