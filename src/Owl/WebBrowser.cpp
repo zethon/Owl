@@ -34,13 +34,8 @@ OwlWebBrowser::OwlWebBrowser(QWidget *parent)
     _urlEdit->setFont(font);
 
     horizontalLayout->addWidget(_urlEdit);
-    horizontalLayout->addSpacing(20);
+    // horizontalLayout->addSpacing(20);
 
-    _goButton = new QPushButton(addressFrame);
-    _goButton->setText("GO");
-    _goButton->setMaximumWidth(30);
-    horizontalLayout->addWidget(_goButton);
-    horizontalLayout->addSpacing(20);
     mainLayout->addWidget(addressFrame);
 
     auto line = new QFrame(this);
@@ -65,7 +60,6 @@ OwlWebBrowser::OwlWebBrowser(QWidget *parent)
 
 void OwlWebBrowser::connectSignals()
 {
-    QObject::connect(_goButton, &QPushButton::clicked, this, [this](){ doGo(); });
     QObject::connect(_urlEdit, &QLineEdit::returnPressed, this, [this]{ doGo(); });
     QObject::connect(_webView, &QWebEngineView::loadFinished, this,
         [this](bool loaded)

@@ -22,7 +22,6 @@ private:
     void doGo();
 
     QLineEdit*      _urlEdit;
-    QPushButton*    _goButton;
     QWebEngineView* _webView;
 };
 

@@ -29,8 +29,8 @@
     #define TREEFONTSIZE        14
     #define TREEITEMHEIGHT      38
     #define TREECATHEIGHT       48
-    #define TOP_PADDING         23
-    #define LEFT_PADDING        6
+    #define TOP_PADDING         10
+    #define LEFT_PADDING        2
 #else
     #define BOARDNAMEFONT       14
     #define USERNAMEFONT        11
@@ -277,6 +277,23 @@ void ForumView::initListView()
         });
 }
 
+constexpr auto FORUMVIEW_STYLESHEET = R"x(
+QWidget
+{{
+    background-color: {};
+}}
+
+#usernameFrame
+{{
+
+}}
+
+#topLine
+{{
+    color: #D0D0D0;
+}}
+)x";
+
 ForumView::ForumView(QWidget* parent /* = 0*/)
     : QWidget(parent),
       _logger { owl::initializeLogger("ForumView") }
@@ -285,23 +302,29 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     // parent's color gets drawn in that margin area, so we have to set
     // the parent's color to match
     parent->setStyleSheet((fmt::format("QWidget{{ background-color: {}; }}", BG_COLOR)).data());
-    setStyleSheet((fmt::format("QWidget{{ background-color: {}; border: none; }}", BG_COLOR)).data());
+    setStyleSheet(fmt::format(FORUMVIEW_STYLESHEET, BG_COLOR).data());
 
     initListView();
 
     _boardLabel = new QLabel(this);
+    _boardLabel->setObjectName("boardLabel");
     QFont font;
     font.setPointSize(BOARDNAMEFONT);
     font.setBold(true);
     font.setWeight(75);
     _boardLabel->setFont(font);
-    _boardLabel->setStyleSheet(fmt::format("QLabel{{ color : {}; }}", HEADER_COLOR).data());
+    _boardLabel->setStyleSheet(fmt::format("QLabel{{ color : {};  }}", HEADER_COLOR).data());
 
     QHBoxLayout* boardNameLayout = new QHBoxLayout();
     boardNameLayout->addSpacing(0);
     boardNameLayout->addWidget(_boardLabel);
 
+    QFrame* userBox = new QFrame(this);
+    userBox->setObjectName("usernameFrame");
     QHBoxLayout* userLayout = new QHBoxLayout();
+    userLayout->setSpacing(0);
+    userLayout->setMargin(0);
+
     _userLabel = new QLabel(this);
     _userLabel->setMaximumHeight(64);
     font.setPointSize(USERNAMEFONT);
@@ -315,14 +338,21 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
 
     userLayout->addWidget(_userImgLabel);
     userLayout->addWidget(_userLabel);
+    userBox->setLayout(userLayout);
 
     QVBoxLayout* layout = new QVBoxLayout();
     layout->setSpacing(0);
     layout->setMargin(0);
     layout->addSpacing(TOP_PADDING);
     layout->addLayout(boardNameLayout);
-    layout->addLayout(userLayout);
-    layout->addItem(new QSpacerItem(0,15));
+    layout->addWidget(userBox);
+
+    QFrame *line = new QFrame;
+    line->setFrameShape(QFrame::HLine);
+    line->setFrameShadow(QFrame::Plain);
+    line->setObjectName("topLine");
+    layout->addWidget(line);
+
     layout->addWidget(_listView);
 
     QHBoxLayout* rootLayout = new QHBoxLayout();
@@ -330,6 +360,7 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     rootLayout->setMargin(0);
     rootLayout->addSpacing(LEFT_PADDING);
     rootLayout->addLayout(layout);
+    rootLayout->addSpacing(LEFT_PADDING);
 
     setLayout(rootLayout);
 }
@@ -393,7 +424,7 @@ void ForumView::doBoardClicked(const owl::BoardWeakPtr boardWeakPtr)
     _listView->setModel(model);
 
     QFontMetrics metrics(_boardLabel->font());
-    QString elidedText = metrics.elidedText(currentBoard->getName(), Qt::ElideRight, _boardLabel->rect().width());
+    QString elidedText = metrics.elidedText(currentBoard->getName(), Qt::ElideRight, this->width());
     _boardLabel->setText(elidedText);
 
     _userLabel->setText(currentBoard->getUsername());

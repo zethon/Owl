@@ -23,8 +23,8 @@ constexpr auto ICONSCALEHEIGHT = 128;
 constexpr auto LISTICONWIDTH = 164;
 constexpr auto LISTICONHEIGHT = 64;
 
-constexpr auto DEFAULT_HOVER = "darkgrey";
-constexpr auto DEFAULT_SELECTED = "white";
+constexpr auto DEFAULT_HOVER = "#222222";
+constexpr auto DEFAULT_SELECTED = "black";
 
 constexpr auto INDICATOR_ERROR = "#FF0000";
 constexpr auto INDICATOR_LOGGED_IN = "#ADFF2F";
@@ -257,23 +257,21 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 
     if (option.state & QStyle::State_Selected)
     {
-        QPen pen(QBrush(QColor(DEFAULT_SELECTED)), 3.25);
-        painter->setPen(pen);
+        QPen pen2{QBrush{QColor{DEFAULT_SELECTED}}, 10.00};
+        painter->setPen(pen2);
         painter->setRenderHint(QPainter::Antialiasing, true);
 
-        QRect tempRect{ iconRect };
-        tempRect.adjust(-5,-5,5,5);
-        painter->drawRoundedRect(tempRect, 10.0, 10.0);
+        QRect tempRect2 { iconRect };
+        tempRect2.adjust(-55, 4, -55 , -4);
+        painter->drawRoundedRect(tempRect2, 0.0, 0.0);
     }
-
-    if ((option.state & QStyle::State_MouseOver)
-        && !(option.state & QStyle::State_Selected))
+    else if (option.state & QStyle::State_MouseOver)
     {
-        QPen pen(QBrush(QColor(DEFAULT_HOVER)), 3.25);
+        QPen pen(QBrush(QColor(DEFAULT_HOVER)), 10.00);
         painter->setPen(pen);
         painter->setRenderHint(QPainter::Antialiasing, true);
 
-        iconRect.adjust(-5,-5,5,5);
+        iconRect.adjust(-55, 8, -55, -8);
         painter->drawRoundedRect(iconRect, 10.0, 10.0);
     }
 

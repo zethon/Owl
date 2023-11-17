@@ -256,73 +256,7 @@ void MainWindow::onForumStructureChanged(BoardPtr b)
 
 void MainWindow::loginEvent(BoardPtr b, const StringMap& sp)
 {
-    // auto doc = b->getBoardItemDocument();
-    // QString msg;
-
-    // _logger->debug("Board '{}' login result with user '{}' was {}",
-    //     b->getName().toStdString(),
-    //     b->getUsername().toStdString(),
-    //     sp.getBool("success") ? "successful" : "unsuccessful");
-    
-    // if (sp.getBool("success"))
-    // {
-    //     if (_workerMap.contains(b->hash()))
-    //     {
-    //         QThreadEx* workerThread = _workerMap.value(b->hash());
-            
-    //         const QString threadName = QString("%1:%2:%3")
-    //             .arg(b->getName(), b->getServiceUrl()).arg(b->hash());
-    //         workerThread->setObjectName(threadName);
-
-    //         BoardUpdateWorker* pWorker = new BoardUpdateWorker(b);
-    //         pWorker->moveToThread(workerThread);
-
-    //         QObject::connect(pWorker, &BoardUpdateWorker::onForumStructureChanged, this,
-    //             [this](BoardPtr board)
-    //             {
-    //                 QMetaObject::invokeMethod(this, "onForumStructureChanged", Q_ARG(owl::BoardPtr, board));
-    //             });
-
-    //         QObject::connect(workerThread, &QThread::started, this,
-    //             [pWorker]()
-    //             {
-    //                 QMetaObject::invokeMethod(pWorker, "doWork");
-    //             });
-
-    //         QObject::connect(workerThread, &QThread::finished, this,
-    //             [workerThread, pWorker]()
-    //             {
-    //                 pWorker->setIsDone(true);
-    //                 pWorker->deleteLater();
-    //                 workerThread->deleteLater();
-    //             });
-
-    //         workerThread->start();
-    //     }
-
-    //     msg = QString(tr("User %1 signed on %2"))
-    //         .arg(b->getUsername(), b->getName());
-
-    //     _logger->info(msg.toStdString());
-    // }
-    // else
-    // {
-    //     msg = QString(tr("User %1 could not sign on to '%2'"))
-    //         .arg(b->getUsername(), b->getName());
-
-    //     if (sp.has("error"))
-    //     {
-    //         msg += " because '" + sp.getText("error") + "'.";
-    //     }
-    //     else
-    //     {
-    //         msg += ".";
-    //     }
-
-    //     _logger->info(msg.toStdString());
-    // }
-
-    // QMainWindow::statusBar()->showMessage(msg, 5000);
+    this->connectionView->repaint();
 }
 
 // invoked when a request for posts has returned
