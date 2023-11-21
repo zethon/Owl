@@ -17,7 +17,7 @@
     #define FORUMNAMELABELHEIGHT      48
 #elif defined(Q_OS_MAC)
     #define LOADINGVIEWFONTSIZE       32
-    #define FORUMNAMELABELHEIGHT      48
+    // #define FORUMNAMELABELHEIGHT      48
 #else
     #define LOADINGVIEWFONTSIZE       32
     #define FORUMNAMELABELHEIGHT      48
@@ -131,78 +131,98 @@ void LoadingView::setBoardInfo(BoardWeakPtr bwp)
 ThreadListContainer::ThreadListContainer(QWidget *parent)
     : QWidget(parent)
 {
-    _threadListWidget = new ThreadListWidget(this);
+    this->loadUI();
+    this->connectWidgets();
+}
+
+constexpr auto BGCOLOR = "white";
+
+constexpr auto THREADLIST_COINTAINER_STYLESHEET = R"x(
+QWidget
+{{
+    background-color: {bgcolor};
+}}
+
+#forumNameLabel
+{{
+    padding-left: 5px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #101010;
+}}
+
+#topLine
+{{
+    color: #C5C5C5;
+}}
+
+#topFramePane
+{{
+    padding-right: 5px;
+}}
+
+)x";
+
+void ThreadListContainer::loadUI()
+{
+    const auto ObjectStyleSheet { fmt::format(THREADLIST_COINTAINER_STYLESHEET, fmt::arg("bgcolor", BGCOLOR)) };
+    this->setStyleSheet(ObjectStyleSheet.data());
 
     _forumNameLbl = new QLabel(this);
+    _forumNameLbl->setObjectName("forumNameLabel");
     QFont threadFont { _forumNameLbl->font() };
     threadFont.setPointSize(16);
     threadFont.setBold(true);
     _forumNameLbl->setFont(threadFont);
     _forumNameLbl->setWordWrap(false);
-    _forumNameLbl->setMinimumHeight(FORUMNAMELABELHEIGHT);
-    _forumNameLbl->setMaximumHeight(FORUMNAMELABELHEIGHT);
+    // _forumNameLbl->setMinimumHeight(48);
+    // _forumNameLbl->setMaximumHeight(48);
 
     _paginationWidget = new owl::PaginationWidget(this);
-    QObject::connect(_paginationWidget, &PaginationWidget::doGotoPage,
-        [this](std::uint32_t page)
-        {
-            if (ForumPtr forum = _currentForum.lock(); forum)
-            {
-                if (BoardPtr board = forum->getBoard().lock(); board)
-                {
-                    _loadingView->setBoardInfo(board);
-                    _container->setCurrentIndex(0);
 
-                    forum->setPageNumber(static_cast<int>(page));
-                    board->requestThreadList(forum);
-                }
-                else
-                {
-                    // TODO: should do something here
-                    Q_ASSERT(0);
-                }
-            }
-            else
-            {
-                // TODO: should do something here
-                Q_ASSERT(0);
-            }
-        });
+    // QVBoxLayout* forumNameLayout = new QVBoxLayout();
+    // forumNameLayout->setMargin(0);
+    // forumNameLayout->setSpacing(0);
+    // forumNameLayout->addWidget(_forumNameLbl);
+    // forumNameLayout->addWidget(_paginationWidget);
 
-    QVBoxLayout* forumNameLayout = new QVBoxLayout();
-    forumNameLayout->setMargin(0);
-    forumNameLayout->setSpacing(0);
-    forumNameLayout->addWidget(_forumNameLbl);
-    forumNameLayout->addWidget(_paginationWidget);
+    // auto stickyBtn = new QPushButton(this);
+    // stickyBtn->setStyleSheet("QPushButton { border: 0px; } QPushButton::hover { background-color: #eaeaea; border-radius: 8px; }");
+    // stickyBtn->setIcon(QIcon(":/icons/sticky2.png"));
+    // stickyBtn->setIconSize(QSize(21, 21));
+    // stickyBtn->setCursor(Qt::CursorShape::PointingHandCursor);
+    // stickyBtn->setMaximumWidth(32);
+    // stickyBtn->setMaximumHeight(32);
 
-    auto stickyBtn = new QPushButton(this);
-    stickyBtn->setStyleSheet("QPushButton { border: 0px; } QPushButton::hover { background-color: #eaeaea; border-radius: 8px; }");
-    stickyBtn->setIcon(QIcon(":/icons/sticky2.png"));
-    stickyBtn->setIconSize(QSize(21, 21));
-    stickyBtn->setCursor(Qt::CursorShape::PointingHandCursor);
-    stickyBtn->setMaximumWidth(32);
-    stickyBtn->setMaximumHeight(32);
+    // auto newBtn = new QPushButton(this);
+    // newBtn->setStyleSheet("QPushButton { border: 0px; } QPushButton::hover { background-color: #eaeaea; border-radius: 8px; }");
+    // newBtn->setIcon(QIcon(":/icons/newboard.png"));
+    // newBtn->setIconSize(QSize(21, 21));
+    // newBtn->setCursor(Qt::CursorShape::PointingHandCursor);
+    // // newBtn->setMaximumWidth(32);
+    // // newBtn->setMaximumHeight(32);
 
-    auto newBtn = new QPushButton(this);
-    newBtn->setStyleSheet("QPushButton { border: 0px; } QPushButton::hover { background-color: #eaeaea; border-radius: 8px; }");
-    newBtn->setIcon(QIcon(":/icons/newboard.png"));
-    newBtn->setIconSize(QSize(21, 21));
-    newBtn->setCursor(Qt::CursorShape::PointingHandCursor);
-    newBtn->setMaximumWidth(32);
-    newBtn->setMaximumHeight(32);
+    // QHBoxLayout* rightHandLayout = new QHBoxLayout();
+    // rightHandLayout->setMargin(0);
+    // rightHandLayout->setSpacing(0);
+    // rightHandLayout->addWidget(stickyBtn);
+    // rightHandLayout->addWidget(newBtn);
 
-    QHBoxLayout* rightHandLayout = new QHBoxLayout();
-    rightHandLayout->setMargin(0);
-    rightHandLayout->setSpacing(0);
-    rightHandLayout->addWidget(stickyBtn);
-    rightHandLayout->addWidget(newBtn);
-
+    auto topPaneFrame = new QFrame(this);
+    topPaneFrame->setObjectName("topFramePane");
+    topPaneFrame->setMaximumHeight(50);
+    topPaneFrame->setMinimumHeight(50);
     QHBoxLayout* topLayout = new QHBoxLayout();
-    topLayout->addItem(new QSpacerItem(10,0));
-    topLayout->addLayout(forumNameLayout);
-    topLayout->addSpacing(10);
-    topLayout->addLayout(rightHandLayout);
-    topLayout->addItem(new QSpacerItem(1,0));
+    topLayout->setSpacing(0);
+    topLayout->setMargin(0);
+    topLayout->addWidget(_forumNameLbl);
+    topLayout->addItem(new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
+    topLayout->addWidget(_paginationWidget);
+
+    // topLayout->addSpacing(10);
+    // topLayout->addLayout(rightHandLayout);
+    // topLayout->addItem(new QSpacerItem(1,0));
+    topPaneFrame->setLayout(topLayout);
 
     // `hLine` separates the top pane from the bottom pane
     //QFrame* hLine = new QFrame(this);
@@ -213,20 +233,52 @@ ThreadListContainer::ThreadListContainer(QWidget *parent)
 
     _container = new QStackedWidget(this);
     _container->addWidget(_loadingView);
-    _container->addWidget(_threadListWidget);
+    _container->addWidget(_threadListWidget = new ThreadListWidget(this));
     _container->setCurrentIndex(1);
+
+    QFrame *topLine = new QFrame;
+    topLine->setFrameShape(QFrame::HLine);
+    topLine->setFrameShadow(QFrame::Plain);
+    topLine->setObjectName("topLine");
 
     QVBoxLayout* rootLayout = new QVBoxLayout();
     rootLayout->setSpacing(0);
     rootLayout->setMargin(0);
 
-    rootLayout->addItem(new QSpacerItem(0,5));
-    rootLayout->addLayout(topLayout);
-    rootLayout->addItem(new QSpacerItem(0,5));
-    //rootLayout->addWidget(hLine);
+    rootLayout->addWidget(topPaneFrame);
+    rootLayout->addWidget(topLine);
     rootLayout->addWidget(_container);
 
     setLayout(rootLayout);
+}
+
+void ThreadListContainer::connectWidgets()
+{
+    QObject::connect(_paginationWidget, &PaginationWidget::doGotoPage,
+     [this](std::uint32_t page)
+     {
+         if (ForumPtr forum = _currentForum.lock(); forum)
+         {
+             if (BoardPtr board = forum->getBoard().lock(); board)
+             {
+                 _loadingView->setBoardInfo(board);
+                 _container->setCurrentIndex(0);
+
+                 forum->setPageNumber(static_cast<int>(page));
+                 board->requestThreadList(forum);
+             }
+             else
+             {
+                 // TODO: should do something here
+                 Q_ASSERT(0);
+             }
+         }
+         else
+         {
+             // TODO: should do something here
+             Q_ASSERT(0);
+         }
+     });
 }
 
 void ThreadListContainer::doShowThreads(ForumPtr forum)

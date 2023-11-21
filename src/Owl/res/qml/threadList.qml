@@ -122,7 +122,7 @@ Item
                 property int spacerRectHeight: 10
                 property int delegateSpacerHeight: 25
 
-                width: parent.width
+                width: threadListView.width
 
 //                property int componentHeight:
 //                    authorText.height + authorText.anchors.topMargin + authorText.anchors.bottomMargin +
@@ -341,6 +341,15 @@ Item
                     }
                 }
             } // delegate: Item
+
+            onContentYChanged:
+            {
+                if (contentY == contentHeight - height)
+                {
+                    console.log("scrolled to bottom");
+                }
+            }
+
         }
     }
 }

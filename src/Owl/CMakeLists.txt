@@ -4,6 +4,7 @@ SET (SOURCE_FILES
     BoardTreeView.cpp
     BoardsModel.cpp
     BoardUpdateWorker.cpp
+    ClickableLabel.cpp
     ConfiguringBoardDlg.cpp
     ContentView.cpp
     EditBoardDlg.cpp
@@ -30,6 +31,7 @@ SET (MOC_HEADERS
     BoardIconView.h
     BoardTreeView.h
     BoardUpdateWorker.h
+    ClickableLabel.h
     ConfiguringBoardDlg.h
     ContentView.h
     EditBoardDlg.h
