@@ -842,25 +842,21 @@ void BoardManager::updateBoardOptions(BoardPtr board, bool bDoCommit /*= false*/
 	}
 }
 
-BoardPtr BoardManager::boardByItem(QStandardItem* item) const
-{
-	BoardPtr board;
-
-    for (BoardPtr b : _boardList)
-	{
-		if (b->getModelItem() == item)
-		{
-			board = b;
-			break;
-		}
-	}
-
-    return board;
-}
-
 BoardPtr BoardManager::boardByIndex(std::size_t index) const
 {
     return _boardList.at(static_cast<std::size_t>(index));
+}
+
+BoardPtr BoardManager::boardByUUID(const QString& uuid) const
+{
+    auto it = std::find_if(_boardList.begin(), _boardList.end(),
+        [uuid](BoardPtr b)
+        {
+            return b->uuid() == uuid.toStdString();
+        });
+
+    if (it == _boardList.end()) return {};
+    return *it;
 }
 
 BoardManagerPtr BoardManager::_instance;

@@ -64,6 +64,7 @@ SET (UI_SOURCES
 
 SET (HEADER_FILES
     Core.h
+    GUIConstants.h
     ${MOC_HEADERS}
 )
 

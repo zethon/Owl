@@ -12,6 +12,7 @@
 #include "Data/Board.h"
 #include "Data/ForumTreeModel.h"
 
+#include "GUIConstants.h"
 #include "ForumView.h"
 
 #if defined(Q_OS_WIN)
@@ -360,8 +361,8 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
 
     QFrame* topPaneFrame = new QFrame(this);
     topPaneFrame->setObjectName("topFrame");
-    topPaneFrame->setMaximumHeight(50);
-    topPaneFrame->setMinimumHeight(50);
+    topPaneFrame->setMaximumHeight(TOPFRAME_HEIGHT);
+    topPaneFrame->setMinimumHeight(TOPFRAME_HEIGHT);
     QVBoxLayout *topLayout = new QVBoxLayout();
     topLayout->setSpacing(0);
     topLayout->setMargin(0);

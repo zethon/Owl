@@ -4,12 +4,14 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 set (SOURCE_FILES
     Board.cpp
     BoardManager.cpp
+    ConnectionListModel.cpp
     ForumTreeModel.cpp
 )
 
 set (MOC_HEADERS
     Board.h
     BoardManager.h
+    ConnectionListModel.h
     ForumTreeModel.h
 )
 
