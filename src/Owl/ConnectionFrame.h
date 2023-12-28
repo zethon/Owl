@@ -13,7 +13,7 @@ public:
         : QFrame(parent)
         , _uuid(uuid)
     {
-        // nothing to do
+        this->setObjectName(QString::fromStdString(uuid));
     }
 
     virtual ~ConnectionFrame() = default;

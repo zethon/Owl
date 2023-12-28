@@ -27,8 +27,6 @@ QLabel#testLabel
 RedditConnectionFrame::RedditConnectionFrame(const std::string& uuid, QWidget* parent)
     : ConnectionFrame(uuid, parent)
 {
-    this->setObjectName("RedditConnectionFrame");
-
     const auto FrameStyleSheet { fmt::format(MAIN_STYLE, fmt::arg("bgcolor", BGCOLOR)) };
     this->setStyleSheet(FrameStyleSheet.data());
 

@@ -12,7 +12,7 @@ class ChatConnectionFrame : public owl::ConnectionFrame
     Q_OBJECT
 
 public:
-    ChatConnectionFrame(const std::string& uuid, QWidget *parent = nullptr);
+    ChatConnectionFrame(QWidget *parent = nullptr);
 
 Q_SIGNALS:
 

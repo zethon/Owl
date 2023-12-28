@@ -24,11 +24,9 @@ QLabel#testLabel
 }}
 )x"sv;
 
-ChatConnectionFrame::ChatConnectionFrame(const std::string& uuid, QWidget* parent)
-    : ConnectionFrame(uuid, parent)
+ChatConnectionFrame::ChatConnectionFrame(QWidget* parent)
+    : ConnectionFrame("ChatConnectionUUID", parent)
 {
-    this->setObjectName("ChatConnectionFrame");
-
     const auto FrameStyleSheet { fmt::format(MAIN_STYLE, fmt::arg("bgcolor", BGCOLOR)) };
     this->setStyleSheet(FrameStyleSheet.data());
 

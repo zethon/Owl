@@ -22,6 +22,7 @@
 #include "WebBrowser.h"
 #include "ForumConnectionFrame.h"
 #include "RedditConnectionFrame.h"
+#include "ChatConnectionFrame.h"
 
 #ifdef Q_OS_WIN
 #include "windows.h"
@@ -137,6 +138,9 @@ void MainWindow::loadBoards()
             forumTopStack->addWidget(new RedditConnectionFrame(connection->uuid(), this));
         }
     }
+
+    auto chatframe = new ChatConnectionFrame(forumTopStack);
+    forumTopStack->addWidget(chatframe);
 }
 
 bool MainWindow::initBoard(const BoardPtr& b)
@@ -781,28 +785,11 @@ void MainWindow::createBoardPanel()
     QObject::connect(connectionView, &BoardIconView::onConnectionClicked, this,
         [this](const std::string& uuid)
         {
-            auto count = forumTopStack->count();
-            for (auto x = 0; x < count; x++)
+            auto widget = forumTopStack->findChild<owl::ConnectionFrame*>(uuid.c_str());
+            if (nullptr != widget)
             {
-                auto widget = forumTopStack->widget(x);
-                auto conFrame = dynamic_cast<owl::ConnectionFrame*>(widget);
-
-                if (nullptr == conFrame) continue;
-                if (conFrame->uuid() != uuid) continue;
-
-                forumTopStack->setCurrentIndex(x);
-                break;
+                forumTopStack->setCurrentWidget(widget);
             }
-        });
-
-    QObject::connect(connectionView, &BoardIconView::onChatButtonClicked, this,
-        [this]()
-        {
-            // auto widget = std::dynamic_pointer_cast<ChatButtonConnection>(forumTopStack->widget(0));
-            // if (widget)
-            // {
-            //     forumTopStack->setCurrentIndex(0);
-            // }
         });
 
     QObject::connect(connectionView, &BoardIconView::onBoardClicked, this,

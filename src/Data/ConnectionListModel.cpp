@@ -67,15 +67,15 @@ RedditConnection::RedditConnection(const std::string& uuid, std::uint16_t displa
     _roleData[Qt::DecorationRole] = icon;
 }
 
-ChatButtonConnection::ChatButtonConnection(std::uint16_t displayOrder)
-    : StaticButtonConnection{displayOrder}
+ChatButtonConnection::ChatButtonConnection()
+    : StaticButtonConnection{"ChatConnectionUUID", 0}
 {
     const auto icon { QIcon(ZFontIcon::icon(Fa5::FAMILY, Fa5::fa_users)) };
     _roleData[Qt::DecorationRole] = icon;
 }
 
-NewConnectionButton::NewConnectionButton(std::uint16_t displayOrder)
-    : StaticButtonConnection{displayOrder}
+NewConnectionButton::NewConnectionButton()
+    : StaticButtonConnection{"NewConnectionUUID", 0}
 {
     const auto icon { QIcon(ZFontIcon::icon(Fa5::FAMILY, Fa5::fa_plus_circle)) };
     _roleData[Qt::DecorationRole] = icon;
@@ -143,9 +143,10 @@ QVariant ConnectionListModel::data(const QModelIndex & index, int role ) const
 void ConnectionListModel::createStaticButtons()
 {
     _connections.insert(_connections.begin(),
-        std::make_shared<ChatButtonConnection>(0));
+        std::make_shared<ChatButtonConnection>());
 
-    _connections.push_back(std::make_shared<NewConnectionButton>(0));
+    _connections.push_back(
+        std::make_shared<NewConnectionButton>());
 }
 
 

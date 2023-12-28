@@ -332,10 +332,6 @@ void BoardIconView::initListView()
                 }
                 break;
 
-                case owl::ConnectionType::CHAT_BUTTON:
-                    Q_EMIT onChatButtonClicked();
-                break;
-
                 case owl::ConnectionType::NEW_CONNECTION_BUTTON:
                     Q_EMIT onNewConnectionButtonClicked();
                 break;

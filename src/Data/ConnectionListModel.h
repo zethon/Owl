@@ -108,8 +108,8 @@ public:
 class StaticButtonConnection: public Connection
 {
 public:
-    StaticButtonConnection(std::uint16_t displayOrder)
-        : Connection({}, displayOrder)
+    StaticButtonConnection(const std::string& uuid, std::uint16_t displayOrder)
+        : Connection(uuid, displayOrder)
     {
         // nothing to do
     }
@@ -121,7 +121,7 @@ public:
 class ChatButtonConnection : public StaticButtonConnection
 {
 public:
-    ChatButtonConnection(std::uint16_t displayOrder);
+    ChatButtonConnection();
     ~ChatButtonConnection() = default;
 
     ConnectionType type() const override { return ConnectionType::CHAT_BUTTON; }
@@ -130,7 +130,7 @@ public:
 class NewConnectionButton : public StaticButtonConnection
 {
 public:
-    NewConnectionButton(std::uint16_t displayOrder);
+    NewConnectionButton();
     ~NewConnectionButton() = default;
 
     ConnectionType type() const override { return ConnectionType::NEW_CONNECTION_BUTTON; }
