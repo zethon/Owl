@@ -59,6 +59,7 @@
         <file>qml/boardIconList.qml</file>
         <file>qml/postList.qml</file>
         <file>qml/threadList.qml</file>
+        <file>qml/NewThreadDialog.qml</file>
         <file>icons/pin.png</file>
         <file>icons/views.png</file>
         <file>icons/replies.png</file>
@@ -82,7 +83,6 @@
         <file>icons/loading2.gif</file>
         <file>icons/sticky2.png</file>
         <file>icons/new_post_indicator.png</file>
-
         <file>fonts/fa5/FontAwesome_v5.15.4_Free_Solid900.otf</file>
         <file>fonts/fa5/FontAwesome_v5.15.4_Brands_Regular400.otf</file>
         <file>fonts/fa4/FontAwesome_v4.7.0_Free.ttf</file>

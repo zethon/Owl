@@ -1,9 +1,11 @@
-#include "../Utils/OwlUtils.h"
 #include "../Utils/QSgml.h"
 #include "Tapatalk.h"
 #include <cmath>
 
 #include <Utils/OwlLogger.h>
+#include <Utils/OwlLiterals.h>
+
+using namespace owl::literals;
 
 namespace owl
 {
@@ -163,7 +165,8 @@ QVariant Tapatalk4x::doGetBoardwareInfo()
         OWL_THROW_EXCEPTION(Exception("Cannot convert 'get_config' response to QVariant::Map"));
 	}
 
-	auto infoMap = response.toMap();
+	const auto infoMap = response.toMap();
+
 	
 	if (infoMap.contains("version"))
 	{
@@ -1120,7 +1123,7 @@ void Tapatalk4x::loadConfig()
 {
 	if (!_configLoaded)
 	{
-        const QString strPostData(getRequestXml("get_config"));
+        const QString strPostData(getRequestXml(QStringLiteral("get_config")));
         const QString data = uploadString(strPostData);
 		XRVariant response(data);
 

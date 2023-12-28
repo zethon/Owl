@@ -9,9 +9,6 @@
 #include "Data/Board.h"
 #include "Data/BoardManager.h"
 
-#define ICONTYPE_ROLE       Qt::UserRole+1
-#define BOARDPTR_ROLE       Qt::UserRole+2
-
 class QStandardItemModel;
 class QVBoxLayout;
 
@@ -23,16 +20,10 @@ namespace spdlog
 namespace owl
 {
 
+class ConnectionListModel;
 using SpdLogPtr = std::shared_ptr<spdlog::logger>;
 
-enum class IconType
-{
-    ADDICON, BOARDICON
-};
-
 }
-
-Q_DECLARE_METATYPE(owl::IconType);
 
 namespace owl
 {
@@ -44,23 +35,6 @@ public:
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 };
 
-class BoardIconModel : public QAbstractListModel
-{
-    Q_OBJECT
-
-public:
-    explicit BoardIconModel(QObject *parent = nullptr);
-    ~BoardIconModel() = default;
-
-private:
-    // Inherited via `QAbstractItemModel`
-    QModelIndex index(int row, int column, const QModelIndex & parent = QModelIndex()) const override;
-    int rowCount(const QModelIndex & parent = QModelIndex()) const override;
-    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
-
-    BoardManagerPtr     _boardManager;
-};
-
 class BoardIconView : public QWidget
 {
 
@@ -70,8 +44,17 @@ public:
     BoardIconView(QWidget* parent = nullptr);
     virtual ~BoardIconView() = default;
 
+    void setConnectionModel(ConnectionListModel* model) { _connectionModel = model; }
+    // void setConnectionFile(const QString& cf) { _connectionFile = cf; }
+    void initListView();
+
 Q_SIGNALS:
+    void onConnectionClicked(const std::string& uuid);
+    void onChatButtonClicked();
+    void onNewConnectionButtonClicked();
+
     void onAddNewBoard();
+    void onAddNewWebBrowser();
     void onBoardClicked(owl::BoardWeakPtr);
     void onBoardDoubleClicked(owl::BoardWeakPtr);
     void onConnectBoard(owl::BoardWeakPtr);
@@ -83,10 +66,11 @@ Q_SIGNALS:
 
 private:
     void doContextMenu(const QPoint &pos);
-    void initListView();
-
     void requestBoardDelete(BoardWeakPtr board);
+    void createListView();
 
+    QString                 _connectionFile;
+    ConnectionListModel*    _connectionModel = nullptr;
     owl::Board*             _rawBoardPtr = nullptr;
     QListView*              _listView = nullptr;
     owl::SpdLogPtr          _logger;

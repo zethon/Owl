@@ -1,5 +1,5 @@
 // Owl - www.owlclient.com
-// Copyright (c) 2012-2019, Adalid Claure <aclaure@gmail.com>
+// Copyright (c) 2012-2023, Adalid Claure <aclaure@gmail.com>
 
 #pragma once
 #include <QSqlDatabase>
@@ -65,8 +65,8 @@ public:
 
 	bool deleteBoard(BoardPtr board);
 
-	BoardPtr boardByItem(QStandardItem* item) const;
     BoardPtr boardByIndex(std::size_t index) const;
+    BoardPtr boardByUUID(const std::string& uid) const;
     
     // FORUM - CRUD
     bool deleteForumVars(const QString& forumId) const;

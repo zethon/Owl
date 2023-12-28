@@ -1,5 +1,5 @@
 // Owl - www.owlclient.com
-// Copyright (c) 2012-2019, Adalid Claure <aclaure@gmail.com>
+// Copyright (c) 2012-2023, Adalid Claure <aclaure@gmail.com>
 
 #include <QFile>
 #include <QSqlDriver>
@@ -451,9 +451,9 @@ bool BoardManager::createBoard(BoardPtr board)
 
 	query.prepare("INSERT INTO boards "
 		"(enabled, autologin, name, url, parser, "
-		"serviceUrl, username, password, icon, lastupdate) "
+		"serviceUrl, username, password, icon, lastupdate, uuid) "
 		"VALUES (:enabled, :autologin, :name, :url, :parser, :serviceurl, "
-		":username, :password, :icon, :lastupdate)");
+		":username, :password, :icon, :lastupdate, :uuid)");
 
 	query.bindValue(":enabled", board->isEnabled() ? "1" : "0");
 	query.bindValue(":autologin", board->isAutoLogin() ? "1" : "0");
@@ -842,25 +842,21 @@ void BoardManager::updateBoardOptions(BoardPtr board, bool bDoCommit /*= false*/
 	}
 }
 
-BoardPtr BoardManager::boardByItem(QStandardItem* item) const
-{
-	BoardPtr board;
-
-    for (BoardPtr b : _boardList)
-	{
-		if (b->getModelItem() == item)
-		{
-			board = b;
-			break;
-		}
-	}
-
-    return board;
-}
-
 BoardPtr BoardManager::boardByIndex(std::size_t index) const
 {
     return _boardList.at(static_cast<std::size_t>(index));
+}
+
+BoardPtr BoardManager::boardByUUID(const std::string& uuid) const
+{
+    auto it = std::find_if(_boardList.begin(), _boardList.end(),
+        [uuid](BoardPtr b)
+        {
+            return b->uuid() == uuid;
+        });
+
+    if (it == _boardList.end()) return {};
+    return *it;
 }
 
 BoardManagerPtr BoardManager::_instance;

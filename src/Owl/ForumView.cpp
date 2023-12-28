@@ -5,7 +5,6 @@
 #include <fmt/compile.h>
 
 #include "ZFontIcon/ZFontIcon.h"
-#include "ZFontIcon/ZFont_fa5.h"
 #include "ZFontIcon/ZFont_fa4.h"
 
 #include  <Utils/OwlLogger.h>
@@ -13,6 +12,7 @@
 #include "Data/Board.h"
 #include "Data/ForumTreeModel.h"
 
+#include "GUIConstants.h"
 #include "ForumView.h"
 
 #if defined(Q_OS_WIN)
@@ -24,13 +24,13 @@
     #define TOP_PADDING         10
     #define LEFT_PADDING        2
 #elif defined(Q_OS_MAC)
-    #define BOARDNAMEFONT       20
-    #define USERNAMEFONT        15
+    // #define BOARDNAMEFONT       20
+    // #define USERNAMEFONT        15
     #define TREEFONTSIZE        14
     #define TREEITEMHEIGHT      38
     #define TREECATHEIGHT       48
-    #define TOP_PADDING         23
-    #define LEFT_PADDING        6
+    // #define TOP_PADDING         10
+    // #define LEFT_PADDING        2
 #else
     #define BOARDNAMEFONT       14
     #define USERNAMEFONT        11
@@ -44,12 +44,14 @@
 using namespace std::literals;
 
 static const auto BG_COLOR =            "#F3F3F4"sv;
-static const auto HEADER_COLOR =        "#5c5e66"sv;
-static const auto USERNAME_COLOR =      "#5c5e66"sv;
+// static const auto HEADER_COLOR =        "#111211"sv;
+// static const auto USERNAME_COLOR =      "#5c5e66"sv;
 static const auto SUB_COLOR =           "#6d6f77"sv;
-static const auto FORUM_COLOR =         "#5c5e66"sv;
 static const auto HOVER_COLOR=          "#e0e1e5"sv;
 static const auto SELECTED_COLOR=       "#d7d9dc"sv;
+
+static const auto FORUM_COLOR           = "#5c5e66"sv;
+static const auto FORUM_UNREAD_COLOR    = "#333333"sv;
 
 const auto strListStyleSheet = fmt::format(R"x(
 QListView
@@ -107,8 +109,8 @@ namespace owl
 
 ForumViewDelegate::ForumViewDelegate()
 {
-    _forumUnreadIcon = QIcon(ZFontIcon::icon(Fa4::FAMILY, Fa4::fa_commenting, QColor{120,120,120}, 0.85));
-    _forumReadIcon = QIcon(ZFontIcon::icon(Fa4::FAMILY, Fa4::fa_commenting_o));
+    _forumUnreadIcon = QIcon(ZFontIcon::icon(Fa4::FAMILY, Fa4::fa_hashtag, QColor{FORUM_UNREAD_COLOR.data()}, 0.85));
+    _forumReadIcon = QIcon(ZFontIcon::icon(Fa4::FAMILY, Fa4::fa_hashtag, QColor{FORUM_COLOR.data()}, 0.85));
 }
 
 void ForumViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
@@ -138,8 +140,6 @@ void ForumViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
     }
     else
     {
-        static int x = 0;
-        x--;
         painter->save();
 
         // draw the background first
@@ -167,7 +167,8 @@ void ForumViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
         }
 
         // center the image vertically
-        int yAdjust = static_cast<int>((option.rect.height() - image.size().height()) / 2);
+        // qDebug() << image.size().height();
+        int yAdjust = static_cast<int>((option.rect.height() - 12) / 2);
 
         // draw the image centered
         QRect workingRect{ option.rect };
@@ -187,23 +188,12 @@ void ForumViewDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
         const QPixmap board_map = board_icon->pixmap(QSize{24, 24});
         painter->drawPixmap(QPoint(workingRect.x() - 5, workingRect.y() - 7), board_map);
 
-//        QRect iconRect { workingRect };
-//        iconRect.adjust(0,0, -64, 0);
-
-
-////        const auto board_icon_size = workingRect.size();
-//        const QIcon board_icon = QIcon(ZFontIcon::icon(Fa5::FAMILY, Fa5::fa_plus_circle));
-////        qDebug() << "QIcon: " << board_icon
-//        qDebug() << "Rect: " << workingRect;
-//        board_icon.paint(painter, workingRect, Qt::AlignLeft);
-////        painter->drawPixmap(QPoint(workingRect.x(), workingRect.y()), board_icon);
-        
         if (item->hasUnread())
         {
             QFont newfont { option.font };
             newfont.setBold(true);
             painter->setFont(newfont);
-            painter->setPen(QColor{"black"});
+            painter->setPen(QColor{FORUM_UNREAD_COLOR.data()});
         }
         else
         {
@@ -288,6 +278,47 @@ void ForumView::initListView()
         });
 }
 
+// padding-top: 10px;
+// padding-left: 5px;
+// padding-bottom: 10px;
+
+
+constexpr auto FORUMVIEW_STYLESHEET = R"x(
+QWidget
+{{
+    background-color: {bgcolor};
+}}
+
+#boardLabel
+{{
+    padding-left: 5px;
+    font-size: 15px;
+    font-weight: bold;
+    color: #101010;
+}}
+
+#boardLabel:hover
+{{
+    background-color: #c0c0c3;
+}}
+
+#usernameFrame, #userLabel, #userImageLabel
+{{
+    background-color: #d0d0d4;
+}}
+
+#userLabel
+{{
+    padding: 10px;
+}}
+
+#topLine
+{{
+    color: #C5C5C5;
+}}
+
+)x";
+
 ForumView::ForumView(QWidget* parent /* = 0*/)
     : QWidget(parent),
       _logger { owl::initializeLogger("ForumView") }
@@ -296,51 +327,60 @@ ForumView::ForumView(QWidget* parent /* = 0*/)
     // parent's color gets drawn in that margin area, so we have to set
     // the parent's color to match
     parent->setStyleSheet((fmt::format("QWidget{{ background-color: {}; }}", BG_COLOR)).data());
-    setStyleSheet((fmt::format("QWidget{{ background-color: {}; border: none; }}", BG_COLOR)).data());
+    setStyleSheet(fmt::format(FORUMVIEW_STYLESHEET, fmt::arg("bgcolor", BG_COLOR)).data());
 
     initListView();
 
     _boardLabel = new QLabel(this);
-    QFont font;
-    font.setPointSize(BOARDNAMEFONT);
-    font.setBold(true);
-    font.setWeight(75);
-    _boardLabel->setFont(font);
-    _boardLabel->setStyleSheet(fmt::format("QLabel{{ color : {}; }}", HEADER_COLOR).data());
+    _boardLabel->setObjectName("boardLabel");
 
-    QHBoxLayout* boardNameLayout = new QHBoxLayout();
-    boardNameLayout->addSpacing(0);
-    boardNameLayout->addWidget(_boardLabel);
+    // QHBoxLayout* boardNameLayout = new QHBoxLayout();
+    // boardNameLayout->addSpacing(0);
+    // boardNameLayout->addWidget(_boardLabel);
 
+    QFrame* userBox = new QFrame(this);
+    userBox->setObjectName("usernameFrame");
+    userBox->setMinimumHeight(70);
+    userBox->setMaximumHeight(70);
     QHBoxLayout* userLayout = new QHBoxLayout();
+    userLayout->setSpacing(0);
+    userLayout->setMargin(0);
+
     _userLabel = new QLabel(this);
-    _userLabel->setMaximumHeight(64);
-    font.setPointSize(USERNAMEFONT);
-    font.setBold(false);
-    _userLabel->setFont(font);
-    _userLabel->setStyleSheet(fmt::format("QLabel{{ color : {}; }}", USERNAME_COLOR).data());
+    _userLabel->setObjectName("userLabel");
+    // _userLabel->setMaximumHeight(64);
 
     _userImgLabel = new QLabel(this);
+    _userImgLabel->setObjectName("userImageLabel");
     _userImgLabel->setMaximumHeight(64);
     _userImgLabel->setMaximumWidth(16);
 
     userLayout->addWidget(_userImgLabel);
     userLayout->addWidget(_userLabel);
+    userBox->setLayout(userLayout);
 
-    QVBoxLayout* layout = new QVBoxLayout();
-    layout->setSpacing(0);
-    layout->setMargin(0);
-    layout->addSpacing(TOP_PADDING);
-    layout->addLayout(boardNameLayout);
-    layout->addLayout(userLayout);
-    layout->addItem(new QSpacerItem(0,15));
-    layout->addWidget(_listView);
+    QFrame* topPaneFrame = new QFrame(this);
+    topPaneFrame->setObjectName("topFrame");
+    topPaneFrame->setMaximumHeight(TOPFRAME_HEIGHT);
+    topPaneFrame->setMinimumHeight(TOPFRAME_HEIGHT);
+    QVBoxLayout *topLayout = new QVBoxLayout();
+    topLayout->setSpacing(0);
+    topLayout->setMargin(0);
+    topLayout->addWidget(_boardLabel);
+    topPaneFrame->setLayout(topLayout);
 
-    QHBoxLayout* rootLayout = new QHBoxLayout();
+    QFrame *line = new QFrame;
+    line->setFrameShape(QFrame::HLine);
+    line->setFrameShadow(QFrame::Plain);
+    line->setObjectName("topLine");
+
+    QVBoxLayout* rootLayout = new QVBoxLayout();
     rootLayout->setSpacing(0);
     rootLayout->setMargin(0);
-    rootLayout->addSpacing(LEFT_PADDING);
-    rootLayout->addLayout(layout);
+    rootLayout->addWidget(topPaneFrame);
+    rootLayout->addWidget(line);
+    rootLayout->addWidget(_listView);
+    rootLayout->addWidget(userBox);
 
     setLayout(rootLayout);
 }
@@ -404,7 +444,7 @@ void ForumView::doBoardClicked(const owl::BoardWeakPtr boardWeakPtr)
     _listView->setModel(model);
 
     QFontMetrics metrics(_boardLabel->font());
-    QString elidedText = metrics.elidedText(currentBoard->getName(), Qt::ElideRight, _boardLabel->rect().width());
+    QString elidedText = metrics.elidedText(currentBoard->getName(), Qt::ElideRight, this->width());
     _boardLabel->setText(elidedText);
 
     _userLabel->setText(currentBoard->getUsername());

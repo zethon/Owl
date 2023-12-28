@@ -75,6 +75,9 @@ Q_SIGNALS:
     void onLoading();
 
 private:
+    void loadUI();
+    void connectWidgets();
+
     QLabel*                 _forumNameLbl;
     PaginationWidget*       _paginationWidget;
 

@@ -5,6 +5,12 @@
 namespace owl
 {
 
+inline const QString GetConnectionsFilename()
+{
+    return QDir(QStandardPaths::writableLocation(QStandardPaths::DataLocation))
+        .absoluteFilePath(QStringLiteral("connections.json"));
+}
+
 bool isWindowsHost();
 bool isMacHost();
 bool isLinuxHost();

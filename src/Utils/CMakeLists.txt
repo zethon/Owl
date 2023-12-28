@@ -25,6 +25,7 @@ set (HEADER_FILES
     QSgml.cpp
     QSgmlTag.cpp
     QThreadEx.h
+    OwlLiterals.h
     OwlLogger.h
     OwlUtils.h
     SimpleArgs.h
@@ -39,6 +40,7 @@ add_library(Utils STATIC
     ${SOURCE_FILES}
     ${HEADER_FILES}
     ${MOC_SOURCE_FILES}
+    OwlLiterals.h
 )
 
 target_link_libraries(Utils
