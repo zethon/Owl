@@ -18,8 +18,10 @@
 #include "BoardUpdateWorker.h"
 #include "PostTextEditor.h"
 #include "NewThreadDlg.h"
+
 #include "WebBrowser.h"
 #include "ForumConnectionFrame.h"
+#include "RedditConnectionFrame.h"
 
 #ifdef Q_OS_WIN
 #include "windows.h"
@@ -75,12 +77,16 @@ MainWindow::MainWindow(SplashScreen *splash, QWidget *parent)
       _logger(owl::initializeLogger("MainWindow"))
 {
     setupUi(this);
-
     initializeTitleBar(this);
 
     // TODO: move this to the OwlApplication class
     readWindowSettings();
-    
+
+    // load stored connections
+    // connectionView->setConnectionFile(owl::GetConnectionsFilename());
+    // connectionView->initListView();
+    loadConnections();
+
     // initialize the dictionaries
     SPELLCHECKER->init();
 
@@ -94,44 +100,43 @@ void MainWindow::onLoaded()
     createThreadPanel();
     updateSelectedThread();
     createMenus();
-    loadBoards();
+    loadBoards(); // will probably be deleted
+}
+
+void MainWindow::loadConnections()
+{
+    _connectionsModel = std::make_unique<ConnectionListModel>(this);
+    _connectionsModel->load(owl::GetConnectionsFilename());
+    connectionView->setConnectionModel(_connectionsModel.get());
+    connectionView->initListView();
+
+    // MAKE LOADBOARDS ITERATE OVER THE CONNECTIONS
+    // AND CREATE THE STACKS
 }
 
 void MainWindow::loadBoards()
 {
-    if (BoardManager::instance()->getBoardCount() == 0)
+    const auto& connections = _connectionsModel->connections();
+    for (const auto& connection : connections)
     {
-        qDebug() << "TODO: Show that there are no boards";
-    }
-    else
-    {
-        int iErrors = 0;
-
-        const auto& list = BOARDMANAGER->getBoardList();
-        for (const BoardPtr& b : list)
+        if (connection->type() == owl::ConnectionType::LEGACY_BOARD)
         {
-            if (initBoard(b)/* && b->isAutoLogin()*/)
+            auto board = connection->data(owl::ConnectionRoles::DATA).value<BoardPtr>();
+            if (board && initBoard(board))
             {
-                _logger->debug("Starting automatic login for board '{}' with user '{}'",
-                    b->readableHash(), b->getUsername().toStdString());
-
-                b->login();
-                forumTopStack->addWidget(new ForumConnectionFrame(b, this));
-            }
-            else
-            {
-                iErrors++;
+                board->login();
+                forumTopStack->addWidget(new ForumConnectionFrame(board, this));
             }
         }
-
-        if (iErrors > 0)
+        else if (connection->type() == owl::ConnectionType::BROWSER)
         {
-            QString msg(tr("Some boards could not be loaded."));
-            QMainWindow::statusBar()->showMessage(msg, 5000); 
+            forumTopStack->addWidget(new OwlWebBrowser(connection->uuid(), this));
+        }
+        else if (connection->type() == owl::ConnectionType::REDDIT)
+        {
+            forumTopStack->addWidget(new RedditConnectionFrame(connection->uuid(), this));
         }
     }
-
-    forumTopStack->addWidget(new OwlWebBrowser(this));
 }
 
 bool MainWindow::initBoard(const BoardPtr& b)
@@ -772,6 +777,33 @@ void MainWindow::createBoardPanel()
 #ifdef Q_OS_MACX
     connectionView->setAttribute(Qt::WA_MacShowFocusRect, 0);
 #endif
+
+    QObject::connect(connectionView, &BoardIconView::onConnectionClicked, this,
+        [this](const std::string& uuid)
+        {
+            auto count = forumTopStack->count();
+            for (auto x = 0; x < count; x++)
+            {
+                auto widget = forumTopStack->widget(x);
+                auto conFrame = dynamic_cast<owl::ConnectionFrame*>(widget);
+
+                if (nullptr == conFrame) continue;
+                if (conFrame->uuid() != uuid) continue;
+
+                forumTopStack->setCurrentIndex(x);
+                break;
+            }
+        });
+
+    QObject::connect(connectionView, &BoardIconView::onChatButtonClicked, this,
+        [this]()
+        {
+            // auto widget = std::dynamic_pointer_cast<ChatButtonConnection>(forumTopStack->widget(0));
+            // if (widget)
+            // {
+            //     forumTopStack->setCurrentIndex(0);
+            // }
+        });
 
     QObject::connect(connectionView, &BoardIconView::onBoardClicked, this,
         [this](owl::BoardWeakPtr bwp)

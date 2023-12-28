@@ -310,8 +310,8 @@ void BoardIconView::createListView()
 
 void BoardIconView::initListView()
 {
-
-    _listView->setModel(new owl::BoardIconModel(this));
+    _listView->setModel(_connectionModel);
+    // _listView->setModel(new owl::BoardIconModel(this));
 
     QObject::connect(_listView, &QWidget::customContextMenuRequested, this,
         [this](const QPoint &pos)
@@ -322,25 +322,45 @@ void BoardIconView::initListView()
     QObject::connect(_listView, &QAbstractItemView::clicked, this,
         [this](const QModelIndex& index)
         {
-            if (index.data(BoardIconModel::ICONTYPE_ROLE).value<IconType>() == IconType::BOARDICON)
+            const auto type = index.data(owl::ConnectionRoles::TYPE).value<owl::ConnectionType>();
+            switch (type)
             {
-                QVariant boardVar = index.data(BoardIconModel::BOARDPTR_ROLE);
-                owl::BoardWeakPtr weakBoard = boardVar.value<BoardWeakPtr>();
-                if (auto board = weakBoard.lock(); board && board.get() != _rawBoardPtr)
+                default:
                 {
-                    _rawBoardPtr = board.get();
-                    Q_EMIT onBoardClicked(weakBoard);
+                    const auto uuid = index.data(owl::ConnectionRoles::UUID).toString().toStdString();
+                    Q_EMIT onConnectionClicked(uuid);
                 }
+                break;
+
+                case owl::ConnectionType::CHAT_BUTTON:
+                    Q_EMIT onChatButtonClicked();
+                break;
+
+                case owl::ConnectionType::NEW_CONNECTION_BUTTON:
+                    Q_EMIT onNewConnectionButtonClicked();
+                break;
             }
-            else if (index.data(BoardIconModel::ICONTYPE_ROLE).value<IconType>() == IconType::ADDICON)
-            {
-                Q_EMIT onAddNewBoard();
-            }
-            else if (index.data(BoardIconModel::ICONTYPE_ROLE).value<IconType>() == IconType::WEBICON)
-            {
-                _rawBoardPtr = nullptr;
-                Q_EMIT onAddNewWebBrowser();
-            }
+
+
+            // if (index.data(BoardIconModel::ICONTYPE_ROLE).value<IconType>() == IconType::BOARDICON)
+            // {
+            //     QVariant boardVar = index.data(BoardIconModel::BOARDPTR_ROLE);
+            //     owl::BoardWeakPtr weakBoard = boardVar.value<BoardWeakPtr>();
+            //     if (auto board = weakBoard.lock(); board && board.get() != _rawBoardPtr)
+            //     {
+            //         _rawBoardPtr = board.get();
+            //         Q_EMIT onBoardClicked(weakBoard);
+            //     }
+            // }
+            // else if (index.data(BoardIconModel::ICONTYPE_ROLE).value<IconType>() == IconType::ADDICON)
+            // {
+            //     Q_EMIT onAddNewBoard();
+            // }
+            // else if (index.data(BoardIconModel::ICONTYPE_ROLE).value<IconType>() == IconType::WEBICON)
+            // {
+            //     _rawBoardPtr = nullptr;
+            //     Q_EMIT onAddNewWebBrowser();
+            // }
         });
 
     QObject::connect(_listView, &QAbstractItemView::doubleClicked, this,

@@ -8,6 +8,25 @@
 namespace owl
 {
 
+namespace ConnectionRoles
+{
+    static constexpr auto UUID = Qt::UserRole;
+    static constexpr auto TYPE = Qt::UserRole+1;
+    static constexpr auto DATA = Qt::UserRole+2;
+}
+
+enum class ConnectionType
+{
+    LEGACY_BOARD, BROWSER, REDDIT, CHAT_BUTTON, NEW_CONNECTION_BUTTON
+};
+
+} // namespace owl
+
+Q_DECLARE_METATYPE(owl::ConnectionType);
+
+namespace owl
+{
+
 class Connection;
 using ConnectionPtr = std::shared_ptr<Connection>;
 
@@ -15,10 +34,10 @@ class Connection
 {
 
 public:
-    Connection(const QString& uuid, std::uint16_t displayOrder)
+    Connection(const std::string& uuid, std::uint16_t displayOrder)
         : _displayOrder{displayOrder}
     {
-        // nothing to do
+        _roleData[owl::ConnectionRoles::UUID] = QString::fromStdString(uuid);
     }
 
     virtual ~Connection() = default;
@@ -26,19 +45,24 @@ public:
     virtual QVariant data(int role)
     {
         if (!_roleData.contains(role)) return {};
+        if (role == owl::ConnectionRoles::TYPE) return QVariant::fromValue(this->type());
         return _roleData[role];
     }
 
+    virtual ConnectionType type() const = 0;
+
     std::uint16_t displayOrder() const { return _displayOrder; }
-    QString uuid() const { return _uuid; }
+    std::string uuid() const 
+    { 
+        const auto uuid = _roleData.at(owl::ConnectionRoles::UUID).toString();
+        return uuid.toStdString();
+    }
 
 protected:
     std::map<int, QVariant> _roleData;
 
 private:
     std::uint16_t   _displayOrder;
-    QString         _uuid;
-
 };
 
 struct ConnectionCmp
@@ -52,9 +76,12 @@ struct ConnectionCmp
 class LegacyBoardConnection : public Connection
 {
 public:
-    LegacyBoardConnection(const QString& uuid,
-                          std::uint16_t displayOrder,
+    LegacyBoardConnection(std::uint16_t displayOrder,
                           BoardPtr board);
+
+    virtual ~LegacyBoardConnection() = default;
+
+    ConnectionType type() const override { return ConnectionType::LEGACY_BOARD; }
 
 private:
     BoardPtr    _board;
@@ -63,13 +90,19 @@ private:
 class BrowserConnection: public Connection
 {
 public:
-    BrowserConnection(const QString& uuid, std::uint16_t displayOrder);
+    BrowserConnection(const std::string& uuid, std::uint16_t displayOrder);
+    virtual ~BrowserConnection() = default;
+
+    ConnectionType type() const override { return ConnectionType::BROWSER; }
 };
 
 class RedditConnection: public Connection
 {
 public:
-    RedditConnection(const QString& uuid, std::uint16_t displayOrder);
+    RedditConnection(const std::string& uuid, std::uint16_t displayOrder);
+    virtual ~RedditConnection() = default;
+
+    ConnectionType type() const override { return ConnectionType::REDDIT; }
 };
 
 class StaticButtonConnection: public Connection
@@ -89,21 +122,18 @@ class ChatButtonConnection : public StaticButtonConnection
 {
 public:
     ChatButtonConnection(std::uint16_t displayOrder);
+    ~ChatButtonConnection() = default;
+
+    ConnectionType type() const override { return ConnectionType::CHAT_BUTTON; }
 };
 
 class NewConnectionButton : public StaticButtonConnection
 {
 public:
     NewConnectionButton(std::uint16_t displayOrder);
-};
+    ~NewConnectionButton() = default;
 
-// build a vector of `Connection` objects
-class ConnectionListFactory
-{
-
-public:
-
-
+    ConnectionType type() const override { return ConnectionType::NEW_CONNECTION_BUTTON; }
 };
 
 class ConnectionListModel : public QAbstractListModel
@@ -115,6 +145,7 @@ public:
     ~ConnectionListModel() = default;
 
     bool load(const QString& filename);
+    const std::vector<ConnectionPtr>& connections() const { return _connections; }
 
 private:
     // Inherited via `QAbstractItemModel`

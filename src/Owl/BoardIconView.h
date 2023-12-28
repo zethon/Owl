@@ -44,10 +44,15 @@ public:
     BoardIconView(QWidget* parent = nullptr);
     virtual ~BoardIconView() = default;
 
-    void setConnectionFile(const QString& cf) { _connectionFile = cf; }
+    void setConnectionModel(ConnectionListModel* model) { _connectionModel = model; }
+    // void setConnectionFile(const QString& cf) { _connectionFile = cf; }
     void initListView();
 
 Q_SIGNALS:
+    void onConnectionClicked(const std::string& uuid);
+    void onChatButtonClicked();
+    void onNewConnectionButtonClicked();
+
     void onAddNewBoard();
     void onAddNewWebBrowser();
     void onBoardClicked(owl::BoardWeakPtr);

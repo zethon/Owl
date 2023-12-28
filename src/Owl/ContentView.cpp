@@ -2,15 +2,20 @@
 #include <QGridLayout>
 #include <QToolButton>
 #include <QPushButton>
+#include <QMenu>
+
+#include "ZFontIcon/ZFontIcon.h"
+#include "ZFontIcon/ZFont_fa5.h"
 
 #include  <Utils/OwlLogger.h>
 
 #include "Data/Board.h"
+
 #include "ThreadListWidget.h"
 #include "PostListWidget.h"
 #include "PaginationWidget.h"
-
 #include "ContentView.h"
+#include "GUIConstants.h"
 
 #if defined(Q_OS_WIN)
     #define LOADINGVIEWFONTSIZE       14
@@ -145,8 +150,8 @@ QWidget
 
 #forumNameLabel
 {{
-    padding-left: 5px;
-    font-size: 13px;
+    padding: 0px;
+    font-size: 16px;
     font-weight: bold;
     color: #101010;
 }}
@@ -161,6 +166,17 @@ QWidget
     padding-right: 5px;
 }}
 
+#optionsMenu::menu-indicator
+{{
+    width:0px;
+}}
+
+#hashIconLbl
+{{
+    padding: 0px;
+    padding-left: 5px;
+    margin: 0px;
+}}
 )x";
 
 void ThreadListContainer::loadUI()
@@ -175,59 +191,61 @@ void ThreadListContainer::loadUI()
     threadFont.setBold(true);
     _forumNameLbl->setFont(threadFont);
     _forumNameLbl->setWordWrap(false);
-    // _forumNameLbl->setMinimumHeight(48);
-    // _forumNameLbl->setMaximumHeight(48);
 
     _paginationWidget = new owl::PaginationWidget(this);
 
-    // QVBoxLayout* forumNameLayout = new QVBoxLayout();
-    // forumNameLayout->setMargin(0);
-    // forumNameLayout->setSpacing(0);
-    // forumNameLayout->addWidget(_forumNameLbl);
-    // forumNameLayout->addWidget(_paginationWidget);
+    auto menu = new QMenu(this);
+    menu->addAction("Cat");
+    menu->addAction("Dog");
+    menu->addAction("Turtle");
 
-    // auto stickyBtn = new QPushButton(this);
-    // stickyBtn->setStyleSheet("QPushButton { border: 0px; } QPushButton::hover { background-color: #eaeaea; border-radius: 8px; }");
-    // stickyBtn->setIcon(QIcon(":/icons/sticky2.png"));
-    // stickyBtn->setIconSize(QSize(21, 21));
-    // stickyBtn->setCursor(Qt::CursorShape::PointingHandCursor);
-    // stickyBtn->setMaximumWidth(32);
-    // stickyBtn->setMaximumHeight(32);
+    auto stickyBtn = new QPushButton(this);
+    stickyBtn->setObjectName("stickyButton");
+    stickyBtn->setIcon(QIcon(ZFontIcon::icon(Fa5::FAMILY, Fa5::fa_thumbtack, QColor{"#4e5058"}, 0.9f)));
+    stickyBtn->setCursor(QCursor(Qt::PointingHandCursor));
+    stickyBtn->setFlat(true);
+    stickyBtn->setToolTip(tr("Show or Hide Sticky Threads"));
+    stickyBtn->setStyleSheet("QToolTip { background-color:#4e5058; color:white; font-size:12px; }");
 
-    // auto newBtn = new QPushButton(this);
-    // newBtn->setStyleSheet("QPushButton { border: 0px; } QPushButton::hover { background-color: #eaeaea; border-radius: 8px; }");
-    // newBtn->setIcon(QIcon(":/icons/newboard.png"));
-    // newBtn->setIconSize(QSize(21, 21));
-    // newBtn->setCursor(Qt::CursorShape::PointingHandCursor);
-    // // newBtn->setMaximumWidth(32);
-    // // newBtn->setMaximumHeight(32);
+    auto newThreadBtn = new QPushButton(this);
+    newThreadBtn->setObjectName("newThreadButton");
+    newThreadBtn->setIcon(QIcon(ZFontIcon::icon(Fa5::FAMILY, Fa5::fa_plus, QColor{"#4e5058"}, 0.9f)));
+    newThreadBtn->setCursor(QCursor(Qt::PointingHandCursor));
+    newThreadBtn->setFlat(true);
+    newThreadBtn->setToolTip(tr("Create New Thread"));
+    newThreadBtn->setStyleSheet("QToolTip { background-color:#4e5058; color:white; font-size:12px; }");
 
-    // QHBoxLayout* rightHandLayout = new QHBoxLayout();
-    // rightHandLayout->setMargin(0);
-    // rightHandLayout->setSpacing(0);
-    // rightHandLayout->addWidget(stickyBtn);
-    // rightHandLayout->addWidget(newBtn);
+    auto optionsMenu = new QPushButton(this);
+    optionsMenu->setObjectName("optionsMenu");
+    optionsMenu->setIcon(QIcon(ZFontIcon::icon(Fa5::FAMILY, Fa5::fa_bars, QColor{"#4e5058"}, 0.9f)));
+    optionsMenu->setFlat(true);
+    optionsMenu->setMenu(menu);
+
+    auto hashIconLbl = new QLabel(this);
+    hashIconLbl->setObjectName("hashIconLbl");
+    hashIconLbl->setMaximumWidth(32);
+    hashIconLbl->setMinimumWidth(32);
+    auto lblPixMap = QIcon(ZFontIcon::icon(Fa5::FAMILY, Fa5::fa_hashtag, QColor{"#4e5058"}, 0.9f)).pixmap(QSize{18,18});
+    hashIconLbl->setPixmap(lblPixMap);
 
     auto topPaneFrame = new QFrame(this);
     topPaneFrame->setObjectName("topFramePane");
-    topPaneFrame->setMaximumHeight(50);
-    topPaneFrame->setMinimumHeight(50);
+    topPaneFrame->setMaximumHeight(TOPFRAME_HEIGHT);
+    topPaneFrame->setMinimumHeight(TOPFRAME_HEIGHT);
     QHBoxLayout* topLayout = new QHBoxLayout();
     topLayout->setSpacing(0);
     topLayout->setMargin(0);
+    topLayout->addWidget(hashIconLbl);
     topLayout->addWidget(_forumNameLbl);
     topLayout->addItem(new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
+    topLayout->addWidget(newThreadBtn);
+    topLayout->addSpacing(10);
+    topLayout->addWidget(stickyBtn);
+    topLayout->addSpacing(10);
     topLayout->addWidget(_paginationWidget);
-
-    // topLayout->addSpacing(10);
-    // topLayout->addLayout(rightHandLayout);
-    // topLayout->addItem(new QSpacerItem(1,0));
+    topLayout->addSpacing(10);
+    topLayout->addWidget(optionsMenu);
     topPaneFrame->setLayout(topLayout);
-
-    // `hLine` separates the top pane from the bottom pane
-    //QFrame* hLine = new QFrame(this);
-    //hLine->setFrameShape(QFrame::HLine);
-    //hLine->setFrameShadow(QFrame::Sunken);
 
     _loadingView = new LoadingView(this);
 

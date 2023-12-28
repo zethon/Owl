@@ -16,13 +16,13 @@ ConnectionPtr ConnectionFromJson(const QJsonObject& object)
     ConnectionPtr retval;
 
     const auto displayOrder = object["displayOrder"].toInt();
-    const auto uuidStr = object["uuid"].toString();
+    const auto uuidStr = object["uuid"].toString().toStdString();
     const auto typeStr = object["type"].toString().toLower();
 
     if (typeStr == "legacy_board")
     {
         auto board = BOARDMANAGER->boardByUUID(uuidStr);
-        retval = std::make_shared<LegacyBoardConnection>(uuidStr, displayOrder, board);
+        retval = std::make_shared<LegacyBoardConnection>(displayOrder, board);
     }
     else if (typeStr == "browser")
     {
@@ -41,8 +41,8 @@ ConnectionPtr ConnectionFromJson(const QJsonObject& object)
     return retval;
 }
 
-LegacyBoardConnection::LegacyBoardConnection(const QString& uuid, std::uint16_t displayOrder, BoardPtr board)
-    : Connection{uuid, displayOrder}, _board{board}
+LegacyBoardConnection::LegacyBoardConnection(std::uint16_t displayOrder, BoardPtr board)
+    : Connection{board->uuid(), displayOrder}, _board{board}
 {
     constexpr auto ICON_WIDTH = 128;
     constexpr auto ICON_HEIGHT = 128;
@@ -50,16 +50,17 @@ LegacyBoardConnection::LegacyBoardConnection(const QString& uuid, std::uint16_t 
     QImage image = QImage::fromData(QByteArray::fromBase64(buffer));
     image = resizeImage(image, QSize(ICON_WIDTH, ICON_HEIGHT));
     _roleData[Qt::DecorationRole] = QIcon{ QPixmap::fromImage(image) };
+    _roleData[owl::ConnectionRoles::DATA] = QVariant::fromValue(board);
 }
 
-BrowserConnection::BrowserConnection(const QString& uuid, std::uint16_t displayOrder)
+BrowserConnection::BrowserConnection(const std::string& uuid, std::uint16_t displayOrder)
     : Connection{uuid, displayOrder}
 {
     const auto icon { QIcon(ZFontIcon::icon(Fa5::FAMILY, Fa5::fa_globe)) };
     _roleData[Qt::DecorationRole] = icon;
 }
 
-RedditConnection::RedditConnection(const QString& uuid, std::uint16_t displayOrder)
+RedditConnection::RedditConnection(const std::string& uuid, std::uint16_t displayOrder)
     : Connection{uuid, displayOrder}
 {
     const auto icon { QIcon(ZFontIcon::icon(Fa5brands::FAMILY, Fa5brands::fa_reddit_alien)) };
@@ -114,14 +115,11 @@ bool ConnectionListModel::load(const QString& filename)
 int ConnectionListModel::rowCount(const QModelIndex& parent) const
 {
     if (parent.column() > 0) return 0;
-    qDebug() << "rowCount: " << static_cast<int>(_connections.size());
     return static_cast<int>(_connections.size());
 }
 
 QModelIndex ConnectionListModel::index(int row, int column, const QModelIndex& parent) const
 {
-    qDebug() << "c-row: " << row;
-    qDebug() << "c-col: " << column;
     if (!hasIndex(row, column, parent)) return QModelIndex{};
 
     std::size_t trow = static_cast<std::size_t>(row);
@@ -139,7 +137,6 @@ QVariant ConnectionListModel::data(const QModelIndex & index, int role ) const
     if (!index.isValid()) return {};
     if (row > _connections.size()) return {};
 
-    qDebug() << "row: " << row;
     return _connections[row]->data(role);
 }
 
@@ -177,8 +174,6 @@ BoardIconModel::BoardIconModel(QObject *parent)
 
 QModelIndex BoardIconModel::index(int row, int column, const QModelIndex& parent) const
 {
-    qDebug() << "2c-row: " << row;
-    qDebug() << "2c-col: " << column;
     if (!hasIndex(row, column, parent)) return QModelIndex{};
 
     Q_ASSERT(!parent.isValid());

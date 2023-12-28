@@ -7,6 +7,7 @@
 #include <Parsers/ParserManager.h>
 #include <Utils/Exception.h>
 #include <Utils/QThreadEx.h>
+#include <Data/ConnectionListModel.h>
 #include "Data/BoardManager.h"
 #include "ui_MainWindow.h"
 
@@ -19,6 +20,9 @@ namespace Ui
 
 namespace owl
 {
+
+class ConnectionListModel;
+using ConnectionListModelPtr = std::unique_ptr<ConnectionListModel>;
 
 class ErrorReportDlg;
 class QuickAddDlg;
@@ -84,18 +88,14 @@ private:
     void createMenus();
     void createBoardPanel();
     void createThreadPanel();
-
     void readWindowSettings();
     void writeWindowSettings();
-
     void connectBoard(BoardPtr board);
-
     void createDebugMenu();
-
     void updateSelectedThread(ThreadPtr thread = ThreadPtr());
-
     bool initBoard(const BoardPtr& b);
     void openPreferences();
+    void loadConnections();
 
     QuickAddDlg*            _quickAddDlg = nullptr;
     ErrorReportDlg*         _errorReportDlg = nullptr; // only one error at a time?
@@ -107,6 +107,8 @@ private:
     WorkerMap       _workerMap;
     SplashScreen*   _splash = nullptr;
     std::shared_ptr<spdlog::logger>  _logger;
+
+    std::unique_ptr<owl::ConnectionListModel>   _connectionsModel;
 };
 
 } //namespace owl

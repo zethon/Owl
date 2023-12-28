@@ -5,15 +5,17 @@
 #include <QPushButton>
 #include <QWebEngineView>
 
+#include "ConnectionFrame.h"
+
 namespace owl
 {
 
-class OwlWebBrowser : public QWidget
+class OwlWebBrowser : public owl::ConnectionFrame
 {
     Q_OBJECT
 
 public:
-    explicit OwlWebBrowser(QWidget *parent = nullptr);
+    explicit OwlWebBrowser(const std::string& uuid, QWidget *parent = nullptr);
 
 Q_SIGNALS:
 

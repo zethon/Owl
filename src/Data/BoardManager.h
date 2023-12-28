@@ -66,7 +66,7 @@ public:
 	bool deleteBoard(BoardPtr board);
 
     BoardPtr boardByIndex(std::size_t index) const;
-    BoardPtr boardByUUID(const QString& uid) const;
+    BoardPtr boardByUUID(const std::string& uid) const;
     
     // FORUM - CRUD
     bool deleteForumVars(const QString& forumId) const;

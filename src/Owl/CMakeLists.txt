@@ -23,6 +23,8 @@ SET (SOURCE_FILES
     ThreadListWidget.cpp
     WebBrowser.cpp
     ForumConnectionFrame.cpp
+    RedditConnectionFrame.cpp
+    ChatConnectionFrame.cpp
 )
 
 SET (MOC_HEADERS
@@ -47,8 +49,11 @@ SET (MOC_HEADERS
     PreferencesDlg.h
     QuickAddDlg.h
     ThreadListWidget.h
+    ConnectionFrame.h
     WebBrowser.h
     ForumConnectionFrame.h
+    RedditConnectionFrame.h
+    ChatConnectionFrame.h
 )
 
 SET (UI_SOURCES

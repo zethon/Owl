@@ -9,8 +9,8 @@
 namespace owl
 {
 
-OwlWebBrowser::OwlWebBrowser(QWidget *parent)
-    : QWidget{parent}
+OwlWebBrowser::OwlWebBrowser(const std::string& uuid, QWidget *parent)
+    : ConnectionFrame{uuid, parent}
 {
     this->setStyleSheet("QWidget { background: white; }");
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
