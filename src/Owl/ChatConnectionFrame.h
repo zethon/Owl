@@ -1,6 +1,8 @@
 #pragma once
 
 #include <QLabel>
+#include <QQmlEngine>
+#include <QQuickItem>
 
 #include "ConnectionFrame.h"
 
@@ -14,7 +16,14 @@ class ChatConnectionFrame : public owl::ConnectionFrame
 public:
     ChatConnectionFrame(QWidget *parent = nullptr);
 
+    void initFocus(Qt::FocusReason reason) override
+    {
+        this->owl::ConnectionFrame::setFocus(reason);
+        QMetaObject::invokeMethod(this->rootObject(), "setFocus");
+    }
+
 Q_SIGNALS:
+    void doSetFocus();
 
 private:
     QLabel* _label;

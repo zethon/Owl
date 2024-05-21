@@ -1,16 +1,16 @@
 #pragma once
-#include <QFrame>
+#include <QQuickWidget>
 
 namespace owl
 {
 
-class ConnectionFrame : public QFrame
+class ConnectionFrame : public QQuickWidget
 {
 
 public:
 
     ConnectionFrame(const std::string& uuid, QWidget *parent = nullptr)
-        : QFrame(parent)
+        : QQuickWidget(parent)
         , _uuid(uuid)
     {
         this->setObjectName(QString::fromStdString(uuid));
@@ -20,6 +20,10 @@ public:
 
     std::string uuid() const { return _uuid; }
 
+    virtual void initFocus(Qt::FocusReason reason)
+    {
+        this->setFocus(reason);
+    }
 
 private:
     std::string _uuid;

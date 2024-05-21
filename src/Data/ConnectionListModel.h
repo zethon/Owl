@@ -45,7 +45,10 @@ public:
     virtual QVariant data(int role)
     {
         if (!_roleData.contains(role)) return {};
-        if (role == owl::ConnectionRoles::TYPE) return QVariant::fromValue(this->type());
+        if (role == owl::ConnectionRoles::TYPE)
+        {
+            return QVariant::fromValue(this->type());
+        }
         return _roleData[role];
     }
 
@@ -186,8 +189,8 @@ class BoardIconModel : public QAbstractListModel
     Q_OBJECT
 
 public:
-    static constexpr auto ICONTYPE_ROLE = Qt::UserRole+1;
-    static constexpr auto BOARDPTR_ROLE = Qt::UserRole+2;
+    static constexpr auto ICONTYPE_ROLE = Qt::UserRole+991;
+    static constexpr auto BOARDPTR_ROLE = Qt::UserRole+992;
     static constexpr auto ICONSCALEWIDTH = 128;
     static constexpr auto ICONSCALEHEIGHT = 128;
 

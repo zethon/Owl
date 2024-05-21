@@ -110,4 +110,10 @@ void ForumConnectionFrame::onLoginHandler(const owl::StringMap& info)
     _forumNavigationView->doBoardClicked(b);
 }
 
+void ForumConnectionFrame::initFocus(Qt::FocusReason reason)
+{
+    this->ConnectionFrame::initFocus(reason);
+    this->_forumContentView->setFocus(reason);
+}
+
 } // namespace owl

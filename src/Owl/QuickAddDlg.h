@@ -1,6 +1,10 @@
 #pragma once
 
 #include <memory>
+
+#include <QQuickView>
+#include <QQuickWidget>
+
 #include "ui_QuickAddDlg.h"
 
 namespace Ui
@@ -40,4 +44,42 @@ private:
 	ConfiguringBoardDlg* _configureDlg;
 };
 
+// class NewConnectionDlg : public QQuickView
+// {
+// 	Q_OBJECT
+
+// public:
+// 	NewConnectionDlg(QWindow *parent = 0)
+// 		: QQuickView(parent)
+// 	{
+// 		this->setObjectName("NewConnectionDlg");
+// 		this->setSource(QUrl("qrc:/qml/NewConnectionDlg.qml"));
+// 	}
+
+// 	~NewConnectionDlg() = default;
+// };
+
+class NewConnectionDlg : public QDialog
+{
+	Q_OBJECT
+
+public:
+	NewConnectionDlg(QWidget *parent = 0)
+		: QDialog(parent)
+	{
+		this->resize(850, 525);
+        auto horizontalLayout = new QHBoxLayout(this);
+        auto widget = new QQuickWidget(this);
+        horizontalLayout->addWidget(widget);
+
+		widget->setFocusPolicy(Qt::TabFocus);
+    	widget->setResizeMode(QQuickWidget::SizeRootObjectToView);
+		widget->setSource(QUrl("qrc:/qml/NewConnectionDlg.qml"));
+	}
+
+	~NewConnectionDlg() = default;
+};
+
 } //namespace owl
+
+

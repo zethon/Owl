@@ -380,8 +380,8 @@ void Board::crawlSubForum(ForumPtr parent, ForumIdList* dupList /*= nullptr*/, b
 			&& !dupList->contains(forum->getId())
 			&& forum->getForumType() != owl::Forum::LINK)
 		{
-            _logger->debug("Crawling Sub Forum '{}' ({})",
-                forum->getName().toStdString(), forum->getId().toStdString());
+            // _logger->debug("Crawling Sub Forum '{}' ({})",
+            //     forum->getName().toStdString(), forum->getId().toStdString());
 
 			dupList->push_back(forum->getId());
 			crawlSubForum(forum, dupList, bThrow);

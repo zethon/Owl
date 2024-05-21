@@ -789,7 +789,32 @@ void MainWindow::createBoardPanel()
             if (nullptr != widget)
             {
                 forumTopStack->setCurrentWidget(widget);
+                widget->initFocus(Qt::ActiveWindowFocusReason);
             }
+        });
+
+    QObject::connect(connectionView, &BoardIconView::onNewConnectionButtonClicked, this,
+        [this]()
+        {
+            auto* newConnectionDlg = new owl::NewConnectionDlg(this);
+            // newConnectionDlg->setParent(this->windowHandle());
+            newConnectionDlg->open();
+
+
+            // QuickAddDlg* addDlg = new QuickAddDlg(this);
+            // connect(addDlg, SIGNAL(newBoardAddedEvent(BoardPtr)), this, SLOT(onNewBoardAdded(BoardPtr)));
+
+            // connect(addDlg, &QuickAddDlg::newBoardAddedEvent, this,
+            //      [this](BoardPtr board)
+            //      {
+            //          if (this->initBoard(board))
+            //          {
+            //             // board->login();
+            //          }
+            //      });
+
+            // QObject::connect(addDlg, &QDialog::finished, [addDlg](int) { addDlg->deleteLater(); });
+            // addDlg->open();
         });
 
     QObject::connect(connectionView, &BoardIconView::onBoardClicked, this,

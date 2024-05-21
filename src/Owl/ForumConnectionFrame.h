@@ -29,6 +29,8 @@ private:
 
     void onLoginHandler(const owl::StringMap& info);
 
+    void initFocus(Qt::FocusReason reason) override;
+
     owl::BoardWeakPtr   _board;
     owl::ContentView*   _forumContentView = nullptr;
     owl::ForumView*     _forumNavigationView = nullptr;

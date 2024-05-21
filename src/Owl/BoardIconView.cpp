@@ -313,12 +313,6 @@ void BoardIconView::initListView()
     _listView->setModel(_connectionModel);
     // _listView->setModel(new owl::BoardIconModel(this));
 
-    QObject::connect(_listView, &QWidget::customContextMenuRequested, this,
-        [this](const QPoint &pos)
-        {
-            this->doContextMenu(pos);
-        });
-
     QObject::connect(_listView, &QAbstractItemView::clicked, this,
         [this](const QModelIndex& index)
         {
@@ -336,27 +330,6 @@ void BoardIconView::initListView()
                     Q_EMIT onNewConnectionButtonClicked();
                 break;
             }
-
-
-            // if (index.data(BoardIconModel::ICONTYPE_ROLE).value<IconType>() == IconType::BOARDICON)
-            // {
-            //     QVariant boardVar = index.data(BoardIconModel::BOARDPTR_ROLE);
-            //     owl::BoardWeakPtr weakBoard = boardVar.value<BoardWeakPtr>();
-            //     if (auto board = weakBoard.lock(); board && board.get() != _rawBoardPtr)
-            //     {
-            //         _rawBoardPtr = board.get();
-            //         Q_EMIT onBoardClicked(weakBoard);
-            //     }
-            // }
-            // else if (index.data(BoardIconModel::ICONTYPE_ROLE).value<IconType>() == IconType::ADDICON)
-            // {
-            //     Q_EMIT onAddNewBoard();
-            // }
-            // else if (index.data(BoardIconModel::ICONTYPE_ROLE).value<IconType>() == IconType::WEBICON)
-            // {
-            //     _rawBoardPtr = nullptr;
-            //     Q_EMIT onAddNewWebBrowser();
-            // }
         });
 
     QObject::connect(_listView, &QAbstractItemView::doubleClicked, this,
@@ -372,6 +345,12 @@ void BoardIconView::initListView()
                 }
             }
     });
+
+    QObject::connect(_listView, &QWidget::customContextMenuRequested, this,
+        [this](const QPoint &pos)
+        {
+            this->doContextMenu(pos);
+        });
 }
 
 void BoardIconView::doContextMenu(const QPoint &pos)

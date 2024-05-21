@@ -131,11 +131,16 @@ QModelIndex ConnectionListModel::index(int row, int column, const QModelIndex& p
     return createIndex(row, column);
 }
 
-QVariant ConnectionListModel::data(const QModelIndex & index, int role ) const
+QVariant ConnectionListModel::data(const QModelIndex & index, int role) const
 {
     const auto row = static_cast<std::size_t>(index.row());
     if (!index.isValid()) return {};
     if (row > _connections.size()) return {};
+
+    if (role == owl::ConnectionRoles::TYPE)
+    {
+        return QVariant::fromValue(_connections[row]->type());
+    }
 
     return _connections[row]->data(role);
 }

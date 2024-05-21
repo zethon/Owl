@@ -16,7 +16,7 @@ set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 # initialize conan libs
 include(CMake/conan.cmake)
 conan_cmake_configure(REQUIRES
-    boost/1.77.0
+    boost/1.84.0
     libcurl/8.2.1
     fmt/8.0.1
     spdlog/1.9.2
