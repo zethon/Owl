@@ -4,8 +4,6 @@
 #include <vector>
 #include <map>
 
-#include <boost/utility/string_view.hpp>
-
 namespace owl
 {
 

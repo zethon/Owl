@@ -1,6 +1,5 @@
 SET (SOURCE_FILES
     AboutDlg.cpp
-    AspectRatioPixmapLabel.cpp
     BoardIconView.cpp
     BoardTreeView.cpp
     BoardsModel.cpp
@@ -22,11 +21,14 @@ SET (SOURCE_FILES
     PostListWidget.cpp
     QuickAddDlg.cpp
     ThreadListWidget.cpp
+    WebBrowser.cpp
+    ForumConnectionFrame.cpp
+    RedditConnectionFrame.cpp
+    ChatConnectionFrame.cpp
 )
 
 SET (MOC_HEADERS
     AboutDlg.h
-    AspectRatioPixmapLabel.h
     BoardsModel.h
     BoardIconView.h
     BoardTreeView.h
@@ -47,6 +49,11 @@ SET (MOC_HEADERS
     PreferencesDlg.h
     QuickAddDlg.h
     ThreadListWidget.h
+    ConnectionFrame.h
+    WebBrowser.h
+    ForumConnectionFrame.h
+    RedditConnectionFrame.h
+    ChatConnectionFrame.h
 )
 
 SET (UI_SOURCES
@@ -62,6 +69,7 @@ SET (UI_SOURCES
 
 SET (HEADER_FILES
     Core.h
+    GUIConstants.h
     ${MOC_HEADERS}
 )
 

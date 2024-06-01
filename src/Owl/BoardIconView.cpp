@@ -16,15 +16,13 @@
 #include  <Utils/OwlLogger.h>
 #include "Data/BoardManager.h"
 #include "BoardIconView.h"
-
-constexpr auto ICONSCALEWIDTH = 128;
-constexpr auto ICONSCALEHEIGHT = 128;
+#include "Data/ConnectionListModel.h"
 
 constexpr auto LISTICONWIDTH = 164;
 constexpr auto LISTICONHEIGHT = 64;
 
-constexpr auto DEFAULT_HOVER = "darkgrey";
-constexpr auto DEFAULT_SELECTED = "white";
+constexpr auto DEFAULT_HOVER = "#222222";
+constexpr auto DEFAULT_SELECTED = "black";
 
 constexpr auto INDICATOR_ERROR = "#FF0000";
 constexpr auto INDICATOR_LOGGED_IN = "#ADFF2F";
@@ -45,11 +43,11 @@ constexpr auto INDICATOR_UNREAD = "#ADFF2F";
 #endif
 
 using namespace std::literals;
-
+    
 namespace owl
 {
-
-static const auto BG_COLOR = "#DEDFDF";
+    
+    static const auto BG_COLOR = "#DEDFDF";
 
 // TODO: The "hover" and "select" styles don't really work
 // right in `QStyledItemDelegate::paint()` unless the properties
@@ -86,8 +84,8 @@ QIcon bufferToIcon(const char* buf)
     QImage image = QImage::fromData(QByteArray::fromBase64(buffer));
 
     // calculate the scaling factor based on wanting a 32x32 image
-    qreal iXScale = static_cast<qreal>(ICONSCALEWIDTH) / static_cast<qreal>(image.width());
-    qreal iYScale = static_cast<qreal>(ICONSCALEHEIGHT) / static_cast<qreal>(image.height());
+    qreal iXScale = static_cast<qreal>(BoardIconModel::ICONSCALEWIDTH) / static_cast<qreal>(image.width());
+    qreal iYScale = static_cast<qreal>(BoardIconModel::ICONSCALEHEIGHT) / static_cast<qreal>(image.height());
 
     // only scale the image if it's not the right size
     if (iXScale > 1 || iXScale < 1 || iYScale > 1 || iYScale < 1)
@@ -100,30 +98,16 @@ QIcon bufferToIcon(const char* buf)
     return QIcon { QPixmap::fromImage(image) };
 }
 
-QImage resizeImage(const QImage& original, const QSize& size)
-{
-    QImage finalImage { original };
-    qreal iXScale = static_cast<qreal>(size.width()) / static_cast<qreal>(finalImage.width());
-    qreal iYScale = static_cast<qreal>(size.height()) / static_cast<qreal>(finalImage.height());
-    if (iXScale > 1 || iXScale < 1 || iYScale > 1 || iYScale < 1)
-    {
-        QTransform transform;
-        transform.scale(iXScale, iYScale);
-        finalImage = finalImage.transformed(transform, Qt::SmoothTransformation);
-    }
-
-    return finalImage;
-}
 
 QImage overlayImages(const QImage& baseImage, const QImage& overlaidImg)
 {
     // scale our final image to the larger icon size
-    QImage finalImage = resizeImage(baseImage, QSize(ICONSCALEWIDTH, ICONSCALEHEIGHT));
+    QImage finalImage = resizeImage(baseImage, QSize(BoardIconModel::ICONSCALEWIDTH, BoardIconModel::ICONSCALEHEIGHT));
 
     if (!overlaidImg.isNull())
     {
-        constexpr std::double_t widhtScaleFactor = ICONSCALEWIDTH * 0.4375;
-        constexpr std::double_t heightScaleFactor = ICONSCALEHEIGHT * 0.4375;
+        constexpr std::double_t widhtScaleFactor = BoardIconModel::ICONSCALEWIDTH * 0.4375;
+        constexpr std::double_t heightScaleFactor = BoardIconModel::ICONSCALEHEIGHT * 0.4375;
 
         // scale the image to be put on top
         QImage scaledOverlayImg { overlaidImg };
@@ -172,9 +156,9 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
     iconRect.moveLeft(iconCellRect.left() + hCenterAdjust);
     iconRect.moveTop(iconCellRect.top() + vCenterAdjust);
 
-    if (index.data(ICONTYPE_ROLE).value<IconType>() == IconType::BOARDICON)
+    if (index.data(BoardIconModel::ICONTYPE_ROLE).value<IconType>() == IconType::BOARDICON)
     {
-        QVariant boardVar = index.data(BOARDPTR_ROLE);
+        QVariant boardVar = index.data(BoardIconModel::BOARDPTR_ROLE);
         BoardPtr boardData = boardVar.value<BoardWeakPtr>().lock();
         Q_ASSERT(boardData);
 
@@ -199,17 +183,6 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
             p.fillRect(0,0, tmpImage->width(), tmpImage->height(), gradient);
 
             p.end();
-        }
-
-        if (option.state & QStyle::State_Selected)
-        {
-            QPen pen(QBrush(QColor(DEFAULT_SELECTED)), 3.25);
-            painter->setPen(pen);
-            painter->setRenderHint(QPainter::Antialiasing, true);
-
-            QRect tempRect{ iconRect };
-            tempRect.adjust(-5,-5,5,5);
-            painter->drawRoundedRect(tempRect, 10.0, 10.0);
         }
 
         painter->drawImage(iconRect, boardImg);
@@ -258,7 +231,7 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
     }
     else
     {
-        Q_ASSERT(index.data(ICONTYPE_ROLE).value<IconType>() == IconType::ADDICON);
+        // Q_ASSERT(index.data(BoardIconModel::ICONTYPE_ROLE).value<IconType>() == IconType::ADDICON);
 
         // get a pixmap of the board's stored icon
         const QIcon icon { decrole.value<QIcon>() };
@@ -266,15 +239,27 @@ void BoardIconViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
         painter->drawPixmap(iconRect, pixmap);
     }
 
-    if ((option.state & QStyle::State_MouseOver)
-        && !(option.state & QStyle::State_Selected))
+    if (option.state & QStyle::State_Selected)
     {
-        QPen pen(QBrush(QColor(DEFAULT_HOVER)), 3.25);
+        QPen pen2{QBrush{QColor{DEFAULT_SELECTED}}, 10.00};
+        painter->setPen(pen2);
+        painter->setRenderHint(QPainter::Antialiasing, true);
+
+        iconRect.setWidth(6);
+        iconRect.setHeight(6);
+        iconRect.adjust(-22, 18, -22, 18);
+        painter->drawRoundedRect(iconRect, 10.0, 10.0);
+    }
+    else if (option.state & QStyle::State_MouseOver)
+    {
+        QPen pen(QBrush(QColor(DEFAULT_HOVER)), 10.00);
         painter->setPen(pen);
         painter->setRenderHint(QPainter::Antialiasing, true);
 
-        iconRect.adjust(-5,-5,5,5);
-        painter->drawRoundedRect(iconRect, 10.0, 10.0);
+        iconRect.setWidth(10);
+        iconRect.setHeight(25);
+        iconRect.adjust(-25, 7, -25, 7);
+        painter->drawRoundedRect(iconRect, 5.0, 5.0);
     }
 
     painter->restore();
@@ -286,97 +271,6 @@ QSize BoardIconViewDelegate::sizeHint(const QStyleOptionViewItem &option, const 
 }
 
 //********************************
-//* BoardIconModel
-//********************************
-
-BoardIconModel::BoardIconModel(QObject *parent)
-    : QAbstractListModel(parent),
-      _boardManager(owl::BoardManager::instance())
-{
-    owl::BoardManager* manager = owl::BoardManager::instance().get();
-
-    QObject::connect(manager, &BoardManager::onBeginAddBoard, this,
-        [this](int first) { beginInsertRows(QModelIndex{}, first, first); });
-
-    QObject::connect(manager, &BoardManager::onEndAddBoard, this,
-        [this]() { endInsertRows(); });
-
-    QObject::connect(manager, &BoardManager::onBeginRemoveBoard, this,
-        [this](int first) { beginRemoveRows(QModelIndex{}, first, first); });
-
-    QObject::connect(manager, &BoardManager::onEndRemoveBoard, this,
-        [this]() { endRemoveRows(); });
-}
-
-QModelIndex BoardIconModel::index(int row, int column, const QModelIndex& parent) const
-{
-    if (!hasIndex(row, column, parent)) return QModelIndex{};
-
-    Q_ASSERT(!parent.isValid());
-    Q_ASSERT(column == 0);
-
-    std::size_t trow = static_cast<std::size_t>(row);
-    if (trow < _boardManager->getBoardCount())
-    {
-        return createIndex(row, column, _boardManager->boardByIndex(trow).get());
-    }
-
-    return createIndex(row, column);
-}
-
-int BoardIconModel::rowCount(const QModelIndex& parent) const
-{
-    if (parent.column() > 0) return 0;
-    return static_cast<int>(_boardManager->getBoardCount() + 1);
-}
-
-QVariant BoardIconModel::data(const QModelIndex& index, int role) const
-{
-    if (!index.isValid()) return QVariant{};
-
-    if (index.row() < static_cast<int>(_boardManager->getBoardCount()))
-    {
-        switch (role)
-        {
-            case Qt::DecorationRole:
-            {
-                owl::Board* board = static_cast<owl::Board*>(index.internalPointer());
-                Q_ASSERT(board);
-
-                QByteArray buffer(board->getFavIcon().toLatin1());
-
-                QImage image = QImage::fromData(QByteArray::fromBase64(buffer));
-                image = resizeImage(image, QSize(ICONSCALEWIDTH, ICONSCALEHEIGHT));
-                return QIcon { QPixmap::fromImage(image) };
-            }
-
-            case ICONTYPE_ROLE:
-                return QVariant::fromValue(IconType::BOARDICON);
-
-            case BOARDPTR_ROLE:
-            {
-                std::size_t trow = static_cast<std::size_t>(index.row());
-                std::weak_ptr<owl::Board> retval { _boardManager->boardByIndex(trow) };
-                return QVariant::fromValue(retval);
-            }
-        }
-    }
-    else
-    {
-        switch (role)
-        {
-            case Qt::DecorationRole:
-                return QVariant { QIcon(ZFontIcon::icon(Fa5::FAMILY, Fa5::fa_plus_circle)) };
-
-            case ICONTYPE_ROLE:
-                return QVariant::fromValue(IconType::ADDICON);
-        }
-    }
-
-    return QVariant{};
-}
-
-//********************************
 //* BoardIconView
 //********************************
 
@@ -385,19 +279,17 @@ BoardIconView::BoardIconView(QWidget* parent /* = 0*/)
       _logger { owl::initializeLogger("BoardIconView") }
 {
     parent->setStyleSheet((fmt::format("QWidget{{ background-color: {}; }}", BG_COLOR)).data());
-    initListView();
+    createListView();
 
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setSpacing(0);
     layout->setMargin(0);
-
     layout->addSpacing(TOP_PADDING);
     layout->addWidget(_listView);
-
     setLayout(layout);
 }
 
-void BoardIconView::initListView()
+void BoardIconView::createListView()
 {
     _listView = new QListView(this);
     _listView->setViewMode(QListView::IconMode);
@@ -413,55 +305,58 @@ void BoardIconView::initListView()
     _listView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     _listView->setContextMenuPolicy(Qt::CustomContextMenu);
     _listView->setIconSize(QSize(LISTICONWIDTH, LISTICONHEIGHT));
-
     _listView->setItemDelegate(new BoardIconViewDelegate);
-    _listView->setModel(new owl::BoardIconModel(this));
+}
 
-    QObject::connect(_listView, &QWidget::customContextMenuRequested, this,
-        [this](const QPoint &pos)
-        {
-            this->doContextMenu(pos);
-        });
+void BoardIconView::initListView()
+{
+    _listView->setModel(_connectionModel);
+    // _listView->setModel(new owl::BoardIconModel(this));
 
     QObject::connect(_listView, &QAbstractItemView::clicked, this,
         [this](const QModelIndex& index)
         {
-            if (index.data(ICONTYPE_ROLE).value<IconType>() == IconType::BOARDICON)
+            const auto type = index.data(owl::ConnectionRoles::TYPE).value<owl::ConnectionType>();
+            switch (type)
             {
-                QVariant boardVar = index.data(BOARDPTR_ROLE);
-                owl::BoardWeakPtr weakBoard = boardVar.value<BoardWeakPtr>();
-                if (auto board = weakBoard.lock(); board && board.get() != _rawBoardPtr)
+                default:
                 {
-                    _rawBoardPtr = board.get();
-                    Q_EMIT onBoardClicked(weakBoard);
+                    const auto uuid = index.data(owl::ConnectionRoles::UUID).toString().toStdString();
+                    Q_EMIT onConnectionClicked(uuid);
                 }
-            }
-            else
-            {
-                Q_ASSERT(index.data(ICONTYPE_ROLE).value<IconType>() == IconType::ADDICON);
-                Q_EMIT onAddNewBoard();
+                break;
+
+                case owl::ConnectionType::NEW_CONNECTION_BUTTON:
+                    Q_EMIT onNewConnectionButtonClicked();
+                break;
             }
         });
 
     QObject::connect(_listView, &QAbstractItemView::doubleClicked, this,
         [this](const QModelIndex &index)
         {
-            if (index.data(ICONTYPE_ROLE).value<IconType>() == IconType::BOARDICON)
+            if (index.data(BoardIconModel::ICONTYPE_ROLE).value<IconType>() == IconType::BOARDICON)
             {
                 if (index.isValid())
                 {
-                    QVariant boardVar = index.data(BOARDPTR_ROLE);
+                    QVariant boardVar = index.data(BoardIconModel::BOARDPTR_ROLE);
                     Q_ASSERT(!boardVar.isNull() && boardVar.isValid());
                     Q_EMIT onBoardDoubleClicked(boardVar.value<BoardWeakPtr>());
                 }
             }
     });
+
+    QObject::connect(_listView, &QWidget::customContextMenuRequested, this,
+        [this](const QPoint &pos)
+        {
+            this->doContextMenu(pos);
+        });
 }
 
 void BoardIconView::doContextMenu(const QPoint &pos)
 {
     const auto index = _listView->indexAt(pos);
-    if (QVariant boardVar = index.data(BOARDPTR_ROLE);
+    if (QVariant boardVar = index.data(BoardIconModel::BOARDPTR_ROLE);
         boardVar.canConvert<BoardWeakPtr>())
     {
         BoardPtr boardPtr = boardVar.value<BoardWeakPtr>().lock();

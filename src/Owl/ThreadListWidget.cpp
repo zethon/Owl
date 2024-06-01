@@ -49,11 +49,12 @@ void ThreadListWidget::setThreadList(const ThreadList& threadList)
                 modelList.push_back(obj.get());
             }
 
-            QObject::connect(obj.get(), &ThreadObject::threadLoading,[this, t]()
-            {
-                _currentThread = t;
-                Q_EMIT this->threadLoading();
-            });
+            QObject::connect(obj.get(), &ThreadObject::threadLoading,
+                [this, t]()
+                {
+                    _currentThread = t;
+                    Q_EMIT this->threadLoading();
+                });
         }
 
         rootContext()->setContextProperty("threadListModel", QVariant::fromValue(modelList));

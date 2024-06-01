@@ -1,9 +1,8 @@
 import QtQuick 2.7
-import QtQuick.Controls 1.4
-import QtQuick.Window 2.0
+import QtQuick.Controls 2.12
+import QtQuick.Window 2.2
 import QtGraphicalEffects 1.0
 import reader.owl 1.0
-
 
 Item
 {
@@ -11,7 +10,6 @@ Item
 
     property int smallTextSize: 11
     property int osTextSizeModifier: 5
-
     property string previewTextColor: "#151515"
 
     signal stickyDisplayChanged
@@ -34,6 +32,43 @@ Item
         noThreadsImage.visible = !hasThreads;
         fillRect.visible = !hasThreads;
         threadListView.currentIndex = -1;
+    }
+
+    Popup
+    {
+        id: popup
+
+        parent: Overlay.overlay
+        modal: true
+        dim: true
+        focus: true
+        width: parent.width * 0.9
+        height: parent.height * 0.4
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+        x: (parent.width / 2) - (width / 2)
+        contentItem: NewThreadDialog{}
+
+        enter: Transition
+        {
+            NumberAnimation
+            {
+                property: "y";
+                from: rootItem.height
+                to: rootItem.height - popup.height
+                duration: 125
+            }
+        }
+
+        exit: Transition
+        {
+            NumberAnimation
+            {
+                property: "y";
+                from: rootItem.height - popup.height
+                to: rootItem.height
+                duration: 125
+            }
+        }
     }
 
     Rectangle
@@ -89,6 +124,12 @@ Item
                 threadListPage.loadInBrowser(threadListView.currentIndex);
             }
         }
+
+        MenuItem
+        {
+            text: qsTr("New Thread")
+            onTriggered: popup.open()
+        }
     }
 
     ScrollView
@@ -122,7 +163,7 @@ Item
                 property int spacerRectHeight: 10
                 property int delegateSpacerHeight: 25
 
-                width: parent.width
+                width: threadListView.width
 
 //                property int componentHeight:
 //                    authorText.height + authorText.anchors.topMargin + authorText.anchors.bottomMargin +
@@ -341,6 +382,15 @@ Item
                     }
                 }
             } // delegate: Item
+
+            onContentYChanged:
+            {
+                if (contentY == contentHeight - height)
+                {
+                    console.log("scrolled to bottom");
+                }
+            }
+
         }
     }
 }

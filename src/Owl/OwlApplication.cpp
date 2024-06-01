@@ -1,3 +1,5 @@
+#include <optional>
+
 #include <QMessageBox>
 #include <QtSql>
 #include <QWebEngineSettings>
@@ -6,11 +8,8 @@
 #include <Parsers/ParserManager.h>
 #include <Utils/Settings.h>
 #include <Utils/OwlUtils.h>
-#include "ErrorReportDlg.h"
 #include "Core.h"
 #include "OwlApplication.h"
-
-#include <boost/optional/optional.hpp>
 
 #include <spdlog/common.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -315,7 +314,7 @@ void OwlApplication::initializeLogger()
     auto logger = owl::rootLogger();
     logger->set_level(configLevel);
 
-    boost::optional<std::string> errorMessage;
+    std::optional<std::string> errorMessage;
 
     if (settings.read("logs.file.enabled").toBool())
     {
