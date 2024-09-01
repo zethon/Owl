@@ -1,0 +1,3 @@
+[submodule "ZFontIcon"]
+	path = ZFontIcon
+	url = https://github.com/zethon/ZFontIcon.git
