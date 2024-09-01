@@ -11,10 +11,20 @@ Item
 
 //    Component { id: btn; Rectangle { width : 100; height : 100; color : "red" } }
 
+    // Loader
+    // {
+    //     id: dialogLoader
+    //     // sourceComponent: column
+    // }
+
     Loader
     {
-        id: dialogLoader
-        // sourceComponent: column
+        id: overlayLoader
+        anchors.fill: parent
+        onLoaded:
+        {
+            overlayLoader.item.visible = true
+        }
     }
 
     Column {
@@ -26,7 +36,7 @@ Item
             height: parent.height / itemCount
             Text
             {
-                padding: 10
+                // padding: 10
                 text: "Add New Connection"
                 horizontalAlignment: Text.AlignHCenter
                 font.bold: true
@@ -49,8 +59,9 @@ Item
                 onClicked:
                 {
                     console.log("New Chat Connection")
-                    dialogLoader.source = "NewChatConnection.qml"
-                    dialogLoader.item.open()
+                    // dialogLoader.source = "NewChatConnection.qml"
+                    // dialogLoader.item.open()
+                    overlayLoader.source = "NewChatConnection.qml"
                 }
             }
         }
