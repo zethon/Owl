@@ -11,6 +11,12 @@ Item
 
 //    Component { id: btn; Rectangle { width : 100; height : 100; color : "red" } }
 
+    Loader
+    {
+        id: dialogLoader
+        // sourceComponent: column
+    }
+
     Column {
         anchors.fill: parent
 
@@ -40,7 +46,12 @@ Item
                 anchors.fill: parent
                 onEntered: parent.color = "yellow"
                 onExited: parent.color = "white"
-                onClicked: console.log("corvett")
+                onClicked:
+                {
+                    console.log("New Chat Connection")
+                    dialogLoader.source = "NewChatConnection.qml"
+                    dialogLoader.item.open()
+                }
             }
         }
 
