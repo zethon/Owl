@@ -164,6 +164,7 @@ if (MSVC)
         -DNOMINMAX
         -D_SCL_SECURE_NO_WARNINGS
         -DWIN32_LEAN_AND_MEAN
+        -D_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
 
         # use this to supress the boost generated "warning C4996"
         # on Windows

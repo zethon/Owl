@@ -912,7 +912,7 @@ void MainWindow::createBoardPanel()
     QObject::connect(connectionView, &BoardIconView::onAddNewWebBrowser, this,
         [this]()
         {
-            forumTopStack->setCurrentIndex(BOARDMANAGER->getBoardCount());
+            forumTopStack->setCurrentIndex(static_cast<int>(BOARDMANAGER->getBoardCount()));
         });
 }
     
