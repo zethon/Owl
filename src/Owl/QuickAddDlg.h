@@ -4,6 +4,8 @@
 
 #include <QQuickView>
 #include <QQuickWidget>
+#include <QQuickItem>
+#include <QQmlContext>
 
 #include "ui_QuickAddDlg.h"
 
@@ -59,25 +61,77 @@ private:
 // 	~NewConnectionDlg() = default;
 // };
 
+class NewConnectionQuickWidget : public QQuickWidget
+{
+	Q_OBJECT
+
+public:
+    NewConnectionQuickWidget(QWidget* parent = nullptr, const QUrl& qmlfile = QUrl{})
+        : QQuickWidget(parent)
+    {
+        setFocusPolicy(Qt::TabFocus);
+        setResizeMode(QQuickWidget::SizeRootObjectToView);
+
+        QQmlContext* root = rootContext();
+        root = this->rootContext();
+        root->setContextProperty("newConnectionPage", this);
+
+        setSource(qmlfile);
+    }
+
+    Q_INVOKABLE void onOptionSelected(int option)
+    {
+        this->newConnectionEvent(option);
+        // // std::cout << "Option selected: " << option << std::endl;
+        // switch (option)
+        // {
+        //     default:
+        //     break;
+
+        //     case 1:
+        //     {
+        //         this->setSource(QUrl(QStringLiteral("qrc:/NewChatConnection.qml")));
+        //         break;
+        //     }
+        // }
+    }
+
+Q_SIGNALS:
+    void newConnectionEvent(int option);
+};
+
 class NewConnectionDlg : public QDialog
 {
 	Q_OBJECT
 
 public:
 	NewConnectionDlg(QWidget *parent = 0)
-		: QDialog(parent)
+        : QDialog(parent), _qmlWidget(new NewConnectionQuickWidget(this, QUrl("qrc:/qml/NewConnectionDlg.qml")))
 	{
 		this->resize(850, 525);
-        auto horizontalLayout = new QHBoxLayout(this);
-        auto widget = new QQuickWidget(this);
-        horizontalLayout->addWidget(widget);
+        _layout = new QHBoxLayout(this);
+        _layout->addWidget(_qmlWidget);
 
-		widget->setFocusPolicy(Qt::TabFocus);
-    	widget->setResizeMode(QQuickWidget::SizeRootObjectToView);
-		widget->setSource(QUrl("qrc:/qml/NewConnectionDlg.qml"));
+        // auto rootObject = _qmlWidget->rootObject();
+        QObject::connect(_qmlWidget, SIGNAL(newConnectionEvent(int)), this, SLOT(accept2(int)));
 	}
 
+
 	~NewConnectionDlg() = default;
+
+protected Q_SLOTS:
+    void accept2(int)
+    {
+        std::cout << "dksjhgkfdjhgjdsf" << std::endl;
+        _qmlWidget->deleteLater();
+        _qmlWidget = new NewConnectionQuickWidget(this, QUrl("qrc:/qml/NewChatConnection.qml"));
+        _layout->addWidget(_qmlWidget);
+    }
+
+
+private:
+    QQuickWidget* _qmlWidget;
+    QHBoxLayout* _layout;
 };
 
 } //namespace owl

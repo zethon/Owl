@@ -59,9 +59,11 @@ Item
                 onClicked:
                 {
                     console.log("New Chat Connection")
+
                     // dialogLoader.source = "NewChatConnection.qml"
                     // dialogLoader.item.open()
-                    overlayLoader.source = "NewChatConnection.qml"
+                    // overlayLoader.source = "NewChatConnection.qml"
+                    newConnectionPage.onOptionSelected(1);
                 }
             }
         }

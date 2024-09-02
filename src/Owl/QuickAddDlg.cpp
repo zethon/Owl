@@ -7,7 +7,13 @@
 
 namespace owl
 {
-	
+
+
+
+// *****************************************************************************************
+// THIS IS OLD CODE AND MAY NEED TO BE DELETED
+// *****************************************************************************************
+
 QuickAddDlg::QuickAddDlg(QWidget* parent)
 	: QDialog(parent)
 {
@@ -150,5 +156,9 @@ void QuickAddDlg::setParserByName(const QString& name)
 		parserCombo->setCurrentIndex(iParser);
 	}
 }
+
+// *****************************************************************************************
+// END OF THE OLD CODE THAT MAY NEED TO BE DELETED
+// *****************************************************************************************
 
 } // end namespace
