@@ -120,12 +120,39 @@ public:
 	~NewConnectionDlg() = default;
 
 protected Q_SLOTS:
-    void accept2(int)
+    void accept2(int selection)
     {
-        std::cout << "dksjhgkfdjhgjdsf" << std::endl;
-        _qmlWidget->deleteLater();
-        _qmlWidget = new NewConnectionQuickWidget(this, QUrl("qrc:/qml/NewChatConnection.qml"));
-        _layout->addWidget(_qmlWidget);
+        NewConnectionQuickWidget* widget = nullptr;
+        switch (selection)
+        {
+            default:
+            break;
+
+            case 1:
+                widget = new NewConnectionQuickWidget(this, QUrl("qrc:/qml/NewChatConnection.qml"));
+            break;
+
+            case 2:
+                widget = new NewConnectionQuickWidget(this, QUrl("qrc:/qml/NewMessageBoardConnection.qml"));
+            break;
+
+            case 3:
+                widget = new NewConnectionQuickWidget(this, QUrl("qrc:/qml/NewRedditConnection.qml"));
+            break;
+
+            case 4:
+            {
+                qDebug() << "New Browser Dialog";
+                break;
+            }
+        }
+
+        if (nullptr != widget)
+        {
+            _qmlWidget->deleteLater();
+            _qmlWidget = widget;
+            _layout->addWidget(_qmlWidget);
+        }
     }
 
 

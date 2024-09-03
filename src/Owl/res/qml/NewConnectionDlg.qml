@@ -59,10 +59,6 @@ Item
                 onClicked:
                 {
                     console.log("New Chat Connection")
-
-                    // dialogLoader.source = "NewChatConnection.qml"
-                    // dialogLoader.item.open()
-                    // overlayLoader.source = "NewChatConnection.qml"
                     newConnectionPage.onOptionSelected(1);
                 }
             }
@@ -73,6 +69,18 @@ Item
             width: parent.width
             height: parent.height / itemCount
             Text { text: "Message Board" }
+            MouseArea
+            {
+                hoverEnabled: true
+                anchors.fill: parent
+                onEntered: parent.color = "yellow"
+                onExited: parent.color = "white"
+                onClicked:
+                {
+                    console.log("New Message Board Connection")
+                    newConnectionPage.onOptionSelected(2);
+                }
+            }
         }
 
         Rectangle {
@@ -80,6 +88,18 @@ Item
             width: parent.width
             height: parent.height / itemCount
             Text { text: "Reddit" }
+            MouseArea
+            {
+                hoverEnabled: true
+                anchors.fill: parent
+                onEntered: parent.color = "yellow"
+                onExited: parent.color = "white"
+                onClicked:
+                {
+                    console.log("New Reddit Connection")
+                    newConnectionPage.onOptionSelected(3);
+                }
+            }
         }
 
         Rectangle {
@@ -87,6 +107,18 @@ Item
             width: parent.width
             height: parent.height / itemCount
             Text { text: "Browser" }
+            MouseArea
+            {
+                hoverEnabled: true
+                anchors.fill: parent
+                onEntered: parent.color = "yellow"
+                onExited: parent.color = "white"
+                onClicked:
+                {
+                    console.log("New Browser Connection")
+                    newConnectionPage.onOptionSelected(4);
+                }
+            }
         }
     }
 }

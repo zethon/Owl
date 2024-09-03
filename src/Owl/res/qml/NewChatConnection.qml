@@ -3,13 +3,13 @@ import QtQuick.Controls 2.15
 
 Item
 {
-    width: 200
-    height: 100
+    // width: 200
+    // height: 100
 
     Text
     {
         anchors.centerIn: parent
-        text: "Hello World"
+        text: "New Chat Connection"
     }
 }
 

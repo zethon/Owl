@@ -89,5 +89,7 @@
         <file>qml/ChatWindow.qml</file>
         <file>qml/NewConnectionDlg.qml</file>
         <file>qml/NewChatConnection.qml</file>
+        <file>qml/NewRedditConnection.qml</file>
+        <file>qml/NewMessageBoardConnection.qml</file>
     </qresource>
 </RCC>
