@@ -82,18 +82,6 @@ public:
     Q_INVOKABLE void onOptionSelected(int option)
     {
         this->newConnectionEvent(option);
-        // // std::cout << "Option selected: " << option << std::endl;
-        // switch (option)
-        // {
-        //     default:
-        //     break;
-
-        //     case 1:
-        //     {
-        //         this->setSource(QUrl(QStringLiteral("qrc:/NewChatConnection.qml")));
-        //         break;
-        //     }
-        // }
     }
 
 Q_SIGNALS:
@@ -106,13 +94,13 @@ class NewConnectionDlg : public QDialog
 
 public:
 	NewConnectionDlg(QWidget *parent = 0)
-        : QDialog(parent), _qmlWidget(new NewConnectionQuickWidget(this, QUrl("qrc:/qml/NewConnectionDlg.qml")))
+        : QDialog(parent),
+        _qmlWidget{new NewConnectionQuickWidget(this, QUrl("qrc:/qml/NewConnectionDlg.qml"))}
 	{
 		this->resize(850, 525);
         _layout = new QHBoxLayout(this);
         _layout->addWidget(_qmlWidget);
 
-        // auto rootObject = _qmlWidget->rootObject();
         QObject::connect(_qmlWidget, SIGNAL(newConnectionEvent(int)), this, SLOT(accept2(int)));
 	}
 
@@ -138,6 +126,7 @@ protected Q_SLOTS:
 
             case 3:
                 widget = new NewConnectionQuickWidget(this, QUrl("qrc:/qml/NewRedditConnection.qml"));
+
             break;
 
             case 4:
