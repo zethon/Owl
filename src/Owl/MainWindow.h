@@ -64,25 +64,20 @@ private Q_SLOTS:
 	void loadBoards();
 	void onNewBoard();
 	void onNewBoardAdded(BoardPtr);
-	
-	// handlers
 	void boardwareInfoEvent(BoardPtr, StringMap);
     void loginEvent(BoardPtr, const StringMap&);
 	void getUnreadForumsEvent(BoardPtr, ForumList);
-
 	void getThreadsHandler(BoardPtr, ForumPtr);
 	void getPostsHandler(BoardPtr, ThreadPtr);
     void markForumReadHandler(BoardPtr, ForumPtr);
-
+    void onForumStructureChanged(BoardPtr);
+    void onNewConnectionButtonClicked();
     // handlers when a new thread or post is submitted successfully
     void newThreadHandler(BoardPtr, ThreadPtr);
     void newPostHandler(BoardPtr, PostPtr);
-
 	// toolbar drop down menu
 	void onBoardDelete();
 	void onBoardDelete(BoardPtr);
-
-    void onForumStructureChanged(BoardPtr);
 
 private:
     void createMenus();
@@ -96,6 +91,7 @@ private:
     bool initBoard(const BoardPtr& b);
     void openPreferences();
     void loadConnections();
+    
 
     QuickAddDlg*            _quickAddDlg = nullptr;
     ErrorReportDlg*         _errorReportDlg = nullptr; // only one error at a time?

@@ -147,4 +147,46 @@ QString previewText(const QString &original)
     return previewText(original, 128);
 }
 
+std::string getRandomElement(const std::vector<std::string>& elements)
+{
+    return elements[std::rand() % elements.size()];
+}
+
+std::string generateRandomUserAgent()
+{
+    // Lists of browsers, operating systems, and versions
+    std::vector<std::string> browsers =
+    {
+         "Mozilla/5.0", "Mozilla/4.0", "Opera/9.80", "Safari/537.36", 
+        "Chrome/91.0.4472.124", "Firefox/89.0", "Edge/91.0.864.59", "Brave/1.25.68", 
+        "Vivaldi/3.8", "SamsungBrowser/14.0"
+    };
+    
+    std::vector<std::string> operatingSystems =
+    {
+        "(Windows NT 10.0; Win64; x64)", "(Macintosh; Intel Mac OS X 10_15_7)", 
+        "(Linux; Android 10)", "(iPhone; CPU iPhone OS 14_4 like Mac OS X)", 
+        "(iPad; CPU OS 13_3 like Mac OS X)", "(Windows NT 6.1; WOW64)", 
+        "(X11; Ubuntu; Linux x86_64)", "(X11; Linux x86_64)", "(Windows Phone 10.0)", 
+        "(Windows NT 6.3; Trident/7.0)"
+    };
+    
+    std::vector<std::string> engines =
+    {
+        "AppleWebKit/537.36 (KHTML, like Gecko)", "Gecko/20100101 Firefox/89.0", 
+        "Safari/605.1.15", "Edge/18.18363", "Presto/2.12.388 Version/12.18", 
+        "Blink/537.36 Chrome/91.0.4472.124", "Trident/7.0", "Goanna/4.2", 
+        "KHTML, like Gecko", "WebKit/534.30"
+    };
+
+    // Randomly select a browser, OS, and engine
+    std::string browser = getRandomElement(browsers);
+    std::string os = getRandomElement(operatingSystems);
+    std::string engine = getRandomElement(engines);
+    
+    // Format the User-Agent string
+    std::string userAgent = browser + " " + os + " " + engine;
+    return userAgent;
+}
+
 } // owl namespace

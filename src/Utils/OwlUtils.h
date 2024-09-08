@@ -1,3 +1,4 @@
+
 #pragma once
 #include <limits>
 #include <QtCore>
@@ -29,5 +30,7 @@ bool numericEquals(T x, T y)
 {
     return fabs(x-y) < std::numeric_limits<T>::epsilon();
 }
+
+std::string generateRandomUserAgent();
 
 } // owl namespace

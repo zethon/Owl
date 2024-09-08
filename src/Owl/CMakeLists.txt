@@ -4,43 +4,49 @@ SET (SOURCE_FILES
     BoardTreeView.cpp
     BoardsModel.cpp
     BoardUpdateWorker.cpp
+    ChatConnectionFrame.cpp
     ClickableLabel.cpp
     ConfiguringBoardDlg.cpp
+    # ConnectionFrame.cpp
     ContentView.cpp
     EditBoardDlg.cpp
     ErrorReportDlg.cpp
     FocusEventLineEdit.cpp
+    ForumConnectionFrame.cpp
     ForumView.cpp
-    main.cpp
+    Main.cpp
     MainWindow.cpp
+    NewConnection.cpp
     NewThreadDlg.cpp
+    OwlApplication.cpp
     PaginationWidget.cpp
+    PostListWidget.cpp
     PostTextEditor.cpp
     PreferencesDlg.cpp
-    OwlApplication.cpp
-    PostListWidget.cpp
     QuickAddDlg.cpp
+    RedditConnectionFrame.cpp
     ThreadListWidget.cpp
     WebBrowser.cpp
-    ForumConnectionFrame.cpp
-    RedditConnectionFrame.cpp
-    ChatConnectionFrame.cpp
 )
 
 SET (MOC_HEADERS
     AboutDlg.h
-    BoardsModel.h
     BoardIconView.h
     BoardTreeView.h
     BoardUpdateWorker.h
+    BoardsModel.h
+    ChatConnectionFrame.h
     ClickableLabel.h
     ConfiguringBoardDlg.h
+    ConnectionFrame.h
     ContentView.h
     EditBoardDlg.h
     ErrorReportDlg.h
     FocusEventLineEdit.h
+    ForumConnectionFrame.h
     ForumView.h
     MainWindow.h
+    NewConnection.h
     NewThreadDlg.h
     OwlApplication.h
     PaginationWidget.h
@@ -48,12 +54,9 @@ SET (MOC_HEADERS
     PostTextEditor.h
     PreferencesDlg.h
     QuickAddDlg.h
-    ThreadListWidget.h
-    ConnectionFrame.h
-    WebBrowser.h
-    ForumConnectionFrame.h
     RedditConnectionFrame.h
-    ChatConnectionFrame.h
+    ThreadListWidget.h
+    WebBrowser.h
 )
 
 SET (UI_SOURCES

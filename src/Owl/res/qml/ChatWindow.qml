@@ -49,7 +49,8 @@ Rectangle {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
 
-        TextInput {
+        TextInput 
+        {
             id: messageInput
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left

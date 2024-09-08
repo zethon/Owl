@@ -1,3 +1,4 @@
+// THE GOAL WITH THIS FILE IS TO DELETE IT
 #pragma once
 
 #include <memory>
@@ -8,6 +9,8 @@
 #include <QQmlContext>
 
 #include "ui_QuickAddDlg.h"
+
+#include "Utils/OwlUtils.h"
 
 namespace Ui
 {
@@ -61,94 +64,6 @@ private:
 // 	~NewConnectionDlg() = default;
 // };
 
-class NewConnectionQuickWidget : public QQuickWidget
-{
-	Q_OBJECT
-
-public:
-    NewConnectionQuickWidget(QWidget* parent = nullptr, const QUrl& qmlfile = QUrl{})
-        : QQuickWidget(parent)
-    {
-        setFocusPolicy(Qt::TabFocus);
-        setResizeMode(QQuickWidget::SizeRootObjectToView);
-
-        QQmlContext* root = rootContext();
-        root = this->rootContext();
-        root->setContextProperty("newConnectionPage", this);
-
-        setSource(qmlfile);
-    }
-
-    Q_INVOKABLE void onOptionSelected(int option)
-    {
-        this->newConnectionEvent(option);
-    }
-
-Q_SIGNALS:
-    void newConnectionEvent(int option);
-};
-
-class NewConnectionDlg : public QDialog
-{
-	Q_OBJECT
-
-public:
-	NewConnectionDlg(QWidget *parent = 0)
-        : QDialog(parent),
-        _qmlWidget{new NewConnectionQuickWidget(this, QUrl("qrc:/qml/NewConnectionDlg.qml"))}
-	{
-		this->resize(850, 525);
-        _layout = new QHBoxLayout(this);
-        _layout->addWidget(_qmlWidget);
-
-        QObject::connect(_qmlWidget, SIGNAL(newConnectionEvent(int)), this, SLOT(accept2(int)));
-	}
-
-
-	~NewConnectionDlg() = default;
-
-protected Q_SLOTS:
-    void accept2(int selection)
-    {
-        NewConnectionQuickWidget* widget = nullptr;
-        switch (selection)
-        {
-            default:
-            break;
-
-            case 1:
-                widget = new NewConnectionQuickWidget(this, QUrl("qrc:/qml/NewChatConnection.qml"));
-            break;
-
-            case 2:
-                widget = new NewConnectionQuickWidget(this, QUrl("qrc:/qml/NewMessageBoardConnection.qml"));
-            break;
-
-            case 3:
-                widget = new NewConnectionQuickWidget(this, QUrl("qrc:/qml/NewRedditConnection.qml"));
-
-            break;
-
-            case 4:
-            {
-                qDebug() << "New Browser Dialog";
-                break;
-            }
-        }
-
-        if (nullptr != widget)
-        {
-            _qmlWidget->deleteLater();
-            _qmlWidget = widget;
-            _layout->addWidget(_qmlWidget);
-        }
-    }
-
-
-private:
-    QQuickWidget* _qmlWidget;
-    QHBoxLayout* _layout;
-};
 
 } //namespace owl
 

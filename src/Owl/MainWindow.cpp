@@ -13,6 +13,7 @@
 #include "ErrorReportDlg.h"
 #include "PreferencesDlg.h"
 #include "QuickAddDlg.h"
+#include "NewConnection.h"
 #include "Core.h"
 #include "MainWindow.h"
 #include "BoardUpdateWorker.h"
@@ -793,29 +794,7 @@ void MainWindow::createBoardPanel()
             }
         });
 
-    QObject::connect(connectionView, &BoardIconView::onNewConnectionButtonClicked, this,
-        [this]()
-        {
-            auto* newConnectionDlg = new owl::NewConnectionDlg(this);
-            // newConnectionDlg->setParent(this->windowHandle());
-            newConnectionDlg->open();
-
-
-            // QuickAddDlg* addDlg = new QuickAddDlg(this);
-            // connect(addDlg, SIGNAL(newBoardAddedEvent(BoardPtr)), this, SLOT(onNewBoardAdded(BoardPtr)));
-
-            // connect(addDlg, &QuickAddDlg::newBoardAddedEvent, this,
-            //      [this](BoardPtr board)
-            //      {
-            //          if (this->initBoard(board))
-            //          {
-            //             // board->login();
-            //          }
-            //      });
-
-            // QObject::connect(addDlg, &QDialog::finished, [addDlg](int) { addDlg->deleteLater(); });
-            // addDlg->open();
-        });
+    QObject::connect(connectionView, SIGNAL(onNewConnectionButtonClicked()), this, SLOT(onNewConnectionButtonClicked()));
 
     QObject::connect(connectionView, &BoardIconView::onBoardClicked, this,
         [this](owl::BoardWeakPtr bwp)
@@ -1041,6 +1020,28 @@ void MainWindow::writeWindowSettings()
     settings.setValue("state", saveState());
     settings.setValue("statusBarGeometry", QMainWindow::statusBar()->saveGeometry());
     settings.setValue("showMenuBar", menuBar()->isVisible());
+}
+
+void MainWindow::onNewConnectionButtonClicked()
+{
+            auto* newConnectionDlg = new owl::NewConnectionDlg(this);
+            newConnectionDlg->open();
+
+
+            // QuickAddDlg* addDlg = new QuickAddDlg(this);
+            // connect(addDlg, SIGNAL(newBoardAddedEvent(BoardPtr)), this, SLOT(onNewBoardAdded(BoardPtr)));
+
+            // connect(addDlg, &QuickAddDlg::newBoardAddedEvent, this,
+            //      [this](BoardPtr board)
+            //      {
+            //          if (this->initBoard(board))
+            //          {
+            //             // board->login();
+            //          }
+            //      });
+
+            // QObject::connect(addDlg, &QDialog::finished, [addDlg](int) { addDlg->deleteLater(); });
+            // addDlg->open();
 }
 
 } // namespace owl
