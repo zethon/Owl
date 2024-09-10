@@ -50,9 +50,10 @@ NewConnectionDlg::NewConnectionDlg(QWidget *parent)
     : QDialog(parent),
       _qmlWidget{new NewConnectionQuickWidget(this, QUrl("qrc:/qml/NewConnectionDlg.qml"))}
 {
-    this->resize(850, 525);
+    this->resize(450, 575);
     _layout = new QHBoxLayout(this);
     _layout->setSpacing(0);
+    _layout->setContentsMargins(0, 0, 0, 0); 
     _layout->addWidget(_qmlWidget);
 
     setupSignals();
