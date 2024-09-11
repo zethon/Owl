@@ -1024,24 +1024,23 @@ void MainWindow::writeWindowSettings()
 
 void MainWindow::onNewConnectionButtonClicked()
 {
-            auto* newConnectionDlg = new owl::NewConnectionDlg(this);
-            newConnectionDlg->open();
+    auto* newConnectionDlg = new owl::NewConnectionDlg(this);
+    newConnectionDlg->open();
 
+    // QuickAddDlg* addDlg = new QuickAddDlg(this);
+    // connect(addDlg, SIGNAL(newBoardAddedEvent(BoardPtr)), this, SLOT(onNewBoardAdded(BoardPtr)));
 
-            // QuickAddDlg* addDlg = new QuickAddDlg(this);
-            // connect(addDlg, SIGNAL(newBoardAddedEvent(BoardPtr)), this, SLOT(onNewBoardAdded(BoardPtr)));
+    // connect(addDlg, &QuickAddDlg::newBoardAddedEvent, this,
+    //      [this](BoardPtr board)
+    //      {
+    //          if (this->initBoard(board))
+    //          {
+    //             // board->login();
+    //          }
+    //      });
 
-            // connect(addDlg, &QuickAddDlg::newBoardAddedEvent, this,
-            //      [this](BoardPtr board)
-            //      {
-            //          if (this->initBoard(board))
-            //          {
-            //             // board->login();
-            //          }
-            //      });
-
-            // QObject::connect(addDlg, &QDialog::finished, [addDlg](int) { addDlg->deleteLater(); });
-            // addDlg->open();
+    // QObject::connect(addDlg, &QDialog::finished, [addDlg](int) { addDlg->deleteLater(); });
+    // addDlg->open();
 }
 
 } // namespace owl

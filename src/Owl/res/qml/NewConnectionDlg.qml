@@ -6,7 +6,9 @@ Item
     width: 485
     height: 300
     property int itemCount: 5
-    property real scaleFactor: 0.65
+    property real widthScaleFactor: 0.95
+    property real heightScaleFactor: 0.60
+    property string hoverBackgroundColor: "#e9e9e9e9"
 
     // Close Button 'X'
     Rectangle
@@ -33,7 +35,7 @@ Item
         {
             anchors.fill: parent
             hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor // Change cursor to hand
+            cursorShape: Qt.PointingHandCursor
 
             onEntered:
             {
@@ -71,7 +73,7 @@ Item
                 {
                     text: "Add New Connection"
                     font.bold: true
-                    font.capitalization: Font.SmallCaps
+                    // font.capitalization: Font.SmallCaps
                     font.pointSize: 24 // Title text size
                     horizontalAlignment: Text.AlignHCenter
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -81,10 +83,10 @@ Item
                 Text
                 {
                     text: "Choose a connection type to proceed. Each connection allows you to interact with different services."
-                    font.pointSize: 12 // Smaller text size
+                    font.pointSize: 12 
                     horizontalAlignment: Text.AlignHCenter
                     wrapMode: Text.WordWrap
-                    width: parent.width * 0.70 // Slightly wider before wrapping
+                    width: parent.width * 1.00
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
             }
@@ -93,8 +95,8 @@ Item
         Rectangle
         {
             id: chatConnection
-            width: parent.width * 0.9 // Adjust width to have padding
-            height: parent.height / itemCount * scaleFactor // Slightly smaller height for spacing
+            width: parent.width * widthScaleFactor
+            height: parent.height / itemCount * heightScaleFactor // Slightly smaller height for spacing
             radius: 10 // Rounded corners
             color: "white" // Default background color
             border.color: "#dcdcdc" // Light gray border color
@@ -106,10 +108,12 @@ Item
             {
                 anchors.fill: parent
                 anchors.margins: 10
+                spacing: 20
 
                 // Optional icon (left side)
                 Image 
                 {
+                    id: chatIcon
                     source: "/images/owl_64.png"
                     width: 32
                     height: 32
@@ -125,6 +129,18 @@ Item
                     anchors.verticalCenter: parent.verticalCenter
                     horizontalAlignment: Text.AlignLeft
                     anchors.leftMargin: 12 // Space between icon and text
+                    anchors.left: chatIcon.right
+                }
+
+                Image
+                {
+                    source: "/images/next-arrow-button.png"
+                    width: 16
+                    height: 16
+                    fillMode: Image.PreserveAspectFit
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    anchors.rightMargin: 10
                 }
             }
 
@@ -132,10 +148,10 @@ Item
             {
                 anchors.fill: parent
                 hoverEnabled: true
-
+                cursorShape: Qt.PointingHandCursor
                 onEntered:
                 {
-                    parent.color = "#f1f1f1" // Light gray on hover
+                    parent.color = hoverBackgroundColor // Light gray on hover
                     parent.border.color = "#cccccc" // Darken border on hover
                 }
                 onExited:
@@ -154,8 +170,8 @@ Item
         Rectangle
         {
             id: messageBoardConnection
-            width: parent.width * 0.9 // Adjust width to have padding
-            height: parent.height / itemCount * scaleFactor // Slightly smaller height for spacing
+            width: parent.width * widthScaleFactor
+            height: parent.height / itemCount * heightScaleFactor // Slightly smaller height for spacing
             radius: 10 // Rounded corners
             color: "white" // Default background color
             border.color: "#dcdcdc" // Light gray border color
@@ -167,10 +183,12 @@ Item
             {
                 anchors.fill: parent
                 anchors.margins: 10
+                spacing: 20
 
                 // Optional icon (left side)
                 Image 
                 {
+                    id: messageBoardIcon
                     source: "/images/sad.png"
                     width: 32
                     height: 32
@@ -186,6 +204,18 @@ Item
                     anchors.verticalCenter: parent.verticalCenter
                     horizontalAlignment: Text.AlignLeft
                     anchors.leftMargin: 12 // Space between icon and text
+                    anchors.left: messageBoardIcon.right
+                }
+
+                Image
+                {
+                    source: "/images/next-arrow-button.png"
+                    width: 16
+                    height: 16
+                    fillMode: Image.PreserveAspectFit
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    anchors.rightMargin: 10
                 }
             }
 
@@ -193,10 +223,11 @@ Item
             {
                 anchors.fill: parent
                 hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
 
                 onEntered:
                 {
-                    parent.color = "#f1f1f1" // Light gray on hover
+                    parent.color = hoverBackgroundColor // Light gray on hover
                     parent.border.color = "#cccccc" // Darken border on hover
                 }
                 onExited:
@@ -215,8 +246,8 @@ Item
         Rectangle
         {
             id: redditConnection
-            width: parent.width * 0.9 // Adjust width to have padding
-            height: parent.height / itemCount * scaleFactor // Slightly smaller height for spacing
+            width: parent.width * widthScaleFactor
+            height: parent.height / itemCount * heightScaleFactor // Slightly smaller height for spacing
             radius: 10 // Rounded corners
             color: "white" // Default background color
             border.color: "#dcdcdc" // Light gray border color
@@ -228,10 +259,12 @@ Item
             {
                 anchors.fill: parent
                 anchors.margins: 10
+                spacing: 20
 
                 // Optional icon (left side)
                 Image 
                 {
+                    id: redditIcon
                     source: "/images/quote-bubble.png"
                     width: 32
                     height: 32
@@ -246,7 +279,19 @@ Item
                     font.pointSize: 16
                     anchors.verticalCenter: parent.verticalCenter
                     horizontalAlignment: Text.AlignLeft
-                    anchors.leftMargin: 12 // Space between icon and text
+                    anchors.leftMargin: 12 
+                    anchors.left: redditIcon.right
+                }
+
+                Image
+                {
+                    source: "/images/next-arrow-button.png"
+                    width: 16
+                    height: 16
+                    fillMode: Image.PreserveAspectFit
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    anchors.rightMargin: 10
                 }
             }
 
@@ -254,10 +299,10 @@ Item
             {
                 anchors.fill: parent
                 hoverEnabled: true
-
+                cursorShape: Qt.PointingHandCursor
                 onEntered:
                 {
-                    parent.color = "#f1f1f1" // Light gray on hover
+                    parent.color = hoverBackgroundColor // Light gray on hover
                     parent.border.color = "#cccccc" // Darken border on hover
                 }
                 onExited:
@@ -276,8 +321,8 @@ Item
         Rectangle
         {
             id: browserConnection
-            width: parent.width * 0.9 // Adjust width to have padding
-            height: parent.height / itemCount * scaleFactor // Slightly smaller height for spacing
+            width: parent.width * widthScaleFactor
+            height: parent.height / itemCount * heightScaleFactor // Slightly smaller height for spacing
             radius: 10 // Rounded corners
             color: "white" // Default background color
             border.color: "#dcdcdc" // Light gray border color
@@ -289,10 +334,12 @@ Item
             {
                 anchors.fill: parent
                 anchors.margins: 10
+                spacing: 20
 
                 // Optional icon (left side)
                 Image 
                 {
+                    id: browserIcon
                     source: "/images/expand-arrow.png"
                     width: 32
                     height: 32
@@ -308,6 +355,18 @@ Item
                     anchors.verticalCenter: parent.verticalCenter
                     horizontalAlignment: Text.AlignLeft
                     anchors.leftMargin: 12 // Space between icon and text
+                    anchors.left: browserIcon.right
+                }
+
+                Image
+                {
+                    source: "/images/next-arrow-button.png"
+                    width: 16
+                    height: 16
+                    fillMode: Image.PreserveAspectFit
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    anchors.rightMargin: 10
                 }
             }
 
@@ -315,11 +374,12 @@ Item
             {
                 anchors.fill: parent
                 hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
 
                 onEntered:
                 {
-                    parent.color = "#f1f1f1" // Light gray on hover
-                    parent.border.color = "#cccccc" // Darken border on hover
+                    parent.color = hoverBackgroundColor
+                    parent.border.color = "#cccccc"
                 }
                 onExited:
                 {
