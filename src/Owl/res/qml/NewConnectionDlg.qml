@@ -6,16 +6,15 @@ Item
     width: 485
     height: 300
     property int itemCount: 5
+    property real scaleFactor: 0.65
 
     // Close Button 'X'
     Rectangle
     {
         width: 40
         height: 40
-        radius: 20 // Makes it a circle
+        radius: 5
         color: "transparent" // Initially transparent
-        // border.color: "gray"
-        // border.width: 1
         z: 999 // Ensure it stays on top
         anchors.top: parent.top
         anchors.right: parent.right
@@ -38,7 +37,7 @@ Item
 
             onEntered:
             {
-                parent.color = "#f8f8f8" // Change color on hover
+                parent.color = "#f0f0f0" // Change color on hover
                 closeText.font.weight = Font.Bold // Make the 'X' bold on hover
             }
             onExited:
@@ -56,10 +55,11 @@ Item
     Column
     {
         anchors.fill: parent
+        anchors.margins: 10
+        spacing: 10
 
         Rectangle
         {
-            border.width: 1
             width: parent.width
             height: parent.height / itemCount
 
@@ -93,24 +93,55 @@ Item
         Rectangle
         {
             id: chatConnection
+            width: parent.width * 0.9 // Adjust width to have padding
+            height: parent.height / itemCount * scaleFactor // Slightly smaller height for spacing
+            radius: 10 // Rounded corners
+            color: "white" // Default background color
+            border.color: "#dcdcdc" // Light gray border color
             border.width: 1
-            width: parent.width
-            height: parent.height / itemCount
-            Text
+            anchors.horizontalCenter: parent.horizontalCenter // Center horizontally
+            anchors.margins: 8 // Add margins for spacing
+
+            Row // Use a row to align an icon and text
             {
-                text: "New Chat Connection"
+                anchors.fill: parent
+                anchors.margins: 10
+
+                // Optional icon (left side)
+                Image 
+                {
+                    source: "/images/owl_64.png"
+                    width: 32
+                    height: 32
+                    fillMode: Image.PreserveAspectFit
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                // Text for the button
+                Text
+                {
+                    text: "New Chat Connection"
+                    font.pointSize: 16
+                    anchors.verticalCenter: parent.verticalCenter
+                    horizontalAlignment: Text.AlignLeft
+                    anchors.leftMargin: 12 // Space between icon and text
+                }
             }
+
             MouseArea
             {
-                hoverEnabled: true
                 anchors.fill: parent
+                hoverEnabled: true
+
                 onEntered:
                 {
-                    parent.color = "yellow"
+                    parent.color = "#f1f1f1" // Light gray on hover
+                    parent.border.color = "#cccccc" // Darken border on hover
                 }
                 onExited:
                 {
-                    parent.color = "white"
+                    parent.color = "white" // Revert back to white
+                    parent.border.color = "#dcdcdc" // Revert border color
                 }
                 onClicked:
                 {
@@ -123,24 +154,55 @@ Item
         Rectangle
         {
             id: messageBoardConnection
+            width: parent.width * 0.9 // Adjust width to have padding
+            height: parent.height / itemCount * scaleFactor // Slightly smaller height for spacing
+            radius: 10 // Rounded corners
+            color: "white" // Default background color
+            border.color: "#dcdcdc" // Light gray border color
             border.width: 1
-            width: parent.width
-            height: parent.height / itemCount
-            Text
+            anchors.horizontalCenter: parent.horizontalCenter // Center horizontally
+            anchors.margins: 8 // Add margins for spacing
+
+            Row // Use a row to align an icon and text
             {
-                text: "Message Board"
+                anchors.fill: parent
+                anchors.margins: 10
+
+                // Optional icon (left side)
+                Image 
+                {
+                    source: "/images/sad.png"
+                    width: 32
+                    height: 32
+                    fillMode: Image.PreserveAspectFit
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                // Text for the button
+                Text
+                {
+                    text: "Message Board Connection"
+                    font.pointSize: 16
+                    anchors.verticalCenter: parent.verticalCenter
+                    horizontalAlignment: Text.AlignLeft
+                    anchors.leftMargin: 12 // Space between icon and text
+                }
             }
+
             MouseArea
             {
-                hoverEnabled: true
                 anchors.fill: parent
+                hoverEnabled: true
+
                 onEntered:
                 {
-                    parent.color = "yellow"
+                    parent.color = "#f1f1f1" // Light gray on hover
+                    parent.border.color = "#cccccc" // Darken border on hover
                 }
                 onExited:
                 {
-                    parent.color = "white"
+                    parent.color = "white" // Revert back to white
+                    parent.border.color = "#dcdcdc" // Revert border color
                 }
                 onClicked:
                 {
@@ -153,24 +215,55 @@ Item
         Rectangle
         {
             id: redditConnection
+            width: parent.width * 0.9 // Adjust width to have padding
+            height: parent.height / itemCount * scaleFactor // Slightly smaller height for spacing
+            radius: 10 // Rounded corners
+            color: "white" // Default background color
+            border.color: "#dcdcdc" // Light gray border color
             border.width: 1
-            width: parent.width
-            height: parent.height / itemCount
-            Text
+            anchors.horizontalCenter: parent.horizontalCenter // Center horizontally
+            anchors.margins: 8 // Add margins for spacing
+
+            Row // Use a row to align an icon and text
             {
-                text: "Reddit"
+                anchors.fill: parent
+                anchors.margins: 10
+
+                // Optional icon (left side)
+                Image 
+                {
+                    source: "/images/quote-bubble.png"
+                    width: 32
+                    height: 32
+                    fillMode: Image.PreserveAspectFit
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                // Text for the button
+                Text
+                {
+                    text: "Reddit Connection"
+                    font.pointSize: 16
+                    anchors.verticalCenter: parent.verticalCenter
+                    horizontalAlignment: Text.AlignLeft
+                    anchors.leftMargin: 12 // Space between icon and text
+                }
             }
+
             MouseArea
             {
-                hoverEnabled: true
                 anchors.fill: parent
+                hoverEnabled: true
+
                 onEntered:
                 {
-                    parent.color = "yellow"
+                    parent.color = "#f1f1f1" // Light gray on hover
+                    parent.border.color = "#cccccc" // Darken border on hover
                 }
                 onExited:
                 {
-                    parent.color = "white"
+                    parent.color = "white" // Revert back to white
+                    parent.border.color = "#dcdcdc" // Revert border color
                 }
                 onClicked:
                 {
@@ -183,24 +276,55 @@ Item
         Rectangle
         {
             id: browserConnection
+            width: parent.width * 0.9 // Adjust width to have padding
+            height: parent.height / itemCount * scaleFactor // Slightly smaller height for spacing
+            radius: 10 // Rounded corners
+            color: "white" // Default background color
+            border.color: "#dcdcdc" // Light gray border color
             border.width: 1
-            width: parent.width
-            height: parent.height / itemCount
-            Text
+            anchors.horizontalCenter: parent.horizontalCenter // Center horizontally
+            anchors.margins: 8 // Add margins for spacing
+
+            Row // Use a row to align an icon and text
             {
-                text: "Browser"
+                anchors.fill: parent
+                anchors.margins: 10
+
+                // Optional icon (left side)
+                Image 
+                {
+                    source: "/images/expand-arrow.png"
+                    width: 32
+                    height: 32
+                    fillMode: Image.PreserveAspectFit
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                // Text for the button
+                Text
+                {
+                    text: "New Browser Connection"
+                    font.pointSize: 16
+                    anchors.verticalCenter: parent.verticalCenter
+                    horizontalAlignment: Text.AlignLeft
+                    anchors.leftMargin: 12 // Space between icon and text
+                }
             }
+
             MouseArea
             {
-                hoverEnabled: true
                 anchors.fill: parent
+                hoverEnabled: true
+
                 onEntered:
                 {
-                    parent.color = "yellow"
+                    parent.color = "#f1f1f1" // Light gray on hover
+                    parent.border.color = "#cccccc" // Darken border on hover
                 }
                 onExited:
                 {
-                    parent.color = "white"
+                    parent.color = "white" // Revert back to white
+                    parent.border.color = "#dcdcdc" // Revert border color
                 }
                 onClicked:
                 {
